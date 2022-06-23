@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id "org.jetbrains.intellij" version "1.6.0"
+}
+
+group 'jezzsantos'
+version '1.0.1'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+    maven { url "https://www.jetbrains.com/intellij-repository/releases" }
+    maven { url "https://www.jetbrains.com/intellij-repository/snapshots" }
+}
+
+dependencies {
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    implementation 'com.google.code.gson:gson:2.9.0'
+}
+
+publishPlugin {
+    token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
+}
+
+intellij {
+    type = 'RD'
+    version = "${ProductVersion}"
+    downloadSources = false
+    instrumentCode = true
+}
+
+patchPluginXml {
+    def changelogText = file("${rootDir}/CHANGES.md").text
+    def changelogMatches = changelogText =~ /(?s)(-.+?)(?=##|$)/
+
+    changeNotes = changelogMatches.collect {
+        it[1].replaceAll(/(?s)\r?\n/, "<br />\n")
+    }.take(1).join('')
+}

@@ -1,0 +1,36 @@
+<idea-plugin  url="https://github.com/jezzsantos/automate.plugin-rider">
+    <id>automate</id>
+    <name>Automate</name>
+    <!-- <version> and other attributes are patched by build.gradle file -->
+    <vendor url="https://github.com/jezzsantos">Jezz Santos</vendor>
+    <description><![CDATA[
+    <p>Templatize patterns from your own codebase, make them programmable, then share them with your team</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.rider</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.xdebugger</depends>
+
+    <resource-bundle>messages.AutomateBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="jezzsantos.automate.settings.ProjectSettingsState"/>
+        <applicationService serviceImplementation="jezzsantos.automate.settings.AppSettingState"/>
+        <projectConfigurable
+                parentId="tools"
+                instance="jezzsantos.automate.settings.ProjectSettingsConfigurable"
+                id="jezzsantos.automate.settings.ProjectSettingsConfigurable"
+                displayName="Automate"
+                nonDefaultProject="true"/>
+    </extensions>
+
+    <actions>
+    </actions>
+
+    <projectListeners>
+        <listener class="jezzsantos.automate.listeners.DebugMessageListener"
+                  topic="com.intellij.xdebugger.XDebuggerManagerListener"/>
+    </projectListeners>
+
+    <idea-version since-build="2021.3" until-build="2022.*"/>
+</idea-plugin>
