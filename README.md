@@ -41,7 +41,7 @@ So, the first iterations of the plugin will simply:
 - Start the `Plugin Stable` run configuration
 
 
-### Contributing
+## Contributing
 
 All contributions and suggestions are very welcome.
 
