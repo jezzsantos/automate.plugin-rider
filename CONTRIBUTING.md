@@ -98,11 +98,9 @@ Your Responsibilities are:
 
 [This is where](https://jezzsantos.github.io/automate/) we have all of our product documentation. This includes documentation for the core product of automate, our CLI interfaces and our plugins.
 
-We build that documentation using [MkDocs]() from the source documentation files located in the: `docs` folder of the [automate](https://github.com/jezzsantos/automate) project.
+We build that documentation using [MkDocs](https://www.mkdocs.org/) from the source documentation files located in the: `docs` folder. The `mkdocs.yml` file is in the root of the repository.
 
-We compile those docs automatically (with a special GitHub action step) that is run when any commit to the `main` branch of the repo is made. That compiles and uploads the compiled documentation to the `gh-pages` branch of the repo. 
-
-> This process is the standard process for all GitHub projects using GitHub pages with MkDocs. See [MkDocs](https://www.mkdocs.org/user-guide/deploying-your-docs/) for more details on how that works.
+Editing and publishing docs is done from the [automate](https://github.com/jezzsantos/automate) project. See the [CONTRIBUTING.md](https://github.com/jezzsantos/automate/blob/main/CONTRIBUTING.md) in that project for more details.
 
 # Building & Testing The Code
 
