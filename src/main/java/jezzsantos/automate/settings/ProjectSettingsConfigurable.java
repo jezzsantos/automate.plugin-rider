@@ -18,10 +18,16 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
         this.project = project;
     }
 
+    @SuppressWarnings("DialogTitleCapitalization")
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
         return AutomateBundle.message("settings.Title");
+    }
+
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+        return settingsComponent.getPreferredFocusedComponent();
     }
 
     @Nullable
@@ -34,17 +40,19 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Override
     public boolean isModified() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        return false;
+        return settingsComponent.getDeveloperMode() != settings.developerMode.getValue();
     }
 
     @Override
     public void apply() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
+        settings.developerMode.setValue(settingsComponent.getDeveloperMode());
     }
 
     @Override
     public void reset() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
+        settingsComponent.setDeveloperMode(settings.developerMode.getValue());
     }
 
     @Override

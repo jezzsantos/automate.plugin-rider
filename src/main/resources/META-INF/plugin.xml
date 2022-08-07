@@ -1,3 +1,4 @@
+<!--suppress PluginXmlCapitalization -->
 <idea-plugin url="https://github.com/jezzsantos/automate.plugin-rider">
     <id>automate</id>
     <name>Automate</name>
@@ -14,7 +15,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceImplementation="jezzsantos.automate.settings.ProjectSettingsState"/>
-        <applicationService serviceImplementation="jezzsantos.automate.settings.AppSettingState"/>
         <projectConfigurable
                 parentId="tools"
                 instance="jezzsantos.automate.settings.ProjectSettingsConfigurable"

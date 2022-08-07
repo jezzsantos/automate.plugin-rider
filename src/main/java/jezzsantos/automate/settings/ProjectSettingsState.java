@@ -6,6 +6,11 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.SimpleModificationTracker;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.intellij.util.xmlb.annotations.OptionTag;
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
+import com.jetbrains.rd.util.reactive.Property;
+import jezzsantos.automate.settings.converters.BooleanPropertyConverter;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,9 +19,12 @@ import org.jetbrains.annotations.Nullable;
         storages = @Storage("automate.xml")
 )
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {
+    @OptionTag(converter = BooleanPropertyConverter.class)
+    public final Property<Boolean> developerMode = new Property<>(false);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     public ProjectSettingsState() {
+        registerAllPropertyToIncrementTrackerOnChanges(this);
     }
 
     public static ProjectSettingsState getInstance(Project project) {
@@ -32,6 +40,18 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     @Override
     public void loadState(@NotNull ProjectSettingsState state) {
         XmlSerializerUtil.copyBean(state, this);
+        registerAllPropertyToIncrementTrackerOnChanges(state);
+    }
+
+    private void registerAllPropertyToIncrementTrackerOnChanges(@NotNull ProjectSettingsState state) {
+        incrementTrackerWhenPropertyChanges(state.developerMode);
+    }
+
+    private <T> void incrementTrackerWhenPropertyChanges(Property<T> property) {
+        property.advise(new LifetimeDefinition(), v -> {
+            this.tracker.incModificationCount();
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
