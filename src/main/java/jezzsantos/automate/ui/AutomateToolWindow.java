@@ -1,365 +1,33 @@
 package jezzsantos.automate.ui;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.intellij.codeInsight.folding.CodeFoldingManager;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.json.JsonFileType;
-import com.intellij.json.JsonLanguage;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.EditorKind;
-import com.intellij.openapi.editor.actions.AbstractToggleUseSoftWrapsAction;
-import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
-import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.LanguageTextField;
-import com.intellij.ui.components.fields.ExtendableTextField;
-import com.intellij.unscramble.AnalyzeStacktraceUtil;
-import com.intellij.util.ui.JBUI;
-import com.jetbrains.rd.util.lifetime.Lifetime;
-import jezzsantos.automate.AutomateSession;
-import jezzsantos.automate.Telemetry;
-import jezzsantos.automate.TelemetryType;
-import jezzsantos.automate.metricdata.*;
-import jezzsantos.automate.settings.AppSettingState;
-import jezzsantos.automate.ui.components.*;
-import jezzsantos.automate.ui.renderers.TelemetryDateRender;
-import jezzsantos.automate.ui.renderers.TelemetryRender;
-import jezzsantos.automate.ui.renderers.TelemetryTypeRender;
-import jezzsantos.automate.utils.TimeSpan;
-import kotlin.Unit;
+import com.intellij.openapi.wm.ToolWindow;
+import jezzsantos.automate.ui.components.OptionsToolbarAction;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
-import java.util.*;
+import java.util.Calendar;
 
 public class AutomateToolWindow {
     @NotNull
-    private JPanel mainPanel;
-    @NotNull
-    private JTable logsTable;
-    @NotNull
-    private JCheckBox metricCheckBox;
-    @NotNull
-    private JCheckBox exceptionCheckBox;
-    @NotNull
-    private JCheckBox messageCheckBox;
-    @NotNull
-    private JCheckBox dependencyCheckBox;
-    @NotNull
-    private JCheckBox requestCheckBox;
-    @NotNull
-    private JCheckBox eventCheckBox;
-    @NotNull
-    private JSplitPane splitPane;
-    @NotNull
-    private JLabel metricCounter;
-    @NotNull
-    private JLabel exceptionCounter;
-    @NotNull
-    private JLabel messageCounter;
-    @NotNull
-    private JLabel dependencyCounter;
-    @NotNull
-    private JLabel requestCounter;
-    @NotNull
-    private JLabel eventCounter;
-    @NotNull
-    private ColorBox metricColorBox;
-    @NotNull
-    private ColorBox exceptionColorBox;
-    @NotNull
-    private ColorBox messageColorBox;
-    @NotNull
-    private ColorBox dependencyColorBox;
-    @NotNull
-    private ColorBox requestColorBox;
-    @NotNull
-    private ColorBox eventColorBox;
-    @NotNull
-    private ExtendableTextField filter;
-    @NotNull
-    private JScrollPane logsScrollPane;
-    @NotNull
-    private ActionToolbarImpl toolbar;
-    @NotNull
-    private JComponent editorPanel;
-    @NotNull
-    private JPanel formattedTelemetryInfo;
-
-    @NotNull
     private final Project project;
     @NotNull
-    private final TelemetryRender telemetryRender;
-    @NotNull
-    private final Map<TelemetryType, Integer> telemetryCountPerType = new HashMap<>();
-    @NotNull
-    private final AutomateSession automateSession;
-    private Lifetime lifetime;
-
-    @NotNull
-    private Editor editor;
-    @NotNull
-    private TelemetryTableModel telemetryTableModel;
-    @NotNull
-    private ArrayList<JLabel> telemetryTypesCounter = new ArrayList<>();
-    @NotNull
-    private Document jsonPreviewDocument;
-    private boolean autoScrollToTheEnd;
-    private final TextConsoleBuilder builder;
-
+    private final ToolWindow toolWindow;
+    private JPanel mainPanel;
+    private ActionToolbarImpl toolbar;
+    private JButton refreshButton;
+    private JLabel currentTime;
 
     public AutomateToolWindow(
-            @NotNull AutomateSession automateSession,
-            @NotNull Project project,
-            Lifetime lifetime) {
+            @NotNull Project project, ToolWindow toolWindow) {
         this.project = project;
-        this.automateSession = automateSession;
-        this.lifetime = lifetime;
+        this.toolWindow = toolWindow;
 
-        initTelemetryTypeFilters();
+        refreshButton.addActionListener(e -> refreshContents());
 
-        splitPane.setDividerLocation(0.5);
-        splitPane.setResizeWeight(0.5);
-
-        CodeFoldingManager.getInstance(ProjectManager.getInstance().getDefaultProject()).buildInitialFoldings(jsonPreviewDocument);
-
-        this.telemetryRender = new TelemetryRender(lifetime);
-        logsTable.setDefaultRenderer(Telemetry.class, telemetryRender);
-        logsTable.setDefaultRenderer(TelemetryType.class, new TelemetryTypeRender());
-        logsTable.setDefaultRenderer(Date.class, new TelemetryDateRender());
-        logsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        telemetryTableModel = new TelemetryTableModel();
-        logsTable.setModel(telemetryTableModel);
-        logsTable.getColumnModel().getColumn(0).setPreferredWidth(90);
-        logsTable.getColumnModel().getColumn(0).setMaxWidth(130);
-        logsTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-        logsTable.getColumnModel().getColumn(1).setMaxWidth(100);
-        logsTable.getColumnModel().getColumn(2).setPreferredWidth(100);
-        logsTable.getColumnModel().getColumn(2).setMaxWidth(100);
-        logsTable.getTableHeader().setUI(null);
-
-        filter.setExtensions(new ClearTextFieldExtension(filter));
-
-        filter.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                AutomateToolWindow.this.automateSession.updateFilter(filter.getText());
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                AutomateToolWindow.this.automateSession.updateFilter(filter.getText());
-            }
-        });
-
-        logsTable.getSelectionModel().addListSelectionListener(e -> {
-            selectTelemetry(telemetryTableModel.getRow(logsTable.getSelectedRow()));
-        });
-
-        builder = TextConsoleBuilderFactory.getInstance().createBuilder(project);
-        builder.filters(AnalyzeStacktraceUtil.EP_NAME.getExtensions(project));
-
-        AppSettingState.getInstance().showFilteredIndicator.advise(lifetime, (v) -> {
-            this.logsTable.invalidate();
-            this.logsTable.repaint();
-            return Unit.INSTANCE;
-        });
-    }
-
-    private void selectTelemetry(@Nullable Telemetry telemetry) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        updateJsonPreview(gson.toJson(telemetry == null ? "" : telemetry.getJsonObject()));
-
-        if (telemetry == null) {
-            return;
-        }
-
-        formattedTelemetryInfo.removeAll();
-        if (telemetry.getFilteredBy() != null) {
-            formattedTelemetryInfo.add(new JLabel("This log was filtered by " + telemetry.getFilteredBy()), createConstraint(0, 0, 0));
-        }
-
-        int column = 1;
-        if (telemetry.getTags().containsKey("ai.operation.id")) {
-            formattedTelemetryInfo.add(createTitleLabel("OperationId"), createConstraint(0, column++, 0));
-            String operationId = telemetry.getTags().get("ai.operation.id");
-            JLabel jLabel = new JLabel("<html><a href=''>" + operationId + "</a></html>");
-            jLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            jLabel.addMouseListener(new ClickListener(e -> {
-                automateSession.updateFilter(operationId);
-                this.filter.setText(operationId);
-            }));
-            formattedTelemetryInfo.add(jLabel, createConstraint(0, column++, 30));
-        }
-        if (telemetry.getType() == TelemetryType.Message) {
-            formattedTelemetryInfo.add(createTitleLabel("Message"), createConstraint(0, column++, 0));
-            MessageData messageData = telemetry.getData(MessageData.class);
-            formattedTelemetryInfo.add(new JLabel(messageData.message), createConstraint(0, column++, 30));
-        }
-        if (telemetry.getType() == TelemetryType.Request) {
-            formattedTelemetryInfo.add(createTitleLabel("Request"), createConstraint(0, column++, 0));
-            RequestData requestData = telemetry.getData(RequestData.class);
-            formattedTelemetryInfo.add(new JLabel(requestData.name), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("Status code: " + requestData.responseCode), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("Duration: " + new TimeSpan(requestData.duration).toString()), createConstraint(0, column++, 30));
-        }
-        if (telemetry.getType() == TelemetryType.Metric) {
-            formattedTelemetryInfo.add(createTitleLabel("Metric"), createConstraint(0, column++, 0));
-            MetricData metricData = telemetry.getData(MetricData.class);
-            if (metricData.metrics != null) {
-                for (MetricData.Metric metric : metricData.metrics) {
-                    formattedTelemetryInfo.add(new JLabel(metric.name), createConstraint(0, column++, 30));
-                    formattedTelemetryInfo.add(new JLabel("Kind: " + metric.kind), createConstraint(0, column++, 60));
-                    formattedTelemetryInfo.add(new JLabel("Value: " + metric.value), createConstraint(0, column++, 60));
-                    formattedTelemetryInfo.add(new JLabel("Count: " + metric.count), createConstraint(0, column++, 60));
-                }
-            }
-        }
-        if (telemetry.getType() == TelemetryType.RemoteDependency) {
-            formattedTelemetryInfo.add(createTitleLabel("Dependency"), createConstraint(0, column++, 0));
-            RemoteDependencyData remoteDependencyData = telemetry.getData(RemoteDependencyData.class);
-            formattedTelemetryInfo.add(new JLabel("Success: " + remoteDependencyData.success), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("Type: " + remoteDependencyData.type), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("Target: " + remoteDependencyData.target), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("Data " + remoteDependencyData.data), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("ResultCode: " + remoteDependencyData.resultCode), createConstraint(0, column++, 30));
-            formattedTelemetryInfo.add(new JLabel("Duration: " + new TimeSpan(remoteDependencyData.duration).toString()), createConstraint(0, column++, 30));
-        }
-        if (telemetry.getType() == TelemetryType.Exception) {
-            formattedTelemetryInfo.add(createTitleLabel("Exception"), createConstraint(0, column++, 0));
-            ExceptionData exceptionData = telemetry.getData(ExceptionData.class);
-            var consoleView = builder.getConsole();
-            consoleView.clear();
-            consoleView.allowHeavyFilters();
-            for (ExceptionData.ExceptionDetailData exception : exceptionData.exceptions) {
-                consoleView.print(StackTraceFormatter.formatStackTrace(exception), ConsoleViewContentType.NORMAL_OUTPUT);
-                formattedTelemetryInfo.add(consoleView.getComponent(), createConstraint(0, column++, 30));
-            }
-        }
-
-        ITelemetryData telemetryData = telemetry.getData(ITelemetryData.class);
-        if (telemetryData != null && telemetryData.getProperties() != null && telemetryData.getProperties().size() > 0) {
-            formattedTelemetryInfo.add(createTitleLabel("Properties"), createConstraint(0, column++, 0));
-            for (Map.Entry<String, String> entry : telemetryData.getProperties().entrySet()) {
-                JLabel jLabel = new JLabel("<html>" + entry.getKey() + ": " + "<a href=''>" + entry.getValue() + "</a></html>");
-                jLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                jLabel.addMouseListener(new ClickListener(e -> {
-                    automateSession.updateFilter(entry.getValue());
-                    this.filter.setText(entry.getValue());
-                }));
-                formattedTelemetryInfo.add(jLabel, createConstraint(0, column++, 30));
-            }
-        }
-
-        // Padding
-        {
-            GridBagConstraints c = createConstraint(0, 10_000, 0);
-            c.weighty = 1;
-            formattedTelemetryInfo.add(new JPanel(), c);
-        }
-
-        formattedTelemetryInfo.revalidate();
-        formattedTelemetryInfo.repaint();
-    }
-
-    @NotNull
-    private JLabel createTitleLabel(String label) {
-        JLabel title = new JLabel("<html><b>" + label + "</b></html>");
-        Font font = title.getFont();
-        font.deriveFont(Font.BOLD);
-        title.setFont(font);
-        return title;
-    }
-
-    @NotNull
-    private GridBagConstraints createConstraint(int x, int y, int padX) {
-        GridBagConstraints gridConstraints = new GridBagConstraints();
-        gridConstraints.gridx = x;
-        gridConstraints.gridy = y;
-        gridConstraints.gridheight = 1;
-        gridConstraints.gridwidth = 1;
-        gridConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridConstraints.weightx = 1;
-        gridConstraints.weighty = 0;
-        gridConstraints.anchor = GridBagConstraints.NORTHEAST;
-        gridConstraints.insets = JBUI.insetsLeft(padX);
-        return gridConstraints;
-    }
-
-    private void updateJsonPreview(String text) {
-        StringBuilder sb = new StringBuilder();
-        // A bit hackish, replace leading space with tabs for better formatting. `gson` is not giving any option on pretty print (maybe need to try another one ?)
-        for (String line : text.split("\n")) {
-            int i;
-            for (i = 0; i < line.length() && line.charAt(i) == ' '; i++) ;
-            if (i > 0) {
-                for (int j = 0; j < i / 2; j++)
-                    sb.append('\t');
-                sb.append(line.substring(i));
-            } else {
-                sb.append(line);
-            }
-            sb.append('\n');
-        }
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            jsonPreviewDocument.setText(sb.toString());
-        });
-        CodeFoldingManager.getInstance(ProjectManager.getInstance().getDefaultProject()).updateFoldRegions(editor);
-    }
-
-    private void initTelemetryTypeFilters() {
-        metricCounter.putClientProperty("TelemetryType", TelemetryType.Metric);
-        exceptionCounter.putClientProperty("TelemetryType", TelemetryType.Exception);
-        messageCounter.putClientProperty("TelemetryType", TelemetryType.Message);
-        dependencyCounter.putClientProperty("TelemetryType", TelemetryType.RemoteDependency);
-        requestCounter.putClientProperty("TelemetryType", TelemetryType.Request);
-        eventCounter.putClientProperty("TelemetryType", TelemetryType.Event);
-
-        telemetryTypesCounter.addAll(Arrays.asList(metricCounter, exceptionCounter, messageCounter, dependencyCounter, requestCounter, eventCounter));
-
-        metricCheckBox.putClientProperty("TelemetryType", TelemetryType.Metric);
-        exceptionCheckBox.putClientProperty("TelemetryType", TelemetryType.Exception);
-        messageCheckBox.putClientProperty("TelemetryType", TelemetryType.Message);
-        dependencyCheckBox.putClientProperty("TelemetryType", TelemetryType.RemoteDependency);
-        requestCheckBox.putClientProperty("TelemetryType", TelemetryType.Request);
-        eventCheckBox.putClientProperty("TelemetryType", TelemetryType.Event);
-
-        for (JCheckBox checkBox : new JCheckBox[]{metricCheckBox, exceptionCheckBox, messageCheckBox, dependencyCheckBox, requestCheckBox, eventCheckBox}) {
-            TelemetryType telemetryType = (TelemetryType) checkBox.getClientProperty("TelemetryType");
-            checkBox.setSelected(automateSession.isTelemetryVisible(telemetryType));
-            checkBox.addItemListener(e -> {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    automateSession.setTelemetryFiltered(telemetryType, false);
-                } else {
-                    automateSession.setTelemetryFiltered(telemetryType, true);
-                }
-            });
-        }
+        this.refreshContents();
     }
 
     @NotNull
@@ -367,82 +35,9 @@ public class AutomateToolWindow {
         return mainPanel;
     }
 
-    public void setTelemetries(
-            @NotNull List<Telemetry> telemetries,
-            @NotNull List<Telemetry> visibleTelemetries
-    ) {
-        telemetryCountPerType.clear();
-        for (Telemetry telemetry : telemetries) {
-            telemetryCountPerType.compute(telemetry.getType(), (telemetryType, count) -> count == null ? 1 : count + 1);
-        }
-        updateTelemetryTypeCounter(null);
-        telemetryTableModel.setRows(visibleTelemetries);
-    }
-
-    public void addTelemetry(
-            int index,
-            @NotNull Telemetry telemetry,
-            boolean visible,
-            boolean shouldScroll
-    ) {
-        if (visible) {
-            if (index != -1)
-                telemetryTableModel.addRow(index, telemetry);
-            else
-                telemetryTableModel.addRow(telemetry);
-            SwingUtilities.invokeLater(() -> {
-                if (autoScrollToTheEnd && shouldScroll) {
-                    performAutoScrollToTheEnd();
-                }
-            });
-        }
-        telemetryCountPerType.compute(telemetry.getType(), (telemetryType, count) -> count == null ? 1 : count + 1);
-        updateTelemetryTypeCounter(telemetry.getType());
-    }
-
-    private void performAutoScrollToTheEnd() {
-        logsTable.scrollRectToVisible(logsTable.getCellRect(telemetryTableModel.getRowCount() - 1, 0, true));
-    }
-
-    private void updateTelemetryTypeCounter(@Nullable TelemetryType type) {
-        for (JLabel counter : telemetryTypesCounter) {
-            TelemetryType telemetryType = (TelemetryType) counter.getClientProperty("TelemetryType");
-            if (type != null && telemetryType != type)
-                continue;
-
-            int count = telemetryCountPerType.computeIfAbsent(telemetryType, (e) -> 0);
-            if (count < 1000) {
-                counter.setText(String.valueOf(count));
-            } else if (count < 1000000) {
-                counter.setText(count / 1000 + "K");
-            } else {
-                counter.setText(count / 1000 + "M");
-            }
-        }
-    }
-
     private void createUIComponents() {
-        metricColorBox = new ColorBox(JBColor.namedColor("Automate.TelemetryColor.Metric", JBColor.gray));
-        exceptionColorBox = new ColorBox(JBColor.namedColor("Automate.TelemetryColor.Exception", JBColor.red));
-        messageColorBox = new ColorBox(JBColor.namedColor("Automate.TelemetryColor.Message", JBColor.orange));
-        dependencyColorBox = new ColorBox(JBColor.namedColor("Automate.TelemetryColor.RemoteDependency", JBColor.blue));
-        requestColorBox = new ColorBox(JBColor.namedColor("Automate.TelemetryColor.Request", JBColor.green));
-        eventColorBox = new ColorBox(JBColor.namedColor("Automate.TelemetryColor.CustomEvents", JBColor.cyan));
 
         toolbar = createToolbar();
-
-        jsonPreviewDocument = new LanguageTextField.SimpleDocumentCreator().createDocument("", JsonLanguage.INSTANCE, project);
-        editor = EditorFactory.getInstance().createViewer(jsonPreviewDocument, project, EditorKind.MAIN_EDITOR);
-        if (editor instanceof EditorEx) {
-            ((EditorEx) editor).setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project, JsonFileType.INSTANCE));
-            ((EditorEx) editor).getFoldingModel().setFoldingEnabled(true);
-        }
-        editor.getSettings().setIndentGuidesShown(true);
-        editor.getSettings().setAdditionalLinesCount(3);
-        editor.getSettings().setFoldingOutlineShown(true);
-        editor.getSettings().setUseSoftWraps(PropertiesComponent.getInstance().getBoolean("jezzsantos.automate.useSoftWrap"));
-
-        editorPanel = editor.getComponent();
     }
 
     @NotNull
@@ -452,44 +47,15 @@ public class AutomateToolWindow {
         actionGroup.add(new OptionsToolbarAction(() -> toolbar));
         actionGroup.addSeparator();
 
-        autoScrollToTheEnd = PropertiesComponent.getInstance().getBoolean("jezzsantos.automate.autoScrollToTheEnd");
+        return new ActionToolbarImpl("automate", actionGroup, false);
+    }
 
-        actionGroup.add(new AutoScrollToTheEndToolbarAction((selected) -> {
-            autoScrollToTheEnd = selected;
-            PropertiesComponent.getInstance().setValue("jezzsantos.automate.autoScrollToTheEnd", selected);
-            if (autoScrollToTheEnd) {
-                performAutoScrollToTheEnd();
-            }
-        }, autoScrollToTheEnd));
-
-        actionGroup.add(new ToggleCaseInsensitiveSearchToolbarAction());
-
-        actionGroup.add(new AbstractToggleUseSoftWrapsAction(SoftWrapAppliancePlaces.PREVIEW, false) {
-            {
-                ActionUtil.copyFrom(this, "EditorToggleUseSoftWraps");
-            }
-
-            @Override
-            public void setSelected(@NotNull AnActionEvent e, boolean state) {
-                super.setSelected(e, state);
-                PropertiesComponent.getInstance().setValue("jezzsantos.automate.useSoftWrap", state);
-            }
-
-            @NotNull
-            @Override
-            protected Editor getEditor(@NotNull AnActionEvent e) {
-                return editor;
-            }
-        });
-
-        actionGroup.add(new ClearLogToolbarAction() {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                automateSession.clear();
-            }
-        });
-
-        return new ActionToolbarImpl("Automate", actionGroup, false);
+    public void refreshContents() {
+        Calendar instance = Calendar.getInstance();
+        int min = instance.get(Calendar.MINUTE);
+        String strMin = min < 10 ? "0" + min : String.valueOf(min);
+        currentTime.setText(instance.get(Calendar.HOUR_OF_DAY) + ":" + strMin);
+        //currentTime.setIcon(new ImageIcon(getClass().getResource("/toolWindow/Time-icon.png")));
     }
 
 }

@@ -8,60 +8,47 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.Arrays;
 
 public class ProjectSettingsConfigurable implements SearchableConfigurable {
     private final Project project;
+    private ProjectSettingsComponent settingsComponent;
 
     public ProjectSettingsConfigurable(Project project) {
         this.project = project;
     }
 
-    private ProjectSettingsComponent mySettingsComponent;
-
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "Automate";
-    }
-
-    @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-        return mySettingsComponent.getPreferredFocusedComponent();
+        return "automate";
     }
 
     @Nullable
     @Override
     public JComponent createComponent() {
-        mySettingsComponent = new ProjectSettingsComponent();
-        return mySettingsComponent.getPanel();
+        settingsComponent = new ProjectSettingsComponent();
+        return settingsComponent.getPanel();
     }
 
     @Override
     public boolean isModified() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        boolean modified = mySettingsComponent.getCaseInsensitiveFiltering() != settings.caseInsensitiveFiltering.getValue();
-        modified |= !Arrays.equals(mySettingsComponent.getFilteredLogs(), settings.filteredLogs.getValue());
-        return modified;
+        return false;
     }
 
     @Override
     public void apply() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        settings.caseInsensitiveFiltering.setValue(mySettingsComponent.getCaseInsensitiveFiltering());
-        settings.filteredLogs.setValue(mySettingsComponent.getFilteredLogs());
     }
 
     @Override
     public void reset() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        mySettingsComponent.setCaseInsensitiveFiltering(settings.caseInsensitiveFiltering.getValue());
-        mySettingsComponent.setFilteredLogs(settings.filteredLogs.getValue());
     }
 
     @Override
     public void disposeUIResources() {
-        mySettingsComponent = null;
+        settingsComponent = null;
     }
 
     @Override

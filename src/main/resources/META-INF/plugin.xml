@@ -1,4 +1,4 @@
-<idea-plugin  url="https://github.com/jezzsantos/automate.plugin-rider">
+<idea-plugin url="https://github.com/jezzsantos/automate.plugin-rider">
     <id>automate</id>
     <name>Automate</name>
     <!-- <version> and other attributes are patched by build.gradle file -->
@@ -9,7 +9,6 @@
 
     <depends>com.intellij.modules.rider</depends>
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.xdebugger</depends>
 
     <resource-bundle>messages.AutomateBundle</resource-bundle>
 
@@ -20,17 +19,14 @@
                 parentId="tools"
                 instance="jezzsantos.automate.settings.ProjectSettingsConfigurable"
                 id="jezzsantos.automate.settings.ProjectSettingsConfigurable"
-                displayName="Automate"
+                displayName="automate"
                 nonDefaultProject="true"/>
+        <toolWindow id="automate" secondary="false" icon="AllIcons.Actions.Lightning" anchor="left"
+                    factoryClass="jezzsantos.automate.ui.AutomateToolWindowFactory"/>
     </extensions>
 
     <actions>
     </actions>
-
-    <projectListeners>
-        <listener class="jezzsantos.automate.listeners.DebugMessageListener"
-                  topic="com.intellij.xdebugger.XDebuggerManagerListener"/>
-    </projectListeners>
 
     <idea-version since-build="2021.3" until-build="2022.*"/>
 </idea-plugin>

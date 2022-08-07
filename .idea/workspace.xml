@@ -4,11 +4,51 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4656d553-4010-427d-82e4-373bf9a12297" name="Changes" comment="Initial Code">
+    <list default="true" id="4656d553-4010-427d-82e4-373bf9a12297" name="Changes" comment="Updated docs">
+      <change afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/AutomateToolWindowFactory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/AutomateSession.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/AutomateSessionManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/Telemetry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/TelemetryFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/TelemetryType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/listeners/DebugMessageListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/EventData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/ExceptionData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/ITelemetryData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/MessageData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/MetricData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/RemoteDependencyData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/RequestData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/metricdata/UnkData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/AppSettingState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/AppSettingState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/FilterTelemetryMode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/ProjectSettingsComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/ProjectSettingsComponent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/ProjectSettingsConfigurable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/ProjectSettingsConfigurable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/ProjectSettingsState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/ProjectSettingsState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/converters/BooleanPropertyConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/converters/FilterTelemetryModePropertyConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/settings/converters/StringArrayPropertyConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/AutomateToolWindow.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/AutomateToolWindow.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/AutomateToolWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/AutomateToolWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/ClearTextFieldExtension.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/ClickListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/StackTraceFormatter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/TelemetryTableModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/AutoScrollToTheEndToolbarAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/ChangeFilterModeToolbarAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/ClearLogToolbarAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/ColorBox.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/FilterIndicatorToolbarAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/OptionsToolbarAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/OptionsToolbarAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/components/ToggleCaseInsensitiveSearchToolbarAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/renderers/TelemetryDateRender.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/renderers/TelemetryRender.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/renderers/TelemetryRenderBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/ui/renderers/TelemetryTypeRender.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/jezzsantos/automate/utils/TimeSpan.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/messages/AutomateBundle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/messages/AutomateBundle.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,11 +79,24 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
   </component>
   <component name="ProjectId" id="2AzZigmpZlmnL7oqJBVwfObjm2j" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -60,6 +113,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Projects/github/jezzsantos/automate.plugin-rider/src/main/resources/META-INF&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -69,7 +123,8 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -97,6 +152,13 @@
       <workItem from="1656021916029" duration="3175000" />
       <workItem from="1656025454960" duration="2516000" />
       <workItem from="1656028002439" duration="534000" />
+      <workItem from="1656915176679" duration="7868000" />
+      <workItem from="1657052582946" duration="326000" />
+      <workItem from="1657052926072" duration="1818000" />
+      <workItem from="1657056655370" duration="79000" />
+      <workItem from="1659824318753" duration="10000" />
+      <workItem from="1659825243876" duration="387000" />
+      <workItem from="1659825680875" duration="2618000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <created>1656014790303</created>
@@ -168,7 +230,14 @@
       <option name="project" value="LOCAL" />
       <updated>1656026188668</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Updated docs">
+      <created>1656965635539</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1656965635539</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TerminalProjectNonSharedOptionsProvider">
@@ -193,7 +262,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Commit" />
     <MESSAGE value="Initial Code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial Code" />
+    <MESSAGE value="Updated docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated docs" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="GradleRunConfiguration">
+        <watch expression="mainPanel" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
