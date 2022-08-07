@@ -21,7 +21,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="4cf3c" class="com.intellij.ui.treeStructure.Tree" binding="patterns">
+          <component id="4cf3c" class="com.intellij.ui.treeStructure.Tree" binding="patternsTree">
             <constraints/>
             <properties/>
           </component>

@@ -8,28 +8,34 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.treeStructure.Tree;
 import jezzsantos.automate.AutomateBundle;
+import jezzsantos.automate.data.PatternDefinition;
 import jezzsantos.automate.ui.components.AddPatternAction;
 import jezzsantos.automate.ui.components.OptionsToolbarAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AutomateToolWindow {
     @NotNull
     private final Project project;
     @NotNull
     private final ToolWindow toolWindow;
+
+    private List<PatternDefinition> patterns;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
-    private Tree patterns;
+    private Tree patternsTree;
 
     public AutomateToolWindow(
-            @NotNull Project project, ToolWindow toolWindow) {
+            @NotNull Project project, @NotNull ToolWindow toolWindow) {
         this.project = project;
         this.toolWindow = toolWindow;
 
-        this.refreshContents();
+        this.init();
     }
 
     @NotNull
@@ -39,14 +45,22 @@ public class AutomateToolWindow {
 
     private void createUIComponents() {
 
+        patterns = new ArrayList<>();
         toolbar = createToolbar();
+    }
+
+    private void init() {
+        patternsTree.getEmptyText().setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
+        var root = ((DefaultMutableTreeNode) patternsTree.getModel().getRoot());
+        root.setUserObject(new DefaultMutableTreeNode("Patterns"));
+        this.refreshContents();
     }
 
     @NotNull
     private ActionToolbarImpl createToolbar() {
         final DefaultActionGroup actions = new DefaultActionGroup();
 
-        actions.add(new AddPatternAction());
+        actions.add(new AddPatternAction(this.patterns, (result) -> refreshContents()));
         actions.addSeparator();
         actions.add(new OptionsToolbarAction());
 
@@ -58,14 +72,16 @@ public class AutomateToolWindow {
     }
 
     public void refreshContents() {
-        patterns.getEmptyText().setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
+        var model = (DefaultTreeModel) patternsTree.getModel();
+        var root = ((DefaultMutableTreeNode) model.getRoot());
+        root.removeAllChildren();
 
-        var root = ((DefaultMutableTreeNode) patterns.getModel().getRoot());
-        root.setUserObject(new DefaultMutableTreeNode("Patterns"));
-        root.add(new DefaultMutableTreeNode("apattername"));
-        patterns.expandRow(0);
+        for (var pattern : patterns) {
+            root.add(new DefaultMutableTreeNode(pattern));
+        }
 
-        //TODO: update the tree
+        model.reload();
+        patternsTree.expandRow(0);
     }
 
 }
