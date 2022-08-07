@@ -1,14 +1,19 @@
 package jezzsantos.automate.ui;
 
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.ui.treeStructure.Tree;
+import jezzsantos.automate.AutomateBundle;
+import jezzsantos.automate.ui.components.AddPatternAction;
 import jezzsantos.automate.ui.components.OptionsToolbarAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.Calendar;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class AutomateToolWindow {
     @NotNull
@@ -17,15 +22,12 @@ public class AutomateToolWindow {
     private final ToolWindow toolWindow;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
-    private JButton refreshButton;
-    private JLabel currentTime;
+    private Tree patterns;
 
     public AutomateToolWindow(
             @NotNull Project project, ToolWindow toolWindow) {
         this.project = project;
         this.toolWindow = toolWindow;
-
-        refreshButton.addActionListener(e -> refreshContents());
 
         this.refreshContents();
     }
@@ -42,20 +44,28 @@ public class AutomateToolWindow {
 
     @NotNull
     private ActionToolbarImpl createToolbar() {
-        final DefaultActionGroup actionGroup = new DefaultActionGroup();
+        final DefaultActionGroup actions = new DefaultActionGroup();
 
-        actionGroup.add(new OptionsToolbarAction(() -> toolbar));
-        actionGroup.addSeparator();
+        actions.add(new AddPatternAction());
+        actions.addSeparator();
+        actions.add(new OptionsToolbarAction());
 
-        return new ActionToolbarImpl("automate", actionGroup, false);
+        var actionToolbar = new ActionToolbarImpl(ActionPlaces.CONTEXT_TOOLBAR, actions, true);
+        actionToolbar.setTargetComponent(mainPanel);
+        actionToolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
+
+        return actionToolbar;
     }
 
     public void refreshContents() {
-        Calendar instance = Calendar.getInstance();
-        int min = instance.get(Calendar.MINUTE);
-        String strMin = min < 10 ? "0" + min : String.valueOf(min);
-        currentTime.setText(instance.get(Calendar.HOUR_OF_DAY) + ":" + strMin);
-        //currentTime.setIcon(new ImageIcon(getClass().getResource("/toolWindow/Time-icon.png")));
+        patterns.getEmptyText().setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
+
+        var root = ((DefaultMutableTreeNode) patterns.getModel().getRoot());
+        root.setUserObject(new DefaultMutableTreeNode("Patterns"));
+        root.add(new DefaultMutableTreeNode("apattername"));
+        patterns.expandRow(0);
+
+        //TODO: update the tree
     }
 
 }

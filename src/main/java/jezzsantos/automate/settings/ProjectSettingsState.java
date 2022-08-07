@@ -17,8 +17,6 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     public ProjectSettingsState() {
-
-
     }
 
     public static ProjectSettingsState getInstance(Project project) {

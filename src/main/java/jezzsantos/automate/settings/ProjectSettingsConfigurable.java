@@ -2,6 +2,7 @@ package jezzsantos.automate.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.AutomateBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "automate";
+        return AutomateBundle.message("settings.Title");
     }
 
     @Nullable
