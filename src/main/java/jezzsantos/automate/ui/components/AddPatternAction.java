@@ -29,11 +29,12 @@ public class AddPatternAction extends AnAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
 
-        String message = AutomateBundle.message("action.AddPattern.Title");
-        e.getPresentation().setDescription(message);
-        e.getPresentation().setText(message);
-        e.getPresentation().setIcon(AllIcons.General.Add);
-        e.getPresentation().setEnabledAndVisible(true);
+        var message = AutomateBundle.message("action.AddPattern.Title");
+        var presentation = e.getPresentation();
+        presentation.setDescription(message);
+        presentation.setText(message);
+        presentation.setIcon(AllIcons.General.Add);
+        presentation.setEnabledAndVisible(true);
     }
 
     @Override
