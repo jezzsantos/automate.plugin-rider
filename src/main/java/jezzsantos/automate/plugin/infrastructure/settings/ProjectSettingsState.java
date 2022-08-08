@@ -1,4 +1,4 @@
-package jezzsantos.automate.settings;
+package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.components.PersistentStateComponentWithModificationTracker;
 import com.intellij.openapi.components.State;
@@ -9,13 +9,13 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
-import jezzsantos.automate.settings.converters.BooleanPropertyConverter;
+import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @State(
-        name = "jezzsantos.automate.settings.ProjectSettingsState",
+        name = "jezzsantos.automate.infrastructure.settings.ProjectSettingsState",
         storages = @Storage("automate.xml")
 )
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {

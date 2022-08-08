@@ -1,4 +1,4 @@
-package jezzsantos.automate.ui;
+package jezzsantos.automate.plugin.infrastructure.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;

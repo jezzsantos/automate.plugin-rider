@@ -1,4 +1,4 @@
-package jezzsantos.automate.data;
+package jezzsantos.automate.plugin.application;
 
 public class PatternDefinition {
     private final String id;

@@ -1,9 +1,9 @@
-package jezzsantos.automate.ui.components;
+package jezzsantos.automate.plugin.infrastructure.ui.components;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import jezzsantos.automate.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;

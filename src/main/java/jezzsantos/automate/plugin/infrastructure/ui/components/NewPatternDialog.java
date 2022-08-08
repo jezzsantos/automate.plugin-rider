@@ -1,11 +1,11 @@
-package jezzsantos.automate.ui.components;
+package jezzsantos.automate.plugin.infrastructure.ui.components;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import jezzsantos.automate.AutomateBundle;
-import jezzsantos.automate.AutomateConstants;
-import jezzsantos.automate.data.PatternDefinition;
+import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.PatternDefinition;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package jezzsantos.automate.settings.converters;
+package jezzsantos.automate.plugin.infrastructure.settings.converters;
 
 import com.intellij.util.xmlb.Converter;
 import com.jetbrains.rd.util.reactive.Property;

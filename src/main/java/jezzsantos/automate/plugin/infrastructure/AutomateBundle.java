@@ -1,4 +1,4 @@
-package jezzsantos.automate;
+package jezzsantos.automate.plugin.infrastructure;
 
 import com.intellij.DynamicBundle;
 import org.jetbrains.annotations.NonNls;
@@ -17,13 +17,13 @@ public class AutomateBundle extends DynamicBundle {
     }
 
     @NotNull
-    public static String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, Object ... params) {
+    public static String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
         return INSTANCE.getMessage(key, params);
     }
 
 
     @NotNull
-    public static Supplier<String> messagePointer(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, Object ... params) {
+    public static Supplier<String> messagePointer(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
         return INSTANCE.getLazyMessage(key, params);
     }
 

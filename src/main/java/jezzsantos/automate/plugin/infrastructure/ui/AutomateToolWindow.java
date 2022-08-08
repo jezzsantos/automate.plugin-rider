@@ -1,4 +1,4 @@
-package jezzsantos.automate.ui;
+package jezzsantos.automate.plugin.infrastructure.ui;
 
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -6,11 +6,11 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
-import jezzsantos.automate.AutomateBundle;
-import jezzsantos.automate.data.PatternDefinition;
-import jezzsantos.automate.ui.components.AddPatternAction;
-import jezzsantos.automate.ui.components.OptionsToolbarAction;
-import jezzsantos.automate.ui.components.RefreshPatternsAction;
+import jezzsantos.automate.plugin.application.PatternDefinition;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.components.AddPatternAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.OptionsToolbarAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.RefreshPatternsAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

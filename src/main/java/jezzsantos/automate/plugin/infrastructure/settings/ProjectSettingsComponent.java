@@ -1,8 +1,8 @@
-package jezzsantos.automate.settings;
+package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ui.FormBuilder;
-import jezzsantos.automate.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 
 import javax.swing.*;
 

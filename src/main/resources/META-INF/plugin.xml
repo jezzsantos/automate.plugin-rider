@@ -14,15 +14,16 @@
     <resource-bundle>messages.AutomateBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="jezzsantos.automate.settings.ProjectSettingsState"/>
+        <projectService
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState"/>
         <projectConfigurable
                 parentId="tools"
-                instance="jezzsantos.automate.settings.ProjectSettingsConfigurable"
-                id="jezzsantos.automate.settings.ProjectSettingsConfigurable"
+                instance="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable"
+                id="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable"
                 displayName="automate"
                 nonDefaultProject="true"/>
         <toolWindow id="automate" secondary="false" icon="AllIcons.Actions.Lightning" anchor="left"
-                    factoryClass="jezzsantos.automate.ui.AutomateToolWindowFactory"/>
+                    factoryClass="jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory"/>
     </extensions>
 
     <actions>

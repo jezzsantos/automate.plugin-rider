@@ -1,8 +1,8 @@
-package jezzsantos.automate.settings;
+package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -63,6 +63,6 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Override
     public @NotNull
     @NonNls String getId() {
-        return "jezzsantos.automate.settings.ProjectSettingsConfigurable";
+        return "jezzsantos.automate.infrastructure.settings.ProjectSettingsConfigurable";
     }
 }
