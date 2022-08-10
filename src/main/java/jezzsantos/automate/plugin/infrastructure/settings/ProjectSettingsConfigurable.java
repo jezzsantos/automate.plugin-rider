@@ -2,6 +2,8 @@ package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.plugin.application.AutomateApplication;
+import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.AutomateService;
 import org.jetbrains.annotations.Nls;
@@ -35,8 +37,8 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        var automateService = new AutomateService();
-        settingsComponent = new ProjectSettingsComponent(this.project, automateService);
+        IAutomateApplication application = new AutomateApplication();
+        settingsComponent = new ProjectSettingsComponent(this.project, new AutomateService(application));
         return settingsComponent.getPanel();
     }
 

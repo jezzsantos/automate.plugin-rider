@@ -9,7 +9,6 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
-import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.StringPropertyConverter;
 import kotlin.Unit;
@@ -24,7 +23,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> developerMode = new Property<>(false);
     @OptionTag(converter = StringPropertyConverter.class)
-    public final Property<String> pathToAutomateExecutable = new Property<>(AutomateConstants.InstallLocation);
+    public final Property<String> pathToAutomateExecutable = new Property<>(null);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     public ProjectSettingsState() {

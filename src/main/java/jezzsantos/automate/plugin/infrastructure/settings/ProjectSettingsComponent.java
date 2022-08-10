@@ -2,15 +2,13 @@ package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.DarculaColors;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
-import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.IAutomateService;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.IAutomateService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +18,7 @@ public class ProjectSettingsComponent {
 
     private final JPanel minPanel;
     private final JBCheckBox developerMode = new JBCheckBox(AutomateBundle.message("settings.DeveloperMode.Label.Title"));
-    private final TextFieldWithBrowseButton pathToAutomateExecutable = new TextFieldWithBrowseButton();
+    private final TextFieldWithBrowseButtonAndPrompt pathToAutomateExecutable = new TextFieldWithBrowseButtonAndPrompt();
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
     public ProjectSettingsComponent(Project project, IAutomateService automateService) {
@@ -30,6 +28,8 @@ public class ProjectSettingsComponent {
         testPathToAutomatePanel.add(pathToAutomateExecutable, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
+        var defaultInstallLocation = automateService.getDefaultInstallLocation();
+        pathToAutomateExecutable.setPrompt("Auto-detected: %s", defaultInstallLocation);
         pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateService));
 
@@ -66,15 +66,16 @@ public class ProjectSettingsComponent {
         pathToAutomateExecutable.setText(value);
     }
 
-    private void onTestPathToAutomate(ActionEvent e, IAutomateService automateService) {
+    private void onTestPathToAutomate(ActionEvent ignoredE, IAutomateService automateService) {
 
+        var executableName = automateService.getExecutableName();
         var version = automateService.tryGetExecutableVersion(pathToAutomateExecutable.getText());
         if (version == null) {
             testPathToAutomateResult.setForeground(DarculaColors.RED);
-            testPathToAutomateResult.setText(String.format("%s is not installed on this machine!", AutomateConstants.ExecutableName));
+            testPathToAutomateResult.setText(String.format("%s is not installed on this machine!", executableName));
         } else {
             testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
-            testPathToAutomateResult.setText(String.format("%s version is %s", AutomateConstants.ExecutableName, version));
+            testPathToAutomateResult.setText(String.format("%s version is %s", executableName, version));
         }
 
     }
