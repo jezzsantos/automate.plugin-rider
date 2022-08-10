@@ -18,7 +18,7 @@ public class ProjectSettingsComponent {
 
     private final JPanel minPanel;
     private final JBCheckBox developerMode = new JBCheckBox(AutomateBundle.message("settings.DeveloperMode.Label.Title"));
-    private final TextFieldWithBrowseButtonAndPrompt pathToAutomateExecutable = new TextFieldWithBrowseButtonAndPrompt();
+    private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
     public ProjectSettingsComponent(Project project, IAutomateService automateService) {
@@ -29,7 +29,7 @@ public class ProjectSettingsComponent {
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         var defaultInstallLocation = automateService.getDefaultInstallLocation();
-        pathToAutomateExecutable.setPrompt("Auto-detected: %s", defaultInstallLocation);
+        pathToAutomateExecutable.setHint(String.format("Auto-detected: %s", defaultInstallLocation));
         pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateService));
 

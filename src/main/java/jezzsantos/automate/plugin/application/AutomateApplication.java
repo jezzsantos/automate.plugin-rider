@@ -12,7 +12,7 @@ public class AutomateApplication implements IAutomateApplication {
     @NotNull
     @Override
     public String getExecutableName() {
-        return (System.getProperty("os.name").startsWith("Windows")
+        return (IsWindowsOs()
                 ? "automate.exe"
                 : "automate");
     }
@@ -20,7 +20,7 @@ public class AutomateApplication implements IAutomateApplication {
     @NotNull
     @Override
     public String getDefaultInstallLocation() {
-        return (System.getProperty("os.name").startsWith("Windows")
+        return (IsWindowsOs()
                 ? System.getenv("USERPROFILE") + "\\.dotnet\\tools\\"
                 : System.getProperty("user.home") + "/.dotnet/tools/") + this.getExecutableName();
     }
@@ -32,6 +32,13 @@ public class AutomateApplication implements IAutomateApplication {
         var path = executablePath == null || executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
         var args = "--version";
 
+        return runAutomate(path, args);
+
+    }
+
+
+    @Nullable
+    private String runAutomate(String path, String args) {
         String result;
         try {
             var process = new ProcessBuilder(path, args).start();
@@ -54,6 +61,10 @@ public class AutomateApplication implements IAutomateApplication {
         } catch (InterruptedException | IOException e) {
             return null;
         }
+    }
 
+
+    private Boolean IsWindowsOs() {
+        return System.getProperty("os.name").startsWith("Windows");
     }
 }
