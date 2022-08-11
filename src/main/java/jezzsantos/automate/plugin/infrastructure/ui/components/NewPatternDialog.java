@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.application.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ public class NewPatternDialog extends DialogWrapper {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch"));
         }
         var existing = this.patterns.stream()
-                .filter(pattern -> pattern.getName().equalsIgnoreCase(text))
+                .filter(pattern -> pattern.Name.equalsIgnoreCase(text))
                 .findAny().orElse(null);
         if (existing != null) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists"));

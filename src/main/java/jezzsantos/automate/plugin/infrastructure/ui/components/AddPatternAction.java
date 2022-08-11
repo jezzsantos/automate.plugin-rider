@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +44,7 @@ public class AddPatternAction extends AnAction {
             var dialog = new NewPatternDialog(project, this.patterns);
             if (dialog.showAndGet()) {
                 var name = dialog.Name;
-                var pattern = new PatternDefinition(UUID.randomUUID().toString(), name);
+                var pattern = new PatternDefinition(UUID.randomUUID().toString(), name, null, true);
                 this.patterns.add(pattern);
                 onSelect.accept(pattern);
             }

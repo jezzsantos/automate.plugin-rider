@@ -7,8 +7,9 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
-import jezzsantos.automate.plugin.application.IAutomateService;
+import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,17 +22,17 @@ public class ProjectSettingsComponent {
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
-    public ProjectSettingsComponent(Project project, IAutomateService automateService) {
+    public ProjectSettingsComponent(Project project, IAutomateApplication automateApplication) {
         pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
         testPathToAutomatePanel.add(pathToAutomateExecutable, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
-        var defaultInstallLocation = automateService.getDefaultInstallLocation();
+        var defaultInstallLocation = automateApplication.getDefaultInstallLocation();
         pathToAutomateExecutable.setHint(String.format("Auto-detected: %s", defaultInstallLocation));
         pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
-        testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateService));
+        testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateApplication));
 
         minPanel = FormBuilder.createFormBuilder()
                 .addComponent(developerMode, 1)
@@ -66,10 +67,10 @@ public class ProjectSettingsComponent {
         pathToAutomateExecutable.setText(value);
     }
 
-    private void onTestPathToAutomate(ActionEvent ignoredE, IAutomateService automateService) {
+    private void onTestPathToAutomate(ActionEvent ignoredE, IAutomateApplication automateApplication) {
 
-        var executableName = automateService.getExecutableName();
-        var version = automateService.tryGetExecutableVersion(pathToAutomateExecutable.getText());
+        var executableName = automateApplication.getExecutableName();
+        var version = automateApplication.tryGetExecutableVersion(pathToAutomateExecutable.getText());
         if (version == null) {
             testPathToAutomateResult.setForeground(DarculaColors.RED);
             testPathToAutomateResult.setText(String.format("%s is not installed on this machine!", executableName));

@@ -1,10 +1,10 @@
-package jezzsantos.automate.plugin.application;
+package jezzsantos.automate.plugin.application.interfaces;
 
-public class PatternDefinition {
+public class DraftDefinition {
     private final String id;
     private final String name;
 
-    public PatternDefinition(String id, String name) {
+    public DraftDefinition(String id, String name) {
         this.id = id;
         this.name = name;
     }

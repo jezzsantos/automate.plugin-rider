@@ -1,70 +1,56 @@
 package jezzsantos.automate.plugin.application;
 
+import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
+import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 public class AutomateApplication implements IAutomateApplication {
+
+    private final IAutomateService automateService;
+
+    public AutomateApplication(@NotNull IAutomateService automateService) {
+
+        this.automateService = automateService;
+    }
 
     @NotNull
     @Override
     public String getExecutableName() {
-        return (IsWindowsOs()
-                ? "automate.exe"
-                : "automate");
+        return this.automateService.getExecutableName();
     }
 
     @NotNull
     @Override
     public String getDefaultInstallLocation() {
-        return (IsWindowsOs()
-                ? System.getenv("USERPROFILE") + "\\.dotnet\\tools\\"
-                : System.getProperty("user.home") + "/.dotnet/tools/") + this.getExecutableName();
+        return this.automateService.getDefaultInstallLocation();
     }
 
     @Nullable
     @Override
     public String tryGetExecutableVersion(@Nullable String executablePath) {
-
-        var path = executablePath == null || executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
-        var args = "--version";
-
-        return runAutomate(path, args);
-
+        return this.automateService.tryGetExecutableVersion(executablePath);
     }
 
-
-    @Nullable
-    private String runAutomate(String path, String args) {
-        String result;
-        try {
-            var process = new ProcessBuilder(path, args).start();
-            var success = process.waitFor(5, TimeUnit.SECONDS);
-            if (!success) {
-                return null;
-            }
-            if (process.exitValue() != 0) {
-                return null;
-            } else {
-                var outputStream = process.getInputStream();
-                var output = outputStream.readAllBytes();
-                outputStream.close();
-                result = new String(output, StandardCharsets.UTF_8).trim();
-            }
-
-            process.destroy();
-            return result;
-
-        } catch (InterruptedException | IOException e) {
-            return null;
-        }
+    @NotNull
+    @Override
+    public List<PatternDefinition> getPatterns(@Nullable String executablePath) {
+        return this.automateService.getPatterns(executablePath);
     }
 
+    @NotNull
+    @Override
+    public List<ToolkitDefinition> getToolkits(@Nullable String executablePath) {
+        return this.automateService.getToolkits(executablePath);
+    }
 
-    private Boolean IsWindowsOs() {
-        return System.getProperty("os.name").startsWith("Windows");
+    @NotNull
+    @Override
+    public List<DraftDefinition> getDrafts(@Nullable String executablePath) {
+        return this.automateService.getDrafts(executablePath);
     }
 }

@@ -6,8 +6,11 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
-import jezzsantos.automate.plugin.application.PatternDefinition;
+import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
+import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AddPatternAction;
 import jezzsantos.automate.plugin.infrastructure.ui.components.OptionsToolbarAction;
 import jezzsantos.automate.plugin.infrastructure.ui.components.RefreshPatternsAction;
@@ -16,22 +19,24 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("FieldCanBeLocal")
+@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class AutomateToolWindow {
     @NotNull
     private final Project project;
+    private final IAutomateApplication automateApplication;
 
     private List<PatternDefinition> patterns;
+    private List<DraftDefinition> drafts;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
     private Tree patternsTree;
 
     public AutomateToolWindow(
-            @NotNull Project project) {
+            @NotNull Project project, @NotNull IAutomateApplication automateApplication) {
         this.project = project;
+        this.automateApplication = automateApplication;
 
         this.init();
     }
@@ -43,7 +48,9 @@ public class AutomateToolWindow {
 
     private void createUIComponents() {
 
-        patterns = new ArrayList<>();
+        var executablePath = ProjectSettingsState.getInstance(this.project).pathToAutomateExecutable.getValue();
+        patterns = this.automateApplication.getPatterns(executablePath);
+        drafts = this.automateApplication.getDrafts(executablePath);
         toolbar = createToolbar();
     }
 

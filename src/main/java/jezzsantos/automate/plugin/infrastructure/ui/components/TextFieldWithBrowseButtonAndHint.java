@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.settings;
+package jezzsantos.automate.plugin.infrastructure.ui.components;
 
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.JBColor;

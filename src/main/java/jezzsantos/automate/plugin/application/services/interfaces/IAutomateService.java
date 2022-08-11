@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.application;
+package jezzsantos.automate.plugin.application.services.interfaces;
 
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface IAutomateApplication {
+public interface IAutomateService {
     @NotNull
     String getExecutableName();
 
@@ -22,8 +22,8 @@ public interface IAutomateApplication {
     List<PatternDefinition> getPatterns(@Nullable String executablePath);
 
     @NotNull
-    List<ToolkitDefinition> getToolkits(@Nullable String executablePath);
+    List<DraftDefinition> getDrafts(@Nullable String executablePath);
 
     @NotNull
-    List<DraftDefinition> getDrafts(@Nullable String executablePath);
+    List<ToolkitDefinition> getToolkits(String executablePath);
 }
