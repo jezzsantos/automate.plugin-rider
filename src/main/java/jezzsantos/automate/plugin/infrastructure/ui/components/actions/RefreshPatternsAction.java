@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.ui.components;
+package jezzsantos.automate.plugin.infrastructure.ui.components.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;

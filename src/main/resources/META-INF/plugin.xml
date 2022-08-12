@@ -15,6 +15,15 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService
+                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IConfiguration"
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.PluginConfiguration"/>
+        <projectService
+                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IAutomateService"
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.AutomateService"/>
+        <projectService
+                serviceInterface="jezzsantos.automate.plugin.application.IAutomateApplication"
+                serviceImplementation="jezzsantos.automate.plugin.application.AutomateApplication"/>
+        <projectService
                 serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState"/>
         <projectConfigurable
                 parentId="tools"

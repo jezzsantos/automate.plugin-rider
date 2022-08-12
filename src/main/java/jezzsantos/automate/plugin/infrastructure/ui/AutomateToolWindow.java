@@ -10,10 +10,10 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState;
-import jezzsantos.automate.plugin.infrastructure.ui.components.AddPatternAction;
-import jezzsantos.automate.plugin.infrastructure.ui.components.OptionsToolbarAction;
-import jezzsantos.automate.plugin.infrastructure.ui.components.RefreshPatternsAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.actions.AddPatternAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.actions.OptionsToolbarAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.actions.RefreshPatternsAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.actions.SelectAuthoringModeAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -25,7 +25,7 @@ import java.util.List;
 public class AutomateToolWindow {
     @NotNull
     private final Project project;
-    private final IAutomateApplication automateApplication;
+    private IAutomateApplication automateApplication;
 
     private List<PatternDefinition> patterns;
     private List<DraftDefinition> drafts;
@@ -34,9 +34,8 @@ public class AutomateToolWindow {
     private Tree patternsTree;
 
     public AutomateToolWindow(
-            @NotNull Project project, @NotNull IAutomateApplication automateApplication) {
+            @NotNull Project project) {
         this.project = project;
-        this.automateApplication = automateApplication;
 
         this.init();
     }
@@ -48,9 +47,9 @@ public class AutomateToolWindow {
 
     private void createUIComponents() {
 
-        var executablePath = ProjectSettingsState.getInstance(this.project).pathToAutomateExecutable.getValue();
-        patterns = this.automateApplication.getPatterns(executablePath);
-        drafts = this.automateApplication.getDrafts(executablePath);
+        this.automateApplication = project.getService(IAutomateApplication.class);
+        patterns = this.automateApplication.getPatterns();
+        drafts = this.automateApplication.getDrafts();
         toolbar = createToolbar();
     }
 
@@ -63,14 +62,16 @@ public class AutomateToolWindow {
 
     @NotNull
     private ActionToolbarImpl createToolbar() {
-        final DefaultActionGroup actions = new DefaultActionGroup();
+        final var actions = new DefaultActionGroup();
 
-        actions.add(new AddPatternAction(this.patterns, (result) -> refreshContents()));
-        actions.add(new RefreshPatternsAction((result) -> refreshContents()));
+        actions.add(new AddPatternAction(this.patterns, (pattern) -> refreshContents()));
+        actions.add(new RefreshPatternsAction((refresh) -> refreshContents()));
         actions.addSeparator();
         actions.add(new OptionsToolbarAction());
+        actions.addSeparator();
+        actions.add(new SelectAuthoringModeAction((isSelected) -> refreshContents()));
 
-        var actionToolbar = new ActionToolbarImpl(ActionPlaces.CONTEXT_TOOLBAR, actions, true);
+        var actionToolbar = new ActionToolbarImpl(ActionPlaces.TOOLWINDOW_CONTENT, actions, true);
         actionToolbar.setTargetComponent(mainPanel);
         actionToolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
 
@@ -89,6 +90,5 @@ public class AutomateToolWindow {
         model.reload();
         patternsTree.expandRow(0);
     }
-
 }
 

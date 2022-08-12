@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.ui.components;
+package jezzsantos.automate.plugin.infrastructure.ui.components.actions;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -17,13 +17,15 @@ public class NewPatternDialog extends DialogWrapper {
     public String Name;
     private JPanel contents;
     private JTextField name;
+    private JLabel nameTitle;
 
     protected NewPatternDialog(@Nullable Project project, List<PatternDefinition> patterns) {
         super(project);
         this.patterns = patterns;
 
-        this.setTitle(AutomateBundle.message("dialog.NewPattern.Title"));
         this.init();
+        this.setTitle(AutomateBundle.message("dialog.NewPattern.Title"));
+        nameTitle.setText(AutomateBundle.message("dialog.NewPattern.Name.Title"));
     }
 
     @Override

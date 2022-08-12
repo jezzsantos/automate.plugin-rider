@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.application.interfaces;
+package jezzsantos.automate.plugin.infrastructure.common;
 
 import java.util.HashMap;
 

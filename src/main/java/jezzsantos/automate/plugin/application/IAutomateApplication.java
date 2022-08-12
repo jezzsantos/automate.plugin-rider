@@ -19,11 +19,11 @@ public interface IAutomateApplication {
     String tryGetExecutableVersion(@Nullable String executablePath);
 
     @NotNull
-    List<PatternDefinition> getPatterns(@Nullable String executablePath);
+    List<PatternDefinition> getPatterns();
 
     @NotNull
-    List<ToolkitDefinition> getToolkits(@Nullable String executablePath);
+    List<ToolkitDefinition> getToolkits();
 
     @NotNull
-    List<DraftDefinition> getDrafts(@Nullable String executablePath);
+    List<DraftDefinition> getDrafts();
 }

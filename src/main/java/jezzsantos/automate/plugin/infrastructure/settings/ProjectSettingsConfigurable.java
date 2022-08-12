@@ -2,9 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.AutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.common.AutomateService;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -36,14 +34,14 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        settingsComponent = new ProjectSettingsComponent(this.project, new AutomateApplication(new AutomateService(this.project)));
+        settingsComponent = new ProjectSettingsComponent(this.project);
         return settingsComponent.getPanel();
     }
 
     @Override
     public boolean isModified() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        var modified = settingsComponent.getDeveloperMode() != settings.developerMode.getValue();
+        var modified = settingsComponent.getAuthoringMode() != settings.authoringMode.getValue();
         modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), settings.pathToAutomateExecutable.getValue());
         return modified;
     }
@@ -51,14 +49,14 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Override
     public void apply() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        settings.developerMode.setValue(settingsComponent.getDeveloperMode());
+        settings.authoringMode.setValue(settingsComponent.getAuthoringMode());
         settings.pathToAutomateExecutable.setValue(settingsComponent.getPathToAutomateExecutable());
     }
 
     @Override
     public void reset() {
         ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
-        settingsComponent.setDeveloperMode(settings.developerMode.getValue());
+        settingsComponent.setAuthoringMode(settings.authoringMode.getValue());
         settingsComponent.setPathToAutomateExecutable(settings.pathToAutomateExecutable.getValue());
     }
 

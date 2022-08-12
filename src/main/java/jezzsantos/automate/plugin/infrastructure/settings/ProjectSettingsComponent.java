@@ -18,24 +18,25 @@ import java.awt.event.ActionEvent;
 public class ProjectSettingsComponent {
 
     private final JPanel minPanel;
-    private final JBCheckBox developerMode = new JBCheckBox(AutomateBundle.message("settings.DeveloperMode.Label.Title"));
+    private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.DeveloperMode.Label.Title"));
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
-    public ProjectSettingsComponent(Project project, IAutomateApplication automateApplication) {
+    public ProjectSettingsComponent(Project project) {
+        var application = project.getService(IAutomateApplication.class);
         pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
         testPathToAutomatePanel.add(pathToAutomateExecutable, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
-        var defaultInstallLocation = automateApplication.getDefaultInstallLocation();
+        var defaultInstallLocation = application.getDefaultInstallLocation();
         pathToAutomateExecutable.setHint(String.format("Auto-detected: %s", defaultInstallLocation));
         pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
-        testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateApplication));
+        testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
 
         minPanel = FormBuilder.createFormBuilder()
-                .addComponent(developerMode, 1)
+                .addComponent(authoringMode, 1)
                 .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title")), testPathToAutomatePanel, 1, false)
                 .addComponentToRightColumn(testPathToAutomateResult)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -48,15 +49,15 @@ public class ProjectSettingsComponent {
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return developerMode;
+        return authoringMode;
     }
 
-    public boolean getDeveloperMode() {
-        return developerMode.isSelected();
+    public boolean getAuthoringMode() {
+        return authoringMode.isSelected();
     }
 
-    public void setDeveloperMode(boolean value) {
-        developerMode.setSelected(value);
+    public void setAuthoringMode(boolean value) {
+        authoringMode.setSelected(value);
     }
 
     public String getPathToAutomateExecutable() {

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 )
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {
     @OptionTag(converter = BooleanPropertyConverter.class)
-    public final Property<Boolean> developerMode = new Property<>(false);
+    public final Property<Boolean> authoringMode = new Property<>(false);
     @OptionTag(converter = StringPropertyConverter.class)
     public final Property<String> pathToAutomateExecutable = new Property<>(null);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
@@ -47,7 +47,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     }
 
     private void registerAllPropertyToIncrementTrackerOnChanges(@NotNull ProjectSettingsState state) {
-        incrementTrackerWhenPropertyChanges(state.developerMode);
+        incrementTrackerWhenPropertyChanges(state.authoringMode);
         incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
     }
 

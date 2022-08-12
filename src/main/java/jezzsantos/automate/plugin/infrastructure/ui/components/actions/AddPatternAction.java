@@ -1,9 +1,8 @@
-package jezzsantos.automate.plugin.infrastructure.ui.components;
+package jezzsantos.automate.plugin.infrastructure.ui.components.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +38,7 @@ public class AddPatternAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
+        var project = e.getProject();
         if (project != null) {
             var dialog = new NewPatternDialog(project, this.patterns);
             if (dialog.showAndGet()) {

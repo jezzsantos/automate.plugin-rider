@@ -1,10 +1,9 @@
-package jezzsantos.automate.plugin.infrastructure.ui.components;
+package jezzsantos.automate.plugin.infrastructure.ui.components.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ public class OptionsToolbarAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
+        var project = e.getProject();
         if (project != null)
             ShowSettingsUtil.getInstance().showSettingsDialog(project, ProjectSettingsConfigurable.class);
     }
