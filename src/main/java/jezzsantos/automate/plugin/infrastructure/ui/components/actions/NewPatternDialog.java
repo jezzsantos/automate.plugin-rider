@@ -45,7 +45,7 @@ public class NewPatternDialog extends DialogWrapper {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch"));
         }
         var existing = this.patterns.stream()
-                .filter(pattern -> pattern.Name.equalsIgnoreCase(text))
+                .filter(pattern -> pattern.getName().equalsIgnoreCase(text))
                 .findAny().orElse(null);
         if (existing != null) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists"));

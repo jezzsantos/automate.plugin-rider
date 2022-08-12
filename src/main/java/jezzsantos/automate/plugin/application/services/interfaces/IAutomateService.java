@@ -22,8 +22,11 @@ public interface IAutomateService {
     List<PatternDefinition> getPatterns(@Nullable String executablePath);
 
     @NotNull
+    List<ToolkitDefinition> getToolkits(String executablePath);
+
+    @NotNull
     List<DraftDefinition> getDrafts(@Nullable String executablePath);
 
     @NotNull
-    List<ToolkitDefinition> getToolkits(String executablePath);
+    PatternDefinition addPattern(@NotNull String executablePath, @NotNull String name) throws Exception;
 }

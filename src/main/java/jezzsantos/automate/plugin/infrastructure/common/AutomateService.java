@@ -2,7 +2,9 @@ package jezzsantos.automate.plugin.infrastructure.common;
 
 import com.google.gson.Gson;
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.interfaces.*;
+import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
+import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,54 +44,86 @@ public class AutomateService implements IAutomateService {
     @Nullable
     @Override
     public String tryGetExecutableVersion(@Nullable String executablePath) {
-        return runAutomate(executablePath, new ArrayList<>(List.of("--version")));
+        var result = runAutomateForTextOutput(executablePath, new ArrayList<>(List.of("--version")));
+        if (result.isError()) {
+            return null;
+        }
+
+        return result.output;
     }
 
     @NotNull
     @Override
     public List<PatternDefinition> getPatterns(@Nullable String executablePath) {
-        var json = runAutomate(executablePath, new ArrayList<>(List.of("list", "patterns", "--output-structured")));
-        var output = new Gson().fromJson(json, ListPatternsStructuredOutput.class);
-
-        if (output.Output.get(0).Values.Patterns == null) {
+        var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
+        if (result.isError()) {
             return new ArrayList<>();
         } else {
-            return output.Output.get(0).Values.Patterns;
+            var patterns = result.output.getPatterns();
+            return patterns != null ? patterns : new ArrayList<>();
         }
     }
 
     @NotNull
     @Override
     public List<ToolkitDefinition> getToolkits(@Nullable String executablePath) {
-        var json = runAutomate(executablePath, new ArrayList<>(List.of("list", "Toolkits", "--output-structured")));
-        var output = new Gson().fromJson(json, ListToolkitsStructuredOutput.class);
-
-        if (output.Output.get(0).Values.Toolkits == null) {
+        var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
+        if (result.isError()) {
             return new ArrayList<>();
         } else {
-            return output.Output.get(0).Values.Toolkits;
+            var toolkits = result.output.getToolkits();
+            return toolkits != null ? toolkits : new ArrayList<>();
         }
     }
 
     @NotNull
     @Override
     public List<DraftDefinition> getDrafts(@Nullable String executablePath) {
-        var json = runAutomate(executablePath, new ArrayList<>(List.of("list", "drafts", "--output-structured")));
-        var output = new Gson().fromJson(json, ListDraftsStructuredOutput.class);
-
-        if (output.Output.get(0).Values.Drafts == null) {
+        var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
+        if (result.isError()) {
             return new ArrayList<>();
         } else {
-            return output.Output.get(0).Values.Drafts;
+            var drafts = result.output.getDrafts();
+            return drafts != null ? drafts : new ArrayList<>();
         }
     }
 
+    @NotNull
+    @Override
+    public PatternDefinition addPattern(@NotNull String executablePath, @NotNull String name) throws Exception {
+        var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("create", "pattern", name)));
+        if (result.isError()) {
+            throw new Exception(result.error);
+        } else {
+            return result.output.getPattern();
+        }
+    }
 
-    @Nullable
-    private String runAutomate(String executablePath, List<String> args) {
+    @NotNull
+    private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(Class<TResult> outputClass, String executablePath, List<String> args) {
+
+        var allArgs = new ArrayList<>(args);
+        if (!allArgs.contains("--output-structured")) {
+            allArgs.add("--output-structured");
+        }
+
+        var gson = new Gson();
+        var result = runAutomateForTextOutput(executablePath, allArgs);
+        if (result.isError()) {
+            var error = gson.fromJson(result.error, StructuredError.class);
+
+            return new CliStructuredResult<>(error.Error.Message, null);
+        }
+
+        var output = gson.fromJson(result.output, outputClass);
+        return new CliStructuredResult<>("", output);
+    }
+
+
+    @NotNull
+    private CliTextResult runAutomateForTextOutput(String executablePath, List<String> args) {
         var path = executablePath == null || executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
 
-        String result;
         try {
             var command = new ArrayList<String>();
             command.add(path);
@@ -99,27 +133,60 @@ public class AutomateService implements IAutomateService {
             var process = builder.start();
             var success = process.waitFor(5, TimeUnit.SECONDS);
             if (!success) {
-                return null;
+                return new CliTextResult("CLI failed to execute", "");
             }
+            var error = "";
+            var output = "";
             if (process.exitValue() != 0) {
-                return null;
+                var errorStream = process.getErrorStream();
+                var errorBytes = errorStream.readAllBytes();
+                errorStream.close();
+                error = new String(errorBytes, StandardCharsets.UTF_8).trim();
             } else {
                 var outputStream = process.getInputStream();
-                var output = outputStream.readAllBytes();
+                var outputBytes = outputStream.readAllBytes();
                 outputStream.close();
-                result = new String(output, StandardCharsets.UTF_8).trim();
+                output = new String(outputBytes, StandardCharsets.UTF_8).trim();
             }
 
             process.destroy();
-            return result;
+            return new CliTextResult(error, output);
 
         } catch (InterruptedException | IOException e) {
-            return null;
+            return new CliTextResult(String.format("CLI failed to execute. Error was: %s", e.getMessage()), "");
         }
     }
 
 
     private Boolean IsWindowsOs() {
         return System.getProperty("os.name").startsWith("Windows");
+    }
+
+    private static class CliStructuredResult<TResult> {
+        private final String error;
+        private final TResult output;
+
+        public CliStructuredResult(@NotNull String error, TResult output) {
+            this.error = error;
+            this.output = output;
+        }
+
+        public Boolean isError() {
+            return !this.error.isEmpty();
+        }
+    }
+
+    private static class CliTextResult {
+        private final String error;
+        private final String output;
+
+        public CliTextResult(@NotNull String error, @NotNull String output) {
+            this.error = error;
+            this.output = output;
+        }
+
+        public Boolean isError() {
+            return !this.error.isEmpty() && this.output.isEmpty();
+        }
     }
 }

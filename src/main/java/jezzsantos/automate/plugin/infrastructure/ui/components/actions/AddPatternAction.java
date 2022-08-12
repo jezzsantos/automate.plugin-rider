@@ -3,23 +3,20 @@ package jezzsantos.automate.plugin.infrastructure.ui.components.actions;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class AddPatternAction extends AnAction {
 
-    private final List<PatternDefinition> patterns;
     private final Consumer<PatternDefinition> onSelect;
 
 
-    public AddPatternAction(List<PatternDefinition> patterns, Consumer<PatternDefinition> onSelect) {
+    public AddPatternAction(Consumer<PatternDefinition> onSelect) {
         super();
-        this.patterns = patterns;
         this.onSelect = onSelect;
     }
 
@@ -40,11 +37,17 @@ public class AddPatternAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         var project = e.getProject();
         if (project != null) {
-            var dialog = new NewPatternDialog(project, this.patterns);
+            var application = project.getService(IAutomateApplication.class);
+            var patterns = application.getPatterns();
+            var dialog = new NewPatternDialog(project, patterns);
             if (dialog.showAndGet()) {
                 var name = dialog.Name;
-                var pattern = new PatternDefinition(UUID.randomUUID().toString(), name, null, true);
-                this.patterns.add(pattern);
+                PatternDefinition pattern;
+                try {
+                    pattern = application.addPattern(name);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
                 onSelect.accept(pattern);
             }
         }

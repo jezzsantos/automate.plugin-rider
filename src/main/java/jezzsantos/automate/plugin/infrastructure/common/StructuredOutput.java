@@ -16,3 +16,4 @@ public class StructuredOutput<TValues> {
     public ArrayList<StructureOutputOutput<TValues>> Output;
     public StructureOutputError Error;
 }
+

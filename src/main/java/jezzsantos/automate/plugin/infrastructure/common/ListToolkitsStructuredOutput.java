@@ -9,4 +9,7 @@ class ListToolkits {
 }
 
 public class ListToolkitsStructuredOutput extends StructuredOutput<ListToolkits> {
+    public List<ToolkitDefinition> getToolkits() {
+        return this.Output.get(0).Values.Toolkits;
+    }
 }

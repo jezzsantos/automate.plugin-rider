@@ -26,4 +26,7 @@ public interface IAutomateApplication {
 
     @NotNull
     List<DraftDefinition> getDrafts();
+
+    @NotNull
+    PatternDefinition addPattern(@NotNull String name) throws Exception;
 }

@@ -9,4 +9,7 @@ class ListDrafts {
 }
 
 public class ListDraftsStructuredOutput extends StructuredOutput<ListDrafts> {
+    public List<DraftDefinition> getDrafts() {
+        return this.Output.get(0).Values.Drafts;
+    }
 }

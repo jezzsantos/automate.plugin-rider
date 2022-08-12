@@ -7,8 +7,6 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.components.actions.AddPatternAction;
 import jezzsantos.automate.plugin.infrastructure.ui.components.actions.OptionsToolbarAction;
@@ -19,16 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class AutomateToolWindow {
     @NotNull
     private final Project project;
-    private IAutomateApplication automateApplication;
-
-    private List<PatternDefinition> patterns;
-    private List<DraftDefinition> drafts;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
     private Tree patternsTree;
@@ -47,9 +40,7 @@ public class AutomateToolWindow {
 
     private void createUIComponents() {
 
-        this.automateApplication = project.getService(IAutomateApplication.class);
-        patterns = this.automateApplication.getPatterns();
-        drafts = this.automateApplication.getDrafts();
+        var application = project.getService(IAutomateApplication.class);
         toolbar = createToolbar();
     }
 
@@ -64,7 +55,7 @@ public class AutomateToolWindow {
     private ActionToolbarImpl createToolbar() {
         final var actions = new DefaultActionGroup();
 
-        actions.add(new AddPatternAction(this.patterns, (pattern) -> refreshContents()));
+        actions.add(new AddPatternAction((pattern) -> refreshContents()));
         actions.add(new RefreshPatternsAction((refresh) -> refreshContents()));
         actions.addSeparator();
         actions.add(new OptionsToolbarAction());
@@ -83,6 +74,7 @@ public class AutomateToolWindow {
         var root = ((DefaultMutableTreeNode) model.getRoot());
         root.removeAllChildren();
 
+        var patterns = project.getService(IAutomateApplication.class).getPatterns();
         for (var pattern : patterns) {
             root.add(new DefaultMutableTreeNode(pattern));
         }

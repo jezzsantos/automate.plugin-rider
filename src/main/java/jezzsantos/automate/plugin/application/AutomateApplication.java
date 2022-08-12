@@ -60,4 +60,11 @@ public class AutomateApplication implements IAutomateApplication {
         var executablePath = this.configuration.getExecutablePath();
         return this.automateService.getDrafts(executablePath);
     }
+
+    @NotNull
+    @Override
+    public PatternDefinition addPattern(@NotNull String name) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
+        return this.automateService.addPattern(executablePath, name);
+    }
 }
