@@ -8,10 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.components.actions.AddPatternAction;
-import jezzsantos.automate.plugin.infrastructure.ui.components.actions.OptionsToolbarAction;
-import jezzsantos.automate.plugin.infrastructure.ui.components.actions.RefreshPatternsAction;
-import jezzsantos.automate.plugin.infrastructure.ui.components.actions.SelectAuthoringModeAction;
+import jezzsantos.automate.plugin.infrastructure.ui.components.actions.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -40,7 +37,7 @@ public class AutomateToolWindow {
 
     private void createUIComponents() {
 
-        var application = project.getService(IAutomateApplication.class);
+        var application = IAutomateApplication.getInstance(project);
         toolbar = createToolbar();
     }
 
@@ -58,9 +55,10 @@ public class AutomateToolWindow {
         actions.add(new AddPatternAction((pattern) -> refreshContents()));
         actions.add(new RefreshPatternsAction((refresh) -> refreshContents()));
         actions.addSeparator();
-        actions.add(new OptionsToolbarAction());
+        actions.add(new ShowSettingsToolbarAction());
+        actions.add(new AdvancedOptionsToolbarActionGroup());
         actions.addSeparator();
-        actions.add(new SelectAuthoringModeAction((isSelected) -> refreshContents()));
+        actions.add(new ToggleAuthoringModeToolbarAction((isSelected) -> refreshContents()));
 
         var actionToolbar = new ActionToolbarImpl(ActionPlaces.TOOLWINDOW_CONTENT, actions, true);
         actionToolbar.setTargetComponent(mainPanel);
@@ -74,7 +72,7 @@ public class AutomateToolWindow {
         var root = ((DefaultMutableTreeNode) model.getRoot());
         root.removeAllChildren();
 
-        var patterns = project.getService(IAutomateApplication.class).getPatterns();
+        var patterns = IAutomateApplication.getInstance(project).getPatterns();
         for (var pattern : patterns) {
             root.add(new DefaultMutableTreeNode(pattern));
         }

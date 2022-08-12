@@ -23,4 +23,9 @@ public class PluginConfiguration implements IConfiguration {
     public Boolean getAuthoringMode() {
         return ProjectSettingsState.getInstance(this.project).authoringMode.getValue();
     }
+
+    @Override
+    public void setAuthoringMode(boolean on) {
+        ProjectSettingsState.getInstance(this.project).authoringMode.setValue(on);
+    }
 }

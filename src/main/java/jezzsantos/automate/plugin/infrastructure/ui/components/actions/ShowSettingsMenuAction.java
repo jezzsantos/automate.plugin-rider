@@ -8,9 +8,9 @@ import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable;
 import org.jetbrains.annotations.NotNull;
 
-public class OptionsToolbarAction extends AnAction {
+public class ShowSettingsMenuAction extends AnAction {
 
-    public OptionsToolbarAction() {
+    public ShowSettingsMenuAction() {
         super();
     }
 

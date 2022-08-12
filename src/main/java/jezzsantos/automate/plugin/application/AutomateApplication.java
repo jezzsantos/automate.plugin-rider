@@ -67,4 +67,14 @@ public class AutomateApplication implements IAutomateApplication {
         var executablePath = this.configuration.getExecutablePath();
         return this.automateService.addPattern(executablePath, name);
     }
+
+    @Override
+    public boolean isAuthoringMode() {
+        return this.configuration.getAuthoringMode();
+    }
+
+    @Override
+    public void setAuthoringMode(boolean on) {
+        this.configuration.setAuthoringMode(on);
+    }
 }

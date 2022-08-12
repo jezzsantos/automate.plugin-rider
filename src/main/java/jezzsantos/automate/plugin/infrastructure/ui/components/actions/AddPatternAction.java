@@ -14,7 +14,6 @@ public class AddPatternAction extends AnAction {
 
     private final Consumer<PatternDefinition> onSelect;
 
-
     public AddPatternAction(Consumer<PatternDefinition> onSelect) {
         super();
         this.onSelect = onSelect;
@@ -30,14 +29,20 @@ public class AddPatternAction extends AnAction {
         presentation.setDescription(message);
         presentation.setText(message);
         presentation.setIcon(AllIcons.General.Add);
-        presentation.setEnabledAndVisible(true);
+
+        var project = e.getProject();
+        if (project != null) {
+            var application = IAutomateApplication.getInstance(project);
+            var isAuthoringMode = application.isAuthoringMode();
+            presentation.setEnabledAndVisible(isAuthoringMode);
+        }
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         var project = e.getProject();
         if (project != null) {
-            var application = project.getService(IAutomateApplication.class);
+            var application = IAutomateApplication.getInstance(project);
             var patterns = application.getPatterns();
             var dialog = new NewPatternDialog(project, patterns);
             if (dialog.showAndGet()) {

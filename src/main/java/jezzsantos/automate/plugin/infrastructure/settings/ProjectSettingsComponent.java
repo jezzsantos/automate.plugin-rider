@@ -23,7 +23,7 @@ public class ProjectSettingsComponent {
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
     public ProjectSettingsComponent(Project project) {
-        var application = project.getService(IAutomateApplication.class);
+        var application = IAutomateApplication.getInstance(project);
         pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
