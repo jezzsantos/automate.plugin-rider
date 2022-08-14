@@ -11,7 +11,7 @@ public class PatternDefinition {
     @SerializedName(value = "Version")
     private String version;
     @SerializedName(value = "IsCurrent")
-    private Boolean isCurrent;
+    private boolean isCurrent;
 
     public PatternDefinition(String id, String name, String version, Boolean isCurrent) {
         this.id = id;
@@ -25,8 +25,17 @@ public class PatternDefinition {
         return this.name;
     }
 
+    @NotNull
+    public String getId() {
+        return this.id;
+    }
+
+    public boolean getIsCurrent() {
+        return this.isCurrent;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s  (%s)", this.name, this.id);
+        return String.format("%s  (v.%s)", this.name, this.version);
     }
 }

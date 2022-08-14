@@ -40,7 +40,7 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
+        var settings = ProjectSettingsState.getInstance(project);
         var modified = settingsComponent.getAuthoringMode() != settings.authoringMode.getValue();
         modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), settings.pathToAutomateExecutable.getValue());
         return modified;
@@ -48,14 +48,14 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
 
     @Override
     public void apply() {
-        ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
+        var settings = ProjectSettingsState.getInstance(project);
         settings.authoringMode.setValue(settingsComponent.getAuthoringMode());
         settings.pathToAutomateExecutable.setValue(settingsComponent.getPathToAutomateExecutable());
     }
 
     @Override
     public void reset() {
-        ProjectSettingsState settings = ProjectSettingsState.getInstance(project);
+        var settings = ProjectSettingsState.getInstance(project);
         settingsComponent.setAuthoringMode(settings.authoringMode.getValue());
         settingsComponent.setPathToAutomateExecutable(settings.pathToAutomateExecutable.getValue());
     }

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.services.interfaces;
 
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import org.jetbrains.annotations.NotNull;
 
 public interface IConfiguration {
@@ -15,4 +16,8 @@ public interface IConfiguration {
     Boolean getAuthoringMode();
 
     void setAuthoringMode(boolean on);
+
+    EditingMode getEditingMode();
+
+    void setEditingMode(EditingMode mode);
 }

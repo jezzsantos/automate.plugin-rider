@@ -9,7 +9,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
+import jezzsantos.automate.plugin.infrastructure.settings.converters.EditingModePropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.StringPropertyConverter;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
+    @OptionTag(converter = EditingModePropertyConverter.class)
+    public final Property<EditingMode> editingMode = new Property<>(EditingMode.Patterns);
     @OptionTag(converter = StringPropertyConverter.class)
     public final Property<String> pathToAutomateExecutable = new Property<>(null);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
@@ -48,6 +52,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
 
     private void registerAllPropertyToIncrementTrackerOnChanges(@NotNull ProjectSettingsState state) {
         incrementTrackerWhenPropertyChanges(state.authoringMode);
+        incrementTrackerWhenPropertyChanges(state.editingMode);
         incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
     }
 

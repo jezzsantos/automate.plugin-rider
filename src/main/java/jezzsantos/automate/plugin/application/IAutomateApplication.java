@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
 import org.jetbrains.annotations.NotNull;
@@ -34,9 +35,26 @@ public interface IAutomateApplication {
     List<DraftDefinition> getDrafts();
 
     @NotNull
-    PatternDefinition addPattern(@NotNull String name) throws Exception;
+    PatternDefinition createPattern(@NotNull String name) throws Exception;
 
     boolean isAuthoringMode();
 
     void setAuthoringMode(boolean on);
+
+    EditingMode getEditingMode();
+
+    void setEditingMode(@NotNull EditingMode mode);
+
+    @Nullable
+    PatternDefinition getCurrentPattern();
+
+    void setCurrentPattern(@NotNull String id) throws Exception;
+
+    @Nullable
+    DraftDefinition getCurrentDraft();
+
+    void setCurrentDraft(@NotNull String id) throws Exception;
+
+    @NotNull
+    DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 }

@@ -25,14 +25,27 @@ public interface IAutomateService {
     String tryGetExecutableVersion(@Nullable String executablePath);
 
     @NotNull
-    List<PatternDefinition> getPatterns(@Nullable String executablePath);
+    List<PatternDefinition> getPatterns(@NotNull String executablePath);
 
     @NotNull
-    List<ToolkitDefinition> getToolkits(String executablePath);
+    List<ToolkitDefinition> getToolkits(@NotNull String executablePath);
 
     @NotNull
-    List<DraftDefinition> getDrafts(@Nullable String executablePath);
+    List<DraftDefinition> getDrafts(@NotNull String executablePath);
 
     @NotNull
-    PatternDefinition addPattern(@NotNull String executablePath, @NotNull String name) throws Exception;
+    PatternDefinition createPattern(@NotNull String executablePath, @NotNull String name) throws Exception;
+
+    void setCurrentPattern(@NotNull String executablePath, @NotNull String id) throws Exception;
+
+    @Nullable
+    PatternDefinition getCurrentPattern(@NotNull String executablePath);
+
+    @Nullable
+    DraftDefinition getCurrentDraft(@NotNull String executablePath);
+
+    void setCurrentDraft(@NotNull String executablePath, @NotNull String id) throws Exception;
+
+    @NotNull
+    DraftDefinition createDraft(@NotNull String executablePath, @NotNull String toolkitName, @NotNull String name) throws Exception;
 }

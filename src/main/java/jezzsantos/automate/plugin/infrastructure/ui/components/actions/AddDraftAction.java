@@ -4,19 +4,19 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.components.dialogs.NewPatternDialog;
+import jezzsantos.automate.plugin.infrastructure.ui.components.dialogs.NewDraftDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class AddPatternAction extends AnAction {
+public class AddDraftAction extends AnAction {
 
-    private final Consumer<PatternDefinition> onSelect;
+    private final Consumer<DraftDefinition> onSelect;
 
-    public AddPatternAction(Consumer<PatternDefinition> onSelect) {
+    public AddDraftAction(Consumer<DraftDefinition> onSelect) {
         super();
         this.onSelect = onSelect;
     }
@@ -26,21 +26,19 @@ public class AddPatternAction extends AnAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
 
-        var message = AutomateBundle.message("action.AddPattern.Title");
+        var message = AutomateBundle.message("action.AddDraft.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
         presentation.setIcon(AllIcons.General.Add);
 
-        boolean isAuthoringMode = false;
-        boolean isPatternEditingMode = false;
+        boolean isDraftEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isAuthoringMode = application.isAuthoringMode();
-            isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
+            isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
         }
-        presentation.setEnabledAndVisible(isAuthoringMode && isPatternEditingMode);
+        presentation.setEnabledAndVisible(isDraftEditingMode);
     }
 
     @Override
@@ -48,17 +46,19 @@ public class AddPatternAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var patterns = application.getPatterns();
-            var dialog = new NewPatternDialog(project, patterns);
+            var drafts = application.getDrafts();
+            var toolkits = application.getToolkits();
+            var dialog = new NewDraftDialog(project, toolkits, drafts);
             if (dialog.showAndGet()) {
                 var name = dialog.Name;
-                PatternDefinition pattern;
+                var toolkitName = dialog.ToolkitName;
+                DraftDefinition draft;
                 try {
-                    pattern = application.createPattern(name);
+                    draft = application.createDraft(toolkitName, name);
                 } catch (Exception ex) {
-                    throw new RuntimeException("Failed to add new pattern", ex);
+                    throw new RuntimeException("Failed to add new draft", ex);
                 }
-                onSelect.accept(pattern);
+                onSelect.accept(draft);
             }
         }
     }

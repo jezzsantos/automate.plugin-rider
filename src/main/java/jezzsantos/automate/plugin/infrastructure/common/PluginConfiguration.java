@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.common;
 
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState;
 import org.jetbrains.annotations.NotNull;
@@ -27,5 +28,15 @@ public class PluginConfiguration implements IConfiguration {
     @Override
     public void setAuthoringMode(boolean on) {
         ProjectSettingsState.getInstance(this.project).authoringMode.setValue(on);
+    }
+
+    @Override
+    public EditingMode getEditingMode() {
+        return ProjectSettingsState.getInstance(this.project).editingMode.getValue();
+    }
+
+    @Override
+    public void setEditingMode(EditingMode mode) {
+        ProjectSettingsState.getInstance(this.project).editingMode.setValue(mode);
     }
 }

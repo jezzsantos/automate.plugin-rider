@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
@@ -63,9 +64,9 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public PatternDefinition addPattern(@NotNull String name) throws Exception {
+    public PatternDefinition createPattern(@NotNull String name) throws Exception {
         var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.addPattern(executablePath, name);
+        return this.automateService.createPattern(executablePath, name);
     }
 
     @Override
@@ -75,6 +76,51 @@ public class AutomateApplication implements IAutomateApplication {
 
     @Override
     public void setAuthoringMode(boolean on) {
+
         this.configuration.setAuthoringMode(on);
+        this.configuration.setEditingMode(on ? EditingMode.Patterns : EditingMode.Drafts);
+    }
+
+    @Override
+    public EditingMode getEditingMode() {
+        return this.configuration.getEditingMode();
+    }
+
+    @Override
+    public void setEditingMode(@NotNull EditingMode mode) {
+        this.configuration.setEditingMode(mode);
+    }
+
+    @Nullable
+    @Override
+    public PatternDefinition getCurrentPattern() {
+        var executablePath = this.configuration.getExecutablePath();
+        return this.automateService.getCurrentPattern(executablePath);
+    }
+
+    @Override
+    public void setCurrentPattern(@NotNull String id) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
+        this.automateService.setCurrentPattern(executablePath, id);
+    }
+
+    @Nullable
+    @Override
+    public DraftDefinition getCurrentDraft() {
+        var executablePath = this.configuration.getExecutablePath();
+        return this.automateService.getCurrentDraft(executablePath);
+    }
+
+    @Override
+    public void setCurrentDraft(@NotNull String id) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
+        this.automateService.setCurrentDraft(executablePath, id);
+    }
+
+    @NotNull
+    @Override
+    public DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
+        return this.automateService.createDraft(executablePath, toolkitName, name);
     }
 }

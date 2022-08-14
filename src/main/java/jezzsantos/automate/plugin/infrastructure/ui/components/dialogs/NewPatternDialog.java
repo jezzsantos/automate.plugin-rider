@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.ui.components.actions;
+package jezzsantos.automate.plugin.infrastructure.ui.components.dialogs;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -19,7 +19,7 @@ public class NewPatternDialog extends DialogWrapper {
     private JTextField name;
     private JLabel nameTitle;
 
-    protected NewPatternDialog(@Nullable Project project, List<PatternDefinition> patterns) {
+    public NewPatternDialog(@Nullable Project project, List<PatternDefinition> patterns) {
         super(project);
         this.patterns = patterns;
 
@@ -45,9 +45,8 @@ public class NewPatternDialog extends DialogWrapper {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch"));
         }
         var existing = this.patterns.stream()
-                .filter(pattern -> pattern.getName().equalsIgnoreCase(text))
-                .findAny().orElse(null);
-        if (existing != null) {
+                .anyMatch(pattern -> pattern.getName().equalsIgnoreCase(text));
+        if (existing) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists"));
         }
 

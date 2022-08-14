@@ -52,7 +52,13 @@ public class AutomateToolWindow {
     private ActionToolbarImpl createToolbar() {
         final var actions = new DefaultActionGroup();
 
+        actions.add(new TogglePatternEditingModeAction());
+        actions.add(new ToggleDraftEditingModeAction());
+        actions.addSeparator();
+        actions.add(new PatternsListToolbarAction());
+        actions.add(new DraftsListToolbarAction());
         actions.add(new AddPatternAction((pattern) -> refreshContents()));
+        actions.add(new AddDraftAction((draft) -> refreshContents()));
         actions.add(new RefreshPatternsAction((refresh) -> refreshContents()));
         actions.addSeparator();
         actions.add(new ShowSettingsToolbarAction());

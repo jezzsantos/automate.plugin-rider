@@ -54,7 +54,7 @@ public class AutomateService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<PatternDefinition> getPatterns(@Nullable String executablePath) {
+    public List<PatternDefinition> getPatterns(@NotNull String executablePath) {
         var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
         if (result.isError()) {
             return new ArrayList<>();
@@ -66,7 +66,7 @@ public class AutomateService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<ToolkitDefinition> getToolkits(@Nullable String executablePath) {
+    public List<ToolkitDefinition> getToolkits(@NotNull String executablePath) {
         var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
         if (result.isError()) {
             return new ArrayList<>();
@@ -78,7 +78,7 @@ public class AutomateService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<DraftDefinition> getDrafts(@Nullable String executablePath) {
+    public List<DraftDefinition> getDrafts(@NotNull String executablePath) {
         var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
         if (result.isError()) {
             return new ArrayList<>();
@@ -90,7 +90,7 @@ public class AutomateService implements IAutomateService {
 
     @NotNull
     @Override
-    public PatternDefinition addPattern(@NotNull String executablePath, @NotNull String name) throws Exception {
+    public PatternDefinition createPattern(@NotNull String executablePath, @NotNull String name) throws Exception {
         var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("create", "pattern", name)));
         if (result.isError()) {
             throw new Exception(result.error);
@@ -99,8 +99,59 @@ public class AutomateService implements IAutomateService {
         }
     }
 
+    @Override
+    public void setCurrentPattern(@NotNull String executablePath, @NotNull String id) throws Exception {
+        var result = runAutomateForStructuredOutput(SwitchPatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("edit", "switch", id)));
+        if (result.isError()) {
+            throw new Exception(result.error);
+        } else {
+            result.output.getPattern();
+        }
+    }
+
+    @Nullable
+    @Override
+    public PatternDefinition getCurrentPattern(@NotNull String executablePath) {
+        var patterns = getPatterns(executablePath);
+
+        return patterns.stream()
+                .filter(PatternDefinition::getIsCurrent)
+                .findFirst().orElse(null);
+    }
+
+    @Nullable
+    @Override
+    public DraftDefinition getCurrentDraft(@NotNull String executablePath) {
+        var drafts = getDrafts(executablePath);
+
+        return drafts.stream()
+                .filter(DraftDefinition::getIsCurrent)
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public void setCurrentDraft(@NotNull String executablePath, @NotNull String id) throws Exception {
+        var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, executablePath, new ArrayList<>(List.of("run", "switch", id)));
+        if (result.isError()) {
+            throw new Exception(result.error);
+        } else {
+            result.output.getDraft();
+        }
+    }
+
     @NotNull
-    private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(Class<TResult> outputClass, String executablePath, List<String> args) {
+    @Override
+    public DraftDefinition createDraft(@NotNull String executablePath, @NotNull String toolkitName, @NotNull String name) throws Exception {
+        var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, executablePath, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
+        if (result.isError()) {
+            throw new Exception(result.error);
+        } else {
+            return result.output.getDraft();
+        }
+    }
+
+    @NotNull
+    private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @Nullable String executablePath, @NotNull List<String> args) {
 
         var allArgs = new ArrayList<>(args);
         if (!allArgs.contains("--output-structured")) {
@@ -110,9 +161,7 @@ public class AutomateService implements IAutomateService {
         var gson = new Gson();
         var result = runAutomateForTextOutput(executablePath, allArgs);
         if (result.isError()) {
-            var error = gson.fromJson(result.error, StructuredError.class);
-
-            return new CliStructuredResult<>(error.Error.Message, null);
+            return new CliStructuredResult<>(result.error, null);
         }
 
         var output = gson.fromJson(result.output, outputClass);
@@ -121,7 +170,7 @@ public class AutomateService implements IAutomateService {
 
 
     @NotNull
-    private CliTextResult runAutomateForTextOutput(String executablePath, List<String> args) {
+    private CliTextResult runAutomateForTextOutput(@Nullable String executablePath, @NotNull List<String> args) {
         var path = executablePath == null || executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
 
         try {
