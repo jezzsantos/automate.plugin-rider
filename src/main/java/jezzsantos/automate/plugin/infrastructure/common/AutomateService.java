@@ -6,6 +6,7 @@ import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
+import jezzsantos.automate.plugin.infrastructure.common.cli.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
