@@ -1,3 +1,5 @@
+[![Build Test](https://github.com/jezzsantos/automate.plugin-rider/actions/workflows/build.yml/badge.svg)](https://github.com/jezzsantos/automate.plugin-rider/actions/workflows/build.yml)
+
 ![Icon](https://raw.githubusercontent.com/jezzsantos/automate.plugin-rider/main/src/main/resources/META-INF/pluginIcon.svg)
 
 # automate Rider Plugin
