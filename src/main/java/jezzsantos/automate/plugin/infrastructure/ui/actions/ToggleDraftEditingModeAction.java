@@ -50,7 +50,7 @@ public class ToggleDraftEditingModeAction extends ToggleAction {
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
-        presentation.setIcon(AllIcons.Actions.QuickfixOffBulb);
+        presentation.setIcon(AllIcons.Actions.GeneratedFolder);
 
         var project = e.getProject();
         if (project != null) {

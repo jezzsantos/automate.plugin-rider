@@ -50,7 +50,7 @@ public class TogglePatternEditingModeAction extends ToggleAction {
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
-        presentation.setIcon(AllIcons.Actions.QuickfixBulb);
+        presentation.setIcon(AllIcons.General.ProjectStructure);
 
         var project = e.getProject();
         if (project != null) {
