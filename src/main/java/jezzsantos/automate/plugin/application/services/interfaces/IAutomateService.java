@@ -48,4 +48,6 @@ public interface IAutomateService {
 
     @NotNull
     DraftDefinition createDraft(@NotNull String executablePath, @NotNull String toolkitName, @NotNull String name) throws Exception;
+
+    void installToolkit(@NotNull String executablePath, @NotNull String location) throws Exception;
 }

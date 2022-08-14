@@ -53,7 +53,7 @@ public class NewDraftDialog extends DialogWrapper {
 
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        return name;
+        return toolkits;
     }
 
     @Override

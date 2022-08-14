@@ -24,15 +24,15 @@ public class ProjectSettingsComponent {
 
     public ProjectSettingsComponent(Project project) {
         var application = IAutomateApplication.getInstance(project);
+        var defaultInstallLocation = application.getDefaultInstallLocation();
+        pathToAutomateExecutable.setHint(String.format("Auto-detected: %s", defaultInstallLocation));
         pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
+        pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
         testPathToAutomatePanel.add(pathToAutomateExecutable, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
-        var defaultInstallLocation = application.getDefaultInstallLocation();
-        pathToAutomateExecutable.setHint(String.format("Auto-detected: %s", defaultInstallLocation));
-        pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
 
         minPanel = FormBuilder.createFormBuilder()
@@ -68,7 +68,7 @@ public class ProjectSettingsComponent {
         pathToAutomateExecutable.setText(value);
     }
 
-    private void onTestPathToAutomate(ActionEvent ignoredE, IAutomateApplication automateApplication) {
+    private void onTestPathToAutomate(ActionEvent e, IAutomateApplication automateApplication) {
 
         var executableName = automateApplication.getExecutableName();
         var version = automateApplication.tryGetExecutableVersion(pathToAutomateExecutable.getText());

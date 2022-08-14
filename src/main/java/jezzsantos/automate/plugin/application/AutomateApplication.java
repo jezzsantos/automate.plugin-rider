@@ -123,4 +123,10 @@ public class AutomateApplication implements IAutomateApplication {
         var executablePath = this.configuration.getExecutablePath();
         return this.automateService.createDraft(executablePath, toolkitName, name);
     }
+
+    @Override
+    public void installToolkit(@NotNull String location) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
+        this.automateService.installToolkit(executablePath, location);
+    }
 }

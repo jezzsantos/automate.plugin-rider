@@ -56,8 +56,9 @@ public class AutomateToolWindow {
         actions.add(new ToggleDraftEditingModeAction());
         actions.addSeparator();
         actions.add(new PatternsListToolbarAction());
-        actions.add(new DraftsListToolbarAction());
         actions.add(new AddPatternAction((pattern) -> refreshContents()));
+        actions.add(new InstallToolkitToolbarAction());
+        actions.add(new DraftsListToolbarAction());
         actions.add(new AddDraftAction((draft) -> refreshContents()));
         actions.add(new RefreshPatternsAction((refresh) -> refreshContents()));
         actions.addSeparator();

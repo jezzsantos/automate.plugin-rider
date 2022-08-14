@@ -150,6 +150,14 @@ public class AutomateService implements IAutomateService {
         }
     }
 
+    @Override
+    public void installToolkit(@NotNull String executablePath, @NotNull String location) throws Exception {
+        var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, executablePath, new ArrayList<>(List.of("install", "toolkit", location)));
+        if (result.isError()) {
+            throw new Exception(result.error);
+        }
+    }
+
     @NotNull
     private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @Nullable String executablePath, @NotNull List<String> args) {
 

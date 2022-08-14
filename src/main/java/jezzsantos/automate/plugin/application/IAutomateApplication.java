@@ -57,4 +57,6 @@ public interface IAutomateApplication {
 
     @NotNull
     DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
+
+    void installToolkit(@NotNull String location) throws Exception;
 }
