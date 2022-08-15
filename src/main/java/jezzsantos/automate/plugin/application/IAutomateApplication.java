@@ -59,4 +59,7 @@ public interface IAutomateApplication {
 
     @NotNull
     AllDefinitions getAllAutomation();
+
+    @NotNull
+    AllDefinitions getAllAutomation(boolean forceRefresh);
 }

@@ -60,8 +60,7 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public AllDefinitions getAllAutomation(@NotNull String executablePath) {
-
+    public AllDefinitions getAllAutomation(@NotNull String executablePath, boolean forceRefresh) {
         return cache.ListAll(() -> {
             var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
             if (result.isError()) {
@@ -69,7 +68,7 @@ public class AutomateCliService implements IAutomateService {
             } else {
                 return result.output.getAll();
             }
-        });
+        }, forceRefresh);
     }
 
     @NotNull

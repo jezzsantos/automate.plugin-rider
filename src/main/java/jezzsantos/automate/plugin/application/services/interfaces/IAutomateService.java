@@ -26,7 +26,7 @@ public interface IAutomateService {
     String tryGetExecutableVersion(@NotNull String executablePath);
 
     @NotNull
-    AllDefinitions getAllAutomation(@NotNull String executablePath);
+    AllDefinitions getAllAutomation(@NotNull String executablePath, boolean forceRefresh);
 
     @NotNull
     List<PatternDefinition> getPatterns(@NotNull String executablePath);

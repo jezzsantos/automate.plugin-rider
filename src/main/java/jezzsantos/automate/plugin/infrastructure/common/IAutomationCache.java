@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 interface IAutomationCache {
     @NotNull
-    AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier);
+    AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh);
 
     @NotNull
     List<PatternDefinition> ListPatterns(@NotNull Supplier<List<PatternDefinition>> supplier);

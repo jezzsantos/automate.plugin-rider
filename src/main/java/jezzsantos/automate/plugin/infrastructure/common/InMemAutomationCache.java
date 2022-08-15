@@ -21,7 +21,11 @@ class InMemAutomationCache implements IAutomationCache {
 
     @NotNull
     @Override
-    public AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier) {
+    public AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh) {
+        if (forceRefresh) {
+            invalidateAllLists();
+        }
+
         if (this.patternsList == null
                 || this.toolkitsList == null
                 || this.draftsList == null) {

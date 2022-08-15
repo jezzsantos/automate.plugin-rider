@@ -44,7 +44,7 @@ public class AutomateToolWindow {
 
     private void initUIStartupState() {
         var application = IAutomateApplication.getInstance(this.project);
-        var automation = application.getAllAutomation();
+        var automation = application.getAllAutomation(false);
         if (automation.getPatterns().isEmpty()) {
             if (application.getEditingMode() != EditingMode.Drafts) {
                 application.setEditingMode(EditingMode.Drafts);

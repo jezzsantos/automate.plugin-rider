@@ -127,11 +127,17 @@ public class AutomateApplication implements IAutomateApplication {
         this.automateService.installToolkit(executablePath, location);
     }
 
-
     @NotNull
     @Override
     public AllDefinitions getAllAutomation() {
+        return getAllAutomation(false);
+    }
+
+
+    @NotNull
+    @Override
+    public AllDefinitions getAllAutomation(boolean forceRefresh) {
         var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getAllAutomation(executablePath);
+        return this.automateService.getAllAutomation(executablePath, forceRefresh);
     }
 }
