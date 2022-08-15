@@ -13,11 +13,13 @@ public interface IConfiguration {
     @NotNull
     String getExecutablePath();
 
-    Boolean getAuthoringMode();
+    boolean getAuthoringMode();
 
     void setAuthoringMode(boolean on);
 
     EditingMode getEditingMode();
 
     void setEditingMode(EditingMode mode);
+
+    boolean getViewCliLog();
 }

@@ -28,6 +28,8 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     public final Property<EditingMode> editingMode = new Property<>(EditingMode.Drafts);
     @OptionTag(converter = StringPropertyConverter.class)
     public final Property<String> pathToAutomateExecutable = new Property<>("");
+    @OptionTag(converter = BooleanPropertyConverter.class)
+    public final Property<Boolean> viewCliLog = new Property<>(false);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     public ProjectSettingsState() {
@@ -54,6 +56,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
         incrementTrackerWhenPropertyChanges(state.authoringMode);
         incrementTrackerWhenPropertyChanges(state.editingMode);
         incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
+        incrementTrackerWhenPropertyChanges(state.viewCliLog);
     }
 
     private <T> void incrementTrackerWhenPropertyChanges(Property<T> property) {

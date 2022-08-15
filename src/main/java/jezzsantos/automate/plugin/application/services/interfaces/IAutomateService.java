@@ -1,13 +1,11 @@
 package jezzsantos.automate.plugin.application.services.interfaces;
 
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 public interface IAutomateService {
@@ -54,4 +52,11 @@ public interface IAutomateService {
     DraftDefinition createDraft(@NotNull String executablePath, @NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String executablePath, @NotNull String location) throws Exception;
+
+    void addCliLogListener(@NotNull PropertyChangeListener listener);
+
+    void removeCliLogListener(@NotNull PropertyChangeListener listener);
+
+    @NotNull
+    List<CliLogEntry> getCliLog();
 }

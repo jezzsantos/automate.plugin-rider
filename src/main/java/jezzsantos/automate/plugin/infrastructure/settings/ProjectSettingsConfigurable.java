@@ -47,6 +47,7 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     public boolean isModified() {
         var modified = settingsComponent.getAuthoringMode() != settings.authoringMode.getValue();
         modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), settings.pathToAutomateExecutable.getValue());
+        modified |= !Objects.equals(settingsComponent.getViewCliLog(), settings.viewCliLog.getValue());
         return modified;
     }
 
@@ -54,12 +55,14 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     public void apply() {
         settings.authoringMode.setValue(settingsComponent.getAuthoringMode());
         settings.pathToAutomateExecutable.setValue(settingsComponent.getPathToAutomateExecutable());
+        settings.viewCliLog.setValue(settingsComponent.getViewCliLog());
     }
 
     @Override
     public void reset() {
         settingsComponent.setAuthoringMode(settings.authoringMode.getValue());
         settingsComponent.setPathToAutomateExecutable(settings.pathToAutomateExecutable.getValue());
+        settingsComponent.setViewCliLog(settings.viewCliLog.getValue());
     }
 
     @Override

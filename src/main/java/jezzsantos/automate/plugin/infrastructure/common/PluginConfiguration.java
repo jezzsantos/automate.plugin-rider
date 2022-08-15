@@ -24,7 +24,7 @@ public class PluginConfiguration implements IConfiguration {
     }
 
     @Override
-    public Boolean getAuthoringMode() {
+    public boolean getAuthoringMode() {
         return this.settings.authoringMode.getValue();
     }
 
@@ -41,5 +41,10 @@ public class PluginConfiguration implements IConfiguration {
     @Override
     public void setEditingMode(EditingMode mode) {
         this.settings.editingMode.setValue(mode);
+    }
+
+    @Override
+    public boolean getViewCliLog() {
+        return this.settings.viewCliLog.getValue();
     }
 }

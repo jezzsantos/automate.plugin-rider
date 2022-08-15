@@ -19,7 +19,8 @@ import java.awt.event.ActionEvent;
 public class ProjectSettingsComponent {
 
     private final JPanel minPanel;
-    private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.DeveloperMode.Label.Title"));
+    private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.AuthoringMode.Label.Title"));
+    private final JBCheckBox viewCliLog = new JBCheckBox(AutomateBundle.message("settings.ViewCliLog.Label.Title"));
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
@@ -38,6 +39,7 @@ public class ProjectSettingsComponent {
 
         minPanel = FormBuilder.createFormBuilder()
                 .addComponent(authoringMode, 1)
+                .addComponent(viewCliLog, 1)
                 .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false)
                 .addComponentToRightColumn(testPathToAutomateResult)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -59,6 +61,14 @@ public class ProjectSettingsComponent {
 
     public void setAuthoringMode(boolean value) {
         authoringMode.setSelected(value);
+    }
+
+    public boolean getViewCliLog() {
+        return viewCliLog.isSelected();
+    }
+
+    public void setViewCliLog(boolean value) {
+        viewCliLog.setSelected(value);
     }
 
     public String getPathToAutomateExecutable() {

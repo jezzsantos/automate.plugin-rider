@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 public class AutomateApplication implements IAutomateApplication {
@@ -139,5 +140,21 @@ public class AutomateApplication implements IAutomateApplication {
     public AllDefinitions getAllAutomation(boolean forceRefresh) {
         var executablePath = this.configuration.getExecutablePath();
         return this.automateService.getAllAutomation(executablePath, forceRefresh);
+    }
+
+    @Override
+    public boolean getViewCliLog() {
+        return this.configuration.getViewCliLog();
+    }
+
+    @Override
+    public void addCliLogListener(@NotNull PropertyChangeListener listener) {
+        this.automateService.addCliLogListener(listener);
+    }
+
+    @NotNull
+    @Override
+    public List<CliLogEntry> getCliLog() {
+        return this.automateService.getCliLog();
     }
 }

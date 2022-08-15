@@ -5,6 +5,7 @@ import jezzsantos.automate.plugin.application.interfaces.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 public interface IAutomateApplication {
@@ -62,4 +63,11 @@ public interface IAutomateApplication {
 
     @NotNull
     AllDefinitions getAllAutomation(boolean forceRefresh);
+
+    boolean getViewCliLog();
+
+    void addCliLogListener(@NotNull PropertyChangeListener listener);
+
+    @NotNull
+    List<CliLogEntry> getCliLog();
 }

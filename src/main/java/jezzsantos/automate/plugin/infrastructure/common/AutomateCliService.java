@@ -3,15 +3,14 @@ package jezzsantos.automate.plugin.infrastructure.common;
 import com.google.gson.Gson;
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.*;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.infrastructure.common.cli.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +24,9 @@ public class AutomateCliService implements IAutomateService {
     @NotNull
     private final Project project;
     private final IAutomationCache cache;
+
+    private final List<CliLogEntry> cliLogs = new ArrayList<>();
+    private final PropertyChangeSupport cliLogsListeners = new PropertyChangeSupport(this);
 
     public AutomateCliService(@NotNull Project project) {
         this.project = project;
@@ -194,6 +196,22 @@ public class AutomateCliService implements IAutomateService {
         cache.invalidateToolkitList();
     }
 
+    @Override
+    public void addCliLogListener(@NotNull PropertyChangeListener listener) {
+        this.cliLogsListeners.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removeCliLogListener(@NotNull PropertyChangeListener listener) {
+        this.cliLogsListeners.removePropertyChangeListener(listener);
+    }
+
+    @NotNull
+    @Override
+    public List<CliLogEntry> getCliLog() {
+        return cliLogs;
+    }
+
     @NotNull
     private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args) {
 
@@ -223,9 +241,12 @@ public class AutomateCliService implements IAutomateService {
             command.addAll(args);
             var builder = new ProcessBuilder(command);
             builder.directory(new File(Objects.requireNonNull(project.getBasePath())));
+            AddCliLogEntry(String.format("Command: %s", String.join(" ", builder.command())), CliLogEntryType.Normal);
+
             var process = builder.start();
             var success = process.waitFor(5, TimeUnit.SECONDS);
             if (!success) {
+                AddCliLogEntry(String.format("Failed to start process: %s", executablePath), CliLogEntryType.Error);
                 return new CliTextResult("CLI failed to execute", "");
             }
             var error = "";
@@ -235,19 +256,34 @@ public class AutomateCliService implements IAutomateService {
                 var errorBytes = errorStream.readAllBytes();
                 errorStream.close();
                 error = new String(errorBytes, StandardCharsets.UTF_8).trim();
+                AddCliLogEntry(String.format("Failed to execute command: %s", error), CliLogEntryType.Error);
             } else {
                 var outputStream = process.getInputStream();
                 var outputBytes = outputStream.readAllBytes();
                 outputStream.close();
                 output = new String(outputBytes, StandardCharsets.UTF_8).trim();
+                AddCliLogEntry("Executed command successfully", CliLogEntryType.Success);
             }
 
             process.destroy();
             return new CliTextResult(error, output);
 
         } catch (InterruptedException | IOException e) {
+            AddCliLogEntry(String.format("Failed to to run process. Error was: %s", e.getMessage()), CliLogEntryType.Error);
             return new CliTextResult(String.format("CLI failed to execute. Error was: %s", e.getMessage()), "");
         }
+    }
+
+    private void AddCliLogEntry(String text, CliLogEntryType type) {
+        var oldValue = new ArrayList<>(cliLogs);
+
+        var entry = new CliLogEntry(text, type);
+        cliLogs.add(entry);
+
+        var newValue = new ArrayList<>();
+        newValue.add(entry);
+
+        cliLogsListeners.firePropertyChange("Logs", oldValue, newValue);
     }
 
 
