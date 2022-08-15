@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
 import org.jetbrains.annotations.NotNull;
@@ -37,8 +38,37 @@ public class AutomateToolWindow {
 
     private void createUIComponents() {
 
-        var application = IAutomateApplication.getInstance(project);
+        initUIStartupState();
         toolbar = createToolbar();
+    }
+
+    private void initUIStartupState() {
+        var application = IAutomateApplication.getInstance(this.project);
+        var automation = application.getAllAutomation();
+        if (automation.getPatterns().isEmpty()) {
+            if (application.getEditingMode() != EditingMode.Drafts) {
+                application.setEditingMode(EditingMode.Drafts);
+            }
+            if (automation.getToolkits().isEmpty()) {
+                if (automation.getDrafts().isEmpty()) {
+                    if (application.isAuthoringMode()) {
+                        application.setAuthoringMode(false);
+                    }
+                }
+            }
+        } else {
+            if (automation.getToolkits().isEmpty()) {
+                if (application.getEditingMode() != EditingMode.Patterns) {
+                    application.setEditingMode(EditingMode.Patterns);
+                }
+            }
+        }
+
+        if (application.getEditingMode() == EditingMode.Patterns) {
+            if (!application.isAuthoringMode()) {
+                application.setAuthoringMode(true);
+            }
+        }
     }
 
     private void init() {

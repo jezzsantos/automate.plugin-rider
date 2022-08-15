@@ -2,6 +2,8 @@ package jezzsantos.automate.plugin.infrastructure.common;
 
 import com.google.gson.Gson;
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AutomateService implements IAutomateService {
 
+    @NotNull
     private final Project project;
 
     public AutomateService(@NotNull Project project) {
@@ -30,8 +33,8 @@ public class AutomateService implements IAutomateService {
     @Override
     public String getExecutableName() {
         return (IsWindowsOs()
-                ? "automate.exe"
-                : "automate");
+                ? String.format("%s.exe", AutomateConstants.ExecutableName)
+                : AutomateConstants.ExecutableName);
     }
 
     @NotNull
@@ -44,13 +47,24 @@ public class AutomateService implements IAutomateService {
 
     @Nullable
     @Override
-    public String tryGetExecutableVersion(@Nullable String executablePath) {
+    public String tryGetExecutableVersion(@NotNull String executablePath) {
         var result = runAutomateForTextOutput(executablePath, new ArrayList<>(List.of("--version")));
         if (result.isError()) {
             return null;
         }
 
         return result.output;
+    }
+
+    @NotNull
+    @Override
+    public AllDefinitions getAllAutomation(@NotNull String executablePath) {
+        var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
+        if (result.isError()) {
+            return new AllDefinitions();
+        } else {
+            return result.output.getAll();
+        }
     }
 
     @NotNull
@@ -160,7 +174,7 @@ public class AutomateService implements IAutomateService {
     }
 
     @NotNull
-    private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @Nullable String executablePath, @NotNull List<String> args) {
+    private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args) {
 
         var allArgs = new ArrayList<>(args);
         if (!allArgs.contains("--output-structured")) {
@@ -179,8 +193,8 @@ public class AutomateService implements IAutomateService {
 
 
     @NotNull
-    private CliTextResult runAutomateForTextOutput(@Nullable String executablePath, @NotNull List<String> args) {
-        var path = executablePath == null || executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
+    private CliTextResult runAutomateForTextOutput(@NotNull String executablePath, @NotNull List<String> args) {
+        var path = executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
 
         try {
             var command = new ArrayList<String>();

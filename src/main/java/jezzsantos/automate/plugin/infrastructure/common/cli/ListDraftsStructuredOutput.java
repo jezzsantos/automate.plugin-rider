@@ -2,7 +2,9 @@ package jezzsantos.automate.plugin.infrastructure.common.cli;
 
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class ListDrafts {
     public List<DraftDefinition> Drafts;
@@ -10,6 +12,6 @@ class ListDrafts {
 
 public class ListDraftsStructuredOutput extends StructuredOutput<ListDrafts> {
     public List<DraftDefinition> getDrafts() {
-        return this.Output.get(0).Values.Drafts;
+        return Objects.requireNonNullElse(this.Output.get(0).Values.Drafts, new ArrayList<>());
     }
 }

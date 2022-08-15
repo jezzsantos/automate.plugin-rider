@@ -2,7 +2,9 @@ package jezzsantos.automate.plugin.infrastructure.common.cli;
 
 import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class ListToolkits {
     public List<ToolkitDefinition> Toolkits;
@@ -10,6 +12,6 @@ class ListToolkits {
 
 public class ListToolkitsStructuredOutput extends StructuredOutput<ListToolkits> {
     public List<ToolkitDefinition> getToolkits() {
-        return this.Output.get(0).Values.Toolkits;
+        return Objects.requireNonNullElse(this.Output.get(0).Values.Toolkits, new ArrayList<>());
     }
 }

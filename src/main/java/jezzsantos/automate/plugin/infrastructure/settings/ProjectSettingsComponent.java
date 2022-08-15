@@ -7,6 +7,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
@@ -25,7 +26,7 @@ public class ProjectSettingsComponent {
     public ProjectSettingsComponent(Project project) {
         var application = IAutomateApplication.getInstance(project);
         var defaultInstallLocation = application.getDefaultInstallLocation();
-        pathToAutomateExecutable.setHint(String.format("Auto-detected: %s", defaultInstallLocation));
+        pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPath.Title", defaultInstallLocation));
         pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
         pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         var testPathToAutomatePanel = new JPanel();
@@ -37,7 +38,7 @@ public class ProjectSettingsComponent {
 
         minPanel = FormBuilder.createFormBuilder()
                 .addComponent(authoringMode, 1)
-                .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title")), testPathToAutomatePanel, 1, false)
+                .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false)
                 .addComponentToRightColumn(testPathToAutomateResult)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -74,10 +75,10 @@ public class ProjectSettingsComponent {
         var version = automateApplication.tryGetExecutableVersion(pathToAutomateExecutable.getText());
         if (version == null) {
             testPathToAutomateResult.setForeground(DarculaColors.RED);
-            testPathToAutomateResult.setText(String.format("%s is not installed on this machine!", executableName));
+            testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Invalid.Message", AutomateConstants.ExecutableName));
         } else {
             testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
-            testPathToAutomateResult.setText(String.format("%s version is %s", executableName, version));
+            testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Success.Message", AutomateConstants.ExecutableName, version));
         }
 
     }

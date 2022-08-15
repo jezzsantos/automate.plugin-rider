@@ -4,6 +4,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.Nullable;
@@ -43,12 +44,12 @@ public class InstallToolkitDialog extends DialogWrapper {
     protected @Nullable ValidationInfo doValidate() {
         var location = this.location.getText();
         if (location.isEmpty()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None"));
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None", AutomateConstants.ToolkitFileExtension));
         }
 
         var file = new File(location);
         if (!file.isFile()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile"));
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile", AutomateConstants.ToolkitFileExtension));
         }
 
         return null;
@@ -62,6 +63,6 @@ public class InstallToolkitDialog extends DialogWrapper {
 
     private void createUIComponents() {
         this.location = new TextFieldWithBrowseButtonAndHint();
-        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Title"));
+        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Title", AutomateConstants.ToolkitFileExtension));
     }
 }

@@ -25,9 +25,9 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
     @OptionTag(converter = EditingModePropertyConverter.class)
-    public final Property<EditingMode> editingMode = new Property<>(EditingMode.Patterns);
+    public final Property<EditingMode> editingMode = new Property<>(EditingMode.Drafts);
     @OptionTag(converter = StringPropertyConverter.class)
-    public final Property<String> pathToAutomateExecutable = new Property<>(null);
+    public final Property<String> pathToAutomateExecutable = new Property<>("");
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     public ProjectSettingsState() {

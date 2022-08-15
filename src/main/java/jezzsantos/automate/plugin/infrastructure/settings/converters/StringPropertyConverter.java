@@ -12,7 +12,7 @@ public class StringPropertyConverter extends Converter<Property<String>> {
     }
 
     @Override
-    public @Nullable String toString(@NotNull Property<String> stringProperty) {
-        return stringProperty.getValue();
+    public @Nullable String toString(@NotNull Property<String> string) {
+        return string.getValue();
     }
 }

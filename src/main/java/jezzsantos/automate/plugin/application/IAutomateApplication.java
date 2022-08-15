@@ -1,10 +1,7 @@
 package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +20,7 @@ public interface IAutomateApplication {
     String getDefaultInstallLocation();
 
     @Nullable
-    String tryGetExecutableVersion(@Nullable String executablePath);
+    String tryGetExecutableVersion(@NotNull String executablePath);
 
     @NotNull
     List<PatternDefinition> getPatterns();
@@ -59,4 +56,7 @@ public interface IAutomateApplication {
     DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String location) throws Exception;
+
+    @NotNull
+    AllDefinitions getAllAutomation();
 }

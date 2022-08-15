@@ -12,11 +12,16 @@ import javax.swing.*;
 import java.util.Objects;
 
 public class ProjectSettingsConfigurable implements SearchableConfigurable {
+    @NotNull
     private final Project project;
+    @NotNull
+    private final ProjectSettingsState settings;
     private ProjectSettingsComponent settingsComponent;
 
-    public ProjectSettingsConfigurable(Project project) {
+    public ProjectSettingsConfigurable(@NotNull Project project) {
+
         this.project = project;
+        this.settings = ProjectSettingsState.getInstance(project);
     }
 
     @SuppressWarnings("DialogTitleCapitalization")
@@ -40,7 +45,6 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        var settings = ProjectSettingsState.getInstance(project);
         var modified = settingsComponent.getAuthoringMode() != settings.authoringMode.getValue();
         modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), settings.pathToAutomateExecutable.getValue());
         return modified;
@@ -48,14 +52,12 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
 
     @Override
     public void apply() {
-        var settings = ProjectSettingsState.getInstance(project);
         settings.authoringMode.setValue(settingsComponent.getAuthoringMode());
         settings.pathToAutomateExecutable.setValue(settingsComponent.getPathToAutomateExecutable());
     }
 
     @Override
     public void reset() {
-        var settings = ProjectSettingsState.getInstance(project);
         settingsComponent.setAuthoringMode(settings.authoringMode.getValue());
         settingsComponent.setPathToAutomateExecutable(settings.pathToAutomateExecutable.getValue());
     }

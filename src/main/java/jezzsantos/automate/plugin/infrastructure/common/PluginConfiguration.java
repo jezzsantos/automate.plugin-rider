@@ -6,37 +6,40 @@ import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration
 import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState;
 import org.jetbrains.annotations.NotNull;
 
-public class PluginConfiguration implements IConfiguration {
+import java.util.Objects;
 
-    private final Project project;
+public class PluginConfiguration implements IConfiguration {
+    @NotNull
+    private final ProjectSettingsState settings;
 
     public PluginConfiguration(@NotNull Project project) {
-        this.project = project;
+
+        this.settings = ProjectSettingsState.getInstance(project);
     }
 
     @NotNull
     @Override
     public String getExecutablePath() {
-        return ProjectSettingsState.getInstance(this.project).pathToAutomateExecutable.getValue();
+        return Objects.requireNonNullElse(this.settings.pathToAutomateExecutable.getValue(), "");
     }
 
     @Override
     public Boolean getAuthoringMode() {
-        return ProjectSettingsState.getInstance(this.project).authoringMode.getValue();
+        return this.settings.authoringMode.getValue();
     }
 
     @Override
     public void setAuthoringMode(boolean on) {
-        ProjectSettingsState.getInstance(this.project).authoringMode.setValue(on);
+        this.settings.authoringMode.setValue(on);
     }
 
     @Override
     public EditingMode getEditingMode() {
-        return ProjectSettingsState.getInstance(this.project).editingMode.getValue();
+        return this.settings.editingMode.getValue();
     }
 
     @Override
     public void setEditingMode(EditingMode mode) {
-        ProjectSettingsState.getInstance(this.project).editingMode.setValue(mode);
+        this.settings.editingMode.setValue(mode);
     }
 }

@@ -1,10 +1,7 @@
 package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.*;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +34,7 @@ public class AutomateApplication implements IAutomateApplication {
 
     @Nullable
     @Override
-    public String tryGetExecutableVersion(@Nullable String executablePath) {
+    public String tryGetExecutableVersion(@NotNull String executablePath) {
         return this.automateService.tryGetExecutableVersion(executablePath);
     }
 
@@ -128,5 +125,13 @@ public class AutomateApplication implements IAutomateApplication {
     public void installToolkit(@NotNull String location) throws Exception {
         var executablePath = this.configuration.getExecutablePath();
         this.automateService.installToolkit(executablePath, location);
+    }
+
+
+    @NotNull
+    @Override
+    public AllDefinitions getAllAutomation() {
+        var executablePath = this.configuration.getExecutablePath();
+        return this.automateService.getAllAutomation(executablePath);
     }
 }
