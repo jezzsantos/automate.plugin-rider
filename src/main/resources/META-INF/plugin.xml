@@ -19,7 +19,7 @@
                 serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.PluginConfiguration"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IAutomateService"
-                serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.AutomateService"/>
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.AutomateCliService"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.IAutomateApplication"
                 serviceImplementation="jezzsantos.automate.plugin.application.AutomateApplication"/>

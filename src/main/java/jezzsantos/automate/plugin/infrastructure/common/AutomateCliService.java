@@ -20,13 +20,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class AutomateService implements IAutomateService {
+public class AutomateCliService implements IAutomateService {
 
     @NotNull
     private final Project project;
+    private final IAutomationCache cache;
 
-    public AutomateService(@NotNull Project project) {
+    public AutomateCliService(@NotNull Project project) {
         this.project = project;
+        this.cache = new InMemAutomationCache();
     }
 
     @NotNull
@@ -59,48 +61,57 @@ public class AutomateService implements IAutomateService {
     @NotNull
     @Override
     public AllDefinitions getAllAutomation(@NotNull String executablePath) {
-        var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
-        if (result.isError()) {
-            return new AllDefinitions();
-        } else {
-            return result.output.getAll();
-        }
+
+        return cache.ListAll(() -> {
+            var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
+            if (result.isError()) {
+                return new AllDefinitions();
+            } else {
+                return result.output.getAll();
+            }
+        });
     }
 
     @NotNull
     @Override
     public List<PatternDefinition> getPatterns(@NotNull String executablePath) {
-        var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
-        if (result.isError()) {
-            return new ArrayList<>();
-        } else {
-            var patterns = result.output.getPatterns();
-            return patterns != null ? patterns : new ArrayList<>();
-        }
+        return cache.ListPatterns(() -> {
+            var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
+            if (result.isError()) {
+                return new ArrayList<>();
+            } else {
+                var patterns = result.output.getPatterns();
+                return patterns != null ? patterns : new ArrayList<>();
+            }
+        });
     }
 
     @NotNull
     @Override
     public List<ToolkitDefinition> getToolkits(@NotNull String executablePath) {
-        var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
-        if (result.isError()) {
-            return new ArrayList<>();
-        } else {
-            var toolkits = result.output.getToolkits();
-            return toolkits != null ? toolkits : new ArrayList<>();
-        }
+        return cache.ListToolkits(() -> {
+            var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
+            if (result.isError()) {
+                return new ArrayList<>();
+            } else {
+                var toolkits = result.output.getToolkits();
+                return toolkits != null ? toolkits : new ArrayList<>();
+            }
+        });
     }
 
     @NotNull
     @Override
     public List<DraftDefinition> getDrafts(@NotNull String executablePath) {
-        var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
-        if (result.isError()) {
-            return new ArrayList<>();
-        } else {
-            var drafts = result.output.getDrafts();
-            return drafts != null ? drafts : new ArrayList<>();
-        }
+        return cache.ListDrafts(() -> {
+            var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
+            if (result.isError()) {
+                return new ArrayList<>();
+            } else {
+                var drafts = result.output.getDrafts();
+                return drafts != null ? drafts : new ArrayList<>();
+            }
+        });
     }
 
     @NotNull
@@ -110,6 +121,7 @@ public class AutomateService implements IAutomateService {
         if (result.isError()) {
             throw new Exception(result.error);
         } else {
+            cache.invalidatePatternList();
             return result.output.getPattern();
         }
     }
@@ -120,6 +132,7 @@ public class AutomateService implements IAutomateService {
         if (result.isError()) {
             throw new Exception(result.error);
         } else {
+            cache.invalidatePatternList();
             result.output.getPattern();
         }
     }
@@ -127,21 +140,27 @@ public class AutomateService implements IAutomateService {
     @Nullable
     @Override
     public PatternDefinition getCurrentPattern(@NotNull String executablePath) {
-        var patterns = getPatterns(executablePath);
+        return this.cache.GetPattern(() ->
+        {
+            var patterns = getPatterns(executablePath);
 
-        return patterns.stream()
-                .filter(PatternDefinition::getIsCurrent)
-                .findFirst().orElse(null);
+            return patterns.stream()
+                    .filter(PatternDefinition::getIsCurrent)
+                    .findFirst().orElse(null);
+        });
     }
 
     @Nullable
     @Override
     public DraftDefinition getCurrentDraft(@NotNull String executablePath) {
-        var drafts = getDrafts(executablePath);
+        return this.cache.GetDraft(() ->
+        {
+            var drafts = getDrafts(executablePath);
 
-        return drafts.stream()
-                .filter(DraftDefinition::getIsCurrent)
-                .findFirst().orElse(null);
+            return drafts.stream()
+                    .filter(DraftDefinition::getIsCurrent)
+                    .findFirst().orElse(null);
+        });
     }
 
     @Override
@@ -150,6 +169,7 @@ public class AutomateService implements IAutomateService {
         if (result.isError()) {
             throw new Exception(result.error);
         } else {
+            cache.invalidateDraftList();
             result.output.getDraft();
         }
     }
@@ -161,6 +181,7 @@ public class AutomateService implements IAutomateService {
         if (result.isError()) {
             throw new Exception(result.error);
         } else {
+            cache.invalidateDraftList();
             return result.output.getDraft();
         }
     }
@@ -171,6 +192,7 @@ public class AutomateService implements IAutomateService {
         if (result.isError()) {
             throw new Exception(result.error);
         }
+        cache.invalidateToolkitList();
     }
 
     @NotNull
