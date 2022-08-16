@@ -24,16 +24,16 @@ public interface IAutomateService {
     String tryGetExecutableVersion(@NotNull String executablePath);
 
     @NotNull
-    AllDefinitions getAllAutomation(@NotNull String executablePath, boolean forceRefresh);
+    AllDefinitions listAllAutomation(@NotNull String executablePath, boolean forceRefresh);
 
     @NotNull
-    List<PatternDefinition> getPatterns(@NotNull String executablePath);
+    List<PatternDefinition> listPatterns(@NotNull String executablePath);
 
     @NotNull
-    List<ToolkitDefinition> getToolkits(@NotNull String executablePath);
+    List<ToolkitDefinition> listToolkits(@NotNull String executablePath);
 
     @NotNull
-    List<DraftDefinition> getDrafts(@NotNull String executablePath);
+    List<DraftDefinition> listDrafts(@NotNull String executablePath);
 
     @NotNull
     PatternDefinition createPattern(@NotNull String executablePath, @NotNull String name) throws Exception;

@@ -13,7 +13,7 @@ public class PatternDefinition {
     @SerializedName(value = "IsCurrent")
     private boolean isCurrent;
 
-    public PatternDefinition(String id, String name, String version, Boolean isCurrent) {
+    public PatternDefinition(@NotNull String id, @NotNull String name, @NotNull String version, Boolean isCurrent) {
         this.id = id;
         this.name = name;
         this.version = version;

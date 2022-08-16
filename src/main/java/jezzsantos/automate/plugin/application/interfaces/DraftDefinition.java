@@ -8,15 +8,18 @@ public class DraftDefinition {
     private final String id;
     @SerializedName(value = "Name")
     private final String name;
+    @SerializedName(value = "ToolkitId")
+    private String toolkitId;
     @SerializedName(value = "Version")
     private String version;
     @SerializedName(value = "IsCurrent")
     private boolean isCurrent;
 
-    public DraftDefinition(String id, String name, String version, Boolean isCurrent) {
+    public DraftDefinition(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String version, Boolean isCurrent) {
         this.id = id;
         this.name = name;
         this.version = version;
+        this.toolkitId = toolkitId;
         this.isCurrent = isCurrent;
     }
 
@@ -28,6 +31,11 @@ public class DraftDefinition {
     @NotNull
     public String getId() {
         return this.id;
+    }
+
+    @NotNull
+    public String getToolkitId() {
+        return this.toolkitId;
     }
 
     public boolean getIsCurrent() {

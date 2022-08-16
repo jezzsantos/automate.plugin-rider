@@ -6,12 +6,12 @@ import org.jetbrains.annotations.NotNull;
 public class ToolkitDefinition {
     @SerializedName(value = "Id")
     private String id;
-    @SerializedName(value = "PatternName")
+    @SerializedName(value = "ToolkitName")
     private String name;
     @SerializedName(value = "Version")
     private String version;
 
-    public ToolkitDefinition(String id, String name, String version) {
+    public ToolkitDefinition(@NotNull String id, @NotNull String name, @NotNull String version) {
         this.id = id;
         this.name = name;
         this.version = version;

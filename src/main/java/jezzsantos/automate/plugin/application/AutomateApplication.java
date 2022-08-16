@@ -43,21 +43,21 @@ public class AutomateApplication implements IAutomateApplication {
     @Override
     public List<PatternDefinition> getPatterns() {
         var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getPatterns(executablePath);
+        return this.automateService.listPatterns(executablePath);
     }
 
     @NotNull
     @Override
     public List<ToolkitDefinition> getToolkits() {
         var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getToolkits(executablePath);
+        return this.automateService.listToolkits(executablePath);
     }
 
     @NotNull
     @Override
     public List<DraftDefinition> getDrafts() {
         var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getDrafts(executablePath);
+        return this.automateService.listDrafts(executablePath);
     }
 
     @NotNull
@@ -139,7 +139,7 @@ public class AutomateApplication implements IAutomateApplication {
     @Override
     public AllDefinitions getAllAutomation(boolean forceRefresh) {
         var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getAllAutomation(executablePath, forceRefresh);
+        return this.automateService.listAllAutomation(executablePath, forceRefresh);
     }
 
     @Override

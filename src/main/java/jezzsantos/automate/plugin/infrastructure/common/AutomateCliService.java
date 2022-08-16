@@ -62,7 +62,7 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public AllDefinitions getAllAutomation(@NotNull String executablePath, boolean forceRefresh) {
+    public AllDefinitions listAllAutomation(@NotNull String executablePath, boolean forceRefresh) {
         return cache.ListAll(() -> {
             var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
             if (result.isError()) {
@@ -75,7 +75,7 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<PatternDefinition> getPatterns(@NotNull String executablePath) {
+    public List<PatternDefinition> listPatterns(@NotNull String executablePath) {
         return cache.ListPatterns(() -> {
             var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
             if (result.isError()) {
@@ -89,7 +89,7 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<ToolkitDefinition> getToolkits(@NotNull String executablePath) {
+    public List<ToolkitDefinition> listToolkits(@NotNull String executablePath) {
         return cache.ListToolkits(() -> {
             var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
             if (result.isError()) {
@@ -103,7 +103,7 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<DraftDefinition> getDrafts(@NotNull String executablePath) {
+    public List<DraftDefinition> listDrafts(@NotNull String executablePath) {
         return cache.ListDrafts(() -> {
             var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
             if (result.isError()) {
@@ -143,7 +143,7 @@ public class AutomateCliService implements IAutomateService {
     public PatternDefinition getCurrentPattern(@NotNull String executablePath) {
         return this.cache.GetPattern(() ->
         {
-            var patterns = getPatterns(executablePath);
+            var patterns = listPatterns(executablePath);
 
             return patterns.stream()
                     .filter(PatternDefinition::getIsCurrent)
@@ -156,7 +156,7 @@ public class AutomateCliService implements IAutomateService {
     public DraftDefinition getCurrentDraft(@NotNull String executablePath) {
         return this.cache.GetDraft(() ->
         {
-            var drafts = getDrafts(executablePath);
+            var drafts = listDrafts(executablePath);
 
             return drafts.stream()
                     .filter(DraftDefinition::getIsCurrent)

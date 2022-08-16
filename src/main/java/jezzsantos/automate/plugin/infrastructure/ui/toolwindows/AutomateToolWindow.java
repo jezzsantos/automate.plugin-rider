@@ -4,6 +4,8 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
+import com.intellij.openapi.editor.colors.EditorFontCache;
+import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.Colors;
 import com.intellij.ui.treeStructure.Tree;
@@ -48,22 +50,9 @@ public class AutomateToolWindow {
         toolbar = createToolbar();
     }
 
-    @SuppressWarnings("unchecked")
     private void init() {
-        var application = IAutomateApplication.getInstance(project);
-        application.addCliLogListener(e -> {
-            var entries = (List<CliLogEntry>) e.getNewValue();
-            writeLogEntry(entries.get(0));
-        });
-        var log = application.getCliLog();
-        for (var entry : log) {
-            writeLogEntry(entry);
-        }
-        patternsTree.getEmptyText().setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
-        windowSplit.setResizeWeight(0.0d);
-        var root = ((DefaultMutableTreeNode) patternsTree.getModel().getRoot());
-        root.setUserObject(new DefaultMutableTreeNode(AutomateBundle.message("toolWindow.RootNode.Title")));
-        this.refreshContents();
+        initCliLog();
+        initTree();
     }
 
     @NotNull
@@ -74,16 +63,16 @@ public class AutomateToolWindow {
         actions.add(new ToggleDraftEditingModeAction());
         actions.addSeparator();
         actions.add(new PatternsListToolbarAction());
-        actions.add(new AddPatternAction((pattern) -> refreshContents()));
+        actions.add(new AddPatternAction((pattern) -> refreshTree()));
         actions.add(new InstallToolkitToolbarAction());
         actions.add(new DraftsListToolbarAction());
-        actions.add(new AddDraftAction((draft) -> refreshContents()));
-        actions.add(new RefreshPatternsAction((refresh) -> refreshContents()));
+        actions.add(new AddDraftAction((draft) -> refreshTree()));
+        actions.add(new RefreshPatternsAction((refresh) -> refreshTree()));
         actions.addSeparator();
         actions.add(new ShowSettingsToolbarAction());
         actions.add(new AdvancedOptionsToolbarActionGroup());
         actions.addSeparator();
-        actions.add(new ToggleAuthoringModeToolbarAction((isSelected) -> refreshContents()));
+        actions.add(new ToggleAuthoringModeToolbarAction((isSelected) -> refreshTree()));
 
         var actionToolbar = new ActionToolbarImpl(ActionPlaces.TOOLWINDOW_CONTENT, actions, true);
         actionToolbar.setTargetComponent(mainPanel);
@@ -92,7 +81,33 @@ public class AutomateToolWindow {
         return actionToolbar;
     }
 
-    private void refreshContents() {
+    private void initTree() {
+        patternsTree.getEmptyText()
+                .setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
+
+        var root = ((DefaultMutableTreeNode) patternsTree.getModel().getRoot());
+        root.setUserObject(new DefaultMutableTreeNode(AutomateBundle.message("toolWindow.RootNode.Title")));
+        this.refreshTree();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initCliLog() {
+        var application = IAutomateApplication.getInstance(project);
+        application.addCliLogListener(e -> {
+
+            if (e.getPropertyName().equals("Logs")) {
+                var entries = (List<CliLogEntry>) e.getNewValue();
+                writeLogEntry(entries.get(0));
+            }
+        });
+        var log = application.getCliLog();
+        for (var entry : log) {
+            writeLogEntry(entry);
+        }
+        cliLog.setFont(EditorFontCache.getInstance().getFont(EditorFontType.CONSOLE_PLAIN));
+    }
+
+    private void refreshTree() {
         var model = (DefaultTreeModel) patternsTree.getModel();
         var root = ((DefaultMutableTreeNode) model.getRoot());
         root.removeAllChildren();
