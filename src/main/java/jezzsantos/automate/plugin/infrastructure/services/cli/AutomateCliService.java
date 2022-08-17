@@ -218,12 +218,12 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @Override
-    public void addCliLogListener(@NotNull PropertyChangeListener listener) {
+    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
         this.cliLogsListeners.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void removeCliLogListener(@NotNull PropertyChangeListener listener) {
+    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
         this.cliLogsListeners.removePropertyChangeListener(listener);
     }
 

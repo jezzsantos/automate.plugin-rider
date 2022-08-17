@@ -41,19 +41,19 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public List<PatternDefinition> getPatterns() {
+    public List<PatternDefinition> listPatterns() {
         return this.automateService.listPatterns();
     }
 
     @NotNull
     @Override
-    public List<ToolkitDefinition> getToolkits() {
+    public List<ToolkitDefinition> listToolkits() {
         return this.automateService.listToolkits();
     }
 
     @NotNull
     @Override
-    public List<DraftDefinition> getDrafts() {
+    public List<DraftDefinition> listDrafts() {
         return this.automateService.listDrafts();
     }
 
@@ -120,30 +120,18 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public AllDefinitions getAllAutomation() {
-        return getAllAutomation(false);
-    }
-
-
-    @NotNull
-    @Override
-    public AllDefinitions getAllAutomation(boolean forceRefresh) {
+    public AllDefinitions listAllAutomation(boolean forceRefresh) {
         return this.automateService.listAllAutomation(forceRefresh);
     }
 
     @Override
-    public boolean getViewCliLog() {
-        return this.configuration.getViewCliLog();
+    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
+        this.automateService.addPropertyChangedListener(listener);
     }
 
     @Override
-    public void addCliLogListener(@NotNull PropertyChangeListener listener) {
-        this.automateService.addCliLogListener(listener);
-    }
-
-    @Override
-    public void removeCliLogListener(@NotNull PropertyChangeListener listener) {
-        this.automateService.removeCliLogListener(listener);
+    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
+        this.automateService.removePropertyChangedListener(listener);
     }
 
     @NotNull

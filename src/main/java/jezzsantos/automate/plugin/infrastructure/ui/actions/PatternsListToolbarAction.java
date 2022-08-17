@@ -53,7 +53,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
         var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var patterns = application.getPatterns();
+            var patterns = application.listPatterns();
             var isAnyPatterns = !patterns.isEmpty();
             if (isAnyPatterns) {
                 var isNoCurrentPattern = patterns.stream()

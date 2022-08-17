@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.Colors;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.SimpleMessageBusConnection;
 import com.intellij.util.messages.Topic;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
@@ -18,6 +19,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +29,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 interface StateChangedListener {
@@ -39,6 +42,12 @@ interface StateChangedListener {
 public class AutomateToolWindow implements Disposable {
     @NotNull
     private final Project project;
+    @NotNull
+    private final IAutomateApplication application;
+    @NotNull
+    private final IConfiguration configuration;
+    @NotNull
+    private final MessageBus messageBus;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
     private Tree patternsTree;
@@ -46,8 +55,11 @@ public class AutomateToolWindow implements Disposable {
     private JSplitPane windowSplit;
 
     public AutomateToolWindow(
-            @NotNull Project project) {
+            @NotNull Project project, AutomateToolWindowFactory factory) {
         this.project = project;
+        this.configuration = IConfiguration.getInstance(this.project);
+        this.application = IAutomateApplication.getInstance(this.project);
+        this.messageBus = project.getMessageBus();
 
         this.init();
     }
@@ -98,18 +110,21 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void setupCliLogs() {
-        var configuration = IConfiguration.getInstance(project);
-        configuration.addListener(evt -> {
-            if (evt.getPropertyName().equals("ViewCliLog")) {
-                displayCliLogs();
-            }
-        });
+        this.configuration.addListener(configurationChangedListener());
         displayCliLogs();
     }
 
+    @NotNull
+    private PropertyChangeListener configurationChangedListener() {
+        return evt -> {
+            if (evt.getPropertyName().equals("ViewCliLog")) {
+                displayCliLogs();
+            }
+        };
+    }
+
     private void displayCliLogs() {
-        var configuration = IConfiguration.getInstance(project);
-        var isVisible = configuration.getViewCliLog();
+        var isVisible = this.configuration.getViewCliLog();
         windowSplit.getBottomComponent().setVisible(isVisible);
         windowSplit.setEnabled(isVisible);
         var splitter = (BasicSplitPaneUI) windowSplit.getUI();
@@ -121,12 +136,11 @@ public class AutomateToolWindow implements Disposable {
 
     @NotNull
     private Runnable notifyUpdated() {
-        return () -> this.project.getMessageBus().syncPublisher(StateChangedListener.TOPIC).settingsChanged();
+        return () -> this.messageBus.syncPublisher(StateChangedListener.TOPIC).settingsChanged();
     }
 
     private void setupActionNotifications() {
-        var messageBus = project.getMessageBus();
-        SimpleMessageBusConnection connection = messageBus.connect(this);
+        SimpleMessageBusConnection connection = this.messageBus.connect(this);
         connection.subscribe(StateChangedListener.TOPIC, this::refreshTree);
     }
 
@@ -139,21 +153,25 @@ public class AutomateToolWindow implements Disposable {
         this.refreshTree();
     }
 
-    @SuppressWarnings("unchecked")
     private void initCliLog() {
-        var application = IAutomateApplication.getInstance(project);
-        application.addCliLogListener(e -> {
-            if (e.getPropertyName().equals("CliLogs")) {
-                var entries = (List<CliLogEntry>) e.getNewValue();
-                displayLogEntry(entries.get(0));
-            }
-        });
+        this.application.addPropertyChangedListener(cliLogUpdatedListener());
 
-        var log = application.getCliLog();
+        var log = this.application.getCliLog();
         for (var entry : log) {
             displayLogEntry(entry);
         }
         cliLog.setFont(EditorFontCache.getInstance().getFont(EditorFontType.CONSOLE_PLAIN));
+    }
+
+    @SuppressWarnings("unchecked")
+    @NotNull
+    private PropertyChangeListener cliLogUpdatedListener() {
+        return e -> {
+            if (e.getPropertyName().equals("CliLogs")) {
+                var entries = (List<CliLogEntry>) e.getNewValue();
+                displayLogEntry(entries.get(0));
+            }
+        };
     }
 
     private void displayLogEntry(CliLogEntry entry) {
@@ -172,7 +190,7 @@ public class AutomateToolWindow implements Disposable {
         var root = ((DefaultMutableTreeNode) model.getRoot());
         root.removeAllChildren();
 
-        var patterns = IAutomateApplication.getInstance(project).getPatterns();
+        var patterns = this.application.listPatterns();
         for (var pattern : patterns) {
             root.add(new DefaultMutableTreeNode(pattern));
         }
@@ -183,6 +201,8 @@ public class AutomateToolWindow implements Disposable {
 
     @Override
     public void dispose() {
+        this.configuration.removeListener(configurationChangedListener());
+        this.application.removePropertyChangedListener(cliLogUpdatedListener());
     }
 }
 

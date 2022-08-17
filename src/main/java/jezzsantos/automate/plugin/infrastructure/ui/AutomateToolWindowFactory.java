@@ -19,15 +19,16 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        var window = new AutomateToolWindow(project);
+        var window = new AutomateToolWindow(project, this);
         var contentFactory = ContentFactory.SERVICE.getInstance();
         var content = contentFactory.createContent(window.getContent(), "", false);
         toolWindow.getContentManager().addContent(content);
+        content.setDisposer(window);
     }
 
     private void initStartupState(@NotNull Project project) {
         var application = IAutomateApplication.getInstance(project);
-        var automation = application.getAllAutomation(false);
+        var automation = application.listAllAutomation(false);
         if (automation.getPatterns().isEmpty()) {
             if (application.getEditingMode() != EditingMode.Drafts) {
                 application.setEditingMode(EditingMode.Drafts);
@@ -53,4 +54,5 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
             }
         }
     }
+
 }

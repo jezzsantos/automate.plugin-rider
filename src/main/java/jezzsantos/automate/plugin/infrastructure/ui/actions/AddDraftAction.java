@@ -42,8 +42,8 @@ public class AddDraftAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var drafts = application.getDrafts();
-            var toolkits = application.getToolkits();
+            var drafts = application.listDrafts();
+            var toolkits = application.listToolkits();
             var dialog = new NewDraftDialog(project, toolkits, drafts);
             if (dialog.showAndGet()) {
                 var name = dialog.Name;

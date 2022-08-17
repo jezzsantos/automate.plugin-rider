@@ -53,9 +53,9 @@ public interface IAutomateService {
 
     void installToolkit(@NotNull String location) throws Exception;
 
-    void addCliLogListener(@NotNull PropertyChangeListener listener);
+    void addPropertyChangedListener(@NotNull PropertyChangeListener listener);
 
-    void removeCliLogListener(@NotNull PropertyChangeListener listener);
+    void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
 
     @NotNull
     List<CliLogEntry> getCliLog();

@@ -44,7 +44,7 @@ public class AddPatternAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var patterns = application.getPatterns();
+            var patterns = application.listPatterns();
             var dialog = new NewPatternDialog(project, patterns);
             if (dialog.showAndGet()) {
                 var name = dialog.Name;

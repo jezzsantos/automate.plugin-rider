@@ -24,13 +24,13 @@ public interface IAutomateApplication {
     String tryGetExecutableVersion(@NotNull String executablePath);
 
     @NotNull
-    List<PatternDefinition> getPatterns();
+    List<PatternDefinition> listPatterns();
 
     @NotNull
-    List<ToolkitDefinition> getToolkits();
+    List<ToolkitDefinition> listToolkits();
 
     @NotNull
-    List<DraftDefinition> getDrafts();
+    List<DraftDefinition> listDrafts();
 
     @SuppressWarnings("UnusedReturnValue")
     @NotNull
@@ -61,16 +61,11 @@ public interface IAutomateApplication {
     void installToolkit(@NotNull String location) throws Exception;
 
     @NotNull
-    AllDefinitions getAllAutomation();
+    AllDefinitions listAllAutomation(boolean forceRefresh);
 
-    @NotNull
-    AllDefinitions getAllAutomation(boolean forceRefresh);
+    void addPropertyChangedListener(@NotNull PropertyChangeListener listener);
 
-    boolean getViewCliLog();
-
-    void addCliLogListener(@NotNull PropertyChangeListener listener);
-
-    void removeCliLogListener(@NotNull PropertyChangeListener listener);
+    void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
 
     @NotNull
     List<CliLogEntry> getCliLog();

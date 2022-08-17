@@ -51,7 +51,7 @@ public class DraftsListToolbarAction extends ComboBoxAction {
         var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var drafts = application.getDrafts();
+            var drafts = application.listDrafts();
             var isAnyDrafts = !drafts.isEmpty();
             if (isAnyDrafts) {
                 var isNoCurrentDraft = drafts.stream()
