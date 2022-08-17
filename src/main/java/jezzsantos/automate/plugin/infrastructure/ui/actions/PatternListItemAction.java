@@ -14,12 +14,15 @@ public class PatternListItemAction extends AnAction {
     @Nullable
     private final String id;
 
-    public PatternListItemAction() {
-        this.name = "";
-        this.id = null;
+    private final Runnable onPerformed;
+
+    public PatternListItemAction(@NotNull Runnable onPerformed) {
+        this(onPerformed, "", null);
     }
 
-    public PatternListItemAction(@NotNull String name, @NotNull String id) {
+    public PatternListItemAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
+        super();
+        this.onPerformed = onPerformed;
         this.name = name;
         this.id = id;
     }
@@ -49,6 +52,7 @@ public class PatternListItemAction extends AnAction {
                 var application = IAutomateApplication.getInstance(project);
                 try {
                     application.setCurrentPattern(this.id);
+                    onPerformed.run();
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to set current pattern", ex);
                 }

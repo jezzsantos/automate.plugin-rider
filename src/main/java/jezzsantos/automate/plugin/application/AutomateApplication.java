@@ -42,29 +42,25 @@ public class AutomateApplication implements IAutomateApplication {
     @NotNull
     @Override
     public List<PatternDefinition> getPatterns() {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.listPatterns(executablePath);
+        return this.automateService.listPatterns();
     }
 
     @NotNull
     @Override
     public List<ToolkitDefinition> getToolkits() {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.listToolkits(executablePath);
+        return this.automateService.listToolkits();
     }
 
     @NotNull
     @Override
     public List<DraftDefinition> getDrafts() {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.listDrafts(executablePath);
+        return this.automateService.listDrafts();
     }
 
     @NotNull
     @Override
     public PatternDefinition createPattern(@NotNull String name) throws Exception {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.createPattern(executablePath, name);
+        return this.automateService.createPattern(name);
     }
 
     @Override
@@ -92,40 +88,34 @@ public class AutomateApplication implements IAutomateApplication {
     @Nullable
     @Override
     public PatternDefinition getCurrentPattern() {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getCurrentPattern(executablePath);
+        return this.automateService.getCurrentPattern();
     }
 
     @Override
     public void setCurrentPattern(@NotNull String id) throws Exception {
-        var executablePath = this.configuration.getExecutablePath();
-        this.automateService.setCurrentPattern(executablePath, id);
+        this.automateService.setCurrentPattern(id);
     }
 
     @Nullable
     @Override
     public DraftDefinition getCurrentDraft() {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.getCurrentDraft(executablePath);
+        return this.automateService.getCurrentDraft();
     }
 
     @Override
     public void setCurrentDraft(@NotNull String id) throws Exception {
-        var executablePath = this.configuration.getExecutablePath();
-        this.automateService.setCurrentDraft(executablePath, id);
+        this.automateService.setCurrentDraft(id);
     }
 
     @NotNull
     @Override
     public DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.createDraft(executablePath, toolkitName, name);
+        return this.automateService.createDraft(toolkitName, name);
     }
 
     @Override
     public void installToolkit(@NotNull String location) throws Exception {
-        var executablePath = this.configuration.getExecutablePath();
-        this.automateService.installToolkit(executablePath, location);
+        this.automateService.installToolkit(location);
     }
 
     @NotNull
@@ -138,8 +128,7 @@ public class AutomateApplication implements IAutomateApplication {
     @NotNull
     @Override
     public AllDefinitions getAllAutomation(boolean forceRefresh) {
-        var executablePath = this.configuration.getExecutablePath();
-        return this.automateService.listAllAutomation(executablePath, forceRefresh);
+        return this.automateService.listAllAutomation(forceRefresh);
     }
 
     @Override
@@ -150,6 +139,11 @@ public class AutomateApplication implements IAutomateApplication {
     @Override
     public void addCliLogListener(@NotNull PropertyChangeListener listener) {
         this.automateService.addCliLogListener(listener);
+    }
+
+    @Override
+    public void removeCliLogListener(@NotNull PropertyChangeListener listener) {
+        this.automateService.removeCliLogListener(listener);
     }
 
     @NotNull

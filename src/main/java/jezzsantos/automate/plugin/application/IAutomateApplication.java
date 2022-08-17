@@ -32,6 +32,7 @@ public interface IAutomateApplication {
     @NotNull
     List<DraftDefinition> getDrafts();
 
+    @SuppressWarnings("UnusedReturnValue")
     @NotNull
     PatternDefinition createPattern(@NotNull String name) throws Exception;
 
@@ -53,6 +54,7 @@ public interface IAutomateApplication {
 
     void setCurrentDraft(@NotNull String id) throws Exception;
 
+    @SuppressWarnings("UnusedReturnValue")
     @NotNull
     DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
@@ -67,6 +69,8 @@ public interface IAutomateApplication {
     boolean getViewCliLog();
 
     void addCliLogListener(@NotNull PropertyChangeListener listener);
+
+    void removeCliLogListener(@NotNull PropertyChangeListener listener);
 
     @NotNull
     List<CliLogEntry> getCliLog();

@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.common.cli;
+package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import java.util.ArrayList;
 

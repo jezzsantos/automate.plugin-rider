@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -15,13 +16,13 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @NotNull
     private final Project project;
     @NotNull
-    private final ProjectSettingsState settings;
+    private final IConfiguration configuration;
     private ProjectSettingsComponent settingsComponent;
 
     public ProjectSettingsConfigurable(@NotNull Project project) {
 
         this.project = project;
-        this.settings = ProjectSettingsState.getInstance(project);
+        this.configuration = IConfiguration.getInstance(project);
     }
 
     @SuppressWarnings("DialogTitleCapitalization")
@@ -45,24 +46,24 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        var modified = settingsComponent.getAuthoringMode() != settings.authoringMode.getValue();
-        modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), settings.pathToAutomateExecutable.getValue());
-        modified |= !Objects.equals(settingsComponent.getViewCliLog(), settings.viewCliLog.getValue());
+        var modified = settingsComponent.getAuthoringMode() != configuration.getAuthoringMode();
+        modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), configuration.getExecutablePath());
+        modified |= !Objects.equals(settingsComponent.getViewCliLog(), configuration.getViewCliLog());
         return modified;
     }
 
     @Override
     public void apply() {
-        settings.authoringMode.setValue(settingsComponent.getAuthoringMode());
-        settings.pathToAutomateExecutable.setValue(settingsComponent.getPathToAutomateExecutable());
-        settings.viewCliLog.setValue(settingsComponent.getViewCliLog());
+        configuration.setAuthoringMode(settingsComponent.getAuthoringMode());
+        configuration.setExecutablePath(settingsComponent.getPathToAutomateExecutable());
+        configuration.setViewCliLog(settingsComponent.getViewCliLog());
     }
 
     @Override
     public void reset() {
-        settingsComponent.setAuthoringMode(settings.authoringMode.getValue());
-        settingsComponent.setPathToAutomateExecutable(settings.pathToAutomateExecutable.getValue());
-        settingsComponent.setViewCliLog(settings.viewCliLog.getValue());
+        settingsComponent.setAuthoringMode(configuration.getAuthoringMode());
+        settingsComponent.setPathToAutomateExecutable(configuration.getExecutablePath());
+        settingsComponent.setViewCliLog(configuration.getViewCliLog());
     }
 
     @Override

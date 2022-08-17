@@ -7,16 +7,12 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
 public class RefreshPatternsAction extends AnAction {
+    private final Runnable onPerformed;
 
-    private final Consumer<Boolean> onSelect;
-
-
-    public RefreshPatternsAction(Consumer<Boolean> onSelect) {
+    public RefreshPatternsAction(Runnable onPerformed) {
         super();
-        this.onSelect = onSelect;
+        this.onPerformed = onPerformed;
     }
 
     @Override
@@ -38,6 +34,6 @@ public class RefreshPatternsAction extends AnAction {
             var application = IAutomateApplication.getInstance(project);
             application.getAllAutomation(true);
         }
-        onSelect.accept(true);
+        onPerformed.run();
     }
 }

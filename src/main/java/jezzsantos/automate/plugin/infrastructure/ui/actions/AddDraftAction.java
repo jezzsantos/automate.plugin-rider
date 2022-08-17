@@ -4,21 +4,17 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialog;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
 public class AddDraftAction extends AnAction {
+    private final Runnable onPerformed;
 
-    private final Consumer<DraftDefinition> onSelect;
-
-    public AddDraftAction(Consumer<DraftDefinition> onSelect) {
+    public AddDraftAction(@NotNull Runnable onPerformed) {
         super();
-        this.onSelect = onSelect;
+        this.onPerformed = onPerformed;
     }
 
     @SuppressWarnings("DialogTitleCapitalization")
@@ -52,13 +48,12 @@ public class AddDraftAction extends AnAction {
             if (dialog.showAndGet()) {
                 var name = dialog.Name;
                 var toolkitName = dialog.ToolkitName;
-                DraftDefinition draft;
                 try {
-                    draft = application.createDraft(toolkitName, name);
+                    application.createDraft(toolkitName, name);
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to add new draft", ex);
                 }
-                onSelect.accept(draft);
+                onPerformed.run();
             }
         }
     }

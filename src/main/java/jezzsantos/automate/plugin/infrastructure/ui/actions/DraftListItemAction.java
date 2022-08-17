@@ -8,18 +8,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DraftListItemAction extends AnAction {
-
+    private final Runnable onPerformed;
     @NotNull
     private final String name;
     @Nullable
     private final String id;
 
-    public DraftListItemAction() {
-        this.name = "";
-        this.id = null;
+    public DraftListItemAction(@NotNull Runnable onPerformed) {
+        this(onPerformed, "", null);
     }
 
-    public DraftListItemAction(@NotNull String name, @NotNull String id) {
+    public DraftListItemAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
+        super();
+        this.onPerformed = onPerformed;
         this.name = name;
         this.id = id;
     }
@@ -49,6 +50,7 @@ public class DraftListItemAction extends AnAction {
                 var application = IAutomateApplication.getInstance(project);
                 try {
                     application.setCurrentDraft(this.id);
+                    onPerformed.run();
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to set current draft", ex);
                 }

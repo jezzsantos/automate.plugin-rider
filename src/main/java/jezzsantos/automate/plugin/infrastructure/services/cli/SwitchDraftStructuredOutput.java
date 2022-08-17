@@ -1,9 +1,9 @@
-package jezzsantos.automate.plugin.infrastructure.common.cli;
+package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 
 import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
 
-class CreateDraft {
+class SwitchDraft {
     public String Name;
     public String DraftId;
 
@@ -12,7 +12,8 @@ class CreateDraft {
     public String Version;
 }
 
-public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
+public class SwitchDraftStructuredOutput extends StructuredOutput<SwitchDraft> {
+    @SuppressWarnings("UnusedReturnValue")
     public DraftDefinition getDraft() {
         var values = this.Output.get(0).Values;
         return new DraftDefinition(values.DraftId, values.Name, values.ToolkitId, values.Version, true);

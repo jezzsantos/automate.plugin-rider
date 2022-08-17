@@ -1,11 +1,11 @@
-package jezzsantos.automate.plugin.infrastructure.common;
+package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.google.gson.Gson;
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.*;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
-import jezzsantos.automate.plugin.infrastructure.common.cli.*;
+import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,10 +27,22 @@ public class AutomateCliService implements IAutomateService {
 
     private final List<CliLogEntry> cliLogs = new ArrayList<>();
     private final PropertyChangeSupport cliLogsListeners = new PropertyChangeSupport(this);
+    private final IConfiguration configuration;
 
     public AutomateCliService(@NotNull Project project) {
         this.project = project;
+        this.configuration = project.getService(IConfiguration.class);
         this.cache = new InMemAutomationCache();
+
+        this.configuration.addListener(e -> {
+
+            if (e.getPropertyName().equals("executablePath")) {
+                var path = (String) e.getNewValue();
+                logChangeInExecutablePath(path);
+            }
+        });
+        var executablePath = getExecutablePathSafe(this.configuration.getExecutablePath());
+        logChangeInExecutablePath(executablePath);
     }
 
     @NotNull
@@ -62,7 +74,8 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public AllDefinitions listAllAutomation(@NotNull String executablePath, boolean forceRefresh) {
+    public AllDefinitions listAllAutomation(boolean forceRefresh) {
+        var executablePath = this.configuration.getExecutablePath();
         return cache.ListAll(() -> {
             var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
             if (result.isError()) {
@@ -75,7 +88,8 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<PatternDefinition> listPatterns(@NotNull String executablePath) {
+    public List<PatternDefinition> listPatterns() {
+        var executablePath = this.configuration.getExecutablePath();
         return cache.ListPatterns(() -> {
             var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
             if (result.isError()) {
@@ -89,7 +103,8 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<ToolkitDefinition> listToolkits(@NotNull String executablePath) {
+    public List<ToolkitDefinition> listToolkits() {
+        var executablePath = this.configuration.getExecutablePath();
         return cache.ListToolkits(() -> {
             var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
             if (result.isError()) {
@@ -103,7 +118,8 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public List<DraftDefinition> listDrafts(@NotNull String executablePath) {
+    public List<DraftDefinition> listDrafts() {
+        var executablePath = this.configuration.getExecutablePath();
         return cache.ListDrafts(() -> {
             var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
             if (result.isError()) {
@@ -117,7 +133,8 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public PatternDefinition createPattern(@NotNull String executablePath, @NotNull String name) throws Exception {
+    public PatternDefinition createPattern(@NotNull String name) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
         var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("create", "pattern", name)));
         if (result.isError()) {
             throw new Exception(result.error);
@@ -127,8 +144,22 @@ public class AutomateCliService implements IAutomateService {
         }
     }
 
+    @Nullable
     @Override
-    public void setCurrentPattern(@NotNull String executablePath, @NotNull String id) throws Exception {
+    public PatternDefinition getCurrentPattern() {
+        return this.cache.GetPattern(() ->
+        {
+            var patterns = listPatterns();
+
+            return patterns.stream()
+                    .filter(PatternDefinition::getIsCurrent)
+                    .findFirst().orElse(null);
+        });
+    }
+
+    @Override
+    public void setCurrentPattern(@NotNull String id) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
         var result = runAutomateForStructuredOutput(SwitchPatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("edit", "switch", id)));
         if (result.isError()) {
             throw new Exception(result.error);
@@ -140,23 +171,10 @@ public class AutomateCliService implements IAutomateService {
 
     @Nullable
     @Override
-    public PatternDefinition getCurrentPattern(@NotNull String executablePath) {
-        return this.cache.GetPattern(() ->
-        {
-            var patterns = listPatterns(executablePath);
-
-            return patterns.stream()
-                    .filter(PatternDefinition::getIsCurrent)
-                    .findFirst().orElse(null);
-        });
-    }
-
-    @Nullable
-    @Override
-    public DraftDefinition getCurrentDraft(@NotNull String executablePath) {
+    public DraftDefinition getCurrentDraft() {
         return this.cache.GetDraft(() ->
         {
-            var drafts = listDrafts(executablePath);
+            var drafts = listDrafts();
 
             return drafts.stream()
                     .filter(DraftDefinition::getIsCurrent)
@@ -165,7 +183,8 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @Override
-    public void setCurrentDraft(@NotNull String executablePath, @NotNull String id) throws Exception {
+    public void setCurrentDraft(@NotNull String id) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
         var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, executablePath, new ArrayList<>(List.of("run", "switch", id)));
         if (result.isError()) {
             throw new Exception(result.error);
@@ -177,7 +196,8 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public DraftDefinition createDraft(@NotNull String executablePath, @NotNull String toolkitName, @NotNull String name) throws Exception {
+    public DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
         var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, executablePath, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
         if (result.isError()) {
             throw new Exception(result.error);
@@ -188,7 +208,8 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @Override
-    public void installToolkit(@NotNull String executablePath, @NotNull String location) throws Exception {
+    public void installToolkit(@NotNull String location) throws Exception {
+        var executablePath = this.configuration.getExecutablePath();
         var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, executablePath, new ArrayList<>(List.of("install", "toolkit", location)));
         if (result.isError()) {
             throw new Exception(result.error);
@@ -233,7 +254,7 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     private CliTextResult runAutomateForTextOutput(@NotNull String executablePath, @NotNull List<String> args) {
-        var path = executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
+        var path = getExecutablePathSafe(executablePath);
 
         try {
             var command = new ArrayList<String>();
@@ -241,13 +262,14 @@ public class AutomateCliService implements IAutomateService {
             command.addAll(args);
             var builder = new ProcessBuilder(command);
             builder.directory(new File(Objects.requireNonNull(project.getBasePath())));
-            AddCliLogEntry(String.format("Command: %s", String.join(" ", builder.command())), CliLogEntryType.Normal);
+            AddCliLogEntry(String.format("Command: %s", String.join(" ", args)), CliLogEntryType.Normal);
 
             var process = builder.start();
             var success = process.waitFor(5, TimeUnit.SECONDS);
             if (!success) {
-                AddCliLogEntry(String.format("Failed to start process: %s", executablePath), CliLogEntryType.Error);
-                return new CliTextResult("CLI failed to execute", "");
+                var error = String.format("Failed to start CLI at: %s", path);
+                AddCliLogEntry(error, CliLogEntryType.Error);
+                return new CliTextResult(error, "");
             }
             var error = "";
             var output = "";
@@ -256,22 +278,28 @@ public class AutomateCliService implements IAutomateService {
                 var errorBytes = errorStream.readAllBytes();
                 errorStream.close();
                 error = new String(errorBytes, StandardCharsets.UTF_8).trim();
-                AddCliLogEntry(String.format("Failed to execute command: %s", error), CliLogEntryType.Error);
+                AddCliLogEntry(String.format("Command failed with error: %s", error), CliLogEntryType.Error);
             } else {
                 var outputStream = process.getInputStream();
                 var outputBytes = outputStream.readAllBytes();
                 outputStream.close();
                 output = new String(outputBytes, StandardCharsets.UTF_8).trim();
-                AddCliLogEntry("Executed command successfully", CliLogEntryType.Success);
+                AddCliLogEntry("Command executed successfully", CliLogEntryType.Success);
             }
 
             process.destroy();
             return new CliTextResult(error, output);
 
         } catch (InterruptedException | IOException e) {
-            AddCliLogEntry(String.format("Failed to to run process. Error was: %s", e.getMessage()), CliLogEntryType.Error);
-            return new CliTextResult(String.format("CLI failed to execute. Error was: %s", e.getMessage()), "");
+            var error = String.format("Failed to run CLI with error: %s", e.getMessage());
+            AddCliLogEntry(error, CliLogEntryType.Error);
+            return new CliTextResult(error, "");
         }
+    }
+
+    @NotNull
+    private String getExecutablePathSafe(@NotNull String executablePath) {
+        return executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
     }
 
     private void AddCliLogEntry(String text, CliLogEntryType type) {
@@ -283,15 +311,20 @@ public class AutomateCliService implements IAutomateService {
         var newValue = new ArrayList<>();
         newValue.add(entry);
 
-        cliLogsListeners.firePropertyChange("Logs", oldValue, newValue);
+        cliLogsListeners.firePropertyChange("CliLogs", oldValue, newValue);
     }
 
+    private void logChangeInExecutablePath(String path) {
+        var entry = new CliLogEntry(String.format("Using CLI at: %s", path), CliLogEntryType.Normal);
+        cliLogs.add(entry);
+    }
 
     private Boolean IsWindowsOs() {
         return System.getProperty("os.name").startsWith("Windows");
     }
 
     private static class CliStructuredResult<TResult> {
+
         private final String error;
         private final TResult output;
 
@@ -306,6 +339,7 @@ public class AutomateCliService implements IAutomateService {
     }
 
     private static class CliTextResult {
+
         private final String error;
         private final String output;
 

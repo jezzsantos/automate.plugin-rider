@@ -14,6 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class PatternsListToolbarAction extends ComboBoxAction {
+    private final Runnable onPerformed;
+
+    public PatternsListToolbarAction(@NotNull Runnable onPerformed) {
+        super();
+        this.onPerformed = onPerformed;
+    }
 
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
@@ -53,10 +59,10 @@ public class PatternsListToolbarAction extends ComboBoxAction {
                 var isNoCurrentPattern = patterns.stream()
                         .noneMatch(PatternDefinition::getIsCurrent);
                 if (isNoCurrentPattern) {
-                    actions.add(new PatternListItemAction());
+                    actions.add(new PatternListItemAction(onPerformed));
                 }
                 for (var pattern : patterns) {
-                    actions.add(new PatternListItemAction(pattern.getName(), pattern.getId()));
+                    actions.add(new PatternListItemAction(onPerformed, pattern.getName(), pattern.getId()));
                 }
             }
         }

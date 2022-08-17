@@ -16,10 +16,10 @@
     <extensions defaultExtensionNs="com.intellij">
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IConfiguration"
-                serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.PluginConfiguration"/>
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.PluginConfiguration"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IAutomateService"
-                serviceImplementation="jezzsantos.automate.plugin.infrastructure.common.AutomateCliService"/>
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliService"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.IAutomateApplication"
                 serviceImplementation="jezzsantos.automate.plugin.application.AutomateApplication"/>

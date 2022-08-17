@@ -5,20 +5,16 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternDialog;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
 public class AddPatternAction extends AnAction {
+    private final Runnable onPerformed;
 
-    private final Consumer<PatternDefinition> onSelect;
-
-    public AddPatternAction(Consumer<PatternDefinition> onSelect) {
+    public AddPatternAction(@NotNull Runnable onPerformed) {
         super();
-        this.onSelect = onSelect;
+        this.onPerformed = onPerformed;
     }
 
     @SuppressWarnings("DialogTitleCapitalization")
@@ -52,13 +48,12 @@ public class AddPatternAction extends AnAction {
             var dialog = new NewPatternDialog(project, patterns);
             if (dialog.showAndGet()) {
                 var name = dialog.Name;
-                PatternDefinition pattern;
                 try {
-                    pattern = application.createPattern(name);
+                    application.createPattern(name);
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to add new pattern", ex);
                 }
-                onSelect.accept(pattern);
+                onPerformed.run();
             }
         }
     }

@@ -14,6 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class DraftsListToolbarAction extends ComboBoxAction {
+    private final Runnable onPerformed;
+
+    public DraftsListToolbarAction(@NotNull Runnable onPerformed) {
+        super();
+        this.onPerformed = onPerformed;
+    }
 
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
@@ -51,10 +57,10 @@ public class DraftsListToolbarAction extends ComboBoxAction {
                 var isNoCurrentDraft = drafts.stream()
                         .noneMatch(DraftDefinition::getIsCurrent);
                 if (isNoCurrentDraft) {
-                    actions.add(new DraftListItemAction());
+                    actions.add(new DraftListItemAction(onPerformed));
                 }
                 for (var draft : drafts) {
-                    actions.add(new DraftListItemAction(draft.getName(), draft.getId()));
+                    actions.add(new DraftListItemAction(onPerformed, draft.getName(), draft.getId()));
                 }
             }
         }

@@ -10,6 +10,12 @@ import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialog
 import org.jetbrains.annotations.NotNull;
 
 public class InstallToolkitToolbarAction extends AnAction {
+    private final Runnable onPerformed;
+
+    public InstallToolkitToolbarAction(@NotNull Runnable onPerformed) {
+        super();
+        this.onPerformed = onPerformed;
+    }
 
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
@@ -41,6 +47,7 @@ public class InstallToolkitToolbarAction extends AnAction {
                 var location = dialog.ToolkitLocation;
                 try {
                     application.installToolkit(location);
+                    onPerformed.run();
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to install toolkit", ex);
                 }

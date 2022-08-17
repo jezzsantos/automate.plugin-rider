@@ -6,17 +6,14 @@ import icons.RiderIcons;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 public class ToggleAuthoringModeToolbarAction extends ToggleAction {
-    private final Consumer<Boolean> onSelect;
+    private final Runnable onPerformed;
     private boolean selected;
 
-    public ToggleAuthoringModeToolbarAction(@Nullable Consumer<Boolean> onSelect) {
+    public ToggleAuthoringModeToolbarAction(@NotNull Runnable onPerformed) {
         super();
-        this.onSelect = onSelect;
+        this.onPerformed = onPerformed;
     }
 
     @Override
@@ -49,10 +46,7 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
             var application = IAutomateApplication.getInstance(project);
             application.setAuthoringMode(this.selected);
         }
-
-        if (this.onSelect != null) {
-            this.onSelect.accept(this.selected);
-        }
+        this.onPerformed.run();
     }
 
     @SuppressWarnings("DialogTitleCapitalization")

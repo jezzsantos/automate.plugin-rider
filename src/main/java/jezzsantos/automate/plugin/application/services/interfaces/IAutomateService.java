@@ -24,34 +24,34 @@ public interface IAutomateService {
     String tryGetExecutableVersion(@NotNull String executablePath);
 
     @NotNull
-    AllDefinitions listAllAutomation(@NotNull String executablePath, boolean forceRefresh);
+    AllDefinitions listAllAutomation(boolean forceRefresh);
 
     @NotNull
-    List<PatternDefinition> listPatterns(@NotNull String executablePath);
+    List<PatternDefinition> listPatterns();
 
     @NotNull
-    List<ToolkitDefinition> listToolkits(@NotNull String executablePath);
+    List<ToolkitDefinition> listToolkits();
 
     @NotNull
-    List<DraftDefinition> listDrafts(@NotNull String executablePath);
+    List<DraftDefinition> listDrafts();
 
     @NotNull
-    PatternDefinition createPattern(@NotNull String executablePath, @NotNull String name) throws Exception;
-
-    void setCurrentPattern(@NotNull String executablePath, @NotNull String id) throws Exception;
+    PatternDefinition createPattern(@NotNull String name) throws Exception;
 
     @Nullable
-    PatternDefinition getCurrentPattern(@NotNull String executablePath);
+    PatternDefinition getCurrentPattern();
+
+    void setCurrentPattern(@NotNull String id) throws Exception;
 
     @Nullable
-    DraftDefinition getCurrentDraft(@NotNull String executablePath);
+    DraftDefinition getCurrentDraft();
 
-    void setCurrentDraft(@NotNull String executablePath, @NotNull String id) throws Exception;
+    void setCurrentDraft(@NotNull String id) throws Exception;
 
     @NotNull
-    DraftDefinition createDraft(@NotNull String executablePath, @NotNull String toolkitName, @NotNull String name) throws Exception;
+    DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
-    void installToolkit(@NotNull String executablePath, @NotNull String location) throws Exception;
+    void installToolkit(@NotNull String location) throws Exception;
 
     void addCliLogListener(@NotNull PropertyChangeListener listener);
 

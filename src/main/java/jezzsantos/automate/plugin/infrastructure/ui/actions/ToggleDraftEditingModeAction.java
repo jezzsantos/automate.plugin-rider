@@ -9,7 +9,13 @@ import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 public class ToggleDraftEditingModeAction extends ToggleAction {
+    private final Runnable onPerformed;
     private boolean selected;
+
+    public ToggleDraftEditingModeAction(@NotNull Runnable onPerformed) {
+        super();
+        this.onPerformed = onPerformed;
+    }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
@@ -41,6 +47,7 @@ public class ToggleDraftEditingModeAction extends ToggleAction {
             if (selected) {
                 var application = IAutomateApplication.getInstance(project);
                 application.setEditingMode(EditingMode.Drafts);
+                onPerformed.run();
             }
         }
     }
