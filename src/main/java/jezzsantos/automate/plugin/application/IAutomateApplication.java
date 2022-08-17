@@ -63,10 +63,16 @@ public interface IAutomateApplication {
     @NotNull
     AllDefinitions listAllAutomation(boolean forceRefresh);
 
-    void addPropertyChangedListener(@NotNull PropertyChangeListener listener);
+    void addPropertyListener(@NotNull PropertyChangeListener listener);
 
-    void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
+    void removePropertyListener(@NotNull PropertyChangeListener listener);
+
+    void addConfigurationListener(@NotNull PropertyChangeListener listener);
+
+    void removeConfigurationListener(@NotNull PropertyChangeListener listener);
 
     @NotNull
-    List<CliLogEntry> getCliLog();
+    List<CliLogEntry> getCliLogEntries();
+
+    boolean getViewCliLog();
 }

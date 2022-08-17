@@ -125,18 +125,32 @@ public class AutomateApplication implements IAutomateApplication {
     }
 
     @Override
-    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
+    public void addPropertyListener(@NotNull PropertyChangeListener listener) {
         this.automateService.addPropertyChangedListener(listener);
     }
 
     @Override
-    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
+    public void removePropertyListener(@NotNull PropertyChangeListener listener) {
         this.automateService.removePropertyChangedListener(listener);
+    }
+
+    @Override
+    public void addConfigurationListener(@NotNull PropertyChangeListener listener) {
+        this.configuration.addListener(listener);
+    }
+
+    @Override
+    public void removeConfigurationListener(@NotNull PropertyChangeListener listener) {
+        this.configuration.removeListener(listener);
     }
 
     @NotNull
     @Override
-    public List<CliLogEntry> getCliLog() {
+    public List<CliLogEntry> getCliLogEntries() {
         return this.automateService.getCliLog();
+    }
+
+    public boolean getViewCliLog() {
+        return this.configuration.getViewCliLog();
     }
 }

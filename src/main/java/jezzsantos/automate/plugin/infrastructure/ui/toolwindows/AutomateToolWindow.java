@@ -16,7 +16,6 @@ import com.intellij.util.messages.Topic;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
-import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory;
@@ -45,8 +44,6 @@ public class AutomateToolWindow implements Disposable {
     @NotNull
     private final IAutomateApplication application;
     @NotNull
-    private final IConfiguration configuration;
-    @NotNull
     private final MessageBus messageBus;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
@@ -57,7 +54,6 @@ public class AutomateToolWindow implements Disposable {
     public AutomateToolWindow(
             @NotNull Project project, AutomateToolWindowFactory factory) {
         this.project = project;
-        this.configuration = IConfiguration.getInstance(this.project);
         this.application = IAutomateApplication.getInstance(this.project);
         this.messageBus = project.getMessageBus();
 
@@ -75,11 +71,9 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void init() {
-        initCliLog();
         initTree();
         setupActionNotifications();
         setupCliLogs();
-
     }
 
     @NotNull
@@ -110,21 +104,40 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void setupCliLogs() {
-        this.configuration.addListener(configurationChangedListener());
-        displayCliLogs();
+        this.application.addConfigurationListener(configurationChangedListener());
+        this.application.addPropertyListener(cliLogUpdatedListener());
+        displayCliLogPane(this.application.getViewCliLog());
+
+        var entries = this.application.getCliLogEntries();
+        for (var entry : entries) {
+            displayLogEntry(entry);
+        }
+        cliLog.setFont(EditorFontCache.getInstance().getFont(EditorFontType.CONSOLE_PLAIN));
     }
 
     @NotNull
     private PropertyChangeListener configurationChangedListener() {
-        return evt -> {
-            if (evt.getPropertyName().equals("ViewCliLog")) {
-                displayCliLogs();
+        return event -> {
+            if (event.getPropertyName().equalsIgnoreCase("ViewCliLog")) {
+                displayCliLogPane((boolean) event.getNewValue());
             }
         };
     }
 
-    private void displayCliLogs() {
-        var isVisible = this.configuration.getViewCliLog();
+    @SuppressWarnings("unchecked")
+    @NotNull
+    private PropertyChangeListener cliLogUpdatedListener() {
+        return event -> {
+            if (event.getPropertyName().equalsIgnoreCase("CliLogs")) {
+                var latestEntries = ((List<CliLogEntry>) event.getNewValue());
+                for (var entry : latestEntries) {
+                    displayLogEntry(entry);
+                }
+            }
+        };
+    }
+
+    private void displayCliLogPane(boolean isVisible) {
         windowSplit.getBottomComponent().setVisible(isVisible);
         windowSplit.setEnabled(isVisible);
         var splitter = (BasicSplitPaneUI) windowSplit.getUI();
@@ -151,27 +164,6 @@ public class AutomateToolWindow implements Disposable {
         var root = ((DefaultMutableTreeNode) patternsTree.getModel().getRoot());
         root.setUserObject(new DefaultMutableTreeNode(AutomateBundle.message("toolWindow.RootNode.Title")));
         this.refreshTree();
-    }
-
-    private void initCliLog() {
-        this.application.addPropertyChangedListener(cliLogUpdatedListener());
-
-        var log = this.application.getCliLog();
-        for (var entry : log) {
-            displayLogEntry(entry);
-        }
-        cliLog.setFont(EditorFontCache.getInstance().getFont(EditorFontType.CONSOLE_PLAIN));
-    }
-
-    @SuppressWarnings("unchecked")
-    @NotNull
-    private PropertyChangeListener cliLogUpdatedListener() {
-        return e -> {
-            if (e.getPropertyName().equals("CliLogs")) {
-                var entries = (List<CliLogEntry>) e.getNewValue();
-                displayLogEntry(entries.get(0));
-            }
-        };
     }
 
     private void displayLogEntry(CliLogEntry entry) {
@@ -201,8 +193,8 @@ public class AutomateToolWindow implements Disposable {
 
     @Override
     public void dispose() {
-        this.configuration.removeListener(configurationChangedListener());
-        this.application.removePropertyChangedListener(cliLogUpdatedListener());
+        this.application.removeConfigurationListener(configurationChangedListener());
+        this.application.removePropertyListener(cliLogUpdatedListener());
     }
 }
 
