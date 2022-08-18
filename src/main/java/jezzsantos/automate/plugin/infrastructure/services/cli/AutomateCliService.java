@@ -80,7 +80,8 @@ public class AutomateCliService implements IAutomateService {
             var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "all")));
             if (result.isError()) {
                 return new AllDefinitions();
-            } else {
+            }
+            else {
                 return result.output.getAll();
             }
         }, forceRefresh);
@@ -94,9 +95,12 @@ public class AutomateCliService implements IAutomateService {
             var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "patterns")));
             if (result.isError()) {
                 return new ArrayList<>();
-            } else {
+            }
+            else {
                 var patterns = result.output.getPatterns();
-                return patterns != null ? patterns : new ArrayList<>();
+                return patterns != null
+                        ? patterns
+                        : new ArrayList<>();
             }
         });
     }
@@ -109,9 +113,12 @@ public class AutomateCliService implements IAutomateService {
             var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "toolkits")));
             if (result.isError()) {
                 return new ArrayList<>();
-            } else {
+            }
+            else {
                 var toolkits = result.output.getToolkits();
-                return toolkits != null ? toolkits : new ArrayList<>();
+                return toolkits != null
+                        ? toolkits
+                        : new ArrayList<>();
             }
         });
     }
@@ -124,9 +131,12 @@ public class AutomateCliService implements IAutomateService {
             var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, executablePath, new ArrayList<>(List.of("list", "drafts")));
             if (result.isError()) {
                 return new ArrayList<>();
-            } else {
+            }
+            else {
                 var drafts = result.output.getDrafts();
-                return drafts != null ? drafts : new ArrayList<>();
+                return drafts != null
+                        ? drafts
+                        : new ArrayList<>();
             }
         });
     }
@@ -138,7 +148,8 @@ public class AutomateCliService implements IAutomateService {
         var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("create", "pattern", name)));
         if (result.isError()) {
             throw new Exception(result.error);
-        } else {
+        }
+        else {
             cache.invalidatePatternList();
             return result.output.getPattern();
         }
@@ -147,13 +158,10 @@ public class AutomateCliService implements IAutomateService {
     @Nullable
     @Override
     public PatternDefinition getCurrentPattern() {
-        return this.cache.GetPattern(() ->
-        {
+        return this.cache.GetPattern(() -> {
             var patterns = listPatterns();
 
-            return patterns.stream()
-                    .filter(PatternDefinition::getIsCurrent)
-                    .findFirst().orElse(null);
+            return patterns.stream().filter(PatternDefinition::getIsCurrent).findFirst().orElse(null);
         });
     }
 
@@ -163,7 +171,8 @@ public class AutomateCliService implements IAutomateService {
         var result = runAutomateForStructuredOutput(SwitchPatternStructuredOutput.class, executablePath, new ArrayList<>(List.of("edit", "switch", id)));
         if (result.isError()) {
             throw new Exception(result.error);
-        } else {
+        }
+        else {
             cache.invalidatePatternList();
             result.output.getPattern();
         }
@@ -172,13 +181,10 @@ public class AutomateCliService implements IAutomateService {
     @Nullable
     @Override
     public DraftDefinition getCurrentDraft() {
-        return this.cache.GetDraft(() ->
-        {
+        return this.cache.GetDraft(() -> {
             var drafts = listDrafts();
 
-            return drafts.stream()
-                    .filter(DraftDefinition::getIsCurrent)
-                    .findFirst().orElse(null);
+            return drafts.stream().filter(DraftDefinition::getIsCurrent).findFirst().orElse(null);
         });
     }
 
@@ -188,7 +194,8 @@ public class AutomateCliService implements IAutomateService {
         var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, executablePath, new ArrayList<>(List.of("run", "switch", id)));
         if (result.isError()) {
             throw new Exception(result.error);
-        } else {
+        }
+        else {
             cache.invalidateDraftList();
             result.output.getDraft();
         }
@@ -201,7 +208,8 @@ public class AutomateCliService implements IAutomateService {
         var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, executablePath, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
         if (result.isError()) {
             throw new Exception(result.error);
-        } else {
+        }
+        else {
             cache.invalidateDraftList();
             return result.output.getDraft();
         }
@@ -251,7 +259,6 @@ public class AutomateCliService implements IAutomateService {
         return new CliStructuredResult<>("", output);
     }
 
-
     @NotNull
     private CliTextResult runAutomateForTextOutput(@NotNull String executablePath, @NotNull List<String> args) {
         var path = getExecutablePathSafe(executablePath);
@@ -279,7 +286,8 @@ public class AutomateCliService implements IAutomateService {
                 errorStream.close();
                 error = new String(errorBytes, StandardCharsets.UTF_8).trim();
                 AddCliLogEntry(String.format("Command failed with error: %s", error), CliLogEntryType.Error);
-            } else {
+            }
+            else {
                 var outputStream = process.getInputStream();
                 var outputBytes = outputStream.readAllBytes();
                 outputStream.close();
@@ -299,7 +307,9 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     private String getExecutablePathSafe(@NotNull String executablePath) {
-        return executablePath.isEmpty() ? getDefaultInstallLocation() : executablePath;
+        return executablePath.isEmpty()
+                ? getDefaultInstallLocation()
+                : executablePath;
     }
 
     private void AddCliLogEntry(String text, CliLogEntryType type) {

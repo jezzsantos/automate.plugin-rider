@@ -37,15 +37,8 @@ public class ProjectSettingsComponent {
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
 
-        minPanel = FormBuilder.createFormBuilder()
-                .addComponent(authoringMode, 1)
-                .addComponent(viewCliLog, 1)
-                .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false)
-                .addComponentToRightColumn(testPathToAutomateResult)
-                .addComponentFillVertically(new JPanel(), 0)
-                .getPanel();
+        minPanel = FormBuilder.createFormBuilder().addComponent(authoringMode, 1).addComponent(viewCliLog, 1).addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false).addComponentToRightColumn(testPathToAutomateResult).addComponentFillVertically(new JPanel(), 0).getPanel();
     }
-
 
     public JPanel getPanel() {
         return minPanel;
@@ -86,7 +79,8 @@ public class ProjectSettingsComponent {
         if (version == null) {
             testPathToAutomateResult.setForeground(DarculaColors.RED);
             testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Invalid.Message", AutomateConstants.ExecutableName));
-        } else {
+        }
+        else {
             testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
             testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Success.Message", AutomateConstants.ExecutableName, version));
         }

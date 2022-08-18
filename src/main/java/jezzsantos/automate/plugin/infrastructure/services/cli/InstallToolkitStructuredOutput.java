@@ -1,6 +1,5 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-
 class InstallToolkit {
     public String Name;
     public String Version;

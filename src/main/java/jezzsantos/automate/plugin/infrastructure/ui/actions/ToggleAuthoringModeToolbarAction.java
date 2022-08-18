@@ -55,7 +55,9 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
-        presentation.setIcon(this.selected ? RiderIcons.AltEnter.MenuToggleOn : RiderIcons.AltEnter.MenuToggleOff);
+        presentation.setIcon(this.selected
+                                     ? RiderIcons.AltEnter.MenuToggleOn
+                                     : RiderIcons.AltEnter.MenuToggleOff);
 
         var project = e.getProject();
         if (project != null) {

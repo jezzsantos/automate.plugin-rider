@@ -21,7 +21,6 @@ public class AutomateBundle extends DynamicBundle {
         return INSTANCE.getMessage(key, params);
     }
 
-
     @NotNull
     public static Supplier<String> messagePointer(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
         return INSTANCE.getLazyMessage(key, params);

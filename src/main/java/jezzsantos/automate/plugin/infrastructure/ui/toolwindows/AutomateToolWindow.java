@@ -51,8 +51,7 @@ public class AutomateToolWindow implements Disposable {
     private JTextPane cliLog;
     private JSplitPane windowSplit;
 
-    public AutomateToolWindow(
-            @NotNull Project project, AutomateToolWindowFactory factory) {
+    public AutomateToolWindow(@NotNull Project project, AutomateToolWindowFactory factory) {
         this.project = project;
         this.application = IAutomateApplication.getInstance(this.project);
         this.messageBus = project.getMessageBus();
@@ -63,6 +62,12 @@ public class AutomateToolWindow implements Disposable {
     @NotNull
     public JPanel getContent() {
         return mainPanel;
+    }
+
+    @Override
+    public void dispose() {
+        this.application.removeConfigurationListener(configurationChangedListener());
+        this.application.removePropertyListener(cliLogUpdatedListener());
     }
 
     private void createUIComponents() {
@@ -158,8 +163,7 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void initTree() {
-        patternsTree.getEmptyText()
-                .setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
+        patternsTree.getEmptyText().setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
 
         var root = ((DefaultMutableTreeNode) patternsTree.getModel().getRoot());
         root.setUserObject(new DefaultMutableTreeNode(AutomateBundle.message("toolWindow.RootNode.Title")));
@@ -169,7 +173,9 @@ public class AutomateToolWindow implements Disposable {
     private void displayLogEntry(CliLogEntry entry) {
         var attributes = new SimpleAttributeSet();
         if (entry.Type != CliLogEntryType.Normal) {
-            StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.Error ? Colors.DARK_RED : Colors.DARK_GREEN);
+            StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.Error
+                    ? Colors.DARK_RED
+                    : Colors.DARK_GREEN);
             StyleConstants.setBold(attributes, entry.Type == CliLogEntryType.Error);
         }
         var text = String.format("%s%s", entry.Text, System.lineSeparator());
@@ -189,12 +195,6 @@ public class AutomateToolWindow implements Disposable {
 
         model.reload();
         patternsTree.expandRow(0);
-    }
-
-    @Override
-    public void dispose() {
-        this.application.removeConfigurationListener(configurationChangedListener());
-        this.application.removePropertyListener(cliLogUpdatedListener());
     }
 }
 

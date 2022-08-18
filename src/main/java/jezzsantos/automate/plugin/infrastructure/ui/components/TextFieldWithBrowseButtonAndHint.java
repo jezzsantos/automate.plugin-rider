@@ -21,7 +21,8 @@ public class TextFieldWithBrowseButtonAndHint extends TextFieldWithBrowseButton 
         var textField = this.getTextField();
         if (textField.hasFocus()) {
             textField.paint(g);
-        } else {
+        }
+        else {
             var currentText = textField.getText();
             if (currentText.isEmpty()) {
                 int height = getHeight();

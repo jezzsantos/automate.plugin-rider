@@ -37,7 +37,9 @@ public class DraftListItemAction extends AnAction {
             var application = IAutomateApplication.getInstance(project);
             var currentDraft = application.getCurrentDraft();
             var isCurrentDraft = currentDraft != null && currentDraft.getId().equals(this.id);
-            presentation.setIcon(isCurrentDraft ? AllIcons.Actions.Checked : null);
+            presentation.setIcon(isCurrentDraft
+                                         ? AllIcons.Actions.Checked
+                                         : null);
             presentation.setEnabledAndVisible(true);
         }
     }

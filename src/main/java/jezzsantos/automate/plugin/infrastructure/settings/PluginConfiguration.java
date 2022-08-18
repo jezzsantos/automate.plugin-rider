@@ -15,7 +15,6 @@ public class PluginConfiguration implements IConfiguration {
     private final ProjectSettingsState settings;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-
     public PluginConfiguration(@NotNull Project project) {
 
         this.settings = ProjectSettingsState.getInstance(project);

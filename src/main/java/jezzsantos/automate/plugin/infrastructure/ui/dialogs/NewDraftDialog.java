@@ -35,7 +35,8 @@ public class NewDraftDialog extends DialogWrapper {
             var label = new JLabel();
             if (value == null) {
                 label.setText(AutomateBundle.message("dialog.NewDraft.NoToolkits.Title"));
-            } else {
+            }
+            else {
                 label.setText(value.getName());
             }
 
@@ -47,13 +48,13 @@ public class NewDraftDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
-        return contents;
+    public @Nullable JComponent getPreferredFocusedComponent() {
+        return toolkits;
     }
 
     @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-        return toolkits;
+    protected @Nullable JComponent createCenterPanel() {
+        return contents;
     }
 
     @Override
@@ -67,8 +68,7 @@ public class NewDraftDialog extends DialogWrapper {
         if (!text.matches(AutomateConstants.DraftNameRegex)) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.NameValidation.NotMatch"));
         }
-        var existing = this.drafts.stream()
-                .anyMatch(draft -> draft.getName().equalsIgnoreCase(text));
+        var existing = this.drafts.stream().anyMatch(draft -> draft.getName().equalsIgnoreCase(text));
         if (existing) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.NameValidation.Exists"));
         }

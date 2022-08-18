@@ -10,7 +10,9 @@ public class EditingModePropertyConverter extends Converter<Property<EditingMode
     @Override
     public @Nullable Property<EditingMode> fromString(@NotNull String s) {
 
-        return new Property<>(s.equals(EditingMode.Drafts.toString()) ? EditingMode.Drafts : EditingMode.Patterns);
+        return new Property<>(s.equals(EditingMode.Drafts.toString())
+                                      ? EditingMode.Drafts
+                                      : EditingMode.Patterns);
     }
 
     @Override

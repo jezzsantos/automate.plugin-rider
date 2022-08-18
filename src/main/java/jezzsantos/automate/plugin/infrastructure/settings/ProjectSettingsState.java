@@ -17,10 +17,7 @@ import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@State(
-        name = "jezzsantos.automate.infrastructure.settings.ProjectSettingsState",
-        storages = @Storage("automate.xml")
-)
+@State(name = "jezzsantos.automate.infrastructure.settings.ProjectSettingsState", storages = @Storage("automate.xml"))
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
@@ -52,6 +49,11 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
         registerAllPropertyToIncrementTrackerOnChanges(state);
     }
 
+    @Override
+    public long getStateModificationCount() {
+        return this.tracker.getModificationCount();
+    }
+
     private void registerAllPropertyToIncrementTrackerOnChanges(@NotNull ProjectSettingsState state) {
         incrementTrackerWhenPropertyChanges(state.authoringMode);
         incrementTrackerWhenPropertyChanges(state.editingMode);
@@ -64,10 +66,5 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
             this.tracker.incModificationCount();
             return Unit.INSTANCE;
         });
-    }
-
-    @Override
-    public long getStateModificationCount() {
-        return this.tracker.getModificationCount();
     }
 }

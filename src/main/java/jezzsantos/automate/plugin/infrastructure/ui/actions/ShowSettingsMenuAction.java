@@ -28,7 +28,8 @@ public class ShowSettingsMenuAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         var project = e.getProject();
-        if (project != null)
+        if (project != null) {
             ShowSettingsUtil.getInstance().showSettingsDialog(project, ProjectSettingsConfigurable.class);
+        }
     }
 }

@@ -31,12 +31,17 @@ public class InstallToolkitDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
+    public @Nullable JComponent getPreferredFocusedComponent() {
         return contents;
     }
 
+    private void createUIComponents() {
+        this.location = new TextFieldWithBrowseButtonAndHint();
+        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Title", AutomateConstants.ToolkitFileExtension));
+    }
+
     @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
+    protected @Nullable JComponent createCenterPanel() {
         return contents;
     }
 
@@ -59,10 +64,5 @@ public class InstallToolkitDialog extends DialogWrapper {
     protected void doOKAction() {
         super.doOKAction();
         ToolkitLocation = this.location.getText();
-    }
-
-    private void createUIComponents() {
-        this.location = new TextFieldWithBrowseButtonAndHint();
-        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Title", AutomateConstants.ToolkitFileExtension));
     }
 }

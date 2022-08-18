@@ -29,13 +29,13 @@ public class NewPatternDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
-        return contents;
+    public @Nullable JComponent getPreferredFocusedComponent() {
+        return name;
     }
 
     @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-        return name;
+    protected @Nullable JComponent createCenterPanel() {
+        return contents;
     }
 
     @Override
@@ -44,8 +44,7 @@ public class NewPatternDialog extends DialogWrapper {
         if (!text.matches(AutomateConstants.PatternNameRegex)) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch"));
         }
-        var existing = this.patterns.stream()
-                .anyMatch(pattern -> pattern.getName().equalsIgnoreCase(text));
+        var existing = this.patterns.stream().anyMatch(pattern -> pattern.getName().equalsIgnoreCase(text));
         if (existing) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists"));
         }

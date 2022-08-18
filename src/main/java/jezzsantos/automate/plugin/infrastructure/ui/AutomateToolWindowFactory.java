@@ -40,7 +40,8 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
                     }
                 }
             }
-        } else {
+        }
+        else {
             if (automation.getToolkits().isEmpty()) {
                 if (application.getEditingMode() != EditingMode.Patterns) {
                     application.setEditingMode(EditingMode.Patterns);

@@ -1,6 +1,5 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-
 import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
 
 class SwitchPattern {
