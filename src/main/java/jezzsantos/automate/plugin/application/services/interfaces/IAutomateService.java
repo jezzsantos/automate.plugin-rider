@@ -1,7 +1,13 @@
 package jezzsantos.automate.plugin.application.services.interfaces;
 
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.interfaces.*;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,42 +20,35 @@ public interface IAutomateService {
         return project.getService(IAutomateService.class);
     }
 
-    @NotNull
-    String getExecutableName();
+    @NotNull String getExecutableName();
 
-    @NotNull
-    String getDefaultInstallLocation();
+    @NotNull String getDefaultInstallLocation();
 
-    @Nullable
-    String tryGetExecutableVersion(@NotNull String executablePath);
+    @Nullable String tryGetExecutableVersion(@NotNull String executablePath);
 
-    @NotNull
-    AllDefinitions listAllAutomation(boolean forceRefresh);
+    @NotNull AllStateLite listAllAutomation(boolean forceRefresh);
 
-    @NotNull
-    List<PatternDefinition> listPatterns();
+    @NotNull List<PatternLite> listPatterns();
 
-    @NotNull
-    List<ToolkitDefinition> listToolkits();
+    @NotNull List<ToolkitLite> listToolkits();
 
-    @NotNull
-    List<DraftDefinition> listDrafts();
+    @NotNull List<DraftLite> listDrafts();
 
-    @NotNull
-    PatternDefinition createPattern(@NotNull String name) throws Exception;
+    @NotNull PatternLite createPattern(@NotNull String name) throws Exception;
 
-    @Nullable
-    PatternDefinition getCurrentPattern();
+    @NotNull PatternDetailed getCurrentPatternDetailed() throws Exception;
+
+    @Nullable PatternLite getCurrentPatternInfo();
 
     void setCurrentPattern(@NotNull String id) throws Exception;
 
-    @Nullable
-    DraftDefinition getCurrentDraft();
+    @NotNull DraftDetailed getCurrentDraftDetailed() throws Exception;
+
+    @Nullable DraftLite getCurrentDraftInfo();
 
     void setCurrentDraft(@NotNull String id) throws Exception;
 
-    @NotNull
-    DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
+    @NotNull DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String location) throws Exception;
 
@@ -57,6 +56,5 @@ public interface IAutomateService {
 
     void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
 
-    @NotNull
-    List<CliLogEntry> getCliLog();
+    @NotNull List<CliLogEntry> getCliLog();
 }

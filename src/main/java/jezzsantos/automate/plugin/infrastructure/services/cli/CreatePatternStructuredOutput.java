@@ -1,6 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 
 class CreatePattern {
     public String Name;
@@ -9,8 +9,8 @@ class CreatePattern {
 }
 
 public class CreatePatternStructuredOutput extends StructuredOutput<CreatePattern> {
-    public PatternDefinition getPattern() {
+    public PatternLite getPattern() {
         var values = this.Output.get(0).Values;
-        return new PatternDefinition(values.PatternId, values.Name, values.Version, true);
+        return new PatternLite(values.PatternId, values.Name, values.Version, true);
     }
 }

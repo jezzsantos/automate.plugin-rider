@@ -35,7 +35,7 @@ public class DraftListItemAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var currentDraft = application.getCurrentDraft();
+            var currentDraft = application.getCurrentDraftInfo();
             var isCurrentDraft = currentDraft != null && currentDraft.getId().equals(this.id);
             presentation.setIcon(isCurrentDraft
                                          ? AllIcons.Actions.Checked

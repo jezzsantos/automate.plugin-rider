@@ -1,25 +1,22 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 class ListAllDefinitions {
-    public List<PatternDefinition> Patterns;
-    public List<ToolkitDefinition> Toolkits;
-    public List<DraftDefinition> Drafts;
+    public List<PatternLite> Patterns;
+    public List<ToolkitLite> Toolkits;
+    public List<DraftLite> Drafts;
 }
 
 public class ListAllDefinitionsStructuredOutput extends StructuredOutput<ListAllDefinitions> {
-    public AllDefinitions getAll() {
-        return new AllDefinitions(
-                Objects.requireNonNullElse(this.Output.get(0).Values.Patterns, new ArrayList<>()),
-                Objects.requireNonNullElse(this.Output.get(1).Values.Toolkits, new ArrayList<>()),
-                Objects.requireNonNullElse(this.Output.get(2).Values.Drafts, new ArrayList<>()));
+    public AllStateLite getAll() {
+        return new AllStateLite(Objects.requireNonNullElse(this.Output.get(0).Values.Patterns, new ArrayList<>()), Objects.requireNonNullElse(this.Output.get(1).Values.Toolkits, new ArrayList<>()), Objects.requireNonNullElse(this.Output.get(2).Values.Drafts, new ArrayList<>()));
     }
 }

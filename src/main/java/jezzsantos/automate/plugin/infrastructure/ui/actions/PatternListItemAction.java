@@ -37,7 +37,7 @@ public class PatternListItemAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var currentPattern = application.getCurrentPattern();
+            var currentPattern = application.getCurrentPatternInfo();
             var isCurrentPattern = currentPattern != null && currentPattern.getId().equals(this.id);
             presentation.setIcon(isCurrentPattern
                                          ? AllIcons.Actions.Checked

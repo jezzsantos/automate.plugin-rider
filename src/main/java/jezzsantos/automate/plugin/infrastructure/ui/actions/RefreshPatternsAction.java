@@ -32,7 +32,7 @@ public class RefreshPatternsAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            application.listAllAutomation(true);
+            application.refreshLocalState();
         }
         onPerformed.run();
     }

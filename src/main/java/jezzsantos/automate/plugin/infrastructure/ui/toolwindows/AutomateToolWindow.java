@@ -16,6 +16,7 @@ import com.intellij.util.messages.Topic;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory;
@@ -26,8 +27,6 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
@@ -97,7 +96,7 @@ public class AutomateToolWindow implements Disposable {
         actions.add(new RefreshPatternsAction(notify));
         actions.addSeparator();
         actions.add(new ShowSettingsToolbarAction());
-        actions.add(new AdvancedOptionsToolbarActionGroup());
+        actions.add(new AdvancedOptionsToolbarActionGroup(notify));
         actions.addSeparator();
         actions.add(new ToggleAuthoringModeToolbarAction(notify));
 
@@ -163,10 +162,6 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void initTree() {
-        patternsTree.getEmptyText().setText(AutomateBundle.message("toolWindow.EmptyPatterns"));
-
-        var root = ((DefaultMutableTreeNode) patternsTree.getModel().getRoot());
-        root.setUserObject(new DefaultMutableTreeNode(AutomateBundle.message("toolWindow.RootNode.Title")));
         this.refreshTree();
     }
 
@@ -184,17 +179,31 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void refreshTree() {
-        var model = (DefaultTreeModel) patternsTree.getModel();
-        var root = ((DefaultMutableTreeNode) model.getRoot());
-        root.removeAllChildren();
-
-        var patterns = this.application.listPatterns();
-        for (var pattern : patterns) {
-            root.add(new DefaultMutableTreeNode(pattern));
+        patternsTree.setModel(null);
+        var editingMode = application.getEditingMode();
+        patternsTree.getEmptyText().setText(editingMode == EditingMode.Patterns
+                                                    ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
+                                                    : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
+        patternsTree.invalidate();
+        if (editingMode == EditingMode.Patterns) {
+            var currentPattern = application.getCurrentPatternInfo();
+            if (currentPattern != null) {
+                var pattern = Try.safely(application::getCurrentPatternDetailed);
+                if (pattern != null) {
+                    patternsTree.setModel(new PatternTreeModel(pattern));
+                }
+            }
+        }
+        else {
+            var currentDraft = application.getCurrentDraftInfo();
+            if (currentDraft != null) {
+                var draft = Try.safely(application::getCurrentDraftDetailed);
+                if (draft != null) {
+                    patternsTree.setModel(new DraftTreeModel(draft));
+                }
+            }
         }
 
-        model.reload();
-        patternsTree.expandRow(0);
     }
 }
 

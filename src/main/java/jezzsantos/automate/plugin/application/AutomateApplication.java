@@ -2,7 +2,14 @@ package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
 import com.jetbrains.rd.util.UsedImplicitly;
-import jezzsantos.automate.plugin.application.interfaces.*;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +32,6 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public String getExecutableName() {
-        return this.automateService.getExecutableName();
-    }
-
-    @NotNull
-    @Override
     public String getDefaultInstallLocation() {
         return this.automateService.getDefaultInstallLocation();
     }
@@ -43,25 +44,25 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public List<PatternDefinition> listPatterns() {
+    public List<PatternLite> listPatterns() {
         return this.automateService.listPatterns();
     }
 
     @NotNull
     @Override
-    public List<ToolkitDefinition> listToolkits() {
+    public List<ToolkitLite> listToolkits() {
         return this.automateService.listToolkits();
     }
 
     @NotNull
     @Override
-    public List<DraftDefinition> listDrafts() {
+    public List<DraftLite> listDrafts() {
         return this.automateService.listDrafts();
     }
 
     @NotNull
     @Override
-    public PatternDefinition createPattern(@NotNull String name) throws Exception {
+    public PatternLite createPattern(@NotNull String name) throws Exception {
         return this.automateService.createPattern(name);
     }
 
@@ -89,10 +90,16 @@ public class AutomateApplication implements IAutomateApplication {
         this.configuration.setEditingMode(mode);
     }
 
+    @NotNull
+    @Override
+    public PatternDetailed getCurrentPatternDetailed() throws Exception {
+        return this.automateService.getCurrentPatternDetailed();
+    }
+
     @Nullable
     @Override
-    public PatternDefinition getCurrentPattern() {
-        return this.automateService.getCurrentPattern();
+    public PatternLite getCurrentPatternInfo() {
+        return this.automateService.getCurrentPatternInfo();
     }
 
     @Override
@@ -100,10 +107,16 @@ public class AutomateApplication implements IAutomateApplication {
         this.automateService.setCurrentPattern(id);
     }
 
+    @NotNull
+    @Override
+    public DraftDetailed getCurrentDraftDetailed() throws Exception {
+        return this.automateService.getCurrentDraftDetailed();
+    }
+
     @Nullable
     @Override
-    public DraftDefinition getCurrentDraft() {
-        return this.automateService.getCurrentDraft();
+    public DraftLite getCurrentDraftInfo() {
+        return this.automateService.getCurrentDraftInfo();
     }
 
     @Override
@@ -113,7 +126,7 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception {
+    public DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception {
         return this.automateService.createDraft(toolkitName, name);
     }
 
@@ -124,8 +137,8 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public AllDefinitions listAllAutomation(boolean forceRefresh) {
-        return this.automateService.listAllAutomation(forceRefresh);
+    public AllStateLite refreshLocalState() {
+        return this.automateService.listAllAutomation(true);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class InstallToolkitDialog extends DialogWrapper {
 
     private void createUIComponents() {
         this.location = new TextFieldWithBrowseButtonAndHint();
-        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Title", AutomateConstants.ToolkitFileExtension));
+        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
     }
 
     @Override
@@ -49,12 +49,12 @@ public class InstallToolkitDialog extends DialogWrapper {
     protected @Nullable ValidationInfo doValidate() {
         var location = this.location.getText();
         if (location.isEmpty()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None", AutomateConstants.ToolkitFileExtension));
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension));
         }
 
         var file = new File(location);
         if (!file.isFile()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile", AutomateConstants.ToolkitFileExtension));
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile.Message", AutomateConstants.ToolkitFileExtension));
         }
 
         return null;

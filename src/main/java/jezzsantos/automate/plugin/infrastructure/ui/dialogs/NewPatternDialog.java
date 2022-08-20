@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,13 +13,13 @@ import java.util.List;
 
 public class NewPatternDialog extends DialogWrapper {
 
-    private final List<PatternDefinition> patterns;
+    private final List<PatternLite> patterns;
     public String Name;
     private JPanel contents;
     private JTextField name;
     private JLabel nameTitle;
 
-    public NewPatternDialog(@Nullable Project project, List<PatternDefinition> patterns) {
+    public NewPatternDialog(@Nullable Project project, List<PatternLite> patterns) {
         super(project);
         this.patterns = patterns;
 
@@ -42,11 +42,11 @@ public class NewPatternDialog extends DialogWrapper {
     protected @Nullable ValidationInfo doValidate() {
         var text = name.getText();
         if (!text.matches(AutomateConstants.PatternNameRegex)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch"));
+            return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch.Message"));
         }
         var existing = this.patterns.stream().anyMatch(pattern -> pattern.getName().equalsIgnoreCase(text));
         if (existing) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists"));
+            return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists.Message"));
         }
 
         return null;

@@ -12,6 +12,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
 
+    private final Runnable onPerformed;
+
+    public AdvancedOptionsToolbarActionGroup(@NotNull Runnable onPerformed) {
+        super();
+        this.onPerformed = onPerformed;
+    }
+
     @Override
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
@@ -29,14 +36,9 @@ public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
         }
     }
 
-    @NotNull
     @Override
-    public AnAction[] getChildren(@Nullable AnActionEvent e) {
-        return new AnAction[]{
-                new ToggleAuthoringModeMenuAction(),
-                new Separator(),
-                new ShowSettingsMenuAction()
-        };
+    public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
+        return new AnAction[]{new ToggleAuthoringModeMenuAction(onPerformed), new Separator(), new ShowSettingsMenuAction()};
     }
 
     @Override

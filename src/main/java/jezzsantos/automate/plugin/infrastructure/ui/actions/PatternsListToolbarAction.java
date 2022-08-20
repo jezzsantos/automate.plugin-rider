@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
 
-        String message = AutomateBundle.message("action.PatternsListToolbarAction.NoSelected.Title");
+        String message = AutomateBundle.message("action.PatternsListToolbarAction.NoSelected.Message");
         boolean isAuthoringMode = false;
         boolean isPatternEditingMode = false;
         var project = e.getProject();
@@ -34,7 +34,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
             var application = IAutomateApplication.getInstance(project);
             isAuthoringMode = application.isAuthoringMode();
             isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
-            var currentPattern = application.getCurrentPattern();
+            var currentPattern = application.getCurrentPatternInfo();
             if (currentPattern != null) {
                 message = currentPattern.getName();
             }
@@ -56,8 +56,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
             var patterns = application.listPatterns();
             var isAnyPatterns = !patterns.isEmpty();
             if (isAnyPatterns) {
-                var isNoCurrentPattern = patterns.stream()
-                        .noneMatch(PatternDefinition::getIsCurrent);
+                var isNoCurrentPattern = patterns.stream().noneMatch(PatternLite::getIsCurrent);
                 if (isNoCurrentPattern) {
                     actions.add(new PatternListItemAction(onPerformed));
                 }

@@ -1,20 +1,24 @@
-package jezzsantos.automate.plugin.application.interfaces;
+package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
-public class ToolkitDefinition {
-    @SerializedName(value = "Id")
+@SuppressWarnings("unused")
+public class PatternDetailed {
+    @SerializedName(value = "PatternId")
     private String id;
-    @SerializedName(value = "ToolkitName")
+    @SerializedName(value = "Name")
     private String name;
     @SerializedName(value = "Version")
     private String version;
+    @SerializedName(value = "Tree")
+    private PatternTree tree;
 
-    public ToolkitDefinition(@NotNull String id, @NotNull String name, @NotNull String version) {
+    public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternTree tree) {
         this.id = id;
         this.name = name;
         this.version = version;
+        this.tree = tree;
     }
 
     @NotNull
@@ -27,13 +31,8 @@ public class ToolkitDefinition {
         return this.id;
     }
 
-    @NotNull
-    public String getVersion() {
-        return this.version;
-    }
-
     @Override
     public String toString() {
-        return String.format("%s  (%s)", this.name, this.id);
+        return String.format("%s  (v.%s)", this.name, this.version);
     }
 }

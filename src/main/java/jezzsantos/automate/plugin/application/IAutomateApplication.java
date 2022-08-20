@@ -1,7 +1,14 @@
 package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.application.interfaces.*;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
+import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,27 +21,18 @@ public interface IAutomateApplication {
         return project.getService(IAutomateApplication.class);
     }
 
-    @NotNull
-    String getExecutableName();
+    @NotNull String getDefaultInstallLocation();
 
-    @NotNull
-    String getDefaultInstallLocation();
+    @Nullable String tryGetExecutableVersion(@NotNull String executablePath);
 
-    @Nullable
-    String tryGetExecutableVersion(@NotNull String executablePath);
+    @NotNull List<PatternLite> listPatterns();
 
-    @NotNull
-    List<PatternDefinition> listPatterns();
+    @NotNull List<ToolkitLite> listToolkits();
 
-    @NotNull
-    List<ToolkitDefinition> listToolkits();
-
-    @NotNull
-    List<DraftDefinition> listDrafts();
+    @NotNull List<DraftLite> listDrafts();
 
     @SuppressWarnings("UnusedReturnValue")
-    @NotNull
-    PatternDefinition createPattern(@NotNull String name) throws Exception;
+    @NotNull PatternLite createPattern(@NotNull String name) throws Exception;
 
     boolean isAuthoringMode();
 
@@ -44,24 +42,24 @@ public interface IAutomateApplication {
 
     void setEditingMode(@NotNull EditingMode mode);
 
-    @Nullable
-    PatternDefinition getCurrentPattern();
+    @NotNull PatternDetailed getCurrentPatternDetailed() throws Exception;
+
+    @Nullable PatternLite getCurrentPatternInfo();
 
     void setCurrentPattern(@NotNull String id) throws Exception;
 
-    @Nullable
-    DraftDefinition getCurrentDraft();
+    @NotNull DraftDetailed getCurrentDraftDetailed() throws Exception;
+
+    @Nullable DraftLite getCurrentDraftInfo();
 
     void setCurrentDraft(@NotNull String id) throws Exception;
 
     @SuppressWarnings("UnusedReturnValue")
-    @NotNull
-    DraftDefinition createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
+    @NotNull DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String location) throws Exception;
 
-    @NotNull
-    AllDefinitions listAllAutomation(boolean forceRefresh);
+    @NotNull AllStateLite refreshLocalState();
 
     void addPropertyListener(@NotNull PropertyChangeListener listener);
 
@@ -71,8 +69,7 @@ public interface IAutomateApplication {
 
     void removeConfigurationListener(@NotNull PropertyChangeListener listener);
 
-    @NotNull
-    List<CliLogEntry> getCliLogEntries();
+    @NotNull List<CliLogEntry> getCliLogEntries();
 
     boolean getViewCliLog();
 }

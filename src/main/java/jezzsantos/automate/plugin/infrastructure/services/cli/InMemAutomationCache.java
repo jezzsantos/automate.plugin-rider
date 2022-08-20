@@ -1,25 +1,32 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 public class InMemAutomationCache implements IAutomationCache {
 
     @Nullable
-    private List<PatternDefinition> patternsList;
+    private List<PatternLite> patternsList;
     @Nullable
-    private List<ToolkitDefinition> toolkitsList;
+    private List<ToolkitLite> toolkitsList;
     @Nullable
-    private List<DraftDefinition> draftsList;
+    private List<DraftLite> draftsList;
+    @Nullable
+    private PatternDetailed currentPattern;
+    @Nullable
+    private DraftDetailed currentDraft;
 
-    public void setAllLists(@NotNull AllDefinitions all) {
+    public void setAllLists(@NotNull AllStateLite all) {
         this.patternsList = all.getPatterns();
         this.toolkitsList = all.getToolkits();
         this.draftsList = all.getDrafts();
@@ -27,9 +34,9 @@ public class InMemAutomationCache implements IAutomationCache {
 
     @NotNull
     @Override
-    public AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh) {
+    public AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh) {
         if (forceRefresh) {
-            invalidateAllLists();
+            invalidateAllLocalState();
         }
 
         if (this.patternsList == null || this.toolkitsList == null || this.draftsList == null) {
@@ -40,12 +47,12 @@ public class InMemAutomationCache implements IAutomationCache {
             return all;
         }
 
-        return new AllDefinitions(this.patternsList, this.toolkitsList, this.draftsList);
+        return new AllStateLite(this.patternsList, this.toolkitsList, this.draftsList);
     }
 
     @NotNull
     @Override
-    public List<PatternDefinition> ListPatterns(@NotNull Supplier<List<PatternDefinition>> supplier) {
+    public List<PatternLite> ListPatterns(@NotNull Supplier<List<PatternLite>> supplier) {
         if (this.patternsList == null) {
             this.patternsList = supplier.get();
         }
@@ -55,7 +62,7 @@ public class InMemAutomationCache implements IAutomationCache {
 
     @NotNull
     @Override
-    public List<ToolkitDefinition> ListToolkits(@NotNull Supplier<List<ToolkitDefinition>> supplier) {
+    public List<ToolkitLite> ListToolkits(@NotNull Supplier<List<ToolkitLite>> supplier) {
         if (this.toolkitsList == null) {
             this.toolkitsList = supplier.get();
         }
@@ -65,7 +72,7 @@ public class InMemAutomationCache implements IAutomationCache {
 
     @NotNull
     @Override
-    public List<DraftDefinition> ListDrafts(@NotNull Supplier<List<DraftDefinition>> supplier) {
+    public List<DraftLite> ListDrafts(@NotNull Supplier<List<DraftLite>> supplier) {
         if (this.draftsList == null) {
             this.draftsList = supplier.get();
         }
@@ -73,37 +80,61 @@ public class InMemAutomationCache implements IAutomationCache {
         return this.draftsList;
     }
 
+    @Nullable
     @Override
-    public void invalidateAllLists() {
-        this.patternsList = null;
-        this.toolkitsList = null;
-        this.draftsList = null;
+    public PatternLite GetPatternInfo(@NotNull Supplier<PatternLite> supplier) {
+        return supplier.get();
     }
 
+    @NotNull
     @Override
-    public void invalidatePatternList() {
-        this.patternsList = null;
-    }
-
-    @Override
-    public void invalidateToolkitList() {
-        this.toolkitsList = null;
-    }
-
-    @Override
-    public void invalidateDraftList() {
-        this.draftsList = null;
+    public PatternDetailed GetPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception {
+        if (this.currentPattern == null) {
+            this.currentPattern = supplier.call();
+        }
+        return this.currentPattern;
     }
 
     @Nullable
     @Override
-    public PatternDefinition GetPattern(@NotNull Supplier<PatternDefinition> supplier) {
+    public DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier) {
         return supplier.get();
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public DraftDefinition GetDraft(@NotNull Supplier<DraftDefinition> supplier) {
-        return supplier.get();
+    public DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception {
+        if (this.currentDraft == null) {
+            this.currentDraft = supplier.call();
+        }
+        return this.currentDraft;
     }
+
+    @Override
+    public void invalidateAllLocalState() {
+        invalidateAllPatterns();
+        invalidateAllToolkits();
+        invalidateAllDrafts();
+    }
+
+    @Override
+    public void invalidateAllPatterns() {
+
+        this.patternsList = null;
+        this.currentPattern = null;
+    }
+
+    @Override
+    public void invalidateAllToolkits() {
+
+        this.toolkitsList = null;
+    }
+
+    @Override
+    public void invalidateAllDrafts() {
+
+        this.draftsList = null;
+        this.currentDraft = null;
+    }
+
 }

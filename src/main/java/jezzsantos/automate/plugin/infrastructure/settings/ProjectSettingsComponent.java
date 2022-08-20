@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent;
 public class ProjectSettingsComponent {
 
     private final JPanel minPanel;
-    private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.AuthoringMode.Label.Title"));
+    private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.AuthoringMode.Label.Message"));
     private final JBCheckBox viewCliLog = new JBCheckBox(AutomateBundle.message("settings.ViewCliLog.Label.Title"));
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
@@ -27,7 +27,7 @@ public class ProjectSettingsComponent {
     public ProjectSettingsComponent(Project project) {
         var application = IAutomateApplication.getInstance(project);
         var defaultInstallLocation = application.getDefaultInstallLocation();
-        pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPath.Title", defaultInstallLocation));
+        pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
         pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
         pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         var testPathToAutomatePanel = new JPanel();
@@ -37,7 +37,13 @@ public class ProjectSettingsComponent {
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
 
-        minPanel = FormBuilder.createFormBuilder().addComponent(authoringMode, 1).addComponent(viewCliLog, 1).addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false).addComponentToRightColumn(testPathToAutomateResult).addComponentFillVertically(new JPanel(), 0).getPanel();
+        minPanel = FormBuilder.createFormBuilder()
+                .addComponent(authoringMode, 1)
+                .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false)
+                .addComponentToRightColumn(testPathToAutomateResult)
+                .addComponent(viewCliLog, 1)
+                .addComponentFillVertically(new JPanel(), 0)
+                .getPanel();
     }
 
     public JPanel getPanel() {
@@ -72,9 +78,8 @@ public class ProjectSettingsComponent {
         pathToAutomateExecutable.setText(value);
     }
 
-    private void onTestPathToAutomate(ActionEvent e, IAutomateApplication automateApplication) {
+    private void onTestPathToAutomate(ActionEvent ignored, IAutomateApplication automateApplication) {
 
-        var executableName = automateApplication.getExecutableName();
         var version = automateApplication.tryGetExecutableVersion(pathToAutomateExecutable.getText());
         if (version == null) {
             testPathToAutomateResult.setForeground(DarculaColors.RED);

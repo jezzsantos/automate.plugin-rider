@@ -8,8 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class ToggleAuthoringModeMenuAction extends AnAction {
 
-    public ToggleAuthoringModeMenuAction() {
+    private final Runnable onPerformed;
+
+    public ToggleAuthoringModeMenuAction(@NotNull Runnable onPerformed) {
         super();
+        this.onPerformed = onPerformed;
     }
 
     @SuppressWarnings("DialogTitleCapitalization")
@@ -30,6 +33,7 @@ public class ToggleAuthoringModeMenuAction extends AnAction {
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             application.setAuthoringMode(true);
+            onPerformed.run();
         }
     }
 }

@@ -1,33 +1,41 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 public interface IAutomationCache {
-    @NotNull AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh);
+    @NotNull AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh);
 
-    @NotNull List<PatternDefinition> ListPatterns(@NotNull Supplier<List<PatternDefinition>> supplier);
+    @NotNull List<PatternLite> ListPatterns(@NotNull Supplier<List<PatternLite>> supplier);
 
-    @NotNull List<ToolkitDefinition> ListToolkits(@NotNull Supplier<List<ToolkitDefinition>> supplier);
+    @NotNull List<ToolkitLite> ListToolkits(@NotNull Supplier<List<ToolkitLite>> supplier);
 
-    @NotNull List<DraftDefinition> ListDrafts(@NotNull Supplier<List<DraftDefinition>> supplier);
+    @NotNull List<DraftLite> ListDrafts(@NotNull Supplier<List<DraftLite>> supplier);
 
-    void invalidateAllLists();
+    void invalidateAllLocalState();
 
-    void invalidatePatternList();
+    void invalidateAllPatterns();
 
-    void invalidateToolkitList();
+    void invalidateAllToolkits();
 
-    void invalidateDraftList();
+    void invalidateAllDrafts();
 
-    @Nullable PatternDefinition GetPattern(@NotNull Supplier<PatternDefinition> supplier);
+    @Nullable PatternLite GetPatternInfo(@NotNull Supplier<PatternLite> supplier);
 
-    @Nullable DraftDefinition GetDraft(@NotNull Supplier<DraftDefinition> supplier);
+    @NotNull PatternDetailed GetPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception;
+
+    @Nullable DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier);
+
+    @NotNull DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception;
+
 }

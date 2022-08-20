@@ -1,9 +1,9 @@
 package jezzsantos.automate.plugin.instrastructure.services.cli;
 
-import jezzsantos.automate.plugin.application.interfaces.AllDefinitions;
-import jezzsantos.automate.plugin.application.interfaces.DraftDefinition;
-import jezzsantos.automate.plugin.application.interfaces.PatternDefinition;
-import jezzsantos.automate.plugin.application.interfaces.ToolkitDefinition;
+import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.infrastructure.services.cli.InMemAutomationCache;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndNotCached_ThenReturnsSupplied() {
-        var allLists = new AllDefinitions();
+        var allLists = new AllStateLite();
 
         var result = this.cache.ListAll(() -> allLists, false);
 
@@ -33,7 +33,7 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndNotCachedAndForced_ThenReturnsSupplied() {
-        var allLists = new AllDefinitions();
+        var allLists = new AllStateLite();
 
         var result = this.cache.ListAll(() -> allLists, true);
 
@@ -42,10 +42,10 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndCachedAndNotForced_ThenFetchesFromCache() {
-        var patterns = new ArrayList<PatternDefinition>();
-        var toolkits = new ArrayList<ToolkitDefinition>();
-        var drafts = new ArrayList<DraftDefinition>();
-        var allLists = new AllDefinitions(patterns, toolkits, drafts);
+        var patterns = new ArrayList<PatternLite>();
+        var toolkits = new ArrayList<ToolkitLite>();
+        var drafts = new ArrayList<DraftLite>();
+        var allLists = new AllStateLite(patterns, toolkits, drafts);
         this.cache.setAllLists(allLists);
 
         var result = this.cache.ListAll(Assertions::fail, false);
@@ -57,10 +57,10 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndCachedAndForced_ThenReturnsSupplied() {
-        var patterns = new ArrayList<PatternDefinition>();
-        var toolkits = new ArrayList<ToolkitDefinition>();
-        var drafts = new ArrayList<DraftDefinition>();
-        var allLists = new AllDefinitions(patterns, toolkits, drafts);
+        var patterns = new ArrayList<PatternLite>();
+        var toolkits = new ArrayList<ToolkitLite>();
+        var drafts = new ArrayList<DraftLite>();
+        var allLists = new AllStateLite(patterns, toolkits, drafts);
         this.cache.setAllLists(allLists);
 
         var result = this.cache.ListAll(() -> allLists, true);
@@ -70,12 +70,12 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndCachedAndNotForcedButInvalidated_ThenReturnsSupplied() {
-        var patterns = new ArrayList<PatternDefinition>();
-        var toolkits = new ArrayList<ToolkitDefinition>();
-        var drafts = new ArrayList<DraftDefinition>();
-        var allLists = new AllDefinitions(patterns, toolkits, drafts);
+        var patterns = new ArrayList<PatternLite>();
+        var toolkits = new ArrayList<ToolkitLite>();
+        var drafts = new ArrayList<DraftLite>();
+        var allLists = new AllStateLite(patterns, toolkits, drafts);
         this.cache.setAllLists(allLists);
-        this.cache.invalidateAllLists();
+        this.cache.invalidateAllLocalState();
 
         var result = this.cache.ListAll(() -> allLists, false);
 
