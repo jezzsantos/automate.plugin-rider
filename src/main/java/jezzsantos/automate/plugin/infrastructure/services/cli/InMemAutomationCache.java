@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-class InMemAutomationCache implements IAutomationCache {
+public class InMemAutomationCache implements IAutomationCache {
 
     @Nullable
     private List<PatternDefinition> patternsList;
@@ -19,6 +19,12 @@ class InMemAutomationCache implements IAutomationCache {
     @Nullable
     private List<DraftDefinition> draftsList;
 
+    public void setAllLists(@NotNull AllDefinitions all) {
+        this.patternsList = all.getPatterns();
+        this.toolkitsList = all.getToolkits();
+        this.draftsList = all.getDrafts();
+    }
+
     @NotNull
     @Override
     public AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh) {
@@ -26,13 +32,12 @@ class InMemAutomationCache implements IAutomationCache {
             invalidateAllLists();
         }
 
-        if (this.patternsList == null
-                || this.toolkitsList == null
-                || this.draftsList == null) {
+        if (this.patternsList == null || this.toolkitsList == null || this.draftsList == null) {
             var all = supplier.get();
             this.patternsList = all.getPatterns();
             this.toolkitsList = all.getToolkits();
             this.draftsList = all.getDrafts();
+            return all;
         }
 
         return new AllDefinitions(this.patternsList, this.toolkitsList, this.draftsList);

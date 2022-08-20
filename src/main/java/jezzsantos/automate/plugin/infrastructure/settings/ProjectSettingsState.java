@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.SimpleModificationTracker;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.OptionTag;
+import com.jetbrains.rd.util.UsedImplicitly;
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
@@ -29,6 +30,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     public final Property<Boolean> viewCliLog = new Property<>(false);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
+    @UsedImplicitly
     public ProjectSettingsState() {
         registerAllPropertyToIncrementTrackerOnChanges(this);
     }

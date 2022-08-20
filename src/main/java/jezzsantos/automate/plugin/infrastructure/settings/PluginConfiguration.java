@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.project.Project;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import kotlin.jvm.internal.Intrinsics;
@@ -15,6 +16,7 @@ public class PluginConfiguration implements IConfiguration {
     private final ProjectSettingsState settings;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
+    @UsedImplicitly
     public PluginConfiguration(@NotNull Project project) {
 
         this.settings = ProjectSettingsState.getInstance(project);

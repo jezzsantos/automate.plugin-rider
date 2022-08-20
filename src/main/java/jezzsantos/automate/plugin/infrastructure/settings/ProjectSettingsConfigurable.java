@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.Nls;
@@ -19,6 +20,7 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     private final IConfiguration configuration;
     private ProjectSettingsComponent settingsComponent;
 
+    @UsedImplicitly
     public ProjectSettingsConfigurable(@NotNull Project project) {
 
         this.project = project;

@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.google.gson.Gson;
 import com.intellij.openapi.project.Project;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.*;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
@@ -10,29 +11,36 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class AutomateCliService implements IAutomateService {
 
     @NotNull
-    private final Project project;
     private final IAutomationCache cache;
-
-    private final List<CliLogEntry> cliLogs = new ArrayList<>();
-    private final PropertyChangeSupport cliLogsListeners = new PropertyChangeSupport(this);
+    @NotNull
     private final IConfiguration configuration;
+    @NotNull
+    private final IOsPlatform platform;
 
+    @NotNull
+    private final IAutomateCliRunner cliRunner;
+
+    @UsedImplicitly
     public AutomateCliService(@NotNull Project project) {
-        this.project = project;
-        this.configuration = project.getService(IConfiguration.class);
-        this.cache = new InMemAutomationCache();
+        this(project.getService(IConfiguration.class), new InMemAutomationCache(), new OsPlatform(project));
+    }
+
+    public AutomateCliService(@NotNull IConfiguration configuration, @NotNull IAutomationCache cache, @NotNull IOsPlatform platform) {
+        this(configuration, cache, platform, new AutomateCliRunner(platform));
+    }
+
+    public AutomateCliService(@NotNull IConfiguration configuration, @NotNull IAutomationCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
+        this.configuration = configuration;
+        this.cache = cache;
+        this.platform = platform;
+        this.cliRunner = runner;
 
         this.configuration.addListener(e -> {
 
@@ -48,7 +56,7 @@ public class AutomateCliService implements IAutomateService {
     @NotNull
     @Override
     public String getExecutableName() {
-        return (IsWindowsOs()
+        return (this.platform.getIsWindowsOs()
                 ? String.format("%s.exe", AutomateConstants.ExecutableName)
                 : AutomateConstants.ExecutableName);
     }
@@ -56,20 +64,18 @@ public class AutomateCliService implements IAutomateService {
     @NotNull
     @Override
     public String getDefaultInstallLocation() {
-        return (IsWindowsOs()
-                ? System.getenv("USERPROFILE") + "\\.dotnet\\tools\\"
-                : System.getProperty("user.home") + "/.dotnet/tools/") + this.getExecutableName();
+        return Paths.get(this.platform.getDotNetInstallationDirectory()).resolve(this.getExecutableName()).toString();
     }
 
     @Nullable
     @Override
     public String tryGetExecutableVersion(@NotNull String executablePath) {
-        var result = runAutomateForTextOutput(executablePath, new ArrayList<>(List.of("--version")));
+        var result = this.cliRunner.execute(getExecutablePathSafe(executablePath), new ArrayList<>(List.of("--version")));
         if (result.isError()) {
             return null;
         }
 
-        return result.output;
+        return result.getOutput();
     }
 
     @NotNull
@@ -227,18 +233,18 @@ public class AutomateCliService implements IAutomateService {
 
     @Override
     public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
-        this.cliLogsListeners.addPropertyChangeListener(listener);
+        this.cliRunner.addLogListener(listener);
     }
 
     @Override
     public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
-        this.cliLogsListeners.removePropertyChangeListener(listener);
+        this.cliRunner.removeLogListener(listener);
     }
 
     @NotNull
     @Override
     public List<CliLogEntry> getCliLog() {
-        return cliLogs;
+        return cliRunner.getCliLogs();
     }
 
     @NotNull
@@ -250,59 +256,13 @@ public class AutomateCliService implements IAutomateService {
         }
 
         var gson = new Gson();
-        var result = runAutomateForTextOutput(executablePath, allArgs);
+        var result = cliRunner.execute(getExecutablePathSafe(executablePath), allArgs);
         if (result.isError()) {
-            return new CliStructuredResult<>(result.error, null);
+            return new CliStructuredResult<>(result.getError(), null);
         }
 
-        var output = gson.fromJson(result.output, outputClass);
+        var output = gson.fromJson(result.getOutput(), outputClass);
         return new CliStructuredResult<>("", output);
-    }
-
-    @NotNull
-    private CliTextResult runAutomateForTextOutput(@NotNull String executablePath, @NotNull List<String> args) {
-        var path = getExecutablePathSafe(executablePath);
-
-        try {
-            var command = new ArrayList<String>();
-            command.add(path);
-            command.addAll(args);
-            var builder = new ProcessBuilder(command);
-            builder.directory(new File(Objects.requireNonNull(project.getBasePath())));
-            AddCliLogEntry(String.format("Command: %s", String.join(" ", args)), CliLogEntryType.Normal);
-
-            var process = builder.start();
-            var success = process.waitFor(5, TimeUnit.SECONDS);
-            if (!success) {
-                var error = String.format("Failed to start CLI at: %s", path);
-                AddCliLogEntry(error, CliLogEntryType.Error);
-                return new CliTextResult(error, "");
-            }
-            var error = "";
-            var output = "";
-            if (process.exitValue() != 0) {
-                var errorStream = process.getErrorStream();
-                var errorBytes = errorStream.readAllBytes();
-                errorStream.close();
-                error = new String(errorBytes, StandardCharsets.UTF_8).trim();
-                AddCliLogEntry(String.format("Command failed with error: %s", error), CliLogEntryType.Error);
-            }
-            else {
-                var outputStream = process.getInputStream();
-                var outputBytes = outputStream.readAllBytes();
-                outputStream.close();
-                output = new String(outputBytes, StandardCharsets.UTF_8).trim();
-                AddCliLogEntry("Command executed successfully", CliLogEntryType.Success);
-            }
-
-            process.destroy();
-            return new CliTextResult(error, output);
-
-        } catch (InterruptedException | IOException e) {
-            var error = String.format("Failed to run CLI with error: %s", e.getMessage());
-            AddCliLogEntry(error, CliLogEntryType.Error);
-            return new CliTextResult(error, "");
-        }
     }
 
     @NotNull
@@ -312,25 +272,9 @@ public class AutomateCliService implements IAutomateService {
                 : executablePath;
     }
 
-    private void AddCliLogEntry(String text, CliLogEntryType type) {
-        var oldValue = new ArrayList<>(cliLogs);
-
-        var entry = new CliLogEntry(text, type);
-        cliLogs.add(entry);
-
-        var newValue = new ArrayList<>();
-        newValue.add(entry);
-
-        cliLogsListeners.firePropertyChange("CliLogs", oldValue, newValue);
-    }
-
     private void logChangeInExecutablePath(String path) {
         var entry = new CliLogEntry(String.format("Using CLI at: %s", path), CliLogEntryType.Normal);
-        cliLogs.add(entry);
-    }
-
-    private Boolean IsWindowsOs() {
-        return System.getProperty("os.name").startsWith("Windows");
+        this.cliRunner.addCliLogEntry(entry);
     }
 
     private static class CliStructuredResult<TResult> {
@@ -348,18 +292,4 @@ public class AutomateCliService implements IAutomateService {
         }
     }
 
-    private static class CliTextResult {
-
-        private final String error;
-        private final String output;
-
-        public CliTextResult(@NotNull String error, @NotNull String output) {
-            this.error = error;
-            this.output = output;
-        }
-
-        public Boolean isError() {
-            return !this.error.isEmpty() && this.output.isEmpty();
-        }
-    }
 }

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.*;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
@@ -16,6 +17,7 @@ public class AutomateApplication implements IAutomateApplication {
     @NotNull
     private final IConfiguration configuration;
 
+    @UsedImplicitly
     public AutomateApplication(@NotNull Project project) {
         this.configuration = project.getService(IConfiguration.class);
         this.automateService = project.getService(IAutomateService.class);

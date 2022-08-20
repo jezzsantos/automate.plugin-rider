@@ -10,18 +10,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-interface IAutomationCache {
-    @NotNull
-    AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh);
+public interface IAutomationCache {
+    @NotNull AllDefinitions ListAll(@NotNull Supplier<AllDefinitions> supplier, boolean forceRefresh);
 
-    @NotNull
-    List<PatternDefinition> ListPatterns(@NotNull Supplier<List<PatternDefinition>> supplier);
+    @NotNull List<PatternDefinition> ListPatterns(@NotNull Supplier<List<PatternDefinition>> supplier);
 
-    @NotNull
-    List<ToolkitDefinition> ListToolkits(@NotNull Supplier<List<ToolkitDefinition>> supplier);
+    @NotNull List<ToolkitDefinition> ListToolkits(@NotNull Supplier<List<ToolkitDefinition>> supplier);
 
-    @NotNull
-    List<DraftDefinition> ListDrafts(@NotNull Supplier<List<DraftDefinition>> supplier);
+    @NotNull List<DraftDefinition> ListDrafts(@NotNull Supplier<List<DraftDefinition>> supplier);
 
     void invalidateAllLists();
 
@@ -31,9 +27,7 @@ interface IAutomationCache {
 
     void invalidateDraftList();
 
-    @Nullable
-    PatternDefinition GetPattern(@NotNull Supplier<PatternDefinition> supplier);
+    @Nullable PatternDefinition GetPattern(@NotNull Supplier<PatternDefinition> supplier);
 
-    @Nullable
-    DraftDefinition GetDraft(@NotNull Supplier<DraftDefinition> supplier);
+    @Nullable DraftDefinition GetDraft(@NotNull Supplier<DraftDefinition> supplier);
 }
