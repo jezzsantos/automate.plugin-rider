@@ -10,19 +10,23 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.colors.EditorFontCache;
 import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.*;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.SimpleMessageBusConnection;
 import com.intellij.util.messages.Topic;
+import com.jetbrains.rider.settings.codeCleanup.TreeActionsGroup;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Automation;
+import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +38,8 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 interface StateChangedListener {
@@ -52,15 +58,17 @@ public class AutomateToolWindow implements Disposable {
     private final IAutomateApplication application;
     @NotNull
     private final MessageBus messageBus;
+    private final ToolWindow toolwindow;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
-    private AutomateTree patternsTree;
+    private AutomateTree automateTree;
     private JTextPane cliLog;
     private JSplitPane windowSplit;
     private TreeSelectionListener currentSelectionListener;
 
-    public AutomateToolWindow(@NotNull Project project, AutomateToolWindowFactory factory) {
+    public AutomateToolWindow(@NotNull Project project, ToolWindow toolwindow) {
         this.project = project;
+        this.toolwindow = toolwindow;
         this.application = IAutomateApplication.getInstance(this.project);
         this.messageBus = project.getMessageBus();
 
@@ -84,9 +92,16 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void init() {
+        initToolWindow();
         initTree();
         setupActionNotifications();
         setupCliLogs();
+    }
+
+    private void initToolWindow() {
+        var expandCollapseActions = new ArrayList<>(List.of(new TreeActionsGroup(automateTree).getChildActionsOrStubs()));
+        Collections.reverse(expandCollapseActions);
+        toolwindow.setTitleActions(expandCollapseActions);
     }
 
     @NotNull
@@ -172,26 +187,44 @@ public class AutomateToolWindow implements Disposable {
 
     private void initTree() {
 
-        PopupHandler.installPopupMenu(patternsTree, addTreeContextMenu(), "TreePopup");
-        patternsTree.setCellRenderer(new ColoredTreeCellRenderer() {
+        PopupHandler.installPopupMenu(automateTree, addTreeContextMenu(), "TreePopup");
+        automateTree.setCellRenderer(new ColoredTreeCellRenderer() {
             @Override
             public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                if (value.getClass() == TreePlaceholder.class) {
+                if (value instanceof TreePlaceholder) {
                     setIcon(AllIcons.Nodes.Folder);
                     append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
                 }
                 else {
-                    if (value.getClass() == PatternElement.class) {
+                    if (value instanceof PatternElement) {
                         setIcon(AllIcons.General.ProjectStructure);
                         append(value.toString());
                     }
                     else {
-                        if (value.getClass() == DraftDetailed.class) {
-                            setIcon(AllIcons.Actions.GeneratedFolder);
+                        if (value instanceof Attribute) {
+                            setIcon(AllIcons.Gutter.ExtAnnotation);
                             append(value.toString());
                         }
                         else {
-                            append(value.toString());
+                            if (value instanceof Automation) {
+                                setIcon(AllIcons.Diff.MagicResolve);
+                                append(value.toString());
+                            }
+                            else {
+                                if (value instanceof CodeTemplate) {
+                                    setIcon(AllIcons.Nodes.Template);
+                                    append(value.toString());
+                                }
+                                else {
+                                    if (value instanceof DraftDetailed) {
+                                        setIcon(AllIcons.Actions.GeneratedFolder);
+                                        append(value.toString());
+                                    }
+                                    else {
+                                        append(value.toString());
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -214,15 +247,15 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void refreshTree() {
-        patternsTree.setModel(null);
+        automateTree.setModel(null);
         if (this.currentSelectionListener != null) {
-            patternsTree.removeTreeSelectionListener(this.currentSelectionListener);
+            automateTree.removeTreeSelectionListener(this.currentSelectionListener);
         }
         var editingMode = application.getEditingMode();
-        patternsTree.getEmptyText().setText(editingMode == EditingMode.Patterns
+        automateTree.getEmptyText().setText(editingMode == EditingMode.Patterns
                                                     ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
                                                     : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
-        patternsTree.invalidate();
+        automateTree.invalidate();
 
         if (editingMode == EditingMode.Patterns) {
             var currentPattern = application.getCurrentPatternInfo();
@@ -231,8 +264,8 @@ public class AutomateToolWindow implements Disposable {
                 if (pattern != null) {
                     var model = new PatternTreeModel(pattern);
                     this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
-                    patternsTree.setModel(model);
-                    patternsTree.addTreeSelectionListener(this.currentSelectionListener);
+                    automateTree.setModel(model);
+                    automateTree.addTreeSelectionListener(this.currentSelectionListener);
                 }
             }
         }
@@ -243,8 +276,8 @@ public class AutomateToolWindow implements Disposable {
                 if (draft != null) {
                     var model = new DraftTreeModel(draft);
                     this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
-                    patternsTree.setModel(model);
-                    patternsTree.addTreeSelectionListener(this.currentSelectionListener);
+                    automateTree.setModel(model);
+                    automateTree.addTreeSelectionListener(this.currentSelectionListener);
 
                 }
             }
@@ -257,9 +290,9 @@ public class AutomateToolWindow implements Disposable {
 
         var actions = new DefaultActionGroup();
 
-        actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) patternsTree.getModel())));
+        actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) automateTree.getModel())));
         actions.addSeparator();
-        actions.add(new DeleteAttributeAction(consumer -> consumer.accept((PatternTreeModel) patternsTree.getModel())));
+        actions.add(new DeleteAttributeAction(consumer -> consumer.accept((PatternTreeModel) automateTree.getModel())));
 
         return actions;
     }

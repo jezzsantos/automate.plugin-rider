@@ -34,7 +34,7 @@
             <properties/>
             <border type="empty"/>
             <children>
-              <component id="4cf3c" class="jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree" binding="patternsTree">
+              <component id="4cf3c" class="jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree" binding="automateTree">
                 <constraints/>
                 <properties/>
               </component>
