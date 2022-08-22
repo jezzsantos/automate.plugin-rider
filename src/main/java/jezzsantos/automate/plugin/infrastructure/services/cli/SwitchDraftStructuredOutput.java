@@ -1,8 +1,13 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class SwitchDraft {
+
     public String Name;
     public String DraftId;
 
@@ -13,6 +18,14 @@ class SwitchDraft {
 }
 
 public class SwitchDraftStructuredOutput extends StructuredOutput<SwitchDraft> {
+
+    @UsedImplicitly
+    public SwitchDraftStructuredOutput() {
+        super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
+            Values = new SwitchDraft();
+        }})));
+    }
+
     @SuppressWarnings("UnusedReturnValue")
     public DraftLite getDraft() {
         var values = this.Output.get(0).Values;

@@ -78,8 +78,8 @@ public class AutomateCliServiceTests {
     @Test
     public void whenListAllAutomationAndNotCachedAndFails_ThenReturnsEmptyLists() {
 
-        Mockito.when(this.runner.execute(anyString(), anyList()))
-                .thenReturn(new CliTextResult("anerror", ""));
+        Mockito.when(this.runner.executeStructured(any(), anyString(), anyList()))
+                .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.ListAll(ArgumentMatchers.any(), anyBoolean()))
                 .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
@@ -88,17 +88,18 @@ public class AutomateCliServiceTests {
         assertTrue(result.getPatterns().isEmpty());
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
-        Mockito.verify(this.runner).execute(
+        Mockito.verify(this.runner).executeStructured(
+                any(),
                 argThat(x -> x.equals("anexecutablepath")),
-                argThat(list -> list.equals(Arrays.asList("list", "all", "--output-structured"))));
+                argThat(list -> list.equals(Arrays.asList("list", "all"))));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void whenListAllAutomationAndNotCached_ThenReturnsCliResult() {
 
-        Mockito.when(this.runner.execute(anyString(), anyList()))
-                .thenReturn(new CliTextResult("", "{\"Output\":[{\"Values\":{\"Patterns\":[]}},{\"Values\":{\"Toolkits\":[]}},{\"Values\":{\"Drafts\":[]}}]}"));
+        Mockito.when(this.runner.executeStructured(any(), anyString(), anyList()))
+                .thenReturn(new CliStructuredResult(null, new ListAllDefinitionsStructuredOutput()));
         Mockito.when(this.cache.ListAll(ArgumentMatchers.any(), anyBoolean()))
                 .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
@@ -107,16 +108,17 @@ public class AutomateCliServiceTests {
         assertTrue(result.getPatterns().isEmpty());
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
-        Mockito.verify(this.runner).execute(
+        Mockito.verify(this.runner).executeStructured(
+                any(),
                 argThat(x -> x.equals("anexecutablepath")),
-                argThat(list -> list.equals(Arrays.asList("list", "all", "--output-structured"))));
+                argThat(list -> list.equals(Arrays.asList("list", "all"))));
     }
 
     @Test
     public void whenListAllAutomationAndCached_ThenReturnsCached() {
 
-        Mockito.when(this.runner.execute(anyString(), anyList()))
-                .thenReturn(new CliTextResult("anerror", ""));
+        Mockito.when(this.runner.executeStructured(any(), anyString(), anyList()))
+                .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.ListAll(ArgumentMatchers.any(), anyBoolean()))
                 .thenReturn(new AllStateLite());
 
@@ -125,6 +127,6 @@ public class AutomateCliServiceTests {
         assertTrue(result.getPatterns().isEmpty());
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
-        Mockito.verify(this.runner, never()).execute(anyString(), anyList());
+        Mockito.verify(this.runner, never()).executeStructured(any(), anyString(), anyList());
     }
 }

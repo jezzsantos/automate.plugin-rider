@@ -1,17 +1,26 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 class ListDrafts {
-    public List<DraftLite> Drafts;
+
+    public List<DraftLite> Drafts = new ArrayList<>();
 }
 
 public class ListDraftsStructuredOutput extends StructuredOutput<ListDrafts> {
+
+    @UsedImplicitly
+    public ListDraftsStructuredOutput() {
+        super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
+            Values = new ListDrafts();
+        }})));
+    }
+
     public List<DraftLite> getDrafts() {
-        return Objects.requireNonNullElse(this.Output.get(0).Values.Drafts, new ArrayList<>());
+        return this.Output.get(0).Values.Drafts;
     }
 }

@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 public interface IAutomationCache {
+
     @NotNull AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh);
 
     @NotNull List<PatternLite> ListPatterns(@NotNull Supplier<List<PatternLite>> supplier);
@@ -21,14 +22,6 @@ public interface IAutomationCache {
     @NotNull List<ToolkitLite> ListToolkits(@NotNull Supplier<List<ToolkitLite>> supplier);
 
     @NotNull List<DraftLite> ListDrafts(@NotNull Supplier<List<DraftLite>> supplier);
-
-    void invalidateAllLocalState();
-
-    void invalidateAllPatterns();
-
-    void invalidateAllToolkits();
-
-    void invalidateAllDrafts();
 
     @Nullable PatternLite GetPatternInfo(@NotNull Supplier<PatternLite> supplier);
 
@@ -38,4 +31,15 @@ public interface IAutomationCache {
 
     @NotNull DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception;
 
+    void invalidateAllLocalState();
+
+    void invalidateAllPatterns();
+
+    void invalidateAllToolkits();
+
+    void invalidateAllDrafts();
+
+    void invalidateCurrentPattern();
+
+    void invalidateCurrentDraft();
 }

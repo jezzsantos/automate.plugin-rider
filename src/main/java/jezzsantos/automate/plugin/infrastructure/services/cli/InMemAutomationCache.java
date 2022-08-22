@@ -121,7 +121,7 @@ public class InMemAutomationCache implements IAutomationCache {
     public void invalidateAllPatterns() {
 
         this.patternsList = null;
-        this.currentPattern = null;
+        invalidateCurrentPattern();
     }
 
     @Override
@@ -134,6 +134,16 @@ public class InMemAutomationCache implements IAutomationCache {
     public void invalidateAllDrafts() {
 
         this.draftsList = null;
+        invalidateCurrentDraft();
+    }
+
+    @Override
+    public void invalidateCurrentPattern() {
+        this.currentPattern = null;
+    }
+
+    @Override
+    public void invalidateCurrentDraft() {
         this.currentDraft = null;
     }
 
