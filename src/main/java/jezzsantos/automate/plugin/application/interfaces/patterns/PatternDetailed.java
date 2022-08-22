@@ -12,13 +12,13 @@ public class PatternDetailed {
     @SerializedName(value = "Version")
     private String version;
     @SerializedName(value = "Tree")
-    private PatternTree tree;
+    private PatternElement pattern;
 
-    public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternTree tree) {
+    public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {
         this.id = id;
         this.name = name;
         this.version = version;
-        this.tree = tree;
+        this.pattern = pattern;
     }
 
     @NotNull
@@ -29,6 +29,11 @@ public class PatternDetailed {
     @NotNull
     public String getId() {
         return this.id;
+    }
+
+    @NotNull
+    public PatternElement getPattern() {
+        return this.pattern;
     }
 
     @Override

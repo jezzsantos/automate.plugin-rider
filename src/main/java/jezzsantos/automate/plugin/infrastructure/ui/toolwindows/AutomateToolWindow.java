@@ -1,6 +1,8 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -8,8 +10,7 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.colors.EditorFontCache;
 import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.Colors;
-import com.intellij.ui.treeStructure.Tree;
+import com.intellij.ui.*;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.SimpleMessageBusConnection;
 import com.intellij.util.messages.Topic;
@@ -17,13 +18,18 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
+import jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -31,6 +37,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 interface StateChangedListener {
+
     Topic<StateChangedListener> TOPIC = new Topic<>(StateChangedListener.class, Topic.BroadcastDirection.TO_CHILDREN);
 
     void settingsChanged();
@@ -38,6 +45,7 @@ interface StateChangedListener {
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class AutomateToolWindow implements Disposable {
+
     @NotNull
     private final Project project;
     @NotNull
@@ -46,9 +54,10 @@ public class AutomateToolWindow implements Disposable {
     private final MessageBus messageBus;
     private JPanel mainPanel;
     private ActionToolbarImpl toolbar;
-    private Tree patternsTree;
+    private AutomateTree patternsTree;
     private JTextPane cliLog;
     private JSplitPane windowSplit;
+    private TreeSelectionListener currentSelectionListener;
 
     public AutomateToolWindow(@NotNull Project project, AutomateToolWindowFactory factory) {
         this.project = project;
@@ -162,6 +171,32 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void initTree() {
+
+        PopupHandler.installPopupMenu(patternsTree, addTreeContextMenu(), "TreePopup");
+        patternsTree.setCellRenderer(new ColoredTreeCellRenderer() {
+            @Override
+            public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                if (value.getClass() == TreePlaceholder.class) {
+                    setIcon(AllIcons.Nodes.Folder);
+                    append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
+                }
+                else {
+                    if (value.getClass() == PatternElement.class) {
+                        setIcon(AllIcons.General.ProjectStructure);
+                        append(value.toString());
+                    }
+                    else {
+                        if (value.getClass() == DraftDetailed.class) {
+                            setIcon(AllIcons.Actions.GeneratedFolder);
+                            append(value.toString());
+                        }
+                        else {
+                            append(value.toString());
+                        }
+                    }
+                }
+            }
+        });
         this.refreshTree();
     }
 
@@ -169,7 +204,7 @@ public class AutomateToolWindow implements Disposable {
         var attributes = new SimpleAttributeSet();
         if (entry.Type != CliLogEntryType.Normal) {
             StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.Error
-                    ? Colors.DARK_RED
+                    ? DarculaColors.RED
                     : Colors.DARK_GREEN);
             StyleConstants.setBold(attributes, entry.Type == CliLogEntryType.Error);
         }
@@ -180,17 +215,24 @@ public class AutomateToolWindow implements Disposable {
 
     private void refreshTree() {
         patternsTree.setModel(null);
+        if (this.currentSelectionListener != null) {
+            patternsTree.removeTreeSelectionListener(this.currentSelectionListener);
+        }
         var editingMode = application.getEditingMode();
         patternsTree.getEmptyText().setText(editingMode == EditingMode.Patterns
                                                     ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
                                                     : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
         patternsTree.invalidate();
+
         if (editingMode == EditingMode.Patterns) {
             var currentPattern = application.getCurrentPatternInfo();
             if (currentPattern != null) {
                 var pattern = Try.safely(application::getCurrentPatternDetailed);
                 if (pattern != null) {
-                    patternsTree.setModel(new PatternTreeModel(pattern));
+                    var model = new PatternTreeModel(pattern);
+                    this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
+                    patternsTree.setModel(model);
+                    patternsTree.addTreeSelectionListener(this.currentSelectionListener);
                 }
             }
         }
@@ -199,11 +241,64 @@ public class AutomateToolWindow implements Disposable {
             if (currentDraft != null) {
                 var draft = Try.safely(application::getCurrentDraftDetailed);
                 if (draft != null) {
-                    patternsTree.setModel(new DraftTreeModel(draft));
+                    var model = new DraftTreeModel(draft);
+                    this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
+                    patternsTree.setModel(model);
+                    patternsTree.addTreeSelectionListener(this.currentSelectionListener);
+
                 }
             }
         }
+    }
 
+    @NotNull
+    private ActionGroup addTreeContextMenu() {
+        final Runnable notify = notifyUpdated();
+
+        var actions = new DefaultActionGroup();
+
+        actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) patternsTree.getModel())));
+        actions.addSeparator();
+        actions.add(new DeleteAttributeAction(consumer -> consumer.accept((PatternTreeModel) patternsTree.getModel())));
+
+        return actions;
+    }
+
+    private static class PatternModelTreeSelectionListener implements TreeSelectionListener {
+
+        @NotNull
+        private final PatternTreeModel model;
+
+        public PatternModelTreeSelectionListener(@NotNull PatternTreeModel model) {this.model = model;}
+
+        @Override
+        public void valueChanged(TreeSelectionEvent e) {
+            var path = e.getNewLeadSelectionPath();
+            if (path == null) {
+                model.resetSelectedPath();
+                return;
+            }
+            var selectedPath = e.getPath();
+            model.setSelectedPath(selectedPath);
+        }
+    }
+
+    private static class DraftModelTreeSelectionListener implements TreeSelectionListener {
+
+        @NotNull
+        private final DraftTreeModel model;
+
+        public DraftModelTreeSelectionListener(@NotNull DraftTreeModel model) {this.model = model;}
+
+        @Override
+        public void valueChanged(TreeSelectionEvent e) {
+            var path = e.getNewLeadSelectionPath();
+            if (path == null) {
+                return;
+            }
+            var selectedItem = e.getPath().getLastPathComponent();
+            //model.setSelection(selectedItem);
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialog;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class InstallToolkitToolbarAction extends AnAction {
@@ -42,11 +43,11 @@ public class InstallToolkitToolbarAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var dialog = new InstallToolkitDialog(project);
+            var dialog = new InstallToolkitDialog(project, new InstallToolkitDialogContext());
             if (dialog.showAndGet()) {
-                var location = dialog.ToolkitLocation;
+                var context = dialog.getContext();
                 try {
-                    application.installToolkit(location);
+                    application.installToolkit(context.ToolkitLocation);
                     onPerformed.run();
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to install toolkit", ex);

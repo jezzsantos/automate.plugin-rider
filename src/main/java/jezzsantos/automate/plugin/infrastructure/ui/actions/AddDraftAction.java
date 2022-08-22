@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialog;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class AddDraftAction extends AnAction {
@@ -44,12 +45,11 @@ public class AddDraftAction extends AnAction {
             var application = IAutomateApplication.getInstance(project);
             var drafts = application.listDrafts();
             var toolkits = application.listToolkits();
-            var dialog = new NewDraftDialog(project, toolkits, drafts);
+            var dialog = new NewDraftDialog(project, new NewDraftDialogContext(toolkits, drafts));
             if (dialog.showAndGet()) {
-                var name = dialog.Name;
-                var toolkitName = dialog.ToolkitName;
+                var context = dialog.getContext();
                 try {
-                    application.createDraft(toolkitName, name);
+                    application.createDraft(context.ToolkitName, context.Name);
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to add new draft", ex);
                 }

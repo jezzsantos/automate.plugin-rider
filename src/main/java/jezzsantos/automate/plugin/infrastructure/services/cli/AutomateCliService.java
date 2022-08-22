@@ -10,6 +10,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
@@ -158,7 +159,7 @@ public class AutomateCliService implements IAutomateService {
     public PatternLite createPattern(@NotNull String name) throws Exception {
         var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, new ArrayList<>(List.of("create", "pattern", name)));
         if (result.isError()) {
-            throw new Exception(result.error);
+            throw new Exception(result.error.getErrorMessage());
         }
         else {
             cache.invalidateAllPatterns();
@@ -172,7 +173,7 @@ public class AutomateCliService implements IAutomateService {
         return this.cache.GetPatternDetailed(() -> {
             var result = runAutomateForStructuredOutput(GetPatternStructuredOutput.class, new ArrayList<>(List.of("view", "pattern", "--all")));
             if (result.isError()) {
-                throw new Exception(result.error);
+                throw new Exception(result.error.getErrorMessage());
             }
             else {
                 return result.output.getPattern();
@@ -194,7 +195,7 @@ public class AutomateCliService implements IAutomateService {
     public void setCurrentPattern(@NotNull String id) throws Exception {
         var result = runAutomateForStructuredOutput(SwitchPatternStructuredOutput.class, new ArrayList<>(List.of("edit", "switch", id)));
         if (result.isError()) {
-            throw new Exception(result.error);
+            throw new Exception(result.error.getErrorMessage());
         }
         else {
             cache.invalidateAllPatterns();
@@ -208,7 +209,7 @@ public class AutomateCliService implements IAutomateService {
         return this.cache.GetDraftDetailed(() -> {
             var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, new ArrayList<>(List.of("view", "draft")));
             if (result.isError()) {
-                throw new Exception(result.error);
+                throw new Exception(result.error.getErrorMessage());
             }
             else {
                 return result.output.getDraft();
@@ -230,7 +231,7 @@ public class AutomateCliService implements IAutomateService {
     public void setCurrentDraft(@NotNull String id) throws Exception {
         var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, new ArrayList<>(List.of("run", "switch", id)));
         if (result.isError()) {
-            throw new Exception(result.error);
+            throw new Exception(result.error.getErrorMessage());
         }
         else {
             cache.invalidateAllDrafts();
@@ -243,7 +244,7 @@ public class AutomateCliService implements IAutomateService {
     public DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception {
         var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
         if (result.isError()) {
-            throw new Exception(result.error);
+            throw new Exception(result.error.getErrorMessage());
         }
         else {
             cache.invalidateAllDrafts();
@@ -255,7 +256,7 @@ public class AutomateCliService implements IAutomateService {
     public void installToolkit(@NotNull String location) throws Exception {
         var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, new ArrayList<>(List.of("install", "toolkit", location)));
         if (result.isError()) {
-            throw new Exception(result.error);
+            throw new Exception(result.error.getErrorMessage());
         }
         cache.invalidateAllToolkits();
     }
@@ -276,6 +277,38 @@ public class AutomateCliService implements IAutomateService {
         return cliRunner.getCliLogs();
     }
 
+    @Override
+    public Attribute addAttribute(@NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+        var args = new ArrayList<>(List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type));
+        if (defaultValue != null) {
+            args.addAll(List.of("--defaultvalueis", defaultValue));
+        }
+        if (choices != null && !choices.isEmpty()) {
+            args.addAll(List.of("--isoneof", String.join(";", choices)));
+        }
+        var result = runAutomateForStructuredOutput(AddRemoveAttributeStructuredOutput.class, args);
+        if (result.isError()) {
+            throw new Exception(result.error.getErrorMessage());
+        }
+        else {
+            cache.invalidateAllPatterns();
+            var attribute = result.output.getAttribute();
+            attribute.setProperties(isRequired, type, defaultValue, choices);
+            return attribute;
+        }
+    }
+
+    @Override
+    public void deleteAttribute(@NotNull String name) throws Exception {
+        var result = runAutomateForStructuredOutput(AddRemoveAttributeStructuredOutput.class, new ArrayList<>(List.of("edit", "delete-attribute", name)));
+        if (result.isError()) {
+            throw new Exception(result.error.getErrorMessage());
+        }
+        else {
+            cache.invalidateAllPatterns();
+        }
+    }
+
     @NotNull
     private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull List<String> args) {
         var executablePath = this.configuration.getExecutablePath();
@@ -287,11 +320,12 @@ public class AutomateCliService implements IAutomateService {
         var gson = new Gson();
         var result = cliRunner.execute(getExecutablePathSafe(executablePath), allArgs);
         if (result.isError()) {
-            return new CliStructuredResult<>(result.getError(), null);
+            var structuredError = gson.fromJson(result.getError(), StructuredError.class);
+            return new CliStructuredResult<>(structuredError, null);
         }
 
-        var output = gson.fromJson(result.getOutput(), outputClass);
-        return new CliStructuredResult<>("", output);
+        var structuredOutput = gson.fromJson(result.getOutput(), outputClass);
+        return new CliStructuredResult<>(null, structuredOutput);
     }
 
     @NotNull
@@ -308,16 +342,16 @@ public class AutomateCliService implements IAutomateService {
 
     private static class CliStructuredResult<TResult> {
 
-        private final String error;
+        private final StructuredError error;
         private final TResult output;
 
-        public CliStructuredResult(@NotNull String error, TResult output) {
+        public CliStructuredResult(@Nullable StructuredError error, @Nullable TResult output) {
             this.error = error;
             this.output = output;
         }
 
         public Boolean isError() {
-            return !this.error.isEmpty();
+            return this.error != null;
         }
     }
 

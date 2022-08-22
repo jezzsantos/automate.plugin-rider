@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
@@ -169,5 +170,15 @@ public class AutomateApplication implements IAutomateApplication {
 
     public boolean getViewCliLog() {
         return this.configuration.getViewCliLog();
+    }
+
+    @Override
+    public Attribute addAttribute(@NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+        return this.automateService.addAttribute(name, isRequired, type, defaultValue, choices);
+    }
+
+    @Override
+    public void deleteAttribute(@NotNull String name) throws Exception {
+        this.automateService.deleteAttribute(name);
     }
 }
