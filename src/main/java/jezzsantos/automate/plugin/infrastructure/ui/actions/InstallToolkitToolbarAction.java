@@ -6,11 +6,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class InstallToolkitToolbarAction extends AnAction {
+
     private final Runnable onPerformed;
 
     public InstallToolkitToolbarAction(@NotNull Runnable onPerformed) {
@@ -50,7 +52,7 @@ public class InstallToolkitToolbarAction extends AnAction {
                     application.installToolkit(context.ToolkitLocation);
                     onPerformed.run();
                 } catch (Exception ex) {
-                    throw new RuntimeException("Failed to install toolkit", ex);
+                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.InstallToolkit.FailureNotification.Title"));
                 }
             }
         }

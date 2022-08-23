@@ -8,6 +8,7 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.ConfirmDeleteDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,7 @@ public class DeleteAttributeAction extends AnAction {
                         application.deleteAttribute(attribute.getName());
                         this.onSuccess.run(model -> model.deleteAttribute(attribute));
                     } catch (Exception ex) {
-                        throw new RuntimeException("Failed to delete attribute", ex);
+                        ExceptionHandler.handle(project, ex, AutomateBundle.message("action.DeleteAttribute.FailureNotification.Title"));
                     }
                 }
             }

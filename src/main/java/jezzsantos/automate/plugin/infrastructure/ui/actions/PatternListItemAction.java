@@ -4,6 +4,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +58,7 @@ public class PatternListItemAction extends AnAction {
                     application.setCurrentPattern(this.id);
                     onPerformed.run();
                 } catch (Exception ex) {
-                    throw new RuntimeException("Failed to set current pattern", ex);
+                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.PatternsListToolbarItem.FailureNotification.Title"));
                 }
             }
         }

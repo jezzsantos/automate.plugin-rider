@@ -9,6 +9,7 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialogContext;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
@@ -61,7 +62,7 @@ public class AddAttributeAction extends AnAction {
                         var attribute = application.addAttribute(context.Name, context.IsRequired, context.DataType, context.DefaultValue, context.Choices);
                         this.onSuccess.run(model -> model.insertAttribute(attribute));
                     } catch (Exception ex) {
-                        throw new RuntimeException("Failed to create new attribute", ex);
+                        ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddAttribute.FailureNotification.Title"));
                     }
                 }
             }

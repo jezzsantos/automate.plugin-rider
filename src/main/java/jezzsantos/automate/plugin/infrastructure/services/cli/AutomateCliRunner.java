@@ -78,27 +78,29 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     private CliTextResult executeInternal(@NotNull String executablePath, @NotNull List<String> args, boolean isStructured) {
 
+        var command = new ArrayList<String>();
+        command.add(executablePath);
+        command.addAll(args);
+        if (isStructured && !command.contains("--os")) {
+            command.add("--os");
+        }
+
+        var builder = new ProcessBuilder(command);
+        builder.redirectErrorStream(false);
+
+        builder.directory(new File(this.platform.getCurrentDirectory()));
+        AddCliLogEntry(String.format("Command: %s", String.join(" ", args)), CliLogEntryType.Normal);
+
+        Process process = null;
         try {
-            var command = new ArrayList<String>();
-            command.add(executablePath);
-            command.addAll(args);
-            if (isStructured && !command.contains("--os")) {
-                command.add("--os");
-            }
-
-            var builder = new ProcessBuilder(command);
-            builder.redirectErrorStream(false);
-
-            builder.directory(new File(this.platform.getCurrentDirectory()));
-            AddCliLogEntry(String.format("Command: %s", String.join(" ", args)), CliLogEntryType.Normal);
-
-            var process = builder.start();
+            process = builder.start();
             final var stdOutWriter = new StringWriter();
             final var stdErrWriter = new StringWriter();
+            Process finalProcess = process;
             new Thread(() -> {
                 try {
-                    IOUtils.copy(process.getInputStream(), stdOutWriter, StandardCharsets.UTF_8);
-                    IOUtils.copy(process.getErrorStream(), stdErrWriter, StandardCharsets.UTF_8);
+                    IOUtils.copy(finalProcess.getInputStream(), stdOutWriter, StandardCharsets.UTF_8);
+                    IOUtils.copy(finalProcess.getErrorStream(), stdErrWriter, StandardCharsets.UTF_8);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -117,18 +119,20 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                         ? getStructuredError(stdErr).getErrorMessage()
                         : stdErr;
                 AddCliLogEntry(String.format("Command failed with error: %s", error), CliLogEntryType.Error);
+                return new CliTextResult(stdErr, "");
             }
             else {
                 AddCliLogEntry("Command executed successfully", CliLogEntryType.Success);
+                return new CliTextResult("", stdOut);
             }
-
-            process.destroy();
-            return new CliTextResult(stdErr, stdOut);
-
         } catch (InterruptedException | IOException e) {
             var error = String.format("Failed to run CLI with error: %s", e.getMessage());
             AddCliLogEntry(error, CliLogEntryType.Error);
             return new CliTextResult(error, "");
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
         }
     }
 

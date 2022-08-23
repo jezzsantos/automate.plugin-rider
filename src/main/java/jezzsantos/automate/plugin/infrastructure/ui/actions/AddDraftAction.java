@@ -6,11 +6,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class AddDraftAction extends AnAction {
+
     private final Runnable onPerformed;
 
     public AddDraftAction(@NotNull Runnable onPerformed) {
@@ -51,7 +53,7 @@ public class AddDraftAction extends AnAction {
                 try {
                     application.createDraft(context.ToolkitName, context.Name);
                 } catch (Exception ex) {
-                    throw new RuntimeException("Failed to add new draft", ex);
+                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddDraft.FailureNotification.Title"));
                 }
                 onPerformed.run();
             }

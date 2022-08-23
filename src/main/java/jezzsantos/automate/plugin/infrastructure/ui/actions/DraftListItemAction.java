@@ -4,10 +4,13 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DraftListItemAction extends AnAction {
+
     private final Runnable onPerformed;
     @NotNull
     private final String name;
@@ -54,7 +57,7 @@ public class DraftListItemAction extends AnAction {
                     application.setCurrentDraft(this.id);
                     onPerformed.run();
                 } catch (Exception ex) {
-                    throw new RuntimeException("Failed to set current draft", ex);
+                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.DraftListItem.FailureNotification.Title"));
                 }
             }
         }

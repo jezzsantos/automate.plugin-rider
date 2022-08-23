@@ -6,11 +6,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class AddPatternAction extends AnAction {
+
     private final Runnable onPerformed;
 
     public AddPatternAction(@NotNull Runnable onPerformed) {
@@ -52,7 +54,7 @@ public class AddPatternAction extends AnAction {
                 try {
                     application.createPattern(context.Name);
                 } catch (Exception ex) {
-                    throw new RuntimeException("Failed to add new pattern", ex);
+                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AppPattern.FailureNotification.Title"));
                 }
                 onPerformed.run();
             }

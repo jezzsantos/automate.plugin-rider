@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class DraftsListToolbarAction extends ComboBoxAction {
+
     private final Runnable onPerformed;
 
     public DraftsListToolbarAction(@NotNull Runnable onPerformed) {
