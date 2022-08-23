@@ -14,6 +14,12 @@ public class PatternElement {
     private String id;
     @SerializedName(value = "Name")
     private String name;
+    @SerializedName(value = "AutoCreate")
+    private boolean autoCreate;
+    @SerializedName(value = "IsCollection")
+    private boolean isCollection;
+    @SerializedName(value = "Cardinality")
+    private ElementCardinality cardinality;
     @SerializedName(value = "CodeTemplates")
     private List<CodeTemplate> codeTemplates = new ArrayList<>();
     @SerializedName(value = "Automation")
@@ -78,7 +84,11 @@ public class PatternElement {
 
     @Override
     public String toString() {
-        return String.format("%s", this.name);
+
+        var type = this.isCollection
+                ? "(collection)"
+                : "";
+        return String.format("%s %s", this.name, type);
     }
 
 }

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.DefaultTreeExpander;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionPlaces;
@@ -65,6 +66,7 @@ public class AutomateToolWindow implements Disposable {
     private JTextPane cliLog;
     private JSplitPane windowSplit;
     private TreeSelectionListener currentSelectionListener;
+    private DefaultTreeExpander automateTreeExpander;
 
     public AutomateToolWindow(@NotNull Project project, ToolWindow toolwindow) {
         this.project = project;
@@ -102,6 +104,7 @@ public class AutomateToolWindow implements Disposable {
         var expandCollapseActions = new ArrayList<>(List.of(new TreeActionsGroup(automateTree).getChildActionsOrStubs()));
         Collections.reverse(expandCollapseActions);
         toolwindow.setTitleActions(expandCollapseActions);
+        this.automateTreeExpander = new DefaultTreeExpander(automateTree);
     }
 
     @NotNull
@@ -282,6 +285,7 @@ public class AutomateToolWindow implements Disposable {
                 }
             }
         }
+        this.automateTreeExpander.expandAll();
     }
 
     @NotNull

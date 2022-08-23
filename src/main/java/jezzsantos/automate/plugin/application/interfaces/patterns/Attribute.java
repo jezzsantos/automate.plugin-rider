@@ -34,9 +34,15 @@ public class Attribute {
 
     @Override
     public String toString() {
-        return String.format("%s  (%s, %s)", this.name, this.isRequired
+        var choices = this.choices.isEmpty()
+                ? ""
+                : String.format(", oneof: %s", String.join(";", this.choices));
+        var defaultValue = this.defaultValue.isEmpty()
+                ? ""
+                : String.format(", default: %s", this.defaultValue);
+        return String.format("%s  (%s, %s%s%s)", this.name, this.dataType, this.isRequired
                 ? "[required]"
-                : "[optional]", this.dataType);
+                : "[optional]", choices, defaultValue);
     }
 
     public void setProperties(boolean isRequired, @NotNull String dataType, @Nullable String defaultValue, @Nullable List<String> choices) {

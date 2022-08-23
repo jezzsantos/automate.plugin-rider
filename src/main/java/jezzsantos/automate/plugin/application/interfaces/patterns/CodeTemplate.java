@@ -10,6 +10,10 @@ public class CodeTemplate {
     private String id;
     @SerializedName(value = "Name")
     private String name;
+    @SerializedName(value = "OriginalFilePath")
+    private String originalFilePath;
+    @SerializedName(value = "OriginalFileExtension")
+    private String originalFileExtension;
 
     public CodeTemplate(@NotNull String id, @NotNull String name) {
         this.id = id;
@@ -18,5 +22,11 @@ public class CodeTemplate {
 
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public String toString() {
+        var filePath = String.format("original: %s", this.originalFilePath);
+        return String.format("%s (%s)", this.name, filePath);
     }
 }
