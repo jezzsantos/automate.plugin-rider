@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DefaultTreeExpander;
 import com.intellij.openapi.Disposable;
@@ -8,11 +9,13 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
-import com.intellij.openapi.editor.colors.EditorFontCache;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.ui.*;
+import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.PopupHandler;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.SimpleMessageBusConnection;
 import com.intellij.util.messages.Topic;
@@ -143,7 +146,9 @@ public class AutomateToolWindow implements Disposable {
         for (var entry : entries) {
             displayLogEntry(entry);
         }
-        cliLog.setFont(EditorFontCache.getInstance().getFont(EditorFontType.CONSOLE_PLAIN));
+        var scheme = EditorColorsManager.getInstance().getGlobalScheme();
+        cliLog.setFont(scheme.getFont(EditorFontType.CONSOLE_PLAIN));
+        cliLog.setBackground(scheme.getColor(ConsoleViewContentType.CONSOLE_BACKGROUND_KEY));
     }
 
     @NotNull
@@ -237,11 +242,16 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void displayLogEntry(CliLogEntry entry) {
+
+        var scheme = EditorColorsManager.getInstance().getGlobalScheme();
+        var infoColor = scheme.getAttributes(ConsoleViewContentType.LOG_INFO_OUTPUT_KEY).getForegroundColor();
+        var errorColor = scheme.getAttributes(ConsoleViewContentType.LOG_ERROR_OUTPUT_KEY).getForegroundColor();
+
         var attributes = new SimpleAttributeSet();
         if (entry.Type != CliLogEntryType.Normal) {
             StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.Error
-                    ? DarculaColors.RED
-                    : Colors.DARK_GREEN);
+                    ? errorColor
+                    : infoColor);
             StyleConstants.setBold(attributes, entry.Type == CliLogEntryType.Error);
         }
         var text = String.format("%s%s", entry.Text, System.lineSeparator());
