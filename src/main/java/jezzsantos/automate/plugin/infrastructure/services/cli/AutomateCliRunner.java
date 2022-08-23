@@ -3,12 +3,14 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 import com.google.gson.Gson;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,33 +87,38 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             }
 
             var builder = new ProcessBuilder(command);
+            builder.redirectErrorStream(false);
+
             builder.directory(new File(this.platform.getCurrentDirectory()));
             AddCliLogEntry(String.format("Command: %s", String.join(" ", args)), CliLogEntryType.Normal);
 
             var process = builder.start();
-            var success = process.waitFor(5, TimeUnit.SECONDS);
+            final var stdOutWriter = new StringWriter();
+            final var stdErrWriter = new StringWriter();
+            new Thread(() -> {
+                try {
+                    IOUtils.copy(process.getInputStream(), stdOutWriter, StandardCharsets.UTF_8);
+                    IOUtils.copy(process.getErrorStream(), stdErrWriter, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+
+            var success = process.waitFor(15, TimeUnit.SECONDS);
             if (!success) {
                 var error = String.format("Failed to start CLI at: %s", executablePath);
                 AddCliLogEntry(error, CliLogEntryType.Error);
                 return new CliTextResult(error, "");
             }
-            var stdErr = "";
-            var stdOut = "";
+            var stdErr = stdErrWriter.toString().trim();
+            var stdOut = stdOutWriter.toString().trim();
             if (process.exitValue() != 0) {
-                var errorStream = process.getErrorStream();
-                var errorBytes = errorStream.readAllBytes();
-                errorStream.close();
-                stdErr = new String(errorBytes, StandardCharsets.UTF_8).trim();
                 var error = isStructured
                         ? getStructuredError(stdErr).getErrorMessage()
                         : stdErr;
                 AddCliLogEntry(String.format("Command failed with error: %s", error), CliLogEntryType.Error);
             }
             else {
-                var outputStream = process.getInputStream();
-                var outputBytes = outputStream.readAllBytes();
-                outputStream.close();
-                stdOut = new String(outputBytes, StandardCharsets.UTF_8).trim();
                 AddCliLogEntry("Command executed successfully", CliLogEntryType.Success);
             }
 
