@@ -1,13 +1,14 @@
 package jezzsantos.automate.plugin.infrastructure.ui.actions;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
-import icons.RiderIcons;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 public class ToggleAuthoringModeToolbarAction extends ToggleAction {
+
     private final Runnable onPerformed;
     private boolean selected;
 
@@ -55,9 +56,7 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
-        presentation.setIcon(this.selected
-                                     ? RiderIcons.AltEnter.MenuToggleOn
-                                     : RiderIcons.AltEnter.MenuToggleOff);
+        presentation.setIcon(AllIcons.Actions.EditScheme);
 
         var project = e.getProject();
         if (project != null) {

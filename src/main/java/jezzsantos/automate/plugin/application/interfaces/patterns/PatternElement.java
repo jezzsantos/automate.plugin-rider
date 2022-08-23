@@ -91,4 +91,7 @@ public class PatternElement {
         return String.format("%s %s", this.name, type);
     }
 
+    public boolean isCollection() {
+        return this.isCollection;
+    }
 }

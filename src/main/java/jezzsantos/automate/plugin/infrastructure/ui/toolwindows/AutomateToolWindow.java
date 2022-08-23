@@ -205,27 +205,50 @@ public class AutomateToolWindow implements Disposable {
                 }
                 else {
                     if (value instanceof PatternElement) {
-                        setIcon(AllIcons.General.ProjectStructure);
+                        var element = (PatternElement) value;
+                        setIcon(element.isCollection()
+                                        ? AllIcons.Windows.Restore
+                                        : AllIcons.Windows.Maximize);
+                        setToolTipText(element.isCollection()
+                                               ? AutomateBundle.message("toolWindow.Tree.Pattern.Collection.Tooltip")
+                                               : AutomateBundle.message("toolWindow.Tree.Pattern.Element.Tooltip"));
                         append(value.toString());
                     }
                     else {
                         if (value instanceof Attribute) {
                             setIcon(AllIcons.Gutter.ExtAnnotation);
+                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.Attribute.Tooltip"));
                             append(value.toString());
                         }
                         else {
                             if (value instanceof Automation) {
-                                setIcon(AllIcons.Diff.MagicResolve);
+                                var automation = (Automation) value;
+                                switch (automation.getType()) {
+                                    case CodeTemplateCommand:
+                                        setIcon(AllIcons.Actions.GeneratedFolder);
+                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplateCommand.Tooltip"));
+                                        break;
+                                    case CliCommand:
+                                        setIcon(AllIcons.Debugger.Console);
+                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CliCommand.Tooltip"));
+                                        break;
+                                    case CommandLaunchPoint:
+                                        setIcon(AllIcons.Diff.MagicResolve);
+                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CommandLaunchPoint.Tooltip"));
+                                        break;
+                                }
                                 append(value.toString());
                             }
                             else {
                                 if (value instanceof CodeTemplate) {
                                     setIcon(AllIcons.Nodes.Template);
+                                    setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplate.Tooltip"));
                                     append(value.toString());
                                 }
                                 else {
                                     if (value instanceof DraftDetailed) {
                                         setIcon(AllIcons.Actions.GeneratedFolder);
+                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Root.Tooltip"));
                                         append(value.toString());
                                     }
                                     else {

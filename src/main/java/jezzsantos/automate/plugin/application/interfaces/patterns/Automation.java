@@ -57,4 +57,8 @@ public class Automation {
 
         return String.format("%s (%s) (%s)", this.name, this.type, data);
     }
+
+    public AutomationType getType() {
+        return this.type;
+    }
 }
