@@ -11,6 +11,7 @@ public class ToggleAuthoringModeMenuAction extends AnAction {
     private final Runnable onPerformed;
 
     public ToggleAuthoringModeMenuAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -18,6 +19,7 @@ public class ToggleAuthoringModeMenuAction extends AnAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.TurnOnAuthoringMode.Title");
@@ -29,11 +31,12 @@ public class ToggleAuthoringModeMenuAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             application.setAuthoringMode(true);
-            onPerformed.run();
+            this.onPerformed.run();
         }
     }
 }

@@ -13,6 +13,7 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
 
     @Override
     public void init(@NotNull ToolWindow toolWindow) {
+
         ToolWindowFactory.super.init(toolWindow);
         var project = toolWindow.getProject();
         initStartupState(project);
@@ -20,6 +21,7 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+
         var window = new AutomateToolWindow(project, toolWindow);
         var contentFactory = ContentFactory.SERVICE.getInstance();
         var content = contentFactory.createContent(window.getContent(), "", false);
@@ -28,6 +30,7 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
     }
 
     private void initStartupState(@NotNull Project project) {
+
         var application = IAutomateApplication.getInstance(project);
         var localState = application.refreshLocalState();
         if (localState.getPatterns().isEmpty()) {

@@ -19,21 +19,28 @@ import java.util.List;
 public interface IAutomateApplication {
 
     static IAutomateApplication getInstance(Project project) {
+
         return project.getService(IAutomateApplication.class);
     }
 
-    @NotNull String getDefaultInstallLocation();
+    @NotNull
+    String getDefaultInstallLocation();
 
-    @Nullable String tryGetExecutableVersion(@NotNull String executablePath);
+    @Nullable
+    String tryGetExecutableVersion(@NotNull String executablePath);
 
-    @NotNull List<PatternLite> listPatterns();
+    @NotNull
+    List<PatternLite> listPatterns();
 
-    @NotNull List<ToolkitLite> listToolkits();
+    @NotNull
+    List<ToolkitLite> listToolkits();
 
-    @NotNull List<DraftLite> listDrafts();
+    @NotNull
+    List<DraftLite> listDrafts();
 
     @SuppressWarnings("UnusedReturnValue")
-    @NotNull PatternLite createPattern(@NotNull String name) throws Exception;
+    @NotNull
+    PatternLite createPattern(@NotNull String name) throws Exception;
 
     boolean isAuthoringMode();
 
@@ -43,24 +50,30 @@ public interface IAutomateApplication {
 
     void setEditingMode(@NotNull EditingMode mode);
 
-    @NotNull PatternDetailed getCurrentPatternDetailed() throws Exception;
+    @NotNull
+    PatternDetailed getCurrentPatternDetailed() throws Exception;
 
-    @Nullable PatternLite getCurrentPatternInfo();
+    @Nullable
+    PatternLite getCurrentPatternInfo();
 
     void setCurrentPattern(@NotNull String id) throws Exception;
 
-    @NotNull DraftDetailed getCurrentDraftDetailed() throws Exception;
+    @NotNull
+    DraftDetailed getCurrentDraftDetailed() throws Exception;
 
-    @Nullable DraftLite getCurrentDraftInfo();
+    @Nullable
+    DraftLite getCurrentDraftInfo();
 
     void setCurrentDraft(@NotNull String id) throws Exception;
 
     @SuppressWarnings("UnusedReturnValue")
-    @NotNull DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
+    @NotNull
+    DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String location) throws Exception;
 
-    @NotNull AllStateLite refreshLocalState();
+    @NotNull
+    AllStateLite refreshLocalState();
 
     void addPropertyListener(@NotNull PropertyChangeListener listener);
 
@@ -70,7 +83,8 @@ public interface IAutomateApplication {
 
     void removeConfigurationListener(@NotNull PropertyChangeListener listener);
 
-    @NotNull List<CliLogEntry> getCliLogEntries();
+    @NotNull
+    List<CliLogEntry> getCliLogEntries();
 
     boolean getViewCliLog();
 

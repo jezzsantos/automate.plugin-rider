@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 @State(name = "jezzsantos.automate.infrastructure.settings.ProjectSettingsState", storages = @Storage("automate.xml"))
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {
+
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
     @OptionTag(converter = EditingModePropertyConverter.class)
@@ -32,31 +33,37 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
 
     @UsedImplicitly
     public ProjectSettingsState() {
+
         registerAllPropertyToIncrementTrackerOnChanges(this);
     }
 
     public static ProjectSettingsState getInstance(Project project) {
+
         return project.getService(ProjectSettingsState.class);
     }
 
     @Nullable
     @Override
     public ProjectSettingsState getState() {
+
         return this;
     }
 
     @Override
     public void loadState(@NotNull ProjectSettingsState state) {
+
         XmlSerializerUtil.copyBean(state, this);
         registerAllPropertyToIncrementTrackerOnChanges(state);
     }
 
     @Override
     public long getStateModificationCount() {
+
         return this.tracker.getModificationCount();
     }
 
     private void registerAllPropertyToIncrementTrackerOnChanges(@NotNull ProjectSettingsState state) {
+
         incrementTrackerWhenPropertyChanges(state.authoringMode);
         incrementTrackerWhenPropertyChanges(state.editingMode);
         incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
@@ -64,6 +71,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
     }
 
     private <T> void incrementTrackerWhenPropertyChanges(Property<T> property) {
+
         property.advise(new LifetimeDefinition(), v -> {
             this.tracker.incModificationCount();
             return Unit.INSTANCE;

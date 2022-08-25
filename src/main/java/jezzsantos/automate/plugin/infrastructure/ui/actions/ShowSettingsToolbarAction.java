@@ -12,11 +12,13 @@ import org.jetbrains.annotations.NotNull;
 public class ShowSettingsToolbarAction extends AnAction {
 
     public ShowSettingsToolbarAction() {
+
         super();
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.ShowSettings.Title");
@@ -34,6 +36,7 @@ public class ShowSettingsToolbarAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         var project = e.getProject();
         if (project != null) {
             ShowSettingsUtil.getInstance().showSettingsDialog(project, ProjectSettingsConfigurable.class);

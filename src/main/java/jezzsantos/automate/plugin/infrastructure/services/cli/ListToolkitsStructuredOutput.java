@@ -15,12 +15,14 @@ public class ListToolkitsStructuredOutput extends StructuredOutput<ListToolkits>
 
     @UsedImplicitly
     public ListToolkitsStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new ListToolkits();
+            this.Values = new ListToolkits();
         }})));
     }
 
     public List<ToolkitLite> getToolkits() {
+
         return this.Output.get(0).Values.Toolkits;
     }
 }

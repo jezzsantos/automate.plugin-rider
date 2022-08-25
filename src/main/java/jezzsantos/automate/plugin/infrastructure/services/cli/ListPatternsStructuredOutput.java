@@ -15,12 +15,14 @@ public class ListPatternsStructuredOutput extends StructuredOutput<ListPatterns>
 
     @UsedImplicitly
     public ListPatternsStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new ListPatterns();
+            this.Values = new ListPatterns();
         }})));
     }
 
     public List<PatternLite> getPatterns() {
+
         return this.Output.get(0).Values.Patterns;
     }
 }

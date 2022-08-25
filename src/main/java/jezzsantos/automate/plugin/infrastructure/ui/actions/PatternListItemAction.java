@@ -19,10 +19,12 @@ public class PatternListItemAction extends AnAction {
     private final Runnable onPerformed;
 
     public PatternListItemAction(@NotNull Runnable onPerformed) {
+
         this(onPerformed, "", null);
     }
 
     public PatternListItemAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
+
         super();
         this.onPerformed = onPerformed;
         this.name = name;
@@ -31,6 +33,7 @@ public class PatternListItemAction extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
         var message = this.name;
         var presentation = e.getPresentation();
@@ -42,21 +45,22 @@ public class PatternListItemAction extends AnAction {
             var currentPattern = application.getCurrentPatternInfo();
             var isCurrentPattern = currentPattern != null && currentPattern.getId().equals(this.id);
             presentation.setIcon(isCurrentPattern
-                                         ? AllIcons.Actions.Checked
-                                         : null);
+                                   ? AllIcons.Actions.Checked
+                                   : null);
             presentation.setEnabledAndVisible(true);
         }
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         if (this.id != null) {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
                 try {
                     application.setCurrentPattern(this.id);
-                    onPerformed.run();
+                    this.onPerformed.run();
                 } catch (Exception ex) {
                     ExceptionHandler.handle(project, ex, AutomateBundle.message("action.PatternsListToolbarItem.FailureNotification.Title"));
                 }

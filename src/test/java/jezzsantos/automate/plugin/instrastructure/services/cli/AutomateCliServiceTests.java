@@ -28,19 +28,20 @@ public class AutomateCliServiceTests {
 
         var configuration = Mockito.mock(IConfiguration.class);
         Mockito.when(configuration.getExecutablePath())
-                .thenReturn("anexecutablepath");
+          .thenReturn("anexecutablepath");
         this.cache = Mockito.mock(IAutomationCache.class);
         var platform = Mockito.mock(IOsPlatform.class);
         Mockito.when(platform.getIsWindowsOs())
-                .thenReturn(true);
+          .thenReturn(true);
         Mockito.when(platform.getDotNetInstallationDirectory())
-                .thenReturn("aninstallationdirectory");
+          .thenReturn("aninstallationdirectory");
         this.runner = Mockito.mock(IAutomateCliRunner.class);
-        this.service = new AutomateCliService(configuration, cache, platform, runner);
+        this.service = new AutomateCliService(configuration, this.cache, platform, this.runner);
     }
 
     @Test
     public void whenGetExecutableName_ThenReturnsName() {
+
         var result = this.service.getExecutableName();
 
         assertEquals("automate.exe", result);
@@ -48,6 +49,7 @@ public class AutomateCliServiceTests {
 
     @Test
     public void whenGetDefaultInstallLocation_ThenReturnsName() {
+
         var result = this.service.getDefaultInstallLocation();
 
         var path = Paths.get("aninstallationdirectory").resolve("automate.exe").toString();
@@ -56,8 +58,9 @@ public class AutomateCliServiceTests {
 
     @Test
     public void whenTryGetExecutableVersionAndInvalidPath_ThenReturnsNull() {
+
         Mockito.when(this.runner.execute(anyString(), anyList()))
-                .thenReturn(new CliTextResult("anerror", ""));
+          .thenReturn(new CliTextResult("anerror", ""));
 
         var result = this.service.tryGetExecutableVersion("anexecutablepath");
 
@@ -66,8 +69,9 @@ public class AutomateCliServiceTests {
 
     @Test
     public void whenTryGetExecutableVersion_ThenReturnsOutput() {
+
         Mockito.when(this.runner.execute(anyString(), anyList()))
-                .thenReturn(new CliTextResult("", "anoutput"));
+          .thenReturn(new CliTextResult("", "anoutput"));
 
         var result = this.service.tryGetExecutableVersion("anexecutablepath");
 
@@ -79,9 +83,9 @@ public class AutomateCliServiceTests {
     public void whenListAllAutomationAndNotCachedAndFails_ThenReturnsEmptyLists() {
 
         Mockito.when(this.runner.executeStructured(any(), anyString(), anyList()))
-                .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
+          .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.ListAll(ArgumentMatchers.any(), anyBoolean()))
-                .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
+          .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
         var result = this.service.listAllAutomation(false);
 
@@ -89,9 +93,9 @@ public class AutomateCliServiceTests {
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
         Mockito.verify(this.runner).executeStructured(
-                any(),
-                argThat(x -> x.equals("anexecutablepath")),
-                argThat(list -> list.equals(Arrays.asList("list", "all"))));
+          any(),
+          argThat(x -> x.equals("anexecutablepath")),
+          argThat(list -> list.equals(Arrays.asList("list", "all"))));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -99,9 +103,9 @@ public class AutomateCliServiceTests {
     public void whenListAllAutomationAndNotCached_ThenReturnsCliResult() {
 
         Mockito.when(this.runner.executeStructured(any(), anyString(), anyList()))
-                .thenReturn(new CliStructuredResult(null, new ListAllDefinitionsStructuredOutput()));
+          .thenReturn(new CliStructuredResult(null, new ListAllDefinitionsStructuredOutput()));
         Mockito.when(this.cache.ListAll(ArgumentMatchers.any(), anyBoolean()))
-                .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
+          .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
         var result = this.service.listAllAutomation(false);
 
@@ -109,18 +113,18 @@ public class AutomateCliServiceTests {
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
         Mockito.verify(this.runner).executeStructured(
-                any(),
-                argThat(x -> x.equals("anexecutablepath")),
-                argThat(list -> list.equals(Arrays.asList("list", "all"))));
+          any(),
+          argThat(x -> x.equals("anexecutablepath")),
+          argThat(list -> list.equals(Arrays.asList("list", "all"))));
     }
 
     @Test
     public void whenListAllAutomationAndCached_ThenReturnsCached() {
 
         Mockito.when(this.runner.executeStructured(any(), anyString(), anyList()))
-                .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
+          .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.ListAll(ArgumentMatchers.any(), anyBoolean()))
-                .thenReturn(new AllStateLite());
+          .thenReturn(new AllStateLite());
 
         var result = this.service.listAllAutomation(false);
 

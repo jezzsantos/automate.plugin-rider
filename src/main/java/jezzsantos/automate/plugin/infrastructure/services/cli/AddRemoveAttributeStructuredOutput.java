@@ -18,12 +18,14 @@ public class AddRemoveAttributeStructuredOutput extends StructuredOutput<AddRemo
 
     @TestOnly
     public AddRemoveAttributeStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new AddRemoveAttribute();
+            this.Values = new AddRemoveAttribute();
         }})));
     }
 
     public Attribute getAttribute() {
+
         var values = this.Output.get(0).Values;
         return new Attribute(values.AttributeId, values.Name);
     }

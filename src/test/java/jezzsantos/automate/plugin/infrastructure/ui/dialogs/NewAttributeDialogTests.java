@@ -13,6 +13,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndNameIsEmpty_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>());
 
         var result = NewAttributeDialog.doValidate(context, "", "", "", new ArrayList<>());
@@ -24,6 +25,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndNameIsInvalid_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>());
 
         var result = NewAttributeDialog.doValidate(context, "^aninvalidname^", "", "", new ArrayList<>());
@@ -35,6 +37,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndNameIsReserved_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(List.of(new Attribute("anid", "anattributename"))), new ArrayList<>());
 
         var result = NewAttributeDialog.doValidate(context, "anattributename", "", "", new ArrayList<>());
@@ -46,6 +49,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndDataTypeIsEmpty_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of("adatatype1")));
 
         var result = NewAttributeDialog.doValidate(context, "aname", "", "", new ArrayList<>());
@@ -57,6 +61,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndDataTypeIsInvalid_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of("adatatype1")));
 
         var result = NewAttributeDialog.doValidate(context, "aname", "aninvaliddatatype", "", new ArrayList<>());
@@ -68,6 +73,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndDefaultValueNotMatchDataType_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of("int")));
 
         var result = NewAttributeDialog.doValidate(context, "aname", "int", "notanintegervalue", new ArrayList<>());
@@ -79,6 +85,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndDefaultValueIsNotAChoice_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of("string")));
 
         var result = NewAttributeDialog.doValidate(context, "aname", "string", "notachoice", new ArrayList<>(List.of("achoice1", "achoice2", "achoice3")));
@@ -90,6 +97,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidateAndAChoiceNotMatchDataType_ThenReturnsError() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of("int")));
 
         var result = NewAttributeDialog.doValidate(context, "aname", "int", "", new ArrayList<>(List.of("1", "notaninteger", "3")));
@@ -101,6 +109,7 @@ public class NewAttributeDialogTests {
 
     @Test
     public void whenDoValidate_ThenReturnsNull() {
+
         var context = new NewAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of("string")));
 
         var result = NewAttributeDialog.doValidate(context, "aname", "string", "adefaultvalue", new ArrayList<>());

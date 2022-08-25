@@ -11,6 +11,7 @@ public class NewPatternDialogContext {
     public String Name;
 
     public NewPatternDialogContext(@NotNull List<PatternLite> patterns) {
+
         this.Patterns = patterns;
     }
 }

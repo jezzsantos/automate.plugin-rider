@@ -19,22 +19,24 @@ public class NewPatternDialog extends DialogWrapper {
     private JLabel nameTitle;
 
     public NewPatternDialog(@Nullable Project project, @NotNull NewPatternDialogContext context) {
+
         super(project);
         this.context = context;
 
         this.init();
         this.setTitle(AutomateBundle.message("dialog.NewPattern.Title"));
-        nameTitle.setText(AutomateBundle.message("dialog.NewPattern.Name.Title"));
-        name.setText(this.context.Name);
+        this.nameTitle.setText(AutomateBundle.message("dialog.NewPattern.Name.Title"));
+        this.name.setText(this.context.Name);
     }
 
     @TestOnly
     public static @Nullable ValidationInfo doValidate(NewPatternDialogContext context, String name) {
+
         if (!name.matches(AutomateConstants.PatternNameRegex)) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch.Message"));
         }
         var patternExists = context.Patterns.stream()
-                .anyMatch(pattern -> pattern.getName().equalsIgnoreCase(name));
+          .anyMatch(pattern -> pattern.getName().equalsIgnoreCase(name));
         if (patternExists) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists.Message"));
         }
@@ -44,26 +46,31 @@ public class NewPatternDialog extends DialogWrapper {
 
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        return name;
+
+        return this.name;
     }
 
     public NewPatternDialogContext getContext() {
+
         return this.context;
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        return contents;
+
+        return this.contents;
     }
 
     @Override
     protected @Nullable ValidationInfo doValidate() {
+
         var name = this.name.getText();
         return doValidate(this.context, name);
     }
 
     @Override
     protected void doOKAction() {
+
         super.doOKAction();
         this.context.Name = this.name.getText();
     }

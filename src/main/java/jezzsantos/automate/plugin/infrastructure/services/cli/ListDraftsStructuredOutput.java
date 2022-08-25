@@ -15,12 +15,14 @@ public class ListDraftsStructuredOutput extends StructuredOutput<ListDrafts> {
 
     @UsedImplicitly
     public ListDraftsStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new ListDrafts();
+            this.Values = new ListDrafts();
         }})));
     }
 
     public List<DraftLite> getDrafts() {
+
         return this.Output.get(0).Values.Drafts;
     }
 }

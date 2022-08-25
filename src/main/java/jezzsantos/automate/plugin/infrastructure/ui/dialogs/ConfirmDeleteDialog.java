@@ -13,6 +13,7 @@ public class ConfirmDeleteDialog extends DialogWrapper {
     private JLabel message;
 
     public ConfirmDeleteDialog(@NotNull Project project, @NotNull ConfirmDeleteDialogContext context) {
+
         super(project);
 
         this.init();
@@ -21,12 +22,14 @@ public class ConfirmDeleteDialog extends DialogWrapper {
     }
 
     public static boolean confirms(Project project, String title, String message) {
+
         var dialog = new ConfirmDeleteDialog(project, new ConfirmDeleteDialogContext(title, message));
         return dialog.showAndGet();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
+
         return this.contents;
     }
 }

@@ -18,12 +18,14 @@ public class DeleteAttributeAction extends AnAction {
     private final Action<PatternTreeModel> onSuccess;
 
     public DeleteAttributeAction(Action<PatternTreeModel> onSuccess) {
+
         super();
         this.onSuccess = onSuccess;
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.DeleteAttribute.Title");
@@ -65,6 +67,7 @@ public class DeleteAttributeAction extends AnAction {
     }
 
     private Attribute getAttribute(AnActionEvent e) {
+
         var data = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (data instanceof Attribute) {
             return (Attribute) data;

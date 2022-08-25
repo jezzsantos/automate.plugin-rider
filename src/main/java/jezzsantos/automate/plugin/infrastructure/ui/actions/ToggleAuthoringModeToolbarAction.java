@@ -13,6 +13,7 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
     private boolean selected;
 
     public ToggleAuthoringModeToolbarAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -33,11 +34,13 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
 
     @Override
     public boolean isSelected(@NotNull AnActionEvent anActionEvent) {
+
         return this.selected;
     }
 
     @Override
     public void setSelected(@NotNull AnActionEvent e, boolean selected) {
+
         this.selected = !this.selected;
 
         SetPresentation(e);
@@ -52,6 +55,7 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
 
     @SuppressWarnings("DialogTitleCapitalization")
     private void SetPresentation(@NotNull AnActionEvent e) {
+
         var message = AutomateBundle.message("action.ToggleAuthoringMode.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);

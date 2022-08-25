@@ -16,6 +16,7 @@ public class AddDraftAction extends AnAction {
     private final Runnable onPerformed;
 
     public AddDraftAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -23,6 +24,7 @@ public class AddDraftAction extends AnAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.AddDraft.Title");
@@ -42,6 +44,7 @@ public class AddDraftAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
@@ -55,7 +58,7 @@ public class AddDraftAction extends AnAction {
                 } catch (Exception ex) {
                     ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddDraft.FailureNotification.Title"));
                 }
-                onPerformed.run();
+                this.onPerformed.run();
             }
         }
     }

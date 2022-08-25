@@ -28,11 +28,13 @@ public class Automation {
     private List<String> cmdIds;
 
     public Automation(@NotNull String id, @NotNull String name) {
+
         this.id = id;
         this.name = name;
     }
 
     public String getName() {
+
         return this.name;
     }
 
@@ -43,8 +45,8 @@ public class Automation {
         switch (this.type) {
             case CodeTemplateCommand:
                 var onceOnly = this.isOneOff
-                        ? ", onceonly"
-                        : ", always";
+                  ? ", onceonly"
+                  : ", always";
                 data = String.format("template: %s%s, path: %s", this.templateId, onceOnly, this.targetPath);
                 break;
             case CliCommand:
@@ -59,6 +61,7 @@ public class Automation {
     }
 
     public AutomationType getType() {
+
         return this.type;
     }
 }

@@ -6,6 +6,7 @@ public class TryTest {
 
     @Test
     public void whenTryAndThrows_ThenReturns() {
+
         Try.safely(() -> {
             throw new Exception("amessage");
         });
@@ -13,6 +14,7 @@ public class TryTest {
 
     @Test
     public void whenTry_TheReturns() {
+
         Try.safely(() -> {});
     }
 }

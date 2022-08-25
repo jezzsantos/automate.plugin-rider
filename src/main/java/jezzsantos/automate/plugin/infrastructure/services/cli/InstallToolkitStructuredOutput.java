@@ -16,8 +16,9 @@ public class InstallToolkitStructuredOutput extends StructuredOutput<InstallTool
 
     @UsedImplicitly
     public InstallToolkitStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new InstallToolkit();
+            this.Values = new InstallToolkit();
         }})));
     }
 

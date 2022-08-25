@@ -24,33 +24,37 @@ public class Attribute {
     private String defaultValue;
 
     public Attribute(@NotNull String id, @NotNull String name) {
+
         this.id = id;
         this.name = name;
     }
 
     public String getName() {
+
         return this.name;
     }
 
     @Override
     public String toString() {
+
         var choices = this.choices.isEmpty()
-                ? ""
-                : String.format(", oneof: %s", String.join(";", this.choices));
+          ? ""
+          : String.format(", oneof: %s", String.join(";", this.choices));
         var defaultValue = this.defaultValue.isEmpty()
-                ? ""
-                : String.format(", default: %s", this.defaultValue);
+          ? ""
+          : String.format(", default: %s", this.defaultValue);
         return String.format("%s  (%s, %s%s%s)", this.name, this.dataType, this.isRequired
-                ? "[required]"
-                : "[optional]", choices, defaultValue);
+          ? "[required]"
+          : "[optional]", choices, defaultValue);
     }
 
     public void setProperties(boolean isRequired, @NotNull String dataType, @Nullable String defaultValue, @Nullable List<String> choices) {
+
         this.isRequired = isRequired;
         this.defaultValue = defaultValue;
         this.dataType = dataType;
         this.choices = choices == null
-                ? this.choices
-                : choices;
+          ? this.choices
+          : choices;
     }
 }

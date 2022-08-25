@@ -18,10 +18,12 @@ public class AllStateLite {
     private final List<DraftLite> drafts;
 
     public AllStateLite() {
+
         this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     public AllStateLite(@NotNull List<PatternLite> patterns, @NotNull List<ToolkitLite> toolkits, @NotNull List<DraftLite> drafts) {
+
         this.patterns = patterns;
         this.toolkits = toolkits;
         this.drafts = drafts;
@@ -29,16 +31,19 @@ public class AllStateLite {
 
     @NotNull
     public List<PatternLite> getPatterns() {
+
         return this.patterns;
     }
 
     @NotNull
     public List<ToolkitLite> getToolkits() {
+
         return this.toolkits;
     }
 
     @NotNull
     public List<DraftLite> getDrafts() {
+
         return this.drafts;
     }
 }

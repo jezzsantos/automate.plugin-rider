@@ -7,16 +7,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EditingModePropertyConverter extends Converter<Property<EditingMode>> {
+
     @Override
     public @Nullable Property<EditingMode> fromString(@NotNull String s) {
 
         return new Property<>(s.equals(EditingMode.Drafts.toString())
-                                      ? EditingMode.Drafts
-                                      : EditingMode.Patterns);
+                                ? EditingMode.Drafts
+                                : EditingMode.Patterns);
     }
 
     @Override
     public @Nullable String toString(@NotNull Property<EditingMode> mode) {
+
         return mode.getValue().toString();
     }
 }

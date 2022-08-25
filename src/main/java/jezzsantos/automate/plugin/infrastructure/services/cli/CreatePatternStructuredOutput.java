@@ -17,12 +17,14 @@ public class CreatePatternStructuredOutput extends StructuredOutput<CreatePatter
 
     @UsedImplicitly
     public CreatePatternStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new CreatePattern();
+            this.Values = new CreatePattern();
         }})));
     }
 
     public PatternLite getPattern() {
+
         var values = this.Output.get(0).Values;
         return new PatternLite(values.PatternId, values.Name, values.Version, true);
     }

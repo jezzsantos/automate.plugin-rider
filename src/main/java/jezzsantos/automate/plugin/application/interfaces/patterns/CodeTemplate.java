@@ -16,16 +16,19 @@ public class CodeTemplate {
     private String originalFileExtension;
 
     public CodeTemplate(@NotNull String id, @NotNull String name) {
+
         this.id = id;
         this.name = name;
     }
 
     public String getName() {
+
         return this.name;
     }
 
     @Override
     public String toString() {
+
         var filePath = String.format("original: %s", this.originalFilePath);
         return String.format("%s (%s)", this.name, filePath);
     }

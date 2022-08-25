@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 public interface IConfiguration {
 
     static IConfiguration getInstance(Project project) {
+
         return project.getService(IConfiguration.class);
     }
 

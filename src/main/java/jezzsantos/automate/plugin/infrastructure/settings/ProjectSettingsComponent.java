@@ -25,69 +25,78 @@ public class ProjectSettingsComponent {
     private final JBLabel testPathToAutomateResult = new JBLabel();
 
     public ProjectSettingsComponent(Project project) {
+
         var application = IAutomateApplication.getInstance(project);
         var defaultInstallLocation = application.getDefaultInstallLocation();
-        pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
-        pathToAutomateExecutable.setPreferredSize(new Dimension(380, pathToAutomateExecutable.getHeight()));
-        pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
+        this.pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
+        this.pathToAutomateExecutable.setPreferredSize(new Dimension(380, this.pathToAutomateExecutable.getHeight()));
+        this.pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
-        testPathToAutomatePanel.add(pathToAutomateExecutable, BorderLayout.LINE_START);
+        testPathToAutomatePanel.add(this.pathToAutomateExecutable, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
 
-        minPanel = FormBuilder.createFormBuilder()
-                .addComponent(authoringMode, 1)
-                .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false)
-                .addComponentToRightColumn(testPathToAutomateResult)
-                .addComponent(viewCliLog, 1)
-                .addComponentFillVertically(new JPanel(), 0)
-                .getPanel();
+        this.minPanel = FormBuilder.createFormBuilder()
+          .addComponent(this.authoringMode, 1)
+          .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1, false)
+          .addComponentToRightColumn(this.testPathToAutomateResult)
+          .addComponent(this.viewCliLog, 1)
+          .addComponentFillVertically(new JPanel(), 0)
+          .getPanel();
     }
 
     public JPanel getPanel() {
-        return minPanel;
+
+        return this.minPanel;
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return authoringMode;
+
+        return this.authoringMode;
     }
 
     public boolean getAuthoringMode() {
-        return authoringMode.isSelected();
+
+        return this.authoringMode.isSelected();
     }
 
     public void setAuthoringMode(boolean value) {
-        authoringMode.setSelected(value);
+
+        this.authoringMode.setSelected(value);
     }
 
     public boolean getViewCliLog() {
-        return viewCliLog.isSelected();
+
+        return this.viewCliLog.isSelected();
     }
 
     public void setViewCliLog(boolean value) {
-        viewCliLog.setSelected(value);
+
+        this.viewCliLog.setSelected(value);
     }
 
     public String getPathToAutomateExecutable() {
-        return pathToAutomateExecutable.getText();
+
+        return this.pathToAutomateExecutable.getText();
     }
 
     public void setPathToAutomateExecutable(String value) {
-        pathToAutomateExecutable.setText(value);
+
+        this.pathToAutomateExecutable.setText(value);
     }
 
     private void onTestPathToAutomate(ActionEvent ignored, IAutomateApplication automateApplication) {
 
-        var version = automateApplication.tryGetExecutableVersion(pathToAutomateExecutable.getText());
+        var version = automateApplication.tryGetExecutableVersion(this.pathToAutomateExecutable.getText());
         if (version == null) {
-            testPathToAutomateResult.setForeground(DarculaColors.RED);
-            testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Invalid.Message", AutomateConstants.ExecutableName));
+            this.testPathToAutomateResult.setForeground(DarculaColors.RED);
+            this.testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Invalid.Message", AutomateConstants.ExecutableName));
         }
         else {
-            testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
-            testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Success.Message", AutomateConstants.ExecutableName, version));
+            this.testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
+            this.testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Success.Message", AutomateConstants.ExecutableName, version));
         }
 
     }

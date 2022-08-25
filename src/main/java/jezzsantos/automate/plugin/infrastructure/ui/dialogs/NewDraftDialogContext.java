@@ -13,6 +13,7 @@ public class NewDraftDialogContext {
     public String ToolkitName;
 
     public NewDraftDialogContext(List<ToolkitLite> installedToolkits, List<DraftLite> drafts) {
+
         this.InstalledToolkits = installedToolkits;
         this.Drafts = drafts;
     }

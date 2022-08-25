@@ -18,38 +18,52 @@ import java.util.List;
 public interface IAutomateService {
 
     static IAutomateService getInstance(Project project) {
+
         return project.getService(IAutomateService.class);
     }
 
-    @NotNull String getExecutableName();
+    @NotNull
+    String getExecutableName();
 
-    @NotNull String getDefaultInstallLocation();
+    @NotNull
+    String getDefaultInstallLocation();
 
-    @Nullable String tryGetExecutableVersion(@NotNull String executablePath);
+    @Nullable
+    String tryGetExecutableVersion(@NotNull String executablePath);
 
-    @NotNull AllStateLite listAllAutomation(boolean forceRefresh);
+    @NotNull
+    AllStateLite listAllAutomation(boolean forceRefresh);
 
-    @NotNull List<PatternLite> listPatterns();
+    @NotNull
+    List<PatternLite> listPatterns();
 
-    @NotNull List<ToolkitLite> listToolkits();
+    @NotNull
+    List<ToolkitLite> listToolkits();
 
-    @NotNull List<DraftLite> listDrafts();
+    @NotNull
+    List<DraftLite> listDrafts();
 
-    @NotNull PatternLite createPattern(@NotNull String name) throws Exception;
+    @NotNull
+    PatternLite createPattern(@NotNull String name) throws Exception;
 
-    @NotNull PatternDetailed getCurrentPatternDetailed() throws Exception;
+    @NotNull
+    PatternDetailed getCurrentPatternDetailed() throws Exception;
 
-    @Nullable PatternLite getCurrentPatternInfo();
+    @Nullable
+    PatternLite getCurrentPatternInfo();
 
     void setCurrentPattern(@NotNull String id) throws Exception;
 
-    @NotNull DraftDetailed getCurrentDraftDetailed() throws Exception;
+    @NotNull
+    DraftDetailed getCurrentDraftDetailed() throws Exception;
 
-    @Nullable DraftLite getCurrentDraftInfo();
+    @Nullable
+    DraftLite getCurrentDraftInfo();
 
     void setCurrentDraft(@NotNull String id) throws Exception;
 
-    @NotNull DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
+    @NotNull
+    DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String location) throws Exception;
 
@@ -57,7 +71,8 @@ public interface IAutomateService {
 
     void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
 
-    @NotNull List<CliLogEntry> getCliLog();
+    @NotNull
+    List<CliLogEntry> getCliLog();
 
     Attribute addAttribute(@NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 

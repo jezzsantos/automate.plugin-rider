@@ -18,10 +18,12 @@ public class DraftListItemAction extends AnAction {
     private final String id;
 
     public DraftListItemAction(@NotNull Runnable onPerformed) {
+
         this(onPerformed, "", null);
     }
 
     public DraftListItemAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
+
         super();
         this.onPerformed = onPerformed;
         this.name = name;
@@ -30,6 +32,7 @@ public class DraftListItemAction extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
         var message = this.name;
         var presentation = e.getPresentation();
@@ -41,21 +44,22 @@ public class DraftListItemAction extends AnAction {
             var currentDraft = application.getCurrentDraftInfo();
             var isCurrentDraft = currentDraft != null && currentDraft.getId().equals(this.id);
             presentation.setIcon(isCurrentDraft
-                                         ? AllIcons.Actions.Checked
-                                         : null);
+                                   ? AllIcons.Actions.Checked
+                                   : null);
             presentation.setEnabledAndVisible(true);
         }
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         if (this.id != null) {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
                 try {
                     application.setCurrentDraft(this.id);
-                    onPerformed.run();
+                    this.onPerformed.run();
                 } catch (Exception ex) {
                     ExceptionHandler.handle(project, ex, AutomateBundle.message("action.DraftListItem.FailureNotification.Title"));
                 }

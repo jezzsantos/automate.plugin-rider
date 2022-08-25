@@ -21,12 +21,14 @@ public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
 
     @UsedImplicitly
     public CreateDraftStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new CreateDraft();
+            this.Values = new CreateDraft();
         }})));
     }
 
     public DraftLite getDraft() {
+
         var values = this.Output.get(0).Values;
         return new DraftLite(values.DraftId, values.Name, values.ToolkitId, values.Version, true);
     }

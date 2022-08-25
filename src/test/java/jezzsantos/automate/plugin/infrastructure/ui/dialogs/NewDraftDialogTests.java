@@ -14,6 +14,7 @@ public class NewDraftDialogTests {
 
     @Test
     public void whenDoValidateAndToolkitIsEmpty_ThenReturnsError() {
+
         var context = new NewDraftDialogContext(new ArrayList<>(), new ArrayList<>());
 
         var result = NewDraftDialog.doValidate(context, null, "");
@@ -25,6 +26,7 @@ public class NewDraftDialogTests {
 
     @Test
     public void whenDoValidateAndToolkitIsInvalid_ThenReturnsError() {
+
         var toolkit1 = new ToolkitLite("anid1", "atoolkitname1", "aversion1");
         var toolkit2 = new ToolkitLite("anid2", "atoolkitname2", "aversion2");
         var context = new NewDraftDialogContext(new ArrayList<>(List.of(toolkit1)), new ArrayList<>());
@@ -38,6 +40,7 @@ public class NewDraftDialogTests {
 
     @Test
     public void whenDoValidateAndEmptyName_ThenReturnsError() {
+
         var toolkit = new ToolkitLite("anid", "atoolkitname", "aversion");
         var context = new NewDraftDialogContext(new ArrayList<>(List.of(toolkit)), new ArrayList<>());
 
@@ -50,6 +53,7 @@ public class NewDraftDialogTests {
 
     @Test
     public void whenDoValidateAndInvalidName_ThenReturnsError() {
+
         var toolkit = new ToolkitLite("anid", "atoolkitname", "aversion");
         var context = new NewDraftDialogContext(new ArrayList<>(List.of(toolkit)), new ArrayList<>());
 
@@ -62,6 +66,7 @@ public class NewDraftDialogTests {
 
     @Test
     public void whenDoValidateAndNameIsReserved_ThenReturnsError() {
+
         var toolkit = new ToolkitLite("anid", "atoolkitname", "aversion");
         var draft = new DraftLite("anid", "adraftname", "atoolkitid", "aversion", false);
         var context = new NewDraftDialogContext(new ArrayList<>(List.of(toolkit)), new ArrayList<>(List.of(draft)));
@@ -75,6 +80,7 @@ public class NewDraftDialogTests {
 
     @Test
     public void whenDoValidate_ThenReturnsNull() {
+
         var toolkit = new ToolkitLite("anid", "atoolkitname", "aversion");
         var context = new NewDraftDialogContext(new ArrayList<>(List.of(toolkit)), new ArrayList<>());
 

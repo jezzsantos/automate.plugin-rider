@@ -16,6 +16,7 @@ public class InstallToolkitToolbarAction extends AnAction {
     private final Runnable onPerformed;
 
     public InstallToolkitToolbarAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -23,6 +24,7 @@ public class InstallToolkitToolbarAction extends AnAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.InstallToolkit.Title");
@@ -42,6 +44,7 @@ public class InstallToolkitToolbarAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
@@ -50,7 +53,7 @@ public class InstallToolkitToolbarAction extends AnAction {
                 var context = dialog.getContext();
                 try {
                     application.installToolkit(context.ToolkitLocation);
-                    onPerformed.run();
+                    this.onPerformed.run();
                 } catch (Exception ex) {
                     ExceptionHandler.handle(project, ex, AutomateBundle.message("action.InstallToolkit.FailureNotification.Title"));
                 }

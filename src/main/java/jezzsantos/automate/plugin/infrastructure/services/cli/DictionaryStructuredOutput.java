@@ -11,8 +11,9 @@ public class DictionaryStructuredOutput extends StructuredOutput<HashMap<String,
 
     @UsedImplicitly
     public DictionaryStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new HashMap<>();
+            this.Values = new HashMap<>();
         }})));
     }
 }

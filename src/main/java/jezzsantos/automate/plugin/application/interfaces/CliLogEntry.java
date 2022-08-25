@@ -9,6 +9,7 @@ public class CliLogEntry {
     public CliLogEntryType Type;
 
     public CliLogEntry(@NotNull String text, CliLogEntryType type) {
+
         this.Text = text;
         this.Type = type;
     }

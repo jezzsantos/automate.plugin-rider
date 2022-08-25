@@ -13,17 +13,20 @@ public class GetPatternStructuredOutput extends StructuredOutput<PatternDetailed
 
     @UsedImplicitly
     public GetPatternStructuredOutput() {
+
     }
 
     @SuppressWarnings("unused")
     @TestOnly
     public GetPatternStructuredOutput(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new PatternDetailed(id, name, version, pattern);
+            this.Values = new PatternDetailed(id, name, version, pattern);
         }})));
     }
 
     public PatternDetailed getPattern() {
+
         return this.Output.get(0).Values;
     }
 }

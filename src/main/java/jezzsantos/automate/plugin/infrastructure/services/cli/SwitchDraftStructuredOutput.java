@@ -21,13 +21,15 @@ public class SwitchDraftStructuredOutput extends StructuredOutput<SwitchDraft> {
 
     @UsedImplicitly
     public SwitchDraftStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new SwitchDraft();
+            this.Values = new SwitchDraft();
         }})));
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public DraftLite getDraft() {
+
         var values = this.Output.get(0).Values;
         return new DraftLite(values.DraftId, values.Name, values.ToolkitId, values.Version, true);
     }

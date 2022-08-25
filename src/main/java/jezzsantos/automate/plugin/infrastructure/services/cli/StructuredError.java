@@ -18,6 +18,7 @@ public final class StructuredError {
     }
 
     public String getErrorMessage() {
-        return String.format("%s", Error.Message);
+
+        return String.format("%s", this.Error.Message);
     }
 }

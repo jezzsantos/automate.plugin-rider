@@ -15,8 +15,8 @@ public class AutomateTree extends Tree implements DataProvider {
         if (PlatformCoreDataKeys.SELECTED_ITEM.is(dataId)) {
             var path = getSelectionPath();
             return path != null
-                    ? path.getLastPathComponent()
-                    : null;
+              ? path.getLastPathComponent()
+              : null;
         }
 
         return null;

@@ -20,16 +20,18 @@ public class ListAllDefinitionsStructuredOutput extends StructuredOutput<ListAll
 
     @UsedImplicitly
     public ListAllDefinitionsStructuredOutput() {
+
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            Values = new ListAllDefinitions();
+            this.Values = new ListAllDefinitions();
         }}, new StructuredOutputOutput<>() {{
-            Values = new ListAllDefinitions();
+            this.Values = new ListAllDefinitions();
         }}, new StructuredOutputOutput<>() {{
-            Values = new ListAllDefinitions();
+            this.Values = new ListAllDefinitions();
         }})));
     }
 
     public AllStateLite getAll() {
+
         return new AllStateLite(this.Output.get(0).Values.Patterns, this.Output.get(1).Values.Toolkits, this.Output.get(2).Values.Drafts);
     }
 }

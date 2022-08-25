@@ -15,12 +15,14 @@ public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
     private final Runnable onPerformed;
 
     public AdvancedOptionsToolbarActionGroup(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.ShowSettings.Title");
@@ -38,11 +40,13 @@ public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
 
     @Override
     public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
-        return new AnAction[]{new ToggleAuthoringModeMenuAction(onPerformed), new Separator(), new ShowSettingsMenuAction()};
+
+        return new AnAction[]{new ToggleAuthoringModeMenuAction(this.onPerformed), new Separator(), new ShowSettingsMenuAction()};
     }
 
     @Override
     public boolean isPopup() {
+
         return true;
     }
 }

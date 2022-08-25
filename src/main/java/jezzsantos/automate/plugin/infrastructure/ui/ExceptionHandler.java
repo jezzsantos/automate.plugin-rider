@@ -9,10 +9,11 @@ import org.jetbrains.annotations.Nullable;
 public class ExceptionHandler {
 
     public static void handle(@Nullable Project project, @NotNull Exception exception, @NotNull String title) {
+
         NotificationGroupManager.getInstance()
-                .getNotificationGroup("automate")
-                .createNotification(title, exception.getMessage(), NotificationType.ERROR)
-                .notify(project);
+          .getNotificationGroup("automate")
+          .createNotification(title, exception.getMessage(), NotificationType.ERROR)
+          .notify(project);
     }
 
 }

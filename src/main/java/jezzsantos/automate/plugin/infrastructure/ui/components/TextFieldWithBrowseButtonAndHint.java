@@ -11,11 +11,13 @@ public class TextFieldWithBrowseButtonAndHint extends TextFieldWithBrowseButton 
     private String hint;
 
     public TextFieldWithBrowseButtonAndHint() {
+
         this.hint = "";
     }
 
     @Override
     public void paint(Graphics g) {
+
         super.paint(g);
 
         var textField = this.getTextField();
@@ -36,6 +38,7 @@ public class TextFieldWithBrowseButtonAndHint extends TextFieldWithBrowseButton 
     }
 
     public void setHint(@NotNull String hint) {
+
         this.hint = hint;
     }
 }

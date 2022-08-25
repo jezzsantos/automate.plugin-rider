@@ -23,19 +23,21 @@ public class InstallToolkitDialog extends DialogWrapper {
     private TextFieldWithBrowseButtonAndHint location;
 
     public InstallToolkitDialog(@Nullable Project project, @NotNull InstallToolkitDialogContext context) {
+
         super(project);
         this.context = context;
 
         this.init();
         this.setTitle(AutomateBundle.message("dialog.InstallToolkit.Title"));
-        locationTitle.setText(AutomateBundle.message("dialog.InstallToolkit.Location.Title"));
-        locationTitle.setLabelFor(this.location);
-        location.setPreferredSize(new Dimension(380, location.getHeight()));
-        location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
+        this.locationTitle.setText(AutomateBundle.message("dialog.InstallToolkit.Location.Title"));
+        this.locationTitle.setLabelFor(this.location);
+        this.location.setPreferredSize(new Dimension(380, this.location.getHeight()));
+        this.location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
     }
 
     @TestOnly
     public static @Nullable ValidationInfo doValidate(InstallToolkitDialogContext ignoredContext, String location) {
+
         if (location.isEmpty()) {
             return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension));
         }
@@ -50,31 +52,37 @@ public class InstallToolkitDialog extends DialogWrapper {
 
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        return contents;
+
+        return this.contents;
     }
 
     public InstallToolkitDialogContext getContext() {
+
         return this.context;
     }
 
     private void createUIComponents() {
+
         this.location = new TextFieldWithBrowseButtonAndHint();
         this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        return contents;
+
+        return this.contents;
     }
 
     @Override
     protected @Nullable ValidationInfo doValidate() {
+
         var location = this.location.getText();
         return doValidate(this.context, location);
     }
 
     @Override
     protected void doOKAction() {
+
         super.doOKAction();
         this.context.ToolkitLocation = this.location.getText();
     }

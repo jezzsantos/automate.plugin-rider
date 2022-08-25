@@ -16,6 +16,7 @@ public class AddPatternAction extends AnAction {
     private final Runnable onPerformed;
 
     public AddPatternAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -23,6 +24,7 @@ public class AddPatternAction extends AnAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.AddPattern.Title");
@@ -44,6 +46,7 @@ public class AddPatternAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
@@ -56,7 +59,7 @@ public class AddPatternAction extends AnAction {
                 } catch (Exception ex) {
                     ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AppPattern.FailureNotification.Title"));
                 }
-                onPerformed.run();
+                this.onPerformed.run();
             }
         }
     }

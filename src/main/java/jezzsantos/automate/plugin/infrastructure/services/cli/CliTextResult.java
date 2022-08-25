@@ -8,19 +8,23 @@ public class CliTextResult {
     private final String output;
 
     public CliTextResult(@NotNull String error, @NotNull String output) {
+
         this.error = error;
         this.output = output;
     }
 
     public Boolean isError() {
+
         return !this.error.isEmpty() && this.output.isEmpty();
     }
 
     public String getError() {
+
         return this.error;
     }
 
     public String getOutput() {
+
         return this.output;
     }
 }

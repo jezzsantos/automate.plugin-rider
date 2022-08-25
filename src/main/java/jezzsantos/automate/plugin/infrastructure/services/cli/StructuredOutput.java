@@ -26,9 +26,11 @@ public abstract class StructuredOutput<TValues> {
 
     @UsedImplicitly
     public StructuredOutput() {
+
     }
 
     protected StructuredOutput(List<StructuredOutputOutput<TValues>> outputs) {
+
         this.Output = outputs;
     }
 }

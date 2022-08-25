@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.util.Objects;
 
 public class ProjectSettingsConfigurable implements SearchableConfigurable {
+
     @NotNull
     private final Project project;
     @NotNull
@@ -31,51 +32,59 @@ public class ProjectSettingsConfigurable implements SearchableConfigurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
+
         return AutomateBundle.message("settings.Title");
     }
 
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        return settingsComponent.getPreferredFocusedComponent();
+
+        return this.settingsComponent.getPreferredFocusedComponent();
     }
 
     @Nullable
     @Override
     public JComponent createComponent() {
-        settingsComponent = new ProjectSettingsComponent(this.project);
-        return settingsComponent.getPanel();
+
+        this.settingsComponent = new ProjectSettingsComponent(this.project);
+        return this.settingsComponent.getPanel();
     }
 
     @Override
     public boolean isModified() {
-        var modified = settingsComponent.getAuthoringMode() != configuration.getAuthoringMode();
-        modified |= !Objects.equals(settingsComponent.getPathToAutomateExecutable(), configuration.getExecutablePath());
-        modified |= !Objects.equals(settingsComponent.getViewCliLog(), configuration.getViewCliLog());
+
+        var modified = this.settingsComponent.getAuthoringMode() != this.configuration.getAuthoringMode();
+        modified |= !Objects.equals(this.settingsComponent.getPathToAutomateExecutable(), this.configuration.getExecutablePath());
+        modified |= !Objects.equals(this.settingsComponent.getViewCliLog(), this.configuration.getViewCliLog());
         return modified;
     }
 
     @Override
     public void apply() {
-        configuration.setAuthoringMode(settingsComponent.getAuthoringMode());
-        configuration.setExecutablePath(settingsComponent.getPathToAutomateExecutable());
-        configuration.setViewCliLog(settingsComponent.getViewCliLog());
+
+        this.configuration.setAuthoringMode(this.settingsComponent.getAuthoringMode());
+        this.configuration.setExecutablePath(this.settingsComponent.getPathToAutomateExecutable());
+        this.configuration.setViewCliLog(this.settingsComponent.getViewCliLog());
     }
 
     @Override
     public void reset() {
-        settingsComponent.setAuthoringMode(configuration.getAuthoringMode());
-        settingsComponent.setPathToAutomateExecutable(configuration.getExecutablePath());
-        settingsComponent.setViewCliLog(configuration.getViewCliLog());
+
+        this.settingsComponent.setAuthoringMode(this.configuration.getAuthoringMode());
+        this.settingsComponent.setPathToAutomateExecutable(this.configuration.getExecutablePath());
+        this.settingsComponent.setViewCliLog(this.configuration.getViewCliLog());
     }
 
     @Override
     public void disposeUIResources() {
-        settingsComponent = null;
+
+        this.settingsComponent = null;
     }
 
     @Override
     public @NotNull
     @NonNls String getId() {
+
         return "jezzsantos.automate.infrastructure.settings.ProjectSettingsConfigurable";
     }
 }

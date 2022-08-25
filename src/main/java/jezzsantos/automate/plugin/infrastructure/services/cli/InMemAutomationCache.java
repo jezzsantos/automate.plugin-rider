@@ -27,6 +27,7 @@ public class InMemAutomationCache implements IAutomationCache {
     private DraftDetailed currentDraft;
 
     public void setAllLists(@NotNull AllStateLite all) {
+
         this.patternsList = all.getPatterns();
         this.toolkitsList = all.getToolkits();
         this.draftsList = all.getDrafts();
@@ -35,6 +36,7 @@ public class InMemAutomationCache implements IAutomationCache {
     @NotNull
     @Override
     public AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh) {
+
         if (forceRefresh) {
             invalidateAllLocalState();
         }
@@ -53,6 +55,7 @@ public class InMemAutomationCache implements IAutomationCache {
     @NotNull
     @Override
     public List<PatternLite> ListPatterns(@NotNull Supplier<List<PatternLite>> supplier) {
+
         if (this.patternsList == null) {
             this.patternsList = supplier.get();
         }
@@ -63,6 +66,7 @@ public class InMemAutomationCache implements IAutomationCache {
     @NotNull
     @Override
     public List<ToolkitLite> ListToolkits(@NotNull Supplier<List<ToolkitLite>> supplier) {
+
         if (this.toolkitsList == null) {
             this.toolkitsList = supplier.get();
         }
@@ -73,6 +77,7 @@ public class InMemAutomationCache implements IAutomationCache {
     @NotNull
     @Override
     public List<DraftLite> ListDrafts(@NotNull Supplier<List<DraftLite>> supplier) {
+
         if (this.draftsList == null) {
             this.draftsList = supplier.get();
         }
@@ -83,12 +88,14 @@ public class InMemAutomationCache implements IAutomationCache {
     @Nullable
     @Override
     public PatternLite GetPatternInfo(@NotNull Supplier<PatternLite> supplier) {
+
         return supplier.get();
     }
 
     @NotNull
     @Override
     public PatternDetailed GetPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception {
+
         if (this.currentPattern == null) {
             this.currentPattern = supplier.call();
         }
@@ -98,12 +105,14 @@ public class InMemAutomationCache implements IAutomationCache {
     @Nullable
     @Override
     public DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier) {
+
         return supplier.get();
     }
 
     @NotNull
     @Override
     public DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception {
+
         if (this.currentDraft == null) {
             this.currentDraft = supplier.call();
         }
@@ -112,6 +121,7 @@ public class InMemAutomationCache implements IAutomationCache {
 
     @Override
     public void invalidateAllLocalState() {
+
         invalidateAllPatterns();
         invalidateAllToolkits();
         invalidateAllDrafts();
@@ -139,11 +149,13 @@ public class InMemAutomationCache implements IAutomationCache {
 
     @Override
     public void invalidateCurrentPattern() {
+
         this.currentPattern = null;
     }
 
     @Override
     public void invalidateCurrentDraft() {
+
         this.currentDraft = null;
     }
 

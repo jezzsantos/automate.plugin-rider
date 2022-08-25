@@ -9,10 +9,12 @@ import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 public class ToggleDraftEditingModeAction extends ToggleAction {
+
     private final Runnable onPerformed;
     private boolean selected;
 
     public ToggleDraftEditingModeAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -33,11 +35,13 @@ public class ToggleDraftEditingModeAction extends ToggleAction {
 
     @Override
     public boolean isSelected(@NotNull AnActionEvent anActionEvent) {
+
         return this.selected;
     }
 
     @Override
     public void setSelected(@NotNull AnActionEvent e, boolean selected) {
+
         this.selected = !this.selected;
 
         SetPresentation(e);
@@ -47,12 +51,13 @@ public class ToggleDraftEditingModeAction extends ToggleAction {
             if (selected) {
                 var application = IAutomateApplication.getInstance(project);
                 application.setEditingMode(EditingMode.Drafts);
-                onPerformed.run();
+                this.onPerformed.run();
             }
         }
     }
 
     private void SetPresentation(@NotNull AnActionEvent e) {
+
         var message = AutomateBundle.message("action.EditingMode.Drafts.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);

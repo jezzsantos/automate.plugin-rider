@@ -19,11 +19,13 @@ public class InMemAutomationCacheTests {
 
     @BeforeEach
     public void setUp() {
+
         this.cache = new InMemAutomationCache();
     }
 
     @Test
     public void whenListAllAndNotCached_ThenReturnsSupplied() {
+
         var allLists = new AllStateLite();
 
         var result = this.cache.ListAll(() -> allLists, false);
@@ -33,6 +35,7 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndNotCachedAndForced_ThenReturnsSupplied() {
+
         var allLists = new AllStateLite();
 
         var result = this.cache.ListAll(() -> allLists, true);
@@ -42,6 +45,7 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndCachedAndNotForced_ThenFetchesFromCache() {
+
         var patterns = new ArrayList<PatternLite>();
         var toolkits = new ArrayList<ToolkitLite>();
         var drafts = new ArrayList<DraftLite>();
@@ -57,6 +61,7 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndCachedAndForced_ThenReturnsSupplied() {
+
         var patterns = new ArrayList<PatternLite>();
         var toolkits = new ArrayList<ToolkitLite>();
         var drafts = new ArrayList<DraftLite>();
@@ -70,6 +75,7 @@ public class InMemAutomationCacheTests {
 
     @Test
     public void whenListAllAndCachedAndNotForcedButInvalidated_ThenReturnsSupplied() {
+
         var patterns = new ArrayList<PatternLite>();
         var toolkits = new ArrayList<ToolkitLite>();
         var drafts = new ArrayList<DraftLite>();
