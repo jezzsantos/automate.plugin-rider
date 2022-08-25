@@ -11,4 +11,17 @@ public class AutomateConstants {
     public static final List<String> AttributeDataTypes = new ArrayList<>(List.of("string", "bool", "int", "float", "datetime"));
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
+
+    public enum ElementCardinality {
+        One,
+        ZeroOrOne,
+        ZeroOrMany,
+        OneOrMany,
+    }
+
+    public enum AutomationType {
+        CodeTemplateCommand,
+        CliCommand,
+        CommandLaunchPoint
+    }
 }

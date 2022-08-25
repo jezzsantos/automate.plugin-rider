@@ -1,6 +1,8 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class PatternElement {
     @SerializedName(value = "IsCollection")
     private boolean isCollection;
     @SerializedName(value = "Cardinality")
-    private ElementCardinality cardinality;
+    private AutomateConstants.ElementCardinality cardinality;
     @SerializedName(value = "CodeTemplates")
     private List<CodeTemplate> codeTemplates = new ArrayList<>();
     @SerializedName(value = "Automation")
@@ -107,14 +109,34 @@ public class PatternElement {
     @Override
     public String toString() {
 
-        var type = this.isCollection
-          ? "(collection)"
-          : "";
+        var cardinality = toCardinalityString(this.cardinality);
+        var type = this.isRoot
+          ? ""
+          : this.isCollection
+            ? String.format("(collection, %s)", cardinality)
+            : String.format("(%s)", cardinality);
         return String.format("%s %s", this.name, type);
     }
 
     public boolean isCollection() {
 
         return this.isCollection;
+    }
+
+    private static String toCardinalityString(AutomateConstants.ElementCardinality cardinality) {
+
+        if (cardinality == null) {
+            return "";
+        }
+        switch (cardinality) {
+            case One:
+            case OneOrMany:
+                return AutomateBundle.message("general.PatternElement.Cardinality.Required.Title");
+            case ZeroOrOne:
+            case ZeroOrMany:
+                return AutomateBundle.message("general.PatternElement.Cardinality.Optional.Title");
+            default:
+                return "";
+        }
     }
 }

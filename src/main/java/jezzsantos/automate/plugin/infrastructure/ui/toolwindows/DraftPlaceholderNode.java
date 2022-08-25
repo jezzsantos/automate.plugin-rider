@@ -10,10 +10,12 @@ class DraftElementPlaceholderNode {
     private final DraftElement element;
     @NotNull
     private final String name;
+    private final boolean isCollectionItem;
 
-    public DraftElementPlaceholderNode(@NotNull DraftElement element, @NotNull String displayName) {
+    public DraftElementPlaceholderNode(@NotNull DraftElement element, boolean isCollectionItem, @NotNull String displayName) {
 
         this.name = displayName;
+        this.isCollectionItem = isCollectionItem;
         this.element = element;
     }
 
@@ -27,6 +29,11 @@ class DraftElementPlaceholderNode {
     public String toString() {
 
         return this.name;
+    }
+
+    public boolean isCollectionItem() {
+
+        return this.isCollectionItem;
     }
 }
 

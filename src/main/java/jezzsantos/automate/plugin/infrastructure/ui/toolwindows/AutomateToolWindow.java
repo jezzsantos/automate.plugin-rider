@@ -221,9 +221,11 @@ public class AutomateToolWindow implements Disposable {
                     else {
                         if (value instanceof PatternElement) {
                             var element = (PatternElement) value;
-                            setIcon(element.isCollection()
-                                      ? AllIcons.Debugger.Frame
-                                      : AllIcons.Windows.Maximize);
+                            setIcon(element.isRoot()
+                                      ? AllIcons.General.ProjectStructure
+                                      : element.isCollection()
+                                        ? AllIcons.Debugger.Frame
+                                        : AllIcons.Windows.Maximize);
                             setToolTipText(element.isCollection()
                                              ? AutomateBundle.message("toolWindow.Tree.Pattern.Collection.Tooltip")
                                              : AutomateBundle.message("toolWindow.Tree.Pattern.Element.Tooltip"));
@@ -280,8 +282,13 @@ public class AutomateToolWindow implements Disposable {
                         }
                         else {
                             if (value instanceof DraftElementPlaceholderNode) {
-                                setIcon(AllIcons.Debugger.Db_muted_breakpoint);
-                                setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
+                                var placeholder = (DraftElementPlaceholderNode) value;
+                                setIcon(placeholder.isCollectionItem()
+                                          ? AllIcons.Actions.DynamicUsages
+                                          : AllIcons.Debugger.Db_muted_breakpoint);
+                                setToolTipText(placeholder.isCollectionItem()
+                                                 ? AutomateBundle.message("toolWindow.Tree.Draft.CollectionItem.Tooltip")
+                                                 : AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
                                 append(value.toString());
                             }
                         }

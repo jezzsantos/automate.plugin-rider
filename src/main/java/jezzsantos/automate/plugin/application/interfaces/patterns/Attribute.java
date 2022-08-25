@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,13 +40,15 @@ public class Attribute {
 
         var choices = this.choices.isEmpty()
           ? ""
-          : String.format(", oneof: %s", String.join(";", this.choices));
+          : String.format(", %s: %s",
+                          AutomateBundle.message("general.Attribute.Choices.Title"),
+                          String.join(";", this.choices));
         var defaultValue = this.defaultValue.isEmpty()
           ? ""
-          : String.format(", default: %s", this.defaultValue);
+          : String.format(", %s: %s", AutomateBundle.message("general.Attribute.DefaultValue.Title"), this.defaultValue);
         return String.format("%s  (%s, %s%s%s)", this.name, this.dataType, this.isRequired
-          ? "[required]"
-          : "[optional]", choices, defaultValue);
+          ? AutomateBundle.message("general.Attribute.IsRequired.True.Title")
+          : AutomateBundle.message("general.Attribute.IsRequired.False.Title"), choices, defaultValue);
     }
 
     public void setProperties(boolean isRequired, @NotNull String dataType, @Nullable String defaultValue, @Nullable List<String> choices) {

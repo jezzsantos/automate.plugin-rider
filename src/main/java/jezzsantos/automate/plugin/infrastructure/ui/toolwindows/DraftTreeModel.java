@@ -47,14 +47,14 @@ class DraftTreeModel extends AbstractTreeModel {
             var collectedItems = getCollectedItemsFromAllCollections(draftElement);
             if (relativeIndex < collectedItems.size()) {
                 var item = collectedItems.get(relativeIndex);
-                return new DraftElementPlaceholderNode(item.collectionItem, String.format("%s (%s)", item.collection.getName(), item.collectionItem.getId()));
+                return new DraftElementPlaceholderNode(item.collectionItem, true, String.format("%s (%s)", item.collection.getName(), item.collectionItem.getId()));
             }
 
             relativeIndex = relativeIndex - collectedItems.size();
             var elements = draftElement.getElements();
             if (relativeIndex < elements.size()) {
                 var element = elements.get(relativeIndex);
-                return new DraftElementPlaceholderNode(element, String.format("%s (%s)", element.getName(), element.getId()));
+                return new DraftElementPlaceholderNode(element, false, String.format("%s (%s)", element.getName(), element.getId()));
             }
         }
 

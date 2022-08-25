@@ -1,6 +1,8 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -13,7 +15,7 @@ public class Automation {
     @SerializedName(value = "Name")
     private String name;
     @SerializedName(value = "Type")
-    private AutomationType type;
+    private AutomateConstants.AutomationType type;
     @SerializedName(value = "TemplateId")
     private String templateId;
     @SerializedName(value = "IsOneOff")
@@ -45,22 +47,30 @@ public class Automation {
         switch (this.type) {
             case CodeTemplateCommand:
                 var onceOnly = this.isOneOff
-                  ? ", onceonly"
-                  : ", always";
-                data = String.format("template: %s%s, path: %s", this.templateId, onceOnly, this.targetPath);
+                  ? String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.True.Title"))
+                  : String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.False.Title"));
+                data = String.format("%s: %s%s, path: %s",
+                                     AutomateBundle.message("general.Automation.CodeTemplateCommand.Template.Title"),
+                                     this.templateId, onceOnly, this.targetPath);
                 break;
             case CliCommand:
-                data = String.format("app: %s args: %s", this.applicationName, this.arguments);
+                data = String.format("%s: %s %s: %s",
+                                     AutomateBundle.message("general.Automation.CliCommand.ApplicationName.Title"),
+                                     this.applicationName,
+                                     AutomateBundle.message("general.Automation.CliCommand.Arguments.Title"),
+                                     this.arguments);
                 break;
             case CommandLaunchPoint:
-                data = String.format("ids: %s", String.join(";", this.cmdIds));
+                data = String.format("%s: %s",
+                                     AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.Title"),
+                                     String.join(";", this.cmdIds));
                 break;
         }
 
         return String.format("%s (%s) (%s)", this.name, this.type, data);
     }
 
-    public AutomationType getType() {
+    public AutomateConstants.AutomationType getType() {
 
         return this.type;
     }

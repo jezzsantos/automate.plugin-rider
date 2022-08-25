@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
@@ -29,7 +30,9 @@ public class CodeTemplate {
     @Override
     public String toString() {
 
-        var filePath = String.format("original: %s", this.originalFilePath);
+        var filePath = String.format("%s: %s",
+                                     AutomateBundle.message("general.Automation.CodeTemplate.FilePath.Title"),
+                                     this.originalFilePath);
         return String.format("%s (%s)", this.name, filePath);
     }
 }
