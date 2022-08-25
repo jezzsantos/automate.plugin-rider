@@ -18,6 +18,7 @@ public class DraftsListToolbarAction extends ComboBoxAction {
     private final Runnable onPerformed;
 
     public DraftsListToolbarAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -25,6 +26,7 @@ public class DraftsListToolbarAction extends ComboBoxAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         String message = AutomateBundle.message("action.DraftsListToolbarAction.NoSelected.Message");
@@ -47,6 +49,7 @@ public class DraftsListToolbarAction extends ComboBoxAction {
 
     @Override
     protected @NotNull DefaultActionGroup createPopupActionGroup(JComponent component) {
+
         final var actions = new DefaultActionGroup();
 
         var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
@@ -55,12 +58,13 @@ public class DraftsListToolbarAction extends ComboBoxAction {
             var drafts = application.listDrafts();
             var isAnyDrafts = !drafts.isEmpty();
             if (isAnyDrafts) {
-                var isNoCurrentDraft = drafts.stream().noneMatch(DraftLite::getIsCurrent);
+                var isNoCurrentDraft = drafts.stream()
+                  .noneMatch(DraftLite::getIsCurrent);
                 if (isNoCurrentDraft) {
-                    actions.add(new DraftListItemAction(onPerformed));
+                    actions.add(new DraftListItemAction(this.onPerformed));
                 }
                 for (var draft : drafts) {
-                    actions.add(new DraftListItemAction(onPerformed, draft.getName(), draft.getId()));
+                    actions.add(new DraftListItemAction(this.onPerformed, draft.getName(), draft.getId()));
                 }
             }
         }

@@ -14,9 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class PatternsListToolbarAction extends ComboBoxAction {
+
     private final Runnable onPerformed;
 
     public PatternsListToolbarAction(@NotNull Runnable onPerformed) {
+
         super();
         this.onPerformed = onPerformed;
     }
@@ -24,6 +26,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         String message = AutomateBundle.message("action.PatternsListToolbarAction.NoSelected.Message");
@@ -48,6 +51,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
 
     @Override
     protected @NotNull DefaultActionGroup createPopupActionGroup(JComponent component) {
+
         final var actions = new DefaultActionGroup();
 
         var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
@@ -56,12 +60,13 @@ public class PatternsListToolbarAction extends ComboBoxAction {
             var patterns = application.listPatterns();
             var isAnyPatterns = !patterns.isEmpty();
             if (isAnyPatterns) {
-                var isNoCurrentPattern = patterns.stream().noneMatch(PatternLite::getIsCurrent);
+                var isNoCurrentPattern = patterns.stream()
+                  .noneMatch(PatternLite::getIsCurrent);
                 if (isNoCurrentPattern) {
-                    actions.add(new PatternListItemAction(onPerformed));
+                    actions.add(new PatternListItemAction(this.onPerformed));
                 }
                 for (var pattern : patterns) {
-                    actions.add(new PatternListItemAction(onPerformed, pattern.getName(), pattern.getId()));
+                    actions.add(new PatternListItemAction(this.onPerformed, pattern.getName(), pattern.getId()));
                 }
             }
         }

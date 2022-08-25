@@ -37,35 +37,87 @@ public class NewAttributeDialog extends DialogWrapper {
     private JBList<String> choices;
 
     public NewAttributeDialog(Project project, @NotNull NewAttributeDialogContext context) {
+
         super(project);
 
         this.context = context;
 
         this.init();
         this.setTitle(AutomateBundle.message("dialog.NewAttribute.Title"));
-        nameTitle.setText(AutomateBundle.message("dialog.NewAttribute.Name.Title"));
-        name.setText(this.context.Name);
-        isRequired.setText(AutomateBundle.message("dialog.NewAttribute.IsRequired.Title"));
-        isRequired.setSelected(this.context.IsRequired);
-        defaultValueTitle.setText(AutomateBundle.message("dialog.NewAttribute.DefaultValue.Title"));
-        defaultValue.setText(this.context.DefaultValue);
-        dataTypeTitle.setText(AutomateBundle.message("dialog.NewAttribute.DataType.Title"));
-        dataTypes.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+        this.nameTitle.setText(AutomateBundle.message("dialog.NewAttribute.Name.Title"));
+        this.name.setText(this.context.Name);
+        this.isRequired.setText(AutomateBundle.message("dialog.NewAttribute.IsRequired.Title"));
+        this.isRequired.setSelected(this.context.IsRequired);
+        this.defaultValueTitle.setText(AutomateBundle.message("dialog.NewAttribute.DefaultValue.Title"));
+        this.defaultValue.setText(this.context.DefaultValue);
+        this.dataTypeTitle.setText(AutomateBundle.message("dialog.NewAttribute.DataType.Title"));
+        this.dataTypes.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
             var label = new JLabel();
             label.setText(Objects.requireNonNullElseGet(value, () -> AutomateBundle.message("dialog.NewAttribute.NoDataTypes.Message")));
             return label;
         });
         for (var type : this.context.DataTypes) {
-            dataTypes.addItem(type);
+            this.dataTypes.addItem(type);
         }
-        dataTypes.setSelectedItem(this.context.DataType);
-        choicesTitle.setText(AutomateBundle.message("dialog.NewAttribute.Choices.Title"));
-        choices.getEmptyText().setText(AutomateBundle.message("dialog.NewAttribute.EmptyChoices.Message"));
-        choices.setModel(new CollectionListModel<>());
+        this.dataTypes.setSelectedItem(this.context.DataType);
+        this.choicesTitle.setText(AutomateBundle.message("dialog.NewAttribute.Choices.Title"));
+        this.choices.getEmptyText().setText(AutomateBundle.message("dialog.NewAttribute.EmptyChoices.Message"));
+        this.choices.setModel(new CollectionListModel<>());
+    }
+
+    @TestOnly
+    public static @Nullable ValidationInfo doValidate(NewAttributeDialogContext context, String name, String dataType, String defaultValue, List<String> choices) {
+
+        if (!name.matches(AutomateConstants.AttributeNameRegex)) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"));
+        }
+        var existingName = context.Attributes.stream()
+          .anyMatch(attribute -> attribute.getName().equalsIgnoreCase(name));
+        if (existingName) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.Exists.Message"));
+        }
+        if (dataType.isEmpty()) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", String.join(", ", context.DataTypes)));
+        }
+        if (!context.DataTypes.contains(dataType)) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", String.join(", ", context.DataTypes)));
+        }
+        if (!defaultValue.isEmpty()) {
+            if (!isValidDataType(dataType, defaultValue)) {
+                return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotDataType.Message", dataType));
+            }
+        }
+        if (!choices.isEmpty()) {
+            if (!defaultValue.isEmpty()) {
+                if (!choices.contains(defaultValue)) {
+                    return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotAChoice.Message"));
+                }
+            }
+            var invalidChoices = choices.stream()
+              .filter((s -> !isValidDataType(dataType, s)))
+              .collect(Collectors.toList());
+            if (!invalidChoices.isEmpty()) {
+                return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.ChoicesValidation.NotDataType.Message", invalidChoices.get(0), dataType));
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+
+        return this.name;
+    }
+
+    public NewAttributeDialogContext getContext() {
+
+        return this.context;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isValidDataType(String dataType, String value) {
+
         switch (dataType) {
             case "string":
                 return true;
@@ -88,58 +140,13 @@ public class NewAttributeDialog extends DialogWrapper {
     }
 
     private static boolean isIsoDate(String value) {
+
         try {
             Instant.from(DateTimeFormatter.ISO_INSTANT.parse(value));
             return true;
         } catch (DateTimeParseException e) {
             return false;
         }
-    }
-
-    @TestOnly
-    public static @Nullable ValidationInfo doValidate(NewAttributeDialogContext context, String name, String dataType, String defaultValue, List<String> choices) {
-        if (!name.matches(AutomateConstants.AttributeNameRegex)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"));
-        }
-        var existingName = context.Attributes.stream().anyMatch(attribute -> attribute.getName().equalsIgnoreCase(name));
-        if (existingName) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.Exists.Message"));
-        }
-        if (dataType.isEmpty()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", String.join(", ", context.DataTypes)));
-        }
-        if (!context.DataTypes.contains(dataType)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", String.join(", ", context.DataTypes)));
-        }
-        if (!defaultValue.isEmpty()) {
-            if (!isValidDataType(dataType, defaultValue)) {
-                return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotDataType.Message", dataType));
-            }
-        }
-        if (!choices.isEmpty()) {
-            if (!defaultValue.isEmpty()) {
-                if (!choices.contains(defaultValue)) {
-                    return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotAChoice.Message"));
-                }
-            }
-            var invalidChoices = choices.stream()
-                    .filter((s -> !isValidDataType(dataType, s)))
-                    .collect(Collectors.toList());
-            if (!invalidChoices.isEmpty()) {
-                return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.ChoicesValidation.NotDataType.Message", invalidChoices.get(0), dataType));
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-        return name;
-    }
-
-    public NewAttributeDialogContext getContext() {
-        return this.context;
     }
 
     @Override
@@ -156,20 +163,22 @@ public class NewAttributeDialog extends DialogWrapper {
         //        //contents.add(decorator.createPanel(), new GridConstraints());
         //        decorator.createPanel();
 
-        return contents;
+        return this.contents;
     }
 
     @Override
     protected @Nullable ValidationInfo doValidate() {
+
         var dataType = this.dataTypes.getSelectedItem() != null
-                ? (String) this.dataTypes.getSelectedItem()
-                : "";
+          ? (String) this.dataTypes.getSelectedItem()
+          : "";
         var choices = ((CollectionListModel<String>) this.choices.getModel()).toList();
         return doValidate(this.context, this.name.getText(), dataType, this.defaultValue.getText(), choices);
     }
 
     @Override
     protected void doOKAction() {
+
         super.doOKAction();
         this.context.Name = this.name.getText();
         this.context.IsRequired = this.isRequired.isSelected();

@@ -72,6 +72,7 @@ public class AutomateToolWindow implements Disposable {
     private DefaultTreeExpander automateTreeExpander;
 
     public AutomateToolWindow(@NotNull Project project, ToolWindow toolwindow) {
+
         this.project = project;
         this.toolwindow = toolwindow;
         this.application = IAutomateApplication.getInstance(this.project);
@@ -82,21 +83,24 @@ public class AutomateToolWindow implements Disposable {
 
     @NotNull
     public JPanel getContent() {
-        return mainPanel;
+
+        return this.mainPanel;
     }
 
     @Override
     public void dispose() {
+
         this.application.removeConfigurationListener(configurationChangedListener());
         this.application.removePropertyListener(cliLogUpdatedListener());
     }
 
     private void createUIComponents() {
 
-        toolbar = createToolbar();
+        this.toolbar = createToolbar();
     }
 
     private void init() {
+
         initToolWindow();
         initTree();
         setupActionNotifications();
@@ -104,14 +108,16 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void initToolWindow() {
-        var expandCollapseActions = new ArrayList<>(List.of(new TreeActionsGroup(automateTree).getChildActionsOrStubs()));
+
+        var expandCollapseActions = new ArrayList<>(List.of(new TreeActionsGroup(this.automateTree).getChildActionsOrStubs()));
         Collections.reverse(expandCollapseActions);
-        toolwindow.setTitleActions(expandCollapseActions);
-        this.automateTreeExpander = new DefaultTreeExpander(automateTree);
+        this.toolwindow.setTitleActions(expandCollapseActions);
+        this.automateTreeExpander = new DefaultTreeExpander(this.automateTree);
     }
 
     @NotNull
     private ActionToolbarImpl createToolbar() {
+
         final Runnable notify = notifyUpdated();
 
         final var actions = new DefaultActionGroup();
@@ -131,13 +137,14 @@ public class AutomateToolWindow implements Disposable {
         actions.add(new ToggleAuthoringModeToolbarAction(notify));
 
         var actionToolbar = new ActionToolbarImpl(ActionPlaces.TOOLWINDOW_CONTENT, actions, true);
-        actionToolbar.setTargetComponent(mainPanel);
+        actionToolbar.setTargetComponent(this.mainPanel);
         actionToolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
 
         return actionToolbar;
     }
 
     private void setupCliLogs() {
+
         this.application.addConfigurationListener(configurationChangedListener());
         this.application.addPropertyListener(cliLogUpdatedListener());
         displayCliLogPane(this.application.getViewCliLog());
@@ -147,12 +154,13 @@ public class AutomateToolWindow implements Disposable {
             displayLogEntry(entry);
         }
         var scheme = EditorColorsManager.getInstance().getGlobalScheme();
-        cliLog.setFont(scheme.getFont(EditorFontType.CONSOLE_PLAIN));
-        cliLog.setBackground(scheme.getColor(ConsoleViewContentType.CONSOLE_BACKGROUND_KEY));
+        this.cliLog.setFont(scheme.getFont(EditorFontType.CONSOLE_PLAIN));
+        this.cliLog.setBackground(scheme.getColor(ConsoleViewContentType.CONSOLE_BACKGROUND_KEY));
     }
 
     @NotNull
     private PropertyChangeListener configurationChangedListener() {
+
         return event -> {
             if (event.getPropertyName().equalsIgnoreCase("ViewCliLog")) {
                 displayCliLogPane((boolean) event.getNewValue());
@@ -163,6 +171,7 @@ public class AutomateToolWindow implements Disposable {
     @SuppressWarnings("unchecked")
     @NotNull
     private PropertyChangeListener cliLogUpdatedListener() {
+
         return event -> {
             if (event.getPropertyName().equalsIgnoreCase("CliLogs")) {
                 var latestEntries = ((List<CliLogEntry>) event.getNewValue());
@@ -174,90 +183,110 @@ public class AutomateToolWindow implements Disposable {
     }
 
     private void displayCliLogPane(boolean isVisible) {
-        windowSplit.getBottomComponent().setVisible(isVisible);
-        windowSplit.setEnabled(isVisible);
-        var splitter = (BasicSplitPaneUI) windowSplit.getUI();
+
+        this.windowSplit.getBottomComponent().setVisible(isVisible);
+        this.windowSplit.setEnabled(isVisible);
+        var splitter = (BasicSplitPaneUI) this.windowSplit.getUI();
         splitter.getDivider().setVisible(isVisible);
         if (isVisible) {
-            windowSplit.setDividerLocation(0.5d);
+            this.windowSplit.setDividerLocation(0.5d);
         }
     }
 
     @NotNull
     private Runnable notifyUpdated() {
+
         return () -> this.messageBus.syncPublisher(StateChangedListener.TOPIC).settingsChanged();
     }
 
     private void setupActionNotifications() {
+
         SimpleMessageBusConnection connection = this.messageBus.connect(this);
         connection.subscribe(StateChangedListener.TOPIC, this::refreshTree);
     }
 
     private void initTree() {
 
-        PopupHandler.installPopupMenu(automateTree, addTreeContextMenu(), "TreePopup");
-        automateTree.setCellRenderer(new ColoredTreeCellRenderer() {
+        PopupHandler.installPopupMenu(this.automateTree, addTreeContextMenu(), "TreePopup");
+        this.automateTree.setCellRenderer(new ColoredTreeCellRenderer() {
             @Override
             public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                if (value instanceof TreePlaceholder) {
-                    setIcon(AllIcons.Nodes.Folder);
-                    append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
-                }
-                else {
-                    if (value instanceof PatternElement) {
-                        var element = (PatternElement) value;
-                        setIcon(element.isCollection()
-                                        ? AllIcons.Windows.Restore
-                                        : AllIcons.Windows.Maximize);
-                        setToolTipText(element.isCollection()
-                                               ? AutomateBundle.message("toolWindow.Tree.Pattern.Collection.Tooltip")
-                                               : AutomateBundle.message("toolWindow.Tree.Pattern.Element.Tooltip"));
-                        append(value.toString());
+
+                var editingMode = AutomateToolWindow.this.application.getEditingMode();
+                if (editingMode == EditingMode.Patterns) {
+                    if (value instanceof PatternPlaceholderNode) {
+                        setIcon(AllIcons.Nodes.Folder);
+                        append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
                     }
                     else {
-                        if (value instanceof Attribute) {
-                            setIcon(AllIcons.Gutter.ExtAnnotation);
-                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.Attribute.Tooltip"));
+                        if (value instanceof PatternElement) {
+                            var element = (PatternElement) value;
+                            setIcon(element.isCollection()
+                                      ? AllIcons.Debugger.Frame
+                                      : AllIcons.Windows.Maximize);
+                            setToolTipText(element.isCollection()
+                                             ? AutomateBundle.message("toolWindow.Tree.Pattern.Collection.Tooltip")
+                                             : AutomateBundle.message("toolWindow.Tree.Pattern.Element.Tooltip"));
                             append(value.toString());
                         }
                         else {
-                            if (value instanceof Automation) {
-                                var automation = (Automation) value;
-                                switch (automation.getType()) {
-                                    case CodeTemplateCommand:
-                                        setIcon(AllIcons.Actions.GeneratedFolder);
-                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplateCommand.Tooltip"));
-                                        break;
-                                    case CliCommand:
-                                        setIcon(AllIcons.Debugger.Console);
-                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CliCommand.Tooltip"));
-                                        break;
-                                    case CommandLaunchPoint:
-                                        setIcon(AllIcons.Diff.MagicResolve);
-                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CommandLaunchPoint.Tooltip"));
-                                        break;
-                                }
+                            if (value instanceof Attribute) {
+                                setIcon(AllIcons.Gutter.ExtAnnotation);
+                                setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.Attribute.Tooltip"));
                                 append(value.toString());
                             }
                             else {
-                                if (value instanceof CodeTemplate) {
-                                    setIcon(AllIcons.Nodes.Template);
-                                    setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplate.Tooltip"));
+                                if (value instanceof Automation) {
+                                    var automation = (Automation) value;
+                                    switch (automation.getType()) {
+                                        case CodeTemplateCommand:
+                                            setIcon(AllIcons.Actions.GeneratedFolder);
+                                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplateCommand.Tooltip"));
+                                            break;
+                                        case CliCommand:
+                                            setIcon(AllIcons.Debugger.Console);
+                                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CliCommand.Tooltip"));
+                                            break;
+                                        case CommandLaunchPoint:
+                                            setIcon(AllIcons.Diff.MagicResolve);
+                                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CommandLaunchPoint.Tooltip"));
+                                            break;
+                                    }
                                     append(value.toString());
                                 }
                                 else {
-                                    if (value instanceof DraftDetailed) {
-                                        setIcon(AllIcons.Actions.GeneratedFolder);
-                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Root.Tooltip"));
-                                        append(value.toString());
-                                    }
-                                    else {
+                                    if (value instanceof CodeTemplate) {
+                                        setIcon(AllIcons.Nodes.Template);
+                                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplate.Tooltip"));
                                         append(value.toString());
                                     }
                                 }
                             }
                         }
                     }
+                }
+
+                if (editingMode == EditingMode.Drafts) {
+                    if (value instanceof DraftDetailed) {
+                        setIcon(AllIcons.Actions.GeneratedFolder);
+                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Root.Tooltip"));
+                        append(value.toString());
+                    }
+                    else {
+                        if (value instanceof DraftPropertyPlaceholderNode) {
+                            setIcon(AllIcons.Gutter.ExtAnnotation);
+                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Property.Tooltip"));
+                            append(value.toString());
+                        }
+                        else {
+                            if (value instanceof DraftElementPlaceholderNode) {
+                                setIcon(AllIcons.Debugger.Db_muted_breakpoint);
+                                setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
+                                append(value.toString());
+                            }
+                        }
+                    }
+
                 }
             }
         });
@@ -273,47 +302,48 @@ public class AutomateToolWindow implements Disposable {
         var attributes = new SimpleAttributeSet();
         if (entry.Type != CliLogEntryType.Normal) {
             StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.Error
-                    ? errorColor
-                    : infoColor);
+              ? errorColor
+              : infoColor);
             StyleConstants.setBold(attributes, entry.Type == CliLogEntryType.Error);
         }
         var text = String.format("%s%s", entry.Text, System.lineSeparator());
-        var document = cliLog.getDocument();
+        var document = this.cliLog.getDocument();
         Try.safely(() -> document.insertString(document.getLength(), text, attributes));
     }
 
     private void refreshTree() {
-        automateTree.setModel(null);
+
+        this.automateTree.setModel(null);
         if (this.currentSelectionListener != null) {
-            automateTree.removeTreeSelectionListener(this.currentSelectionListener);
+            this.automateTree.removeTreeSelectionListener(this.currentSelectionListener);
         }
-        var editingMode = application.getEditingMode();
-        automateTree.getEmptyText().setText(editingMode == EditingMode.Patterns
-                                                    ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
-                                                    : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
-        automateTree.invalidate();
+        var editingMode = this.application.getEditingMode();
+        this.automateTree.getEmptyText().setText(editingMode == EditingMode.Patterns
+                                                   ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
+                                                   : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
+        this.automateTree.invalidate();
 
         if (editingMode == EditingMode.Patterns) {
-            var currentPattern = application.getCurrentPatternInfo();
+            var currentPattern = this.application.getCurrentPatternInfo();
             if (currentPattern != null) {
-                var pattern = Try.safely(application::getCurrentPatternDetailed);
+                var pattern = Try.safely(this.application::getCurrentPatternDetailed);
                 if (pattern != null) {
                     var model = new PatternTreeModel(pattern);
                     this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
-                    automateTree.setModel(model);
-                    automateTree.addTreeSelectionListener(this.currentSelectionListener);
+                    this.automateTree.setModel(model);
+                    this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
                 }
             }
         }
         else {
-            var currentDraft = application.getCurrentDraftInfo();
+            var currentDraft = this.application.getCurrentDraftInfo();
             if (currentDraft != null) {
-                var draft = Try.safely(application::getCurrentDraftDetailed);
+                var draft = Try.safely(this.application::getCurrentDraftDetailed);
                 if (draft != null) {
                     var model = new DraftTreeModel(draft);
                     this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
-                    automateTree.setModel(model);
-                    automateTree.addTreeSelectionListener(this.currentSelectionListener);
+                    this.automateTree.setModel(model);
+                    this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
 
                 }
             }
@@ -323,13 +353,14 @@ public class AutomateToolWindow implements Disposable {
 
     @NotNull
     private ActionGroup addTreeContextMenu() {
+
         final Runnable notify = notifyUpdated();
 
         var actions = new DefaultActionGroup();
 
-        actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) automateTree.getModel())));
+        actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
         actions.addSeparator();
-        actions.add(new DeleteAttributeAction(consumer -> consumer.accept((PatternTreeModel) automateTree.getModel())));
+        actions.add(new DeleteAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
 
         return actions;
     }
@@ -343,13 +374,14 @@ public class AutomateToolWindow implements Disposable {
 
         @Override
         public void valueChanged(TreeSelectionEvent e) {
+
             var path = e.getNewLeadSelectionPath();
             if (path == null) {
-                model.resetSelectedPath();
+                this.model.resetSelectedPath();
                 return;
             }
             var selectedPath = e.getPath();
-            model.setSelectedPath(selectedPath);
+            this.model.setSelectedPath(selectedPath);
         }
     }
 
@@ -362,6 +394,7 @@ public class AutomateToolWindow implements Disposable {
 
         @Override
         public void valueChanged(TreeSelectionEvent e) {
+
             var path = e.getNewLeadSelectionPath();
             if (path == null) {
                 return;

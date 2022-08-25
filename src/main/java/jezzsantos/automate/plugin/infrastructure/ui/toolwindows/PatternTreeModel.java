@@ -28,6 +28,7 @@ public class PatternTreeModel extends AbstractTreeModel {
 
     @Override
     public Object getRoot() {
+
         return this.pattern.getPattern();
     }
 
@@ -37,21 +38,21 @@ public class PatternTreeModel extends AbstractTreeModel {
         if (parent instanceof PatternElement) {
             var element = ((PatternElement) parent);
             if (index == CodeTemplatesIndex) {
-                return new TreePlaceholder(element, element.getCodeTemplates(), AutomateBundle.message("toolWindow.Tree.Element.CodeTemplates.Title"));
+                return new PatternPlaceholderNode(element, element.getCodeTemplates(), AutomateBundle.message("toolWindow.Tree.Element.CodeTemplates.Title"));
             }
             if (index == AutomationIndex) {
-                return new TreePlaceholder(element, element.getAutomation(), AutomateBundle.message("toolWindow.Tree.Element.Automation.Title"));
+                return new PatternPlaceholderNode(element, element.getAutomation(), AutomateBundle.message("toolWindow.Tree.Element.Automation.Title"));
             }
             if (index == AttributesIndex) {
-                return new TreePlaceholder(element, element.getAttributes(), AutomateBundle.message("toolWindow.Tree.Element.Attributes.Title"));
+                return new PatternPlaceholderNode(element, element.getAttributes(), AutomateBundle.message("toolWindow.Tree.Element.Attributes.Title"));
             }
             if (index == ElementsIndex) {
-                return new TreePlaceholder(element, element.getElements(), AutomateBundle.message("toolWindow.Tree.Element.Elements.Title"));
+                return new PatternPlaceholderNode(element, element.getElements(), AutomateBundle.message("toolWindow.Tree.Element.Elements.Title"));
             }
         }
 
-        if (parent instanceof TreePlaceholder) {
-            var placeholder = ((TreePlaceholder) parent);
+        if (parent instanceof PatternPlaceholderNode) {
+            var placeholder = ((PatternPlaceholderNode) parent);
             var element = placeholder.getParent();
             if (isCodeTemplatesPlaceholder(placeholder)) {
                 return getItemAtIndex(element.getCodeTemplates(), index);
@@ -77,8 +78,8 @@ public class PatternTreeModel extends AbstractTreeModel {
             return 4;
         }
 
-        if (parent instanceof TreePlaceholder) {
-            var placeholder = ((TreePlaceholder) parent);
+        if (parent instanceof PatternPlaceholderNode) {
+            var placeholder = ((PatternPlaceholderNode) parent);
             var element = placeholder.getParent();
             if (isCodeTemplatesPlaceholder(placeholder)) {
                 return element.getCodeTemplates().size();
@@ -99,22 +100,23 @@ public class PatternTreeModel extends AbstractTreeModel {
 
     @Override
     public boolean isLeaf(Object node) {
+
         if (node instanceof PatternElement
-                || node instanceof TreePlaceholder) {
+          || node instanceof PatternPlaceholderNode) {
             return false;
         }
 
         return node instanceof CodeTemplate
-                || node instanceof Automation
-                || node instanceof Attribute;
+          || node instanceof Automation
+          || node instanceof Attribute;
     }
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
 
         if (parent instanceof PatternElement) {
-            if (child instanceof TreePlaceholder) {
-                var placeholder = ((TreePlaceholder) child);
+            if (child instanceof PatternPlaceholderNode) {
+                var placeholder = ((PatternPlaceholderNode) child);
                 if (isCodeTemplatesPlaceholder(placeholder)) {
                     return CodeTemplatesIndex;
                 }
@@ -130,8 +132,8 @@ public class PatternTreeModel extends AbstractTreeModel {
             }
         }
 
-        if (parent instanceof TreePlaceholder) {
-            var placeholder = ((TreePlaceholder) parent);
+        if (parent instanceof PatternPlaceholderNode) {
+            var placeholder = ((PatternPlaceholderNode) parent);
             if (isCodeTemplatesPlaceholder(placeholder)) {
                 return getIndexOfChild(placeholder, child, CodeTemplate.class);
             }
@@ -151,28 +153,30 @@ public class PatternTreeModel extends AbstractTreeModel {
 
     @Override
     public void valueForPathChanged(TreePath path, Object value) {
+
     }
 
     public void insertAttribute(@NotNull Attribute attribute) {
-        if (selectedPath == null) {
+
+        if (this.selectedPath == null) {
             return;
         }
 
-        var node = selectedPath.getLastPathComponent();
+        var node = this.selectedPath.getLastPathComponent();
 
         if (node instanceof PatternElement) {
             var element = (PatternElement) node;
             var newIndex = addAttribute(element, attribute);
 
-            var placeholder = (TreePlaceholder) getChild(element, AttributesIndex);
-            var placeholderPath = TreePathUtil.createTreePath(selectedPath, placeholder);
+            var placeholder = (PatternPlaceholderNode) getChild(element, AttributesIndex);
+            var placeholderPath = TreePathUtil.createTreePath(this.selectedPath, placeholder);
             treeNodesInserted(placeholderPath, new int[]{newIndex}, new Object[]{attribute});
         }
         else {
-            if (node instanceof TreePlaceholder) {
-                var placeholder = (TreePlaceholder) node;
+            if (node instanceof PatternPlaceholderNode) {
+                var placeholder = (PatternPlaceholderNode) node;
                 if (isAttributesPlaceholder(placeholder)) {
-                    var placeholderPath = selectedPath;
+                    var placeholderPath = this.selectedPath;
                     var element = (PatternElement) placeholderPath.getParentPath().getLastPathComponent();
                     var newIndex = addAttribute(element, attribute);
                     treeNodesInserted(placeholderPath, new int[]{newIndex}, new Object[]{attribute});
@@ -182,13 +186,14 @@ public class PatternTreeModel extends AbstractTreeModel {
     }
 
     public void deleteAttribute(@NotNull Attribute attribute) {
-        if (selectedPath == null) {
+
+        if (this.selectedPath == null) {
             return;
         }
 
-        var node = selectedPath.getLastPathComponent();
+        var node = this.selectedPath.getLastPathComponent();
         if (node instanceof Attribute) {
-            var placeholderPath = selectedPath.getParentPath();
+            var placeholderPath = this.selectedPath.getParentPath();
             var element = (PatternElement) placeholderPath.getParentPath().getLastPathComponent();
             var oldIndex = getIndexOfAttribute(element, attribute);
             element.removeAttribute(attribute);
@@ -197,19 +202,23 @@ public class PatternTreeModel extends AbstractTreeModel {
     }
 
     public void setSelectedPath(@Nullable TreePath path) {
+
         this.selectedPath = path;
     }
 
     public void resetSelectedPath() {
+
         this.selectedPath = null;
     }
 
     private int addAttribute(PatternElement element, Attribute attribute) {
+
         element.addAttribute(attribute);
         return getIndexOfAttribute(element, attribute);
     }
 
     private Object getItemAtIndex(List<?> list, int index) {
+
         if (list.size() > index) {
             return list.get(index);
         }
@@ -218,7 +227,8 @@ public class PatternTreeModel extends AbstractTreeModel {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> int getIndexOfChild(TreePlaceholder placeholder, Object child, Class<T> kind) {
+    private <T> int getIndexOfChild(PatternPlaceholderNode placeholder, Object child, Class<T> kind) {
+
         if (kind.isInstance(child)) {
             var instance = (T) child;
             return ((List<T>) placeholder.getChild()).indexOf(instance);
@@ -227,23 +237,28 @@ public class PatternTreeModel extends AbstractTreeModel {
         return -1;
     }
 
-    private boolean isCodeTemplatesPlaceholder(TreePlaceholder placeholder) {
+    private boolean isCodeTemplatesPlaceholder(PatternPlaceholderNode placeholder) {
+
         return placeholder.getChild() == placeholder.getParent().getCodeTemplates();
     }
 
-    private boolean isAutomationPlaceholder(TreePlaceholder placeholder) {
+    private boolean isAutomationPlaceholder(PatternPlaceholderNode placeholder) {
+
         return placeholder.getChild() == placeholder.getParent().getAutomation();
     }
 
-    private boolean isAttributesPlaceholder(TreePlaceholder placeholder) {
+    private boolean isAttributesPlaceholder(PatternPlaceholderNode placeholder) {
+
         return placeholder.getChild() == placeholder.getParent().getAttributes();
     }
 
-    private boolean isElementsPlaceholder(TreePlaceholder placeholder) {
+    private boolean isElementsPlaceholder(PatternPlaceholderNode placeholder) {
+
         return placeholder.getChild() == placeholder.getParent().getElements();
     }
 
     private int getIndexOfAttribute(PatternElement element, Attribute attribute) {
+
         return element.getAttributes().indexOf(attribute);
 
     }

@@ -26,22 +26,14 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     private final PropertyChangeSupport cliLogsListeners = new PropertyChangeSupport(this);
 
     public AutomateCliRunner(@NotNull IOsPlatform platform) {
+
         this.platform = platform;
-    }
-
-    private static StructuredError getStructuredError(String error) {
-        var gson = new Gson();
-        return gson.fromJson(error, StructuredError.class);
-    }
-
-    private static <TResult> TResult getStructuredOutput(Class<TResult> outputClass, String output) {
-        var gson = new Gson();
-        return gson.fromJson(output, outputClass);
     }
 
     @NotNull
     @Override
     public <TResult> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args) {
+
         var result = executeInternal(executablePath, args, true);
         if (result.isError()) {
             return new CliStructuredResult<>(getStructuredError(result.getError()), null);
@@ -53,27 +45,44 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     @NotNull
     @Override
     public CliTextResult execute(@NotNull String executablePath, @NotNull List<String> args) {
+
         return executeInternal(executablePath, args, false);
     }
 
     @Override
     public @NotNull List<CliLogEntry> getCliLogs() {
+
         return this.cliLogs;
     }
 
     @Override
     public void addLogListener(@NotNull PropertyChangeListener listener) {
+
         this.cliLogsListeners.addPropertyChangeListener(listener);
     }
 
     @Override
     public void removeLogListener(@NotNull PropertyChangeListener listener) {
+
         this.cliLogsListeners.removePropertyChangeListener(listener);
     }
 
     @Override
     public void addCliLogEntry(@NotNull CliLogEntry entry) {
-        cliLogs.add(entry);
+
+        this.cliLogs.add(entry);
+    }
+
+    private static StructuredError getStructuredError(String error) {
+
+        var gson = new Gson();
+        return gson.fromJson(error, StructuredError.class);
+    }
+
+    private static <TResult> TResult getStructuredOutput(Class<TResult> outputClass, String output) {
+
+        var gson = new Gson();
+        return gson.fromJson(output, outputClass);
     }
 
     private CliTextResult executeInternal(@NotNull String executablePath, @NotNull List<String> args, boolean isStructured) {
@@ -106,7 +115,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                 }
             }).start();
 
-            var success = process.waitFor(15, TimeUnit.SECONDS);
+            var success = process.waitFor(5, TimeUnit.SECONDS);
             if (!success) {
                 var error = String.format("Failed to start CLI at: %s", executablePath);
                 AddCliLogEntry(error, CliLogEntryType.Error);
@@ -116,8 +125,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             var stdOut = stdOutWriter.toString().trim();
             if (process.exitValue() != 0) {
                 var error = isStructured
-                        ? getStructuredError(stdErr).getErrorMessage()
-                        : stdErr;
+                  ? getStructuredError(stdErr).getErrorMessage()
+                  : stdErr;
                 AddCliLogEntry(String.format("Command failed with error: %s", error), CliLogEntryType.Error);
                 return new CliTextResult(stdErr, "");
             }
@@ -137,15 +146,16 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     private void AddCliLogEntry(String text, CliLogEntryType type) {
-        var oldValue = new ArrayList<>(cliLogs);
+
+        var oldValue = new ArrayList<>(this.cliLogs);
 
         var entry = new CliLogEntry(text, type);
-        cliLogs.add(entry);
+        this.cliLogs.add(entry);
 
         var newValue = new ArrayList<>();
         newValue.add(entry);
 
-        cliLogsListeners.firePropertyChange("CliLogs", oldValue, newValue);
+        this.cliLogsListeners.firePropertyChange("CliLogs", oldValue, newValue);
     }
 
 }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public class PatternDetailed {
+
     @SerializedName(value = "PatternId")
     private String id;
     @SerializedName(value = "Name")
@@ -15,6 +16,7 @@ public class PatternDetailed {
     private PatternElement pattern;
 
     public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {
+
         this.id = id;
         this.name = name;
         this.version = version;
@@ -23,21 +25,26 @@ public class PatternDetailed {
 
     @NotNull
     public String getName() {
+
         return this.name;
     }
 
     @NotNull
     public String getId() {
+
         return this.id;
     }
 
     @NotNull
     public PatternElement getPattern() {
+
+        this.pattern.setRoot();
         return this.pattern;
     }
 
     @Override
     public String toString() {
+
         return String.format("%s  (v.%s)", this.name, this.version);
     }
 }

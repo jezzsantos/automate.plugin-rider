@@ -3,7 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
 
-public class TreePlaceholder {
+public class PatternPlaceholderNode {
 
     @NotNull
     private final PatternElement parent;
@@ -12,7 +12,8 @@ public class TreePlaceholder {
     @NotNull
     private final String name;
 
-    public TreePlaceholder(@NotNull PatternElement parent, @NotNull Object child, @NotNull String displayName) {
+    public PatternPlaceholderNode(@NotNull PatternElement parent, @NotNull Object child, @NotNull String displayName) {
+
         this.parent = parent;
         this.name = displayName;
         this.child = child;
@@ -20,16 +21,19 @@ public class TreePlaceholder {
 
     @NotNull
     public PatternElement getParent() {
+
         return this.parent;
     }
 
     @NotNull
     public Object getChild() {
+
         return this.child;
     }
 
     @Override
     public String toString() {
+
         return this.name;
     }
 }

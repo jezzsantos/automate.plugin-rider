@@ -12,8 +12,8 @@ import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialogContext;
+import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.TreePlaceholder;
 import org.jetbrains.annotations.NotNull;
 
 public class AddAttributeAction extends AnAction {
@@ -21,6 +21,7 @@ public class AddAttributeAction extends AnAction {
     private final Action<PatternTreeModel> onSuccess;
 
     public AddAttributeAction(Action<PatternTreeModel> onSuccess) {
+
         super();
         this.onSuccess = onSuccess;
     }
@@ -28,6 +29,7 @@ public class AddAttributeAction extends AnAction {
     @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
+
         super.update(e);
 
         var message = AutomateBundle.message("action.AddAttribute.Title");
@@ -70,16 +72,17 @@ public class AddAttributeAction extends AnAction {
     }
 
     private PatternElement getParentElement(AnActionEvent e) {
+
         var data = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (data instanceof PatternElement) {
             return (PatternElement) data;
         }
         else {
-            if (data instanceof TreePlaceholder) {
-                var placeholder = (TreePlaceholder) data;
+            if (data instanceof PatternPlaceholderNode) {
+                var placeholder = (PatternPlaceholderNode) data;
                 return (placeholder.getChild() == placeholder.getParent().getAttributes())
-                        ? placeholder.getParent()
-                        : null;
+                  ? placeholder.getParent()
+                  : null;
             }
         }
 
