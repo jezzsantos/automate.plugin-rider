@@ -14,7 +14,7 @@ public class DraftElementTests {
     @Test
     public void whenGetName_ThenReturnsName() {
 
-        var element = new DraftElement("apropertyname", new HashMap<>());
+        var element = new DraftElement("apropertyname", new HashMap<>(), false);
 
         var result = element.getName();
 
@@ -24,7 +24,7 @@ public class DraftElementTests {
     @Test
     public void whenContainsKeyAndNotExists_ThenReturnsFalse() {
 
-        var element = new DraftElement("apropertyname", new HashMap<>());
+        var element = new DraftElement("apropertyname", new HashMap<>(), false);
 
         var result = element.containsKey("anunknownkey");
 
@@ -37,7 +37,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("akey", new DraftElementValue("avalue"));
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.containsKey("akey");
 
@@ -47,7 +47,7 @@ public class DraftElementTests {
     @Test
     public void whenGetPropertyAndNotExists_ThenReturnsNull() {
 
-        var element = new DraftElement("apropertyname", new HashMap<>());
+        var element = new DraftElement("apropertyname", new HashMap<>(), false);
 
         var result = element.getProperty("aname");
 
@@ -61,7 +61,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("aname", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getProperty("aname");
 
@@ -76,7 +76,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("aname", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getId();
 
@@ -90,7 +90,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("Id", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getId();
 
@@ -102,7 +102,7 @@ public class DraftElementTests {
 
         var map = new HashMap<String, DraftElementValue>();
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getProperties();
 
@@ -110,13 +110,14 @@ public class DraftElementTests {
     }
 
     @Test
-    public void whenGetPropertiesAndHasOnlyIdAndItems_ThenReturnsEmpty() {
+    public void whenGetPropertiesAndHasOnlyBuiltInProperties_ThenReturnsEmpty() {
 
         var map = new HashMap<String, DraftElementValue>();
         map.put("Id", new DraftElementValue("anid"));
         map.put("Items", new DraftElementValue("anid"));
+        map.put("ConfigurePath", new DraftElementValue("anid"));
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getProperties();
 
@@ -124,14 +125,15 @@ public class DraftElementTests {
     }
 
     @Test
-    public void whenGetPropertiesAndHasMoreThanIdAndItems_ThenReturnsMore() {
+    public void whenGetPropertiesAndHasMoreThanBuiltInProperties_ThenReturnsMore() {
 
         var map = new HashMap<String, DraftElementValue>();
         map.put("Id", new DraftElementValue("anid"));
         map.put("Items", new DraftElementValue("avalue"));
+        map.put("ConfigurePath", new DraftElementValue("avalue"));
         map.put("aname", new DraftElementValue("avalue"));
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getProperties();
 
@@ -144,7 +146,7 @@ public class DraftElementTests {
 
         var map = new HashMap<String, DraftElementValue>();
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getElement("aname");
 
@@ -158,7 +160,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("aname", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getElement("aname");
 
@@ -170,7 +172,7 @@ public class DraftElementTests {
 
         var map = new HashMap<String, DraftElementValue>();
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getCollectionItems();
 
@@ -180,12 +182,12 @@ public class DraftElementTests {
     @Test
     public void whenGetCollectionItemsAndExist_ThenReturnsItems() {
 
-        var list = List.of(new DraftElement("apropertyname", Map.of("aname", new DraftElementValue("avalue"))));
+        var list = List.of(new DraftElement("apropertyname", Map.of("aname", new DraftElementValue("avalue")), false));
         var value = new DraftElementValue(list);
         var map = new HashMap<String, DraftElementValue>();
         map.put("Items", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getCollectionItems();
 
@@ -198,7 +200,7 @@ public class DraftElementTests {
 
         var map = new HashMap<String, DraftElementValue>();
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getCollections();
 
@@ -214,7 +216,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("acollectionname", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getCollections();
 
@@ -227,7 +229,7 @@ public class DraftElementTests {
 
         var map = new HashMap<String, DraftElementValue>();
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getElements();
 
@@ -242,7 +244,7 @@ public class DraftElementTests {
         var map = new HashMap<String, DraftElementValue>();
         map.put("anelementname", value);
 
-        var element = new DraftElement("apropertyname", map);
+        var element = new DraftElement("apropertyname", map, false);
 
         var result = element.getElements();
 

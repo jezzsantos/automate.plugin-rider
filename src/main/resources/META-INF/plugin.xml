@@ -34,8 +34,8 @@
         <toolWindow id="automate" secondary="false" icon="AllIcons.Actions.Lightning" anchor="left"
                     factoryClass="jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory"/>
         <notificationGroup
-                displayType="TOOL_WINDOW"
-                id="automate"
+                displayType="STICKY_BALLOON"
+                id="automate Errors"
                 isLogByDefault="true"
                 key="notification.group.name"/>
     </extensions>

@@ -57,7 +57,7 @@ public class NewDraftDialogTests {
         var toolkit = new ToolkitLite("anid", "atoolkitname", "aversion");
         var context = new NewDraftDialogContext(new ArrayList<>(List.of(toolkit)), new ArrayList<>());
 
-        var result = NewDraftDialog.doValidate(context, toolkit, "^aninvalidaname^");
+        var result = NewDraftDialog.doValidate(context, toolkit, "^aninvalidname^");
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewDraft.NameValidation.NotMatch.Message"), result.message);

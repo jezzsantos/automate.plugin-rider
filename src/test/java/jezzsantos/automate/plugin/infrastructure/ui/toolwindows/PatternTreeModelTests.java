@@ -64,7 +64,7 @@ public class PatternTreeModelTests {
 
         var result = this.model.getChild(parent, 0);
 
-        assertEquals(parent.getCodeTemplates(), ((PatternPlaceholderNode) result).getChild());
+        assertEquals(parent.getCodeTemplates(), ((PatternFolderPlaceholderNode) result).getChild());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class PatternTreeModelTests {
 
         var result = this.model.getChild(parent, 1);
 
-        assertEquals(parent.getAutomation(), ((PatternPlaceholderNode) result).getChild());
+        assertEquals(parent.getAutomation(), ((PatternFolderPlaceholderNode) result).getChild());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class PatternTreeModelTests {
 
         var result = this.model.getChild(parent, 2);
 
-        assertEquals(parent.getAttributes(), ((PatternPlaceholderNode) result).getChild());
+        assertEquals(parent.getAttributes(), ((PatternFolderPlaceholderNode) result).getChild());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class PatternTreeModelTests {
 
         var result = this.model.getChild(parent, 3);
 
-        assertEquals(parent.getElements(), ((PatternPlaceholderNode) result).getChild());
+        assertEquals(parent.getElements(), ((PatternFolderPlaceholderNode) result).getChild());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class PatternTreeModelTests {
         var codeTemplate = new CodeTemplate("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addCodeTemplate(codeTemplate);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
 
         var result = this.model.getChild(parent, 0);
 
@@ -126,7 +126,7 @@ public class PatternTreeModelTests {
         var codeTemplate = new CodeTemplate("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addCodeTemplate(codeTemplate);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
 
         var result = this.model.getChild(parent, 99);
 
@@ -139,7 +139,7 @@ public class PatternTreeModelTests {
         var automation = new Automation("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addAutomation(automation);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
 
         var result = this.model.getChild(parent, 0);
 
@@ -152,7 +152,7 @@ public class PatternTreeModelTests {
         var automation = new Automation("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addAutomation(automation);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
 
         var result = this.model.getChild(parent, 99);
 
@@ -165,7 +165,7 @@ public class PatternTreeModelTests {
         var attribute = new Attribute("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addAttribute(attribute);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
 
         var result = this.model.getChild(parent, 0);
 
@@ -178,7 +178,7 @@ public class PatternTreeModelTests {
         var attribute = new Attribute("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addAttribute(attribute);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
 
         var result = this.model.getChild(parent, 99);
 
@@ -191,7 +191,7 @@ public class PatternTreeModelTests {
         var element = new PatternElement("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addElement(element);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
 
         var result = this.model.getChild(parent, 0);
 
@@ -204,7 +204,7 @@ public class PatternTreeModelTests {
         var element = new PatternElement("anid", "aname");
         var pattern = new PatternElement("anid", "aname");
         pattern.addElement(element);
-        var parent = new PatternPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
 
         var result = this.model.getChild(parent, 99);
 
@@ -256,7 +256,7 @@ public class PatternTreeModelTests {
 
         var pattern = new PatternElement("anid", "aname");
         pattern.addCodeTemplate(new CodeTemplate("anid", "aname"));
-        var parent = new PatternPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
 
         var result = this.model.getChildCount(parent);
 
@@ -268,7 +268,7 @@ public class PatternTreeModelTests {
 
         var pattern = new PatternElement("anid", "aname");
         pattern.addAutomation(new Automation("anid", "aname"));
-        var parent = new PatternPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
 
         var result = this.model.getChildCount(parent);
 
@@ -280,7 +280,7 @@ public class PatternTreeModelTests {
 
         var pattern = new PatternElement("anid", "aname");
         pattern.addAttribute(new Attribute("anid", "aname"));
-        var parent = new PatternPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
 
         var result = this.model.getChildCount(parent);
 
@@ -292,7 +292,7 @@ public class PatternTreeModelTests {
 
         var pattern = new PatternElement("anid", "aname");
         pattern.addElement(new PatternElement("anid", "aname"));
-        var parent = new PatternPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
 
         var result = this.model.getChildCount(parent);
 
@@ -343,7 +343,7 @@ public class PatternTreeModelTests {
     public void whenIsLeafAndNodeIsCodeTemplates_ThenReturnsFalse() {
 
         var pattern = new PatternElement("anid", "aname");
-        var node = new PatternPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
+        var node = new PatternFolderPlaceholderNode(pattern, pattern.getCodeTemplates(), "adisplayname");
 
         var result = this.model.isLeaf(node);
 
@@ -354,7 +354,7 @@ public class PatternTreeModelTests {
     public void whenIsLeafAndNodeIsAutomation_ThenReturnsFalse() {
 
         var pattern = new PatternElement("anid", "aname");
-        var node = new PatternPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
+        var node = new PatternFolderPlaceholderNode(pattern, pattern.getAutomation(), "adisplayname");
 
         var result = this.model.isLeaf(node);
 
@@ -365,7 +365,7 @@ public class PatternTreeModelTests {
     public void whenIsLeafAndNodeIsAttributes_ThenReturnsFalse() {
 
         var pattern = new PatternElement("anid", "aname");
-        var node = new PatternPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
+        var node = new PatternFolderPlaceholderNode(pattern, pattern.getAttributes(), "adisplayname");
 
         var result = this.model.isLeaf(node);
 
@@ -376,7 +376,7 @@ public class PatternTreeModelTests {
     public void whenIsLeafAndNodeIsElements_ThenReturnsFalse() {
 
         var pattern = new PatternElement("anid", "aname");
-        var node = new PatternPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
+        var node = new PatternFolderPlaceholderNode(pattern, pattern.getElements(), "adisplayname");
 
         var result = this.model.isLeaf(node);
 
@@ -417,7 +417,7 @@ public class PatternTreeModelTests {
     public void whenGetIndexOfChildAndParentIsElementAndChildIsCodeTemplates_ThenReturnsZero() {
 
         var parent = new PatternElement("anid", "aname");
-        var child = new PatternPlaceholderNode(parent, parent.getCodeTemplates(), "adisplayname");
+        var child = new PatternFolderPlaceholderNode(parent, parent.getCodeTemplates(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -428,7 +428,7 @@ public class PatternTreeModelTests {
     public void whenGetIndexOfChildAndParentIsElementAndChildIsAutomation_ThenReturnsOne() {
 
         var parent = new PatternElement("anid", "aname");
-        var child = new PatternPlaceholderNode(parent, parent.getAutomation(), "adisplayname");
+        var child = new PatternFolderPlaceholderNode(parent, parent.getAutomation(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -439,7 +439,7 @@ public class PatternTreeModelTests {
     public void whenGetIndexOfChildAndParentIsElementAndChildIsAttributes_ThenReturnsTwo() {
 
         var parent = new PatternElement("anid", "aname");
-        var child = new PatternPlaceholderNode(parent, parent.getAttributes(), "adisplayname");
+        var child = new PatternFolderPlaceholderNode(parent, parent.getAttributes(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -450,7 +450,7 @@ public class PatternTreeModelTests {
     public void whenGetIndexOfChildAndParentIsElementAndChildIsElements_ThenReturnsThree() {
 
         var parent = new PatternElement("anid", "aname");
-        var child = new PatternPlaceholderNode(parent, parent.getElements(), "adisplayname");
+        var child = new PatternFolderPlaceholderNode(parent, parent.getElements(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -465,7 +465,7 @@ public class PatternTreeModelTests {
         var element = new PatternElement("anid", "aname");
         element.addCodeTemplate(codeTemplate1);
         element.addCodeTemplate(codeTemplate2);
-        var parent = new PatternPlaceholderNode(element, element.getCodeTemplates(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getCodeTemplates(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, codeTemplate2);
 
@@ -479,7 +479,7 @@ public class PatternTreeModelTests {
         var codeTemplate2 = new CodeTemplate("anid", "aname");
         var element = new PatternElement("anid", "aname");
         element.addCodeTemplate(codeTemplate1);
-        var parent = new PatternPlaceholderNode(element, element.getCodeTemplates(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getCodeTemplates(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, codeTemplate2);
 
@@ -494,7 +494,7 @@ public class PatternTreeModelTests {
         var element = new PatternElement("anid", "aname");
         element.addAutomation(automation1);
         element.addAutomation(automation2);
-        var parent = new PatternPlaceholderNode(element, element.getAutomation(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getAutomation(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, automation2);
 
@@ -508,7 +508,7 @@ public class PatternTreeModelTests {
         var automation2 = new Automation("anid", "aname");
         var element = new PatternElement("anid", "aname");
         element.addAutomation(automation1);
-        var parent = new PatternPlaceholderNode(element, element.getAutomation(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getAutomation(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, automation2);
 
@@ -523,7 +523,7 @@ public class PatternTreeModelTests {
         var element = new PatternElement("anid", "aname");
         element.addAttribute(attribute1);
         element.addAttribute(attribute2);
-        var parent = new PatternPlaceholderNode(element, element.getAttributes(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getAttributes(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, attribute2);
 
@@ -537,7 +537,7 @@ public class PatternTreeModelTests {
         var attribute2 = new Attribute("anid", "aname");
         var element = new PatternElement("anid", "aname");
         element.addAttribute(attribute1);
-        var parent = new PatternPlaceholderNode(element, element.getAttributes(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getAttributes(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, attribute2);
 
@@ -552,7 +552,7 @@ public class PatternTreeModelTests {
         var element = new PatternElement("anid", "aname");
         element.addElement(element1);
         element.addElement(element2);
-        var parent = new PatternPlaceholderNode(element, element.getElements(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getElements(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, element2);
 
@@ -566,7 +566,7 @@ public class PatternTreeModelTests {
         var element2 = new PatternElement("anid", "aname");
         var element = new PatternElement("anid", "aname");
         element.addElement(element1);
-        var parent = new PatternPlaceholderNode(element, element.getElements(), "adisplayname");
+        var parent = new PatternFolderPlaceholderNode(element, element.getElements(), "adisplayname");
 
         var result = this.model.getIndexOfChild(parent, element2);
 

@@ -199,14 +199,20 @@ public class AutomateApplication implements IAutomateApplication {
     }
 
     @Override
-    public Attribute addAttribute(@NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
-        return this.automateService.addAttribute(name, isRequired, type, defaultValue, choices);
+        return this.automateService.addPatternAttribute(editPath, name, isRequired, type, defaultValue, choices);
     }
 
     @Override
-    public void deleteAttribute(@NotNull String name) throws Exception {
+    public void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception {
 
-        this.automateService.deleteAttribute(name);
+        this.automateService.deletePatternAttribute(editPath, name);
+    }
+
+    @Override
+    public void deleteDraftElement(@NotNull String expression) throws Exception {
+
+        this.automateService.deleteDraftElement(expression);
     }
 }

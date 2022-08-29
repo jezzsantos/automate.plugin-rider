@@ -13,10 +13,7 @@ public class AutomateTree extends Tree implements DataProvider {
     public @Nullable Object getData(@NotNull @NonNls String dataId) {
 
         if (PlatformCoreDataKeys.SELECTED_ITEM.is(dataId)) {
-            var path = getSelectionPath();
-            return path != null
-              ? path.getLastPathComponent()
-              : null;
+            return getSelectionPath();
         }
 
         return null;

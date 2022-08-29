@@ -41,6 +41,12 @@ public class ElementMap implements Iterable<DraftElement> {
         return this.map.entrySet();
     }
 
+    public void remove(@NotNull DraftElement element) {
+
+        var key = element.getName();
+        this.map.remove(key);
+    }
+
     @NotNull
     @Override
     public Iterator<DraftElement> iterator() {

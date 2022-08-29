@@ -3,7 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PatternPlaceholderNode {
+public class PatternFolderPlaceholderNode {
 
     @NotNull
     private final PatternElement parent;
@@ -12,7 +12,7 @@ public class PatternPlaceholderNode {
     @NotNull
     private final String name;
 
-    public PatternPlaceholderNode(@NotNull PatternElement parent, @NotNull Object child, @NotNull String displayName) {
+    public PatternFolderPlaceholderNode(@NotNull PatternElement parent, @NotNull Object child, @NotNull String displayName) {
 
         this.parent = parent;
         this.name = displayName;

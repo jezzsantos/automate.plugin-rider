@@ -305,16 +305,16 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @Override
-    public Attribute addAttribute(@NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
-        var args = new ArrayList<>(List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type));
+        var args = new ArrayList<>(List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type, "--aschildof", editPath));
         if (defaultValue != null) {
             args.addAll(List.of("--defaultvalueis", defaultValue));
         }
         if (choices != null && !choices.isEmpty()) {
             args.addAll(List.of("--isoneof", String.join(";", choices)));
         }
-        var result = runAutomateForStructuredOutput(AddRemoveAttributeStructuredOutput.class, args);
+        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, args);
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -327,15 +327,33 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @Override
-    public void deleteAttribute(@NotNull String name) throws Exception {
+    public void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception {
 
-        var result = runAutomateForStructuredOutput(AddRemoveAttributeStructuredOutput.class, new ArrayList<>(List.of("edit", "delete-attribute", name)));
+        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, new ArrayList<>(List.of("edit", "delete-attribute", name, "--aschildof", editPath)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
             this.cache.invalidateCurrentPattern();
         }
+    }
+
+    @Override
+    public void deleteDraftElement(@NotNull String expression) throws Exception {
+
+        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, new ArrayList<>(List.of("configure", "delete", doubleQuote(expression))));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentDraft();
+        }
+    }
+
+    @NotNull
+    private String doubleQuote(@Nullable String expression) {
+
+        return String.format("\"%s\"", expression);
     }
 
     @NotNull

@@ -74,7 +74,9 @@ public interface IAutomateService {
     @NotNull
     List<CliLogEntry> getCliLog();
 
-    Attribute addAttribute(@NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
+    Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
-    void deleteAttribute(@NotNull String name) throws Exception;
+    void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception;
+
+    void deleteDraftElement(@NotNull String expression) throws Exception;
 }

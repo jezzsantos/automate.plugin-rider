@@ -16,6 +16,8 @@ public class PatternElement {
     private String id;
     @SerializedName(value = "Name")
     private String name;
+    @SerializedName(value = "EditPath")
+    private String editPath;
     private boolean isRoot = false;
     @SerializedName(value = "AutoCreate")
     private boolean autoCreate;
@@ -51,6 +53,11 @@ public class PatternElement {
     public String getName() {
 
         return this.name;
+    }
+
+    public String getEditPath() {
+
+        return this.editPath;
     }
 
     @NotNull

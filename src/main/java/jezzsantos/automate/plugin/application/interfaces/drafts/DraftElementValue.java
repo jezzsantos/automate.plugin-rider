@@ -22,7 +22,7 @@ public class DraftElementValue {
 
     public DraftElementValue(@NotNull String name, @NotNull Map<String, DraftElementValue> element) {
 
-        this.element = new DraftElement(name, element);
+        this.element = new DraftElement(name, element, false);
     }
 
     public DraftElementValue(@NotNull List<DraftElement> collectionItems) {

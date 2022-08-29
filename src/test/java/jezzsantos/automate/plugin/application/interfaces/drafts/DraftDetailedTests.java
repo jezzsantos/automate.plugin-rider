@@ -86,7 +86,7 @@ public class DraftDetailedTests {
 
         assertEquals("adraftname", result.getName());
         assertEquals("adraftid", result.getId());
-        var configuration = result.getConfiguration();
+        var configuration = result.getRoot();
         assertEquals("aconfigurationid", configuration.getId());
         assertEquals("adraftname", configuration.getName());
         var properties = configuration.getProperties();

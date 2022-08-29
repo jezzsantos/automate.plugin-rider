@@ -30,7 +30,7 @@ public class NewPatternDialogTests {
         var pattern = new PatternLite("anid", "apatternname", "aversion", false);
         var context = new NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
-        var result = NewPatternDialog.doValidate(context, "^aninvalidaname^");
+        var result = NewPatternDialog.doValidate(context, "^aninvalidname^");
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch.Message"), result.message);

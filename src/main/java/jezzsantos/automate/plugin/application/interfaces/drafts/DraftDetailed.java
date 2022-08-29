@@ -41,10 +41,9 @@ public class DraftDetailed {
         return String.format("%s (%s)", this.name, this.id);
     }
 
-    @NotNull
-    public DraftElement getConfiguration() {
+    public DraftElement getRoot() {
 
-        return new DraftElement(this.name, DraftElement.toElementValueMap(this.configuration));
+        return new DraftElement(this.name, DraftElement.toElementValueMap(this.configuration), true);
     }
 
 }

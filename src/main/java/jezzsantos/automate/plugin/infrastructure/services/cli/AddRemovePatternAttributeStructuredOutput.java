@@ -14,10 +14,10 @@ class AddRemoveAttribute {
     public String ParentId;
 }
 
-public class AddRemoveAttributeStructuredOutput extends StructuredOutput<AddRemoveAttribute> {
+public class AddRemovePatternAttributeStructuredOutput extends StructuredOutput<AddRemoveAttribute> {
 
     @TestOnly
-    public AddRemoveAttributeStructuredOutput() {
+    public AddRemovePatternAttributeStructuredOutput() {
 
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
             this.Values = new AddRemoveAttribute();

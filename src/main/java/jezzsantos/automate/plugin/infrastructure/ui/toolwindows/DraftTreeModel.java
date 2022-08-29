@@ -1,9 +1,9 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.util.ui.tree.AbstractTreeModel;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
@@ -12,14 +12,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-class DraftTreeModel extends AbstractTreeModel {
+public class DraftTreeModel extends AbstractTreeModel {
 
     @NotNull
-    private final DraftDetailed draft;
+    private final DraftElementPlaceholderNode draft;
+    private TreePath selectedPath;
 
-    public DraftTreeModel(@NotNull DraftDetailed draft) {
+    public DraftTreeModel(@NotNull DraftElement draft) {
 
-        this.draft = draft;
+        this.draft = new DraftElementPlaceholderNode(draft, false, draft.getName());
     }
 
     @Override
@@ -31,11 +32,8 @@ class DraftTreeModel extends AbstractTreeModel {
     @Override
     public Object getChild(Object parent, int index) {
 
-        if (parent instanceof DraftDetailed
-          || (parent instanceof DraftElementPlaceholderNode)) {
-            var draftElement = (parent instanceof DraftDetailed)
-              ? ((DraftDetailed) parent).getConfiguration()
-              : ((DraftElementPlaceholderNode) parent).getElement();
+        if (parent instanceof DraftElementPlaceholderNode) {
+            var draftElement = ((DraftElementPlaceholderNode) parent).getElement();
 
             var relativeIndex = index;
             var properties = draftElement.getProperties();
@@ -64,15 +62,13 @@ class DraftTreeModel extends AbstractTreeModel {
     @Override
     public int getChildCount(Object parent) {
 
-        if (parent instanceof DraftDetailed
-          || (parent instanceof DraftElementPlaceholderNode)) {
-            var draftElement = (parent instanceof DraftDetailed)
-              ? ((DraftDetailed) parent).getConfiguration()
-              : ((DraftElementPlaceholderNode) parent).getElement();
+        if (parent instanceof DraftElementPlaceholderNode) {
+            var draftElement = ((DraftElementPlaceholderNode) parent).getElement();
 
             var numberOfProperties = draftElement.getProperties().size();
             var numberOfCollectedItems = getCollectedItemsFromAllCollections(draftElement).size();
             var numberOfElements = draftElement.getElements().size();
+
             return numberOfProperties + numberOfCollectedItems + numberOfElements;
         }
 
@@ -82,18 +78,14 @@ class DraftTreeModel extends AbstractTreeModel {
     @Override
     public boolean isLeaf(Object node) {
 
-        return !(node instanceof DraftDetailed)
-          && !(node instanceof DraftElementPlaceholderNode);
+        return !(node instanceof DraftElementPlaceholderNode);
     }
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
 
-        if (parent instanceof DraftDetailed
-          || (parent instanceof DraftElementPlaceholderNode)) {
-            var parentElement = (parent instanceof DraftDetailed)
-              ? ((DraftDetailed) parent).getConfiguration()
-              : ((DraftElementPlaceholderNode) parent).getElement();
+        if (parent instanceof DraftElementPlaceholderNode) {
+            var parentElement = ((DraftElementPlaceholderNode) parent).getElement();
 
             var elementProperties = parentElement.getProperties();
             var relativeIndex = 0;
@@ -142,6 +134,34 @@ class DraftTreeModel extends AbstractTreeModel {
     @Override
     public void valueForPathChanged(TreePath path, Object value) {
 
+    }
+
+    public void deleteElement(@NotNull DraftElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedNode = this.selectedPath.getLastPathComponent();
+        if (selectedNode instanceof DraftElementPlaceholderNode) {
+            var elementNode = (DraftElementPlaceholderNode) selectedNode;
+
+            var parentPath = this.selectedPath.getParentPath();
+            var parentElementNode = ((DraftElementPlaceholderNode) parentPath.getLastPathComponent());
+            var existingIndexInTree = getIndexOfChild(parentElementNode, elementNode);
+            parentElementNode.getElement().removeElement(element);
+            treeNodesRemoved(parentPath, new int[]{existingIndexInTree}, new Object[]{elementNode});
+        }
+    }
+
+    public void setSelectedPath(@Nullable TreePath path) {
+
+        this.selectedPath = path;
+    }
+
+    public void resetSelectedPath() {
+
+        this.selectedPath = null;
     }
 
     private List<CollectedItemDescriptor> getCollectedItemsFromAllCollections(DraftElement item) {

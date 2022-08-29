@@ -12,9 +12,11 @@ import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialogContext;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternPlaceholderNode;
+import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternFolderPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.tree.TreePath;
 
 public class AddAttributeAction extends AnAction {
 
@@ -61,7 +63,7 @@ public class AddAttributeAction extends AnAction {
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
                     try {
-                        var attribute = application.addAttribute(context.Name, context.IsRequired, context.DataType, context.DefaultValue, context.Choices);
+                        var attribute = application.addPatternAttribute(parent.getEditPath(), context.Name, context.IsRequired, context.DataType, context.DefaultValue, context.Choices);
                         this.onSuccess.run(model -> model.insertAttribute(attribute));
                     } catch (Exception ex) {
                         ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddAttribute.FailureNotification.Title"));
@@ -73,16 +75,22 @@ public class AddAttributeAction extends AnAction {
 
     private PatternElement getParentElement(AnActionEvent e) {
 
-        var data = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (data instanceof PatternElement) {
-            return (PatternElement) data;
-        }
-        else {
-            if (data instanceof PatternPlaceholderNode) {
-                var placeholder = (PatternPlaceholderNode) data;
-                return (placeholder.getChild() == placeholder.getParent().getAttributes())
-                  ? placeholder.getParent()
-                  : null;
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath) {
+                var path = (TreePath) selection;
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof PatternElement) {
+                    return (PatternElement) leaf;
+                }
+                else {
+                    if (leaf instanceof PatternFolderPlaceholderNode) {
+                        var placeholder = (PatternFolderPlaceholderNode) leaf;
+                        return (placeholder.getChild() == placeholder.getParent().getAttributes())
+                          ? placeholder.getParent()
+                          : null;
+                    }
+                }
             }
         }
 

@@ -12,9 +12,11 @@ public class DraftElement {
     private final Map<String, DraftElementValue> map;
     @NotNull
     private final String name;
+    private final boolean isRoot;
 
-    public DraftElement(@NotNull String name, @NotNull Map<String, DraftElementValue> map) {
+    public DraftElement(@NotNull String name, @NotNull Map<String, DraftElementValue> map, boolean isRoot) {
 
+        this.isRoot = isRoot;
         this.name = name;
         this.map = map;
     }
@@ -22,7 +24,7 @@ public class DraftElement {
     public static Map<String, DraftElementValue> toElementValueMap(@NotNull Map<String, Object> objectMap) {
 
         return objectMap.entrySet().stream()
-          .collect(Collectors.toMap(Map.Entry::getKey, entry -> getObjectValue(entry.getKey(), entry.getValue())));
+          .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseObjectValue(entry.getKey(), entry.getValue())));
     }
 
     public boolean containsKey(@NotNull String key) {
@@ -51,12 +53,23 @@ public class DraftElement {
         return this.map.get("Id").getValue();
     }
 
+    @Nullable
+    public String getPath() {
+
+        if (!this.map.containsKey("ConfigurePath")) {
+            return null;
+        }
+
+        return this.map.get("ConfigurePath").getValue();
+    }
+
     @NotNull
     public ElementValueMap getProperties() {
 
         return new ElementValueMap(this.map.entrySet().stream()
                                      .filter(prop -> prop.getValue().isProperty()
                                        && !prop.getKey().equalsIgnoreCase("Id")
+                                       && !prop.getKey().equalsIgnoreCase("ConfigurePath")
                                        && !prop.getKey().equalsIgnoreCase("Items"))
                                      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (val1, val2) -> val1, TreeMap::new)));
     }
@@ -125,9 +138,19 @@ public class DraftElement {
         return Objects.hash(this.getId());
     }
 
+    public void removeElement(@NotNull DraftElement element) {
+
+        this.getElements().remove(element);
+    }
+
+    public boolean isRoot() {
+
+        return this.isRoot;
+    }
+
     @SuppressWarnings("unchecked")
     @NotNull
-    private static DraftElementValue getObjectValue(@NotNull String name, @NotNull Object value) {
+    private static DraftElementValue parseObjectValue(@NotNull String name, @NotNull Object value) {
 
         if (value instanceof Boolean) {
             return new DraftElementValue(value.toString());
@@ -145,7 +168,7 @@ public class DraftElement {
             var objectMap = (Map<String, Object>) value;
             var itemMap = new HashMap<String, DraftElementValue>();
             objectMap
-              .forEach((key, val) -> itemMap.put(key, getObjectValue(key, val)));
+              .forEach((key, val) -> itemMap.put(key, parseObjectValue(key, val)));
             return new DraftElementValue(name, itemMap);
         }
 
@@ -156,7 +179,7 @@ public class DraftElement {
               .filter(Objects::nonNull)
               .forEach(map -> elementList.add(new DraftElement(name,
                                                                map.entrySet().stream()
-                                                                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> getObjectValue(entry.getKey(), entry.getValue()))))));
+                                                                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseObjectValue(entry.getKey(), entry.getValue()))), false)));
 
             return new DraftElementValue(elementList);
         }

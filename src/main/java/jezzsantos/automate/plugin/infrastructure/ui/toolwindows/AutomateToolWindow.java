@@ -214,7 +214,7 @@ public class AutomateToolWindow implements Disposable {
 
                 var editingMode = AutomateToolWindow.this.application.getEditingMode();
                 if (editingMode == EditingMode.Patterns) {
-                    if (value instanceof PatternPlaceholderNode) {
+                    if (value instanceof PatternFolderPlaceholderNode) {
                         setIcon(AllIcons.Nodes.Folder);
                         append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
                     }
@@ -347,7 +347,7 @@ public class AutomateToolWindow implements Disposable {
             if (currentDraft != null) {
                 var draft = Try.safely(this.application::getCurrentDraftDetailed);
                 if (draft != null) {
-                    var model = new DraftTreeModel(draft);
+                    var model = new DraftTreeModel(draft.getRoot());
                     this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
                     this.automateTree.setModel(model);
                     this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
@@ -367,7 +367,8 @@ public class AutomateToolWindow implements Disposable {
 
         actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
         actions.addSeparator();
-        actions.add(new DeleteAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
+        actions.add(new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
+        actions.add(new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
 
         return actions;
     }
@@ -404,10 +405,11 @@ public class AutomateToolWindow implements Disposable {
 
             var path = e.getNewLeadSelectionPath();
             if (path == null) {
+                this.model.resetSelectedPath();
                 return;
             }
-            var selectedItem = e.getPath().getLastPathComponent();
-            //model.setSelection(selectedItem);
+            var selectedItem = e.getPath();
+            this.model.setSelectedPath(selectedItem);
         }
     }
 }
