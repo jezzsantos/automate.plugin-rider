@@ -67,6 +67,11 @@ public class InstallToolkitDialog extends DialogWrapper {
         this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
     }
 
+    public static class InstallToolkitDialogContext {
+
+        public String ToolkitLocation;
+    }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
 

@@ -12,9 +12,11 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
+import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -234,6 +236,21 @@ public class AutomateCliService implements IAutomateService {
         });
     }
 
+    @NotNull
+    @Override
+    public ToolkitDetailed getCurrentToolkitDetailed() throws Exception {
+
+        return this.cache.GetToolkitDetailed(() -> {
+            var result = runAutomateForStructuredOutput(GetToolkitStructuredOutput.class, new ArrayList<>(List.of("view", "toolkit")));
+            if (result.isError()) {
+                throw new Exception(result.getError().getErrorMessage());
+            }
+            else {
+                return result.getOutput().getToolkit();
+            }
+        });
+    }
+
     @Nullable
     @Override
     public DraftLite getCurrentDraftInfo() {
@@ -256,7 +273,8 @@ public class AutomateCliService implements IAutomateService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
-            this.cache.invalidateAllDrafts();
+            this.cache.invalidateCurrentDraft();
+            this.cache.invalidateCurrentToolkit();
             result.getOutput().getDraft();
         }
     }
@@ -270,7 +288,7 @@ public class AutomateCliService implements IAutomateService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
-            this.cache.invalidateAllDrafts();
+            this.cache.invalidateCurrentDraft();
             return result.getOutput().getDraft();
         }
     }
@@ -282,6 +300,21 @@ public class AutomateCliService implements IAutomateService {
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
+        this.cache.invalidateAllToolkits();
+    }
+
+    @Override
+    public void publishCurrentPattern(boolean installLocally) throws Exception {
+
+        var args = new ArrayList<>(List.of("build", "toolkit"));
+        if (installLocally) {
+            args.add("--install");
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, new ArrayList<>(args));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        this.cache.invalidateCurrentPattern();
         this.cache.invalidateAllToolkits();
     }
 
@@ -301,7 +334,7 @@ public class AutomateCliService implements IAutomateService {
     @Override
     public List<CliLogEntry> getCliLog() {
 
-        return this.cliRunner.getCliLogs();
+        return this.cliRunner.getLogs();
     }
 
     @Override
@@ -329,7 +362,8 @@ public class AutomateCliService implements IAutomateService {
     @Override
     public void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception {
 
-        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, new ArrayList<>(List.of("edit", "delete-attribute", name, "--aschildof", editPath)));
+        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class,
+                                                    new ArrayList<>(List.of("edit", "delete-attribute", name, "--aschildof", editPath)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -357,7 +391,7 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @NotNull
-    private <TResult> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull List<String> args) {
+    private <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull List<String> args) {
 
         var executablePath = this.configuration.getExecutablePath();
         return this.cliRunner.executeStructured(outputClass, getExecutablePathSafe(executablePath), args);
@@ -373,7 +407,7 @@ public class AutomateCliService implements IAutomateService {
 
     private void logChangeInExecutablePath(String path) {
 
-        var entry = new CliLogEntry(String.format("Using CLI at: %s", path), CliLogEntryType.Normal);
-        this.cliRunner.addCliLogEntry(entry);
+        var entry = new CliLogEntry(AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Message", path), CliLogEntryType.Normal);
+        this.cliRunner.log(entry);
     }
 }

@@ -98,6 +98,65 @@ public class DraftElementTests {
     }
 
     @Test
+    public void whenGetPathAndNotExists_ThenReturnsNull() {
+
+        var value = new DraftElementValue("avalue");
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("aname", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.getPath();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetPathExists_ThenReturnsId() {
+
+        var value = new DraftElementValue("avalue");
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("ConfigurePath", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.getPath();
+
+        assertEquals("avalue", result);
+    }
+
+    @Test
+    public void whenGetSchemaIdAndNotExists_ThenReturnsNull() {
+
+        var value = new DraftElementValue("avalue");
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("aname", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.getSchemaId();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetSchemaIdExists_ThenReturnsId() {
+
+        var value = new DraftElementValue("Schema",
+                                          new HashMap<>(Map.of(
+                                            "Type", new DraftElementValue("atype"),
+                                            "Id", new DraftElementValue("anid"))));
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("Schema", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.getSchemaId();
+
+        assertEquals("anid", result);
+    }
+
+    @Test
     public void whenGetPropertiesAndIsEmpty_ThenReturnsEmpty() {
 
         var map = new HashMap<String, DraftElementValue>();
@@ -250,5 +309,146 @@ public class DraftElementTests {
 
         assertEquals(1, result.size());
         assertEquals("anelementid", result.get("anelementname").getProperty("Id").getValue());
+    }
+
+    @Test
+    public void whenGetElementsAndHasMoreThanSchema_ThenReturnsMore() {
+
+        var property1 = new DraftElementValue("anelementid");
+        var value = new DraftElementValue("aname", Map.of("Id", property1));
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("anelementname", value);
+        map.put("Schema", new DraftElementValue("avalue"));
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.getElements();
+
+        assertEquals(1, result.size());
+        assertEquals("anelementid", result.get("anelementname").getProperty("Id").getValue());
+    }
+
+    @SuppressWarnings("EqualsWithItself")
+    @Test
+    public void whenEqualsAndSameInstance_ThenReturnsTrue() {
+
+        var element = new DraftElement("aname", new HashMap<>(), false);
+
+        var result = element.equals(element);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void whenEqualsWithNull_ThenReturnsTrue() {
+
+        var element = new DraftElement("aname", new HashMap<>(), false);
+
+        var result = element.equals(null);
+
+        assertFalse(result);
+    }
+
+    @SuppressWarnings("EqualsBetweenInconvertibleTypes")
+    @Test
+    public void whenEqualsAndDifferentType_ThenReturnsFalse() {
+
+        var otherObject = new DraftDetailed("anid", "aname", new HashMap<>());
+        var element = new DraftElement("aname", new HashMap<>(), false);
+
+        var result = element
+          .equals(otherObject);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void whenEqualsAndNoIdentifiers_ThenReturnsFalse() {
+
+        var otherElement = new DraftElement("aname", new HashMap<>(), false);
+        var element = new DraftElement("aname", new HashMap<>(), false);
+
+        var result = element
+          .equals(otherElement);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void whenEqualsAndDifferentIds_ThenReturnsFalse() {
+
+        var otherElement = new DraftElement("aname", new HashMap<>(Map.of(
+          "Id", new DraftElementValue("anid1"))), false);
+        var element = new DraftElement("aname", new HashMap<>(Map.of(
+          "Id", new DraftElementValue("anid2"))), false);
+
+        var result = element
+          .equals(otherElement);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void whenEqualsAndDifferentInstancesButSameIds_ThenReturnsTrue() {
+
+        var otherElement = new DraftElement("aname", new HashMap<>(Map.of(
+          "Id", new DraftElementValue("anid"))), false);
+        var element = new DraftElement("aname", new HashMap<>(Map.of(
+          "Id", new DraftElementValue("anid"))), false);
+
+        var result = element
+          .equals(otherElement);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void whenRemoveElementAndNotExist_ThenDoesNothing() {
+
+        var element = new DraftElement("aname", new HashMap<>(Map.of(
+          "Id", new DraftElementValue("anid"))), false);
+
+        assertEquals(0, element.getElements().size());
+
+        element.removeElement(new DraftElement("aname", new HashMap<>(), false));
+
+        assertEquals(0, element.getElements().size());
+    }
+
+    @Test
+    public void whenRemoveElementAndExists_ThenRemoves() {
+
+        var childElementProperties = new HashMap<String, DraftElementValue>();
+        var childElementValue = new DraftElementValue("anelementname", childElementProperties);
+        var childElement = new DraftElement("anelementname", childElementProperties, false);
+
+        var element = new DraftElement("aname", new HashMap<>(Map.of(
+          "anelementname", childElementValue)), false);
+
+        assertEquals(1, element.getElements().size());
+
+        element.removeElement(childElement);
+
+        assertEquals(0, element.getElements().size());
+    }
+
+    @Test
+    public void whenIsNotRootAndRoot_ThenReturnsFalse() {
+
+        var element = new DraftElement("aname", new HashMap<>(), true);
+
+        var result = element.isNotRoot();
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void whenIsNotRootAndNotRoot_ThenReturnsTrue() {
+
+        var element = new DraftElement("aname", new HashMap<>(), false);
+
+        var result = element.isNotRoot();
+
+        assertTrue(result);
     }
 }

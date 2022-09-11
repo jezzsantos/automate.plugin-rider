@@ -8,7 +8,6 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class InstallToolkitToolbarAction extends AnAction {
@@ -48,7 +47,7 @@ public class InstallToolkitToolbarAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var dialog = new InstallToolkitDialog(project, new InstallToolkitDialogContext());
+            var dialog = new InstallToolkitDialog(project, new InstallToolkitDialog.InstallToolkitDialogContext());
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
                 try {

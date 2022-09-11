@@ -9,6 +9,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,6 +58,9 @@ public interface IAutomateApplication {
     PatternLite getCurrentPatternInfo();
 
     void setCurrentPattern(@NotNull String id) throws Exception;
+
+    @NotNull
+    ToolkitDetailed getCurrentToolkitDetailed() throws Exception;
 
     @NotNull
     DraftDetailed getCurrentDraftDetailed() throws Exception;

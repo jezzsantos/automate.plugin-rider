@@ -1,8 +1,7 @@
-package jezzsantos.automate.plugin.instrastructure.services.cli;
+package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
-import jezzsantos.automate.plugin.infrastructure.services.cli.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;

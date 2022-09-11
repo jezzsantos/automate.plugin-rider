@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.util.ui.tree.AbstractTreeModel;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,11 +17,14 @@ public class DraftTreeModel extends AbstractTreeModel {
 
     @NotNull
     private final DraftElementPlaceholderNode draft;
+    @NotNull
+    private final PatternElement pattern;
     private TreePath selectedPath;
 
-    public DraftTreeModel(@NotNull DraftElement draft) {
+    public DraftTreeModel(@NotNull DraftElement draft, @NotNull PatternElement pattern) {
 
-        this.draft = new DraftElementPlaceholderNode(draft, false, draft.getName());
+        this.draft = new DraftElementPlaceholderNode(pattern, draft, false, draft.getName());
+        this.pattern = pattern;
     }
 
     @Override
@@ -38,21 +42,21 @@ public class DraftTreeModel extends AbstractTreeModel {
             var relativeIndex = index;
             var properties = draftElement.getProperties();
             if (relativeIndex < properties.size()) {
-                var property = properties.get(relativeIndex);
+                var property = Objects.requireNonNull(properties.get(relativeIndex));
                 return new DraftPropertyPlaceholderNode(property, String.format("%s: %s", property.getName(), property.getValue()));
             }
             relativeIndex = relativeIndex - properties.size();
             var collectedItems = getCollectedItemsFromAllCollections(draftElement);
             if (relativeIndex < collectedItems.size()) {
                 var item = collectedItems.get(relativeIndex);
-                return new DraftElementPlaceholderNode(item.collectionItem, true, String.format("%s (%s)", item.collection.getName(), item.collectionItem.getId()));
+                return new DraftElementPlaceholderNode(this.pattern, item.collectionItem, true, String.format("%s (%s)", item.collection.getName(), item.collectionItem.getId()));
             }
 
             relativeIndex = relativeIndex - collectedItems.size();
             var elements = draftElement.getElements();
             if (relativeIndex < elements.size()) {
-                var element = elements.get(relativeIndex);
-                return new DraftElementPlaceholderNode(element, false, String.format("%s (%s)", element.getName(), element.getId()));
+                var element = Objects.requireNonNull(elements.get(relativeIndex));
+                return new DraftElementPlaceholderNode(this.pattern, element, false, String.format("%s (%s)", element.getName(), element.getId()));
             }
         }
 
@@ -136,7 +140,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
     }
 
-    public void deleteElement(@NotNull DraftElement element) {
+    public void deleteDraftElement(@NotNull DraftElement element) {
 
         if (this.selectedPath == null) {
             return;
@@ -145,12 +149,17 @@ public class DraftTreeModel extends AbstractTreeModel {
         var selectedNode = this.selectedPath.getLastPathComponent();
         if (selectedNode instanceof DraftElementPlaceholderNode) {
             var elementNode = (DraftElementPlaceholderNode) selectedNode;
-
-            var parentPath = this.selectedPath.getParentPath();
-            var parentElementNode = ((DraftElementPlaceholderNode) parentPath.getLastPathComponent());
-            var existingIndexInTree = getIndexOfChild(parentElementNode, elementNode);
-            parentElementNode.getElement().removeElement(element);
-            treeNodesRemoved(parentPath, new int[]{existingIndexInTree}, new Object[]{elementNode});
+            if (elementNode.getElement().isNotRoot()) {
+                var parentPath = this.selectedPath.getParentPath();
+                if (parentPath != null) {
+                    var parentElementNode = ((DraftElementPlaceholderNode) parentPath.getLastPathComponent());
+                    var existingIndexInTree = getIndexOfChild(parentElementNode, elementNode);
+                    if (existingIndexInTree >= 0) {
+                        parentElementNode.getElement().removeElement(element);
+                        treeNodesRemoved(parentPath, new int[]{existingIndexInTree}, new Object[]{elementNode});
+                    }
+                }
+            }
         }
     }
 

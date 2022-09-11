@@ -31,6 +31,7 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliRunner;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree;
 import org.jetbrains.annotations.NotNull;
@@ -173,7 +174,7 @@ public class AutomateToolWindow implements Disposable {
     private PropertyChangeListener cliLogUpdatedListener() {
 
         return event -> {
-            if (event.getPropertyName().equalsIgnoreCase("CliLogs")) {
+            if (event.getPropertyName().equalsIgnoreCase(AutomateCliRunner.PropertyChanged_Logs)) {
                 var latestEntries = ((List<CliLogEntry>) event.getNewValue());
                 for (var entry : latestEntries) {
                     displayLogEntry(entry);
@@ -346,8 +347,9 @@ public class AutomateToolWindow implements Disposable {
             var currentDraft = this.application.getCurrentDraftInfo();
             if (currentDraft != null) {
                 var draft = Try.safely(this.application::getCurrentDraftDetailed);
-                if (draft != null) {
-                    var model = new DraftTreeModel(draft.getRoot());
+                var toolkit = Try.safely(this.application::getCurrentToolkitDetailed);
+                if (draft != null && toolkit != null) {
+                    var model = new DraftTreeModel(draft.getRoot(), toolkit.getPattern());
                     this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
                     this.automateTree.setModel(model);
                     this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
@@ -365,7 +367,8 @@ public class AutomateToolWindow implements Disposable {
 
         var actions = new DefaultActionGroup();
 
-        actions.add(new AddAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
+        actions.add(new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
+        actions.add(new AddDraftElementListActionGroup(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
         actions.addSeparator();
         actions.add(new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
         actions.add(new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));

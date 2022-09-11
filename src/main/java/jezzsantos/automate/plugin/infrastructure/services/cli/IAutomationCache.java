@@ -5,6 +5,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +28,8 @@ public interface IAutomationCache {
 
     @NotNull PatternDetailed GetPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception;
 
+    @NotNull ToolkitDetailed GetToolkitDetailed(@NotNull Callable<ToolkitDetailed> supplier) throws Exception;
+
     @Nullable DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier);
 
     @NotNull DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception;
@@ -40,6 +43,8 @@ public interface IAutomationCache {
     void invalidateAllDrafts();
 
     void invalidateCurrentPattern();
+
+    void invalidateCurrentToolkit();
 
     void invalidateCurrentDraft();
 }

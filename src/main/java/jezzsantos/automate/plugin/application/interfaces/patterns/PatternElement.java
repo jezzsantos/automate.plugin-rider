@@ -2,8 +2,11 @@ package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElementSchema;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,6 +19,10 @@ public class PatternElement {
     private String id;
     @SerializedName(value = "Name")
     private String name;
+    @SerializedName(value = "DisplayName")
+    private String displayName;
+    @SerializedName(value = "Description")
+    private String description;
     @SerializedName(value = "EditPath")
     private String editPath;
     private boolean isRoot = false;
@@ -36,8 +43,18 @@ public class PatternElement {
 
     public PatternElement(@NotNull String id, @NotNull String name) {
 
+        this(id, name, AutomateConstants.ElementCardinality.One);
+    }
+
+    @TestOnly
+    public PatternElement(@NotNull String id, @NotNull String name, AutomateConstants.ElementCardinality cardinality) {
+
         this.id = id;
         this.name = name;
+        this.cardinality = cardinality;
+        this.isCollection =
+          cardinality == AutomateConstants.ElementCardinality.ZeroOrMany
+            || cardinality == AutomateConstants.ElementCardinality.OneOrMany;
     }
 
     public void setRoot() {
@@ -50,14 +67,41 @@ public class PatternElement {
         return this.isRoot;
     }
 
+    @NotNull
+    public String getId() {
+
+        return this.id;
+    }
+
+    @NotNull
     public String getName() {
 
         return this.name;
     }
 
+    @NotNull
+    public String getDisplayName() {
+
+        return this.displayName != null
+          ? this.displayName
+          : this.name;
+    }
+
+    @TestOnly
+    public void setDisplayName(@NotNull String text) {
+
+        this.displayName = text;
+    }
+
+    @NotNull
     public String getEditPath() {
 
         return this.editPath;
+    }
+
+    public AutomateConstants.ElementCardinality getCardinality() {
+
+        return this.cardinality;
     }
 
     @NotNull
@@ -84,7 +128,7 @@ public class PatternElement {
     @NotNull
     public List<PatternElement> getElements() {
 
-        this.elements.sort(Comparator.comparing(PatternElement::getName));
+        this.elements.sort(Comparator.comparing(PatternElement::getDisplayName));
         return this.elements;
     }
 
@@ -130,6 +174,17 @@ public class PatternElement {
         return this.isCollection;
     }
 
+    @NotNull
+    public DraftElementSchema findSchema(@NotNull String schemaId) {
+
+        var schema = findSchema(this, schemaId);
+        if (schema == null) {
+            throw new RuntimeException(AutomateBundle.message("exception.PatternElement.FindSchema.NotExists.Message", schemaId));
+        }
+
+        return schema;
+    }
+
     private static String toCardinalityString(AutomateConstants.ElementCardinality cardinality) {
 
         if (cardinality == null) {
@@ -145,5 +200,23 @@ public class PatternElement {
             default:
                 return "";
         }
+    }
+
+    @Nullable
+    private DraftElementSchema findSchema(@NotNull PatternElement patternElement, @NotNull String schemaId) {
+
+        if (patternElement.getId().equals(schemaId)) {
+            return new DraftElementSchema(patternElement);
+        }
+
+        var elements = patternElement.getElements();
+        for (var element : elements) {
+            var schema = findSchema(element, schemaId);
+            if (schema != null) {
+                return schema;
+            }
+        }
+
+        return null;
     }
 }

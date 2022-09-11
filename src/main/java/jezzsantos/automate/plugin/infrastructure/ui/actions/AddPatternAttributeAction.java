@@ -10,19 +10,18 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
-import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewAttributeDialogContext;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternAttributeDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternFolderPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.TreePath;
 
-public class AddAttributeAction extends AnAction {
+public class AddPatternAttributeAction extends AnAction {
 
     private final Action<PatternTreeModel> onSuccess;
 
-    public AddAttributeAction(Action<PatternTreeModel> onSuccess) {
+    public AddPatternAttributeAction(Action<PatternTreeModel> onSuccess) {
 
         super();
         this.onSuccess = onSuccess;
@@ -34,7 +33,7 @@ public class AddAttributeAction extends AnAction {
 
         super.update(e);
 
-        var message = AutomateBundle.message("action.AddAttribute.Title");
+        var message = AutomateBundle.message("action.AddPatternAttribute.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
@@ -59,14 +58,16 @@ public class AddAttributeAction extends AnAction {
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
                 var attributes = parent.getAttributes();
-                var dialog = new NewAttributeDialog(project, new NewAttributeDialogContext(attributes, AutomateConstants.AttributeDataTypes));
+                var dialog = new NewPatternAttributeDialog(project,
+                                                           new NewPatternAttributeDialog.NewPatternAttributeDialogContext(attributes, AutomateConstants.AttributeDataTypes));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
                     try {
-                        var attribute = application.addPatternAttribute(parent.getEditPath(), context.Name, context.IsRequired, context.DataType, context.DefaultValue, context.Choices);
+                        var attribute = application.addPatternAttribute(parent.getEditPath(), context.Name, context.IsRequired, context.DataType, context.DefaultValue,
+                                                                        context.Choices);
                         this.onSuccess.run(model -> model.insertAttribute(attribute));
                     } catch (Exception ex) {
-                        ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddAttribute.FailureNotification.Title"));
+                        ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddPatternAttribute.FailureNotification.Title"));
                     }
                 }
             }

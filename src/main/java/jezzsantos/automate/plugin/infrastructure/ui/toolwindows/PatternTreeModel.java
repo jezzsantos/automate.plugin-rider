@@ -194,10 +194,14 @@ public class PatternTreeModel extends AbstractTreeModel {
         var selectedNode = this.selectedPath.getLastPathComponent();
         if (selectedNode instanceof Attribute) {
             var folderPath = this.selectedPath.getParentPath();
-            var parentElement = (PatternElement) folderPath.getParentPath().getLastPathComponent();
-            var existingIndexInTree = getIndexOfAttribute(parentElement, attribute);
-            parentElement.removeAttribute(attribute);
-            treeNodesRemoved(folderPath, new int[]{existingIndexInTree}, new Object[]{attribute});
+            if (folderPath != null) {
+                var parentElement = (PatternElement) folderPath.getParentPath().getLastPathComponent();
+                var existingIndexInTree = getIndexOfAttribute(parentElement, attribute);
+                if (existingIndexInTree >= 0) {
+                    parentElement.removeAttribute(attribute);
+                    treeNodesRemoved(folderPath, new int[]{existingIndexInTree}, new Object[]{attribute});
+                }
+            }
         }
     }
 

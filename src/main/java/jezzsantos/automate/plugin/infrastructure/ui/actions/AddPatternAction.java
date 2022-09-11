@@ -8,7 +8,6 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class AddPatternAction extends AnAction {
@@ -51,7 +50,7 @@ public class AddPatternAction extends AnAction {
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             var patterns = application.listPatterns();
-            var dialog = new NewPatternDialog(project, new NewPatternDialogContext(patterns));
+            var dialog = new NewPatternDialog(project, new NewPatternDialog.NewPatternDialogContext(patterns));
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
                 try {

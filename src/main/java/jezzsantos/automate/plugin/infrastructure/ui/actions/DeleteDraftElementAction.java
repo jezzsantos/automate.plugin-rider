@@ -61,7 +61,7 @@ public class DeleteDraftElementAction extends AnAction {
                     var application = IAutomateApplication.getInstance(project);
                     try {
                         application.deleteDraftElement(Objects.requireNonNull(element.getPath()));
-                        this.onSuccess.run(model -> model.deleteElement(element));
+                        this.onSuccess.run(model -> model.deleteDraftElement(element));
                     } catch (Exception ex) {
                         ExceptionHandler.handle(project, ex, AutomateBundle.message("action.DeleteDraftElement.FailureNotification.Title"));
                     }
@@ -79,7 +79,7 @@ public class DeleteDraftElementAction extends AnAction {
                 var leaf = path.getLastPathComponent();
                 if (leaf instanceof DraftElementPlaceholderNode) {
                     var element = ((DraftElementPlaceholderNode) leaf).getElement();
-                    if (!element.isRoot()) {
+                    if (element.isNotRoot()) {
                         return element;
                     }
                 }

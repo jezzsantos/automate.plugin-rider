@@ -27,6 +27,18 @@ public class ConfirmDeleteDialog extends DialogWrapper {
         return dialog.showAndGet();
     }
 
+    public static class ConfirmDeleteDialogContext {
+
+        public final String Title;
+        public final String Message;
+
+        public ConfirmDeleteDialogContext(@NotNull String title, @NotNull String message) {
+
+            this.Title = title;
+            this.Message = message;
+        }
+    }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
 

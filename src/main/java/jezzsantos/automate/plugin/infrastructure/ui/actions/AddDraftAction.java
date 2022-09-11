@@ -8,7 +8,6 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialogContext;
 import org.jetbrains.annotations.NotNull;
 
 public class AddDraftAction extends AnAction {
@@ -50,7 +49,7 @@ public class AddDraftAction extends AnAction {
             var application = IAutomateApplication.getInstance(project);
             var drafts = application.listDrafts();
             var toolkits = application.listToolkits();
-            var dialog = new NewDraftDialog(project, new NewDraftDialogContext(toolkits, drafts));
+            var dialog = new NewDraftDialog(project, new NewDraftDialog.NewDraftDialogContext(toolkits, drafts));
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
                 try {

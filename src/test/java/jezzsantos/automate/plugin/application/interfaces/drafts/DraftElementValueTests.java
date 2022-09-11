@@ -21,46 +21,6 @@ public class DraftElementValueTests {
     }
 
     @Test
-    public void whenGetValueAndProperty_ThenReturnsPropertyValue() {
-
-        var value = new DraftElementValue("astringvalue");
-
-        var result = value.getValue();
-
-        assertEquals("astringvalue", result);
-    }
-
-    @Test
-    public void whenGetCollectionAndProperty_ThenReturnsNull() {
-
-        var value = new DraftElementValue("astringvalue");
-
-        var result = value.getCollection();
-
-        assertNull(result);
-    }
-
-    @Test
-    public void whenGetElementAndProperty_ThenReturnsNull() {
-
-        var value = new DraftElementValue("astringvalue");
-
-        var result = value.getElement();
-
-        assertNull(result);
-    }
-
-    @Test
-    public void whenGetCollectionItemsAndProperty_ThenReturnsEmpty() {
-
-        var value = new DraftElementValue("astringvalue");
-
-        var result = value.getCollectionItems();
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     public void whenConstructedWithHashMap_ThenIsElement() {
 
         var result = new DraftElementValue("aname", new HashMap<>());
@@ -72,11 +32,52 @@ public class DraftElementValueTests {
     }
 
     @Test
+    public void whenConstructedWithListOfElements_ThenIsCollectionItems() {
+
+        var result = new DraftElementValue(new ArrayList<>());
+
+        assertFalse(result.isProperty());
+        assertFalse(result.isElement());
+        assertFalse(result.isCollection());
+        assertTrue(result.hasCollectionItems());
+    }
+
+    @Test
+    public void whenGetValueAndProperty_ThenReturnsPropertyValue() {
+
+        var value = new DraftElementValue("astringvalue");
+
+        var result = value.getValue();
+
+        assertEquals("astringvalue", result);
+    }
+
+    @Test
     public void whenGetValueAndElement_ThenReturnsNull() {
 
         var value = new DraftElementValue("aname", new HashMap<>());
 
         var result = value.getValue();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetValueAndCollectionItems_ThenReturnsNull() {
+
+        var value = new DraftElementValue(new ArrayList<>());
+
+        var result = value.getValue();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetCollectionAndProperty_ThenReturnsNull() {
+
+        var value = new DraftElementValue("astringvalue");
+
+        var result = value.getCollection();
 
         assertNull(result);
     }
@@ -105,47 +106,6 @@ public class DraftElementValueTests {
     }
 
     @Test
-    public void whenGetElementAndElement_ThenReturnsElement() {
-
-        var value = new DraftElementValue("aname", new HashMap<>());
-
-        var result = value.getElement();
-
-        assertNotNull(result);
-    }
-
-    @Test
-    public void whenGetCollectionItemsAndElement_ThenReturnsEmpty() {
-
-        var value = new DraftElementValue("aname", new HashMap<>());
-
-        var result = value.getCollectionItems();
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    public void whenConstructedWithList_ThenIsCollectionItems() {
-
-        var result = new DraftElementValue(new ArrayList<>());
-
-        assertFalse(result.isProperty());
-        assertFalse(result.isElement());
-        assertFalse(result.isCollection());
-        assertTrue(result.hasCollectionItems());
-    }
-
-    @Test
-    public void whenGetValueAndCollectionItems_ThenReturnsNull() {
-
-        var value = new DraftElementValue(new ArrayList<>());
-
-        var result = value.getValue();
-
-        assertNull(result);
-    }
-
-    @Test
     public void whenGetCollectionAndCollectionItems_ThenReturnsNull() {
 
         var value = new DraftElementValue(new ArrayList<>());
@@ -156,6 +116,26 @@ public class DraftElementValueTests {
     }
 
     @Test
+    public void whenGetElementAndProperty_ThenReturnsNull() {
+
+        var value = new DraftElementValue("astringvalue");
+
+        var result = value.getElement();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetElementAndElement_ThenReturnsElement() {
+
+        var value = new DraftElementValue("aname", new HashMap<>());
+
+        var result = value.getElement();
+
+        assertNotNull(result);
+    }
+
+    @Test
     public void whenGetElementAndCollectionItems_ThenReturnsNull() {
 
         var value = new DraftElementValue(new ArrayList<>());
@@ -163,6 +143,26 @@ public class DraftElementValueTests {
         var result = value.getElement();
 
         assertNull(result);
+    }
+
+    @Test
+    public void whenGetCollectionItemsAndProperty_ThenReturnsEmpty() {
+
+        var value = new DraftElementValue("astringvalue");
+
+        var result = value.getCollectionItems();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void whenGetCollectionItemsAndElement_ThenReturnsEmpty() {
+
+        var value = new DraftElementValue("aname", new HashMap<>());
+
+        var result = value.getCollectionItems();
+
+        assertTrue(result.isEmpty());
     }
 
     @Test

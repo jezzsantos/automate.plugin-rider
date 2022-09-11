@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
@@ -31,8 +32,41 @@ public class Automation {
 
     public Automation(@NotNull String id, @NotNull String name) {
 
+        this(id, name, AutomateConstants.AutomationType.CodeTemplateCommand);
+    }
+
+    public Automation(@NotNull String id, @NotNull String name, @NotNull AutomateConstants.AutomationType type) {
+
         this.id = id;
         this.name = name;
+        this.type = type;
+    }
+
+    @TestOnly
+    public static Automation createCodeTemplateCommand(@NotNull String id, @NotNull String name, @NotNull String templateId, boolean isOneOff, @NotNull String targetPath) {
+
+        var automation = new Automation(id, name, AutomateConstants.AutomationType.CodeTemplateCommand);
+        automation.templateId = templateId;
+        automation.isOneOff = isOneOff;
+        automation.targetPath = targetPath;
+        return automation;
+    }
+
+    @TestOnly
+    public static Automation createCliCommand(@NotNull String id, @NotNull String name, @NotNull String applicationName, @NotNull String arguments) {
+
+        var automation = new Automation(id, name, AutomateConstants.AutomationType.CliCommand);
+        automation.applicationName = applicationName;
+        automation.arguments = arguments;
+        return automation;
+    }
+
+    @TestOnly
+    public static Automation createLaunchPoint(@NotNull String id, @NotNull String name, @NotNull List<String> commandIds) {
+
+        var automation = new Automation(id, name, AutomateConstants.AutomationType.CommandLaunchPoint);
+        automation.cmdIds = commandIds;
+        return automation;
     }
 
     public String getName() {
@@ -54,7 +88,7 @@ public class Automation {
                                      this.templateId, onceOnly, this.targetPath);
                 break;
             case CliCommand:
-                data = String.format("%s: %s %s: %s",
+                data = String.format("%s: %s, %s: %s",
                                      AutomateBundle.message("general.Automation.CliCommand.ApplicationName.Title"),
                                      this.applicationName,
                                      AutomateBundle.message("general.Automation.CliCommand.Arguments.Title"),
@@ -63,7 +97,9 @@ public class Automation {
             case CommandLaunchPoint:
                 data = String.format("%s: %s",
                                      AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.Title"),
-                                     String.join(";", this.cmdIds));
+                                     this.cmdIds.isEmpty()
+                                       ? AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.None.Title")
+                                       : String.join(";", this.cmdIds));
                 break;
         }
 

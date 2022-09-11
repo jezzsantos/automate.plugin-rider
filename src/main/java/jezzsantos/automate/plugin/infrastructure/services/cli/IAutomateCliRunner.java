@@ -11,14 +11,14 @@ public interface IAutomateCliRunner {
     @NotNull
     CliTextResult execute(@NotNull String executablePath, @NotNull List<String> args);
 
-    @NotNull <TResult> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args);
+    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args);
 
     @NotNull
-    List<CliLogEntry> getCliLogs();
+    List<CliLogEntry> getLogs();
 
     void addLogListener(@NotNull PropertyChangeListener listener);
 
     void removeLogListener(@NotNull PropertyChangeListener listener);
 
-    void addCliLogEntry(@NotNull CliLogEntry entry);
+    void log(@NotNull CliLogEntry entry);
 }

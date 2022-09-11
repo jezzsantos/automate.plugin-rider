@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.components.JBList;
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import javax.swing.*;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,9 +24,9 @@ import java.util.stream.Collectors;
 import static com.github.hypfvieh.util.TypeUtil.isDouble;
 import static com.github.hypfvieh.util.TypeUtil.isInteger;
 
-public class NewAttributeDialog extends DialogWrapper {
+public class NewPatternAttributeDialog extends DialogWrapper {
 
-    private final NewAttributeDialogContext context;
+    private final NewPatternAttributeDialogContext context;
     private JTextField name;
     private JTextField defaultValue;
     private JComboBox<String> dataTypes;
@@ -36,7 +38,7 @@ public class NewAttributeDialog extends DialogWrapper {
     private JLabel choicesTitle;
     private JBList<String> choices;
 
-    public NewAttributeDialog(Project project, @NotNull NewAttributeDialogContext context) {
+    public NewPatternAttributeDialog(Project project, @NotNull NewPatternAttributeDialogContext context) {
 
         super(project);
 
@@ -66,7 +68,7 @@ public class NewAttributeDialog extends DialogWrapper {
     }
 
     @TestOnly
-    public static @Nullable ValidationInfo doValidate(NewAttributeDialogContext context, String name, String dataType, String defaultValue, List<String> choices) {
+    public static @Nullable ValidationInfo doValidate(NewPatternAttributeDialogContext context, String name, String dataType, String defaultValue, List<String> choices) {
 
         if (!name.matches(AutomateConstants.AttributeNameRegex)) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"));
@@ -110,7 +112,7 @@ public class NewAttributeDialog extends DialogWrapper {
         return this.name;
     }
 
-    public NewAttributeDialogContext getContext() {
+    public NewPatternAttributeDialogContext getContext() {
 
         return this.context;
     }
@@ -146,6 +148,23 @@ public class NewAttributeDialog extends DialogWrapper {
             return true;
         } catch (DateTimeParseException e) {
             return false;
+        }
+    }
+
+    public static class NewPatternAttributeDialogContext {
+
+        public List<Attribute> Attributes;
+        public String Name;
+        public boolean IsRequired = false;
+        public String DefaultValue;
+        public String DataType = "string";
+        public List<String> Choices = new ArrayList<>();
+        public List<String> DataTypes;
+
+        public NewPatternAttributeDialogContext(@NotNull List<Attribute> attributes, @NotNull List<String> dataTypes) {
+
+            this.Attributes = attributes;
+            this.DataTypes = dataTypes;
         }
     }
 

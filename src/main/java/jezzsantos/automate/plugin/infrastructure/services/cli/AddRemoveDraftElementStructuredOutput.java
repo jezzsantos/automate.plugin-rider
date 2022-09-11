@@ -4,7 +4,6 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,6 @@ public class AddRemoveDraftElementStructuredOutput extends StructuredOutput<AddR
     public DraftElement getElement() {
 
         var values = this.Output.get(0).Values;
-        return new DraftElement(values.DraftName, new HashMap<>(), false);
+        return new DraftElement(values.DraftName, DraftElement.toElementValueMap(values.Configuration), false);
     }
 }

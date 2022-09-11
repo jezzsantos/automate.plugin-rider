@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -14,15 +15,22 @@ public class ElementValueMap implements Iterable<DraftProperty> {
         this.map = map;
     }
 
-    public DraftProperty get(String name) {
-
-        return new DraftProperty(name, this.map.get(name));
-    }
-
+    @Nullable
     public DraftProperty get(int index) {
 
         var key = (String) this.map.keySet().toArray()[index];
         return this.get(key);
+    }
+
+    @Nullable
+    public DraftProperty get(@NotNull String name) {
+
+        var value = this.map.get(name);
+        if (value == null) {
+            return null;
+        }
+
+        return new DraftProperty(name, value);
     }
 
     public int size() {
@@ -40,16 +48,19 @@ public class ElementValueMap implements Iterable<DraftProperty> {
     public Iterator<DraftProperty> iterator() {
 
         return new Iterator<>() {
+
+            private final Iterator<String> iterator = ElementValueMap.this.map.keySet().iterator();
+
             @Override
             public boolean hasNext() {
 
-                return ElementValueMap.this.map.keySet().iterator().hasNext();
+                return this.iterator.hasNext();
             }
 
             @Override
             public DraftProperty next() {
 
-                var name = ElementValueMap.this.map.keySet().iterator().next();
+                var name = this.iterator.next();
                 var value = ElementValueMap.this.map.get(name);
                 return new DraftProperty(name, value);
             }

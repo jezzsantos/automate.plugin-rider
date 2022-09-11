@@ -4,12 +4,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
+import java.util.List;
 
 public class NewPatternDialog extends DialogWrapper {
 
@@ -53,6 +55,17 @@ public class NewPatternDialog extends DialogWrapper {
     public NewPatternDialogContext getContext() {
 
         return this.context;
+    }
+
+    public static class NewPatternDialogContext {
+
+        public List<PatternLite> Patterns;
+        public String Name;
+
+        public NewPatternDialogContext(@NotNull List<PatternLite> patterns) {
+
+            this.Patterns = patterns;
+        }
     }
 
     @Override

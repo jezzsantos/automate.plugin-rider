@@ -7,7 +7,7 @@ public class ToolkitLite {
 
     @SerializedName(value = "Id")
     private String id;
-    @SerializedName(value = "ToolkitName")
+    @SerializedName(value = "PatternName")
     private String name;
     @SerializedName(value = "Version")
     private String version;

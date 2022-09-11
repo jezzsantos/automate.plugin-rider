@@ -15,7 +15,7 @@ public class NewPatternDialogTests {
     public void whenDoValidateAndEmptyName_ThenReturnsError() {
 
         var pattern = new PatternLite("anid", "apatternname", "aversion", false);
-        var context = new NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
+        var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "");
 
@@ -28,7 +28,7 @@ public class NewPatternDialogTests {
     public void whenDoValidateAndInvalidName_ThenReturnsError() {
 
         var pattern = new PatternLite("anid", "apatternname", "aversion", false);
-        var context = new NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
+        var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "^aninvalidname^");
 
@@ -41,7 +41,7 @@ public class NewPatternDialogTests {
     public void whenDoValidateAndNameIsReserved_ThenReturnsError() {
 
         var pattern = new PatternLite("anid", "apatternname", "aversion", false);
-        var context = new NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
+        var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "apatternname");
 
@@ -54,7 +54,7 @@ public class NewPatternDialogTests {
     public void whenDoValidate_ThenReturnsNull() {
 
         var pattern = new PatternLite("anid", "apatternname", "aversion", false);
-        var context = new NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
+        var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "adraftname");
 

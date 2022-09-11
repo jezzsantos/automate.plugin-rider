@@ -5,6 +5,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +26,8 @@ public class InMemAutomationCache implements IAutomationCache {
     private PatternDetailed currentPattern;
     @Nullable
     private DraftDetailed currentDraft;
+    @Nullable
+    private ToolkitDetailed currentToolkit;
 
     public void setAllLists(@NotNull AllStateLite all) {
 
@@ -102,6 +105,15 @@ public class InMemAutomationCache implements IAutomationCache {
         return this.currentPattern;
     }
 
+    @Override
+    public @NotNull ToolkitDetailed GetToolkitDetailed(@NotNull Callable<ToolkitDetailed> supplier) throws Exception {
+
+        if (this.currentToolkit == null) {
+            this.currentToolkit = supplier.call();
+        }
+        return this.currentToolkit;
+    }
+
     @Nullable
     @Override
     public DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier) {
@@ -138,6 +150,7 @@ public class InMemAutomationCache implements IAutomationCache {
     public void invalidateAllToolkits() {
 
         this.toolkitsList = null;
+        invalidateCurrentToolkit();
     }
 
     @Override
@@ -151,6 +164,12 @@ public class InMemAutomationCache implements IAutomationCache {
     public void invalidateCurrentPattern() {
 
         this.currentPattern = null;
+    }
+
+    @Override
+    public void invalidateCurrentToolkit() {
+
+        this.currentToolkit = null;
     }
 
     @Override

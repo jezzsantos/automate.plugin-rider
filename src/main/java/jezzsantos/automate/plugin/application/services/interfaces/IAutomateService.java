@@ -8,6 +8,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,6 +58,9 @@ public interface IAutomateService {
     @NotNull
     DraftDetailed getCurrentDraftDetailed() throws Exception;
 
+    @NotNull
+    ToolkitDetailed getCurrentToolkitDetailed() throws Exception;
+
     @Nullable
     DraftLite getCurrentDraftInfo();
 
@@ -66,6 +70,8 @@ public interface IAutomateService {
     DraftLite createDraft(@NotNull String toolkitName, @NotNull String name) throws Exception;
 
     void installToolkit(@NotNull String location) throws Exception;
+
+    void publishCurrentPattern(boolean installLocally) throws Exception;
 
     void addPropertyChangedListener(@NotNull PropertyChangeListener listener);
 

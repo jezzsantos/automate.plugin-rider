@@ -12,7 +12,7 @@ public class PatternDetailed {
     private String name;
     @SerializedName(value = "Version")
     private String version;
-    @SerializedName(value = "Tree")
+    @SerializedName(value = "Schema")
     private PatternElement pattern;
 
     public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -15,11 +16,13 @@ public class ElementMap implements Iterable<DraftElement> {
         this.map = map;
     }
 
-    public DraftElement get(String name) {
+    @Nullable
+    public DraftElement get(@NotNull String name) {
 
         return this.map.get(name);
     }
 
+    @Nullable
     public DraftElement get(int index) {
 
         var key = (String) this.map.keySet().toArray()[index];
@@ -39,12 +42,6 @@ public class ElementMap implements Iterable<DraftElement> {
     public Set<Map.Entry<String, DraftElement>> entrySet() {
 
         return this.map.entrySet();
-    }
-
-    public void remove(@NotNull DraftElement element) {
-
-        var key = element.getName();
-        this.map.remove(key);
     }
 
     @NotNull

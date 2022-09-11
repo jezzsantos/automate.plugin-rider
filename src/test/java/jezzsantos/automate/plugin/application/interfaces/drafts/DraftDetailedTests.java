@@ -3,6 +3,8 @@ package jezzsantos.automate.plugin.application.interfaces.drafts;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DraftDetailedTests {
@@ -147,4 +149,25 @@ public class DraftDetailedTests {
         assertEquals("12.3", elementName2.getProperty("APropertyName4").getValue());
     }
 
+    @Test
+    public void whenGetRoot_ThenReturnsRoot() {
+
+        var map = new HashMap<String, Object>();
+        map.put("Id", "anid");
+
+        var result = new DraftDetailed("anid", "aname", map)
+          .getRoot();
+
+        assertEquals("aname", result.getName());
+        assertEquals("anid", result.getId());
+    }
+
+    @Test
+    public void whenToString_ThenReturnsString() {
+
+        var result = new DraftDetailed("anid", "aname", new HashMap<>())
+          .toString();
+
+        assertEquals("aname (anid)", result);
+    }
 }

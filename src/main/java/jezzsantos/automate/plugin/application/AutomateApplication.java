@@ -10,6 +10,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
@@ -120,6 +121,13 @@ public class AutomateApplication implements IAutomateApplication {
     public void setCurrentPattern(@NotNull String id) throws Exception {
 
         this.automateService.setCurrentPattern(id);
+    }
+
+    @NotNull
+    @Override
+    public ToolkitDetailed getCurrentToolkitDetailed() throws Exception {
+
+        return this.automateService.getCurrentToolkitDetailed();
     }
 
     @NotNull

@@ -63,14 +63,24 @@ public class DraftElement {
         return this.map.get("ConfigurePath").getValue();
     }
 
+    @Nullable
+    public String getSchemaId() {
+
+        if (!this.map.containsKey("Schema")) {
+            return null;
+        }
+
+        return Objects.requireNonNull(this.map.get("Schema").getElement()).getId();
+    }
+
     @NotNull
     public ElementValueMap getProperties() {
 
         return new ElementValueMap(this.map.entrySet().stream()
-                                     .filter(prop -> prop.getValue().isProperty()
-                                       && !prop.getKey().equalsIgnoreCase("Id")
-                                       && !prop.getKey().equalsIgnoreCase("ConfigurePath")
-                                       && !prop.getKey().equalsIgnoreCase("Items"))
+                                     .filter(entry -> entry.getValue().isProperty()
+                                       && !entry.getKey().equalsIgnoreCase("Id")
+                                       && !entry.getKey().equalsIgnoreCase("ConfigurePath")
+                                       && !entry.getKey().equalsIgnoreCase("Items"))
                                      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (val1, val2) -> val1, TreeMap::new)));
     }
 
@@ -109,7 +119,8 @@ public class DraftElement {
 
         //noinspection ConstantConditions
         return new ElementMap(this.map.entrySet().stream()
-                                .filter(entry -> entry.getValue().isElement())
+                                .filter(entry -> entry.getValue().isElement()
+                                  && !entry.getKey().equalsIgnoreCase("Schema"))
                                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getElement())));
     }
 
@@ -120,16 +131,22 @@ public class DraftElement {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object other) {
 
-        if (this == o) {
+        if (this == other) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        DraftElement that = (DraftElement) o;
-        return Objects.equals(this.getId(), that.getId());
+        var that = (DraftElement) other;
+        var thatId = that.getId();
+        var thisId = this.getId();
+        if (thisId == null || thatId == null) {
+            return false;
+        }
+
+        return Objects.equals(thisId, thatId);
     }
 
     @Override
@@ -140,12 +157,13 @@ public class DraftElement {
 
     public void removeElement(@NotNull DraftElement element) {
 
-        this.getElements().remove(element);
+        var key = element.getName();
+        this.map.remove(key);
     }
 
-    public boolean isRoot() {
+    public boolean isNotRoot() {
 
-        return this.isRoot;
+        return !this.isRoot;
     }
 
     @SuppressWarnings("unchecked")
@@ -179,7 +197,8 @@ public class DraftElement {
               .filter(Objects::nonNull)
               .forEach(map -> elementList.add(new DraftElement(name,
                                                                map.entrySet().stream()
-                                                                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseObjectValue(entry.getKey(), entry.getValue()))), false)));
+                                                                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseObjectValue(entry.getKey(), entry.getValue()))),
+                                                               false)));
 
             return new DraftElementValue(elementList);
         }

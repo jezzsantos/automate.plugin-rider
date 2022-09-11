@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.Objects;
 
 public class NewDraftDialog extends DialogWrapper {
@@ -74,6 +76,20 @@ public class NewDraftDialog extends DialogWrapper {
         return this.context;
     }
 
+    public static class NewDraftDialogContext {
+
+        public List<ToolkitLite> InstalledToolkits;
+        public List<DraftLite> Drafts;
+        public String Name;
+        public String ToolkitName;
+
+        public NewDraftDialogContext(List<ToolkitLite> installedToolkits, List<DraftLite> drafts) {
+
+            this.InstalledToolkits = installedToolkits;
+            this.Drafts = drafts;
+        }
+    }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
 
@@ -98,5 +114,4 @@ public class NewDraftDialog extends DialogWrapper {
             this.context.ToolkitName = selectedToolkit.getName();
         }
     }
-
 }

@@ -20,7 +20,7 @@ public class InstallToolkitDialogTests {
     @Test
     public void whenDoValidateAndLocationEmpty_ThenReturnsError() {
 
-        var result = InstallToolkitDialog.doValidate(new InstallToolkitDialogContext(), "");
+        var result = InstallToolkitDialog.doValidate(new InstallToolkitDialog.InstallToolkitDialogContext(), "");
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension), result.message);
@@ -30,7 +30,7 @@ public class InstallToolkitDialogTests {
     @Test
     public void whenDoValidateAndLocationIsNotAFile_ThenReturnsError() {
 
-        var result = InstallToolkitDialog.doValidate(new InstallToolkitDialogContext(), "notanexistingfile");
+        var result = InstallToolkitDialog.doValidate(new InstallToolkitDialog.InstallToolkitDialogContext(), "notanexistingfile");
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension), result.message);
@@ -42,7 +42,7 @@ public class InstallToolkitDialogTests {
 
         var file = File.createTempFile("aprefix", "asuffix");
         try {
-            var result = InstallToolkitDialog.doValidate(new InstallToolkitDialogContext(), file.getPath());
+            var result = InstallToolkitDialog.doValidate(new InstallToolkitDialog.InstallToolkitDialogContext(), file.getPath());
 
             assertNull(result);
         } finally {

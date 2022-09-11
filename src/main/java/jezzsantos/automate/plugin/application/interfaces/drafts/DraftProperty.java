@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -15,26 +16,28 @@ public class DraftProperty {
         this.value = value;
     }
 
+    @NotNull
     public String getName() {
 
         return this.name;
     }
 
+    @Nullable
     public String getValue() {
 
         return this.value.getValue();
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object other) {
 
-        if (this == o) {
+        if (this == other) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        DraftProperty that = (DraftProperty) o;
+        DraftProperty that = (DraftProperty) other;
         return this.name.equals(that.name);
     }
 

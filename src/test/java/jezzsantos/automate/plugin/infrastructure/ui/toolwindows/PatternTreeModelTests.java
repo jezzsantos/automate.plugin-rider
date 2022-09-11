@@ -1,8 +1,11 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import jezzsantos.automate.plugin.application.interfaces.patterns.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.swing.tree.TreePath;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,12 +13,21 @@ public class PatternTreeModelTests {
 
     private PatternDetailed pattern;
     private PatternTreeModel model;
+    private TestModelTreeListener treeModelListener;
 
     @BeforeEach
     public void setUp() {
 
         this.pattern = new PatternDetailed("anid", "aname", "aversion", new PatternElement("anid", "aname"));
         this.model = new PatternTreeModel(this.pattern);
+        this.treeModelListener = new TestModelTreeListener();
+        this.model.addTreeModelListener(this.treeModelListener);
+    }
+
+    @AfterEach
+    public void tearDown() {
+
+        this.model.removeTreeModelListener(this.treeModelListener);
     }
 
     @Test
@@ -571,5 +583,50 @@ public class PatternTreeModelTests {
         var result = this.model.getIndexOfChild(parent, element2);
 
         assertEquals(-1, result);
+    }
+
+    @Test
+    public void whenDeleteAttributeAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.deleteAttribute(new Attribute("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
+    }
+
+    @Test
+    public void whenDeleteAttributeAndSelectedPathIsNotAPlaceholder_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.deleteAttribute(new Attribute("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
+    }
+
+    @Test
+    public void whenDeleteAttributeAndNoParentPath_ThenDoesNothing() {
+
+        var attribute = new Attribute("anid", "aname");
+        this.model.setSelectedPath(new TreePath(attribute));
+
+        this.model.deleteAttribute(attribute);
+
+        assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
+    }
+
+    @Test
+    public void whenDeleteAttribute_ThenRaisesEvent() {
+
+        var patternElement = new PatternElement("aparentid", "aname");
+        var attribute = new Attribute("anid", "aname");
+        patternElement.addAttribute(attribute);
+
+        this.model.setSelectedPath(new TreePath(new Object[]{patternElement, new Object(), attribute}));
+
+        this.model.deleteAttribute(attribute);
+
+        assertTrue(this.treeModelListener.hasRemoved(0, attribute));
     }
 }
