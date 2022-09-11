@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewDraftDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,13 +32,15 @@ public class AddDraftAction extends AnAction {
         presentation.setText(message);
         presentation.setIcon(AllIcons.General.Add);
 
+        boolean isInstalled = false;
         boolean isDraftEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
+            isInstalled = application.isCliInstalled();
             isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
         }
-        presentation.setEnabledAndVisible(isDraftEditingMode);
+        presentation.setEnabledAndVisible(isInstalled && isDraftEditingMode);
     }
 
     @Override
@@ -52,12 +54,12 @@ public class AddDraftAction extends AnAction {
             var dialog = new NewDraftDialog(project, new NewDraftDialog.NewDraftDialogContext(toolkits, drafts));
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
-                try {
-                    application.createDraft(context.ToolkitName, context.Name);
-                } catch (Exception ex) {
-                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddDraft.FailureNotification.Title"));
+                var draft = Try.andHandle(project,
+                                          () -> application.createDraft(context.ToolkitName, context.Name),
+                                          AutomateBundle.message("action.AddDraft.NewDraft.Failure.Message"));
+                if (draft != null) {
+                    this.onPerformed.run();
                 }
-                this.onPerformed.run();
             }
         }
     }

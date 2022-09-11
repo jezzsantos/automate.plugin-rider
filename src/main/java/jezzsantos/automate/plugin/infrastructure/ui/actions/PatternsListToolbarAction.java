@@ -8,10 +8,12 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PatternsListToolbarAction extends ComboBoxAction {
 
@@ -29,24 +31,30 @@ public class PatternsListToolbarAction extends ComboBoxAction {
 
         super.update(e);
 
-        String message = AutomateBundle.message("action.PatternsListToolbarAction.NoSelected.Message");
+        AtomicReference<String> message = new AtomicReference<>(AutomateBundle.message("action.PatternsListToolbar.NoSelected.Message"));
+        boolean isInstalled = false;
         boolean isAuthoringMode = false;
         boolean isPatternEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
+            isInstalled = application.isCliInstalled();
             isAuthoringMode = application.isAuthoringMode();
             isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
-            var currentPattern = application.getCurrentPatternInfo();
-            if (currentPattern != null) {
-                message = currentPattern.getName();
+            if (isInstalled) {
+                var currentPattern = Try.andHandle(project,
+                                                   application::getCurrentPatternInfo,
+                                                   AutomateBundle.message("action.PatternsListToolbar.GetCurrentPattern.Failure.Message"));
+                if (currentPattern != null) {
+                    message.set(currentPattern.getName());
+                }
             }
         }
 
         var presentation = e.getPresentation();
-        presentation.setDescription(AutomateBundle.message("action.PatternsListToolbarAction.Title"));
-        presentation.setText(message);
-        presentation.setEnabledAndVisible(isAuthoringMode && isPatternEditingMode);
+        presentation.setDescription(AutomateBundle.message("action.PatternsListToolbar.Title"));
+        presentation.setText(message.get());
+        presentation.setEnabledAndVisible(isInstalled && isAuthoringMode && isPatternEditingMode);
     }
 
     @Override
@@ -57,16 +65,20 @@ public class PatternsListToolbarAction extends ComboBoxAction {
         var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var patterns = application.listPatterns();
-            var isAnyPatterns = !patterns.isEmpty();
-            if (isAnyPatterns) {
-                var isNoCurrentPattern = patterns.stream()
-                  .noneMatch(PatternLite::getIsCurrent);
-                if (isNoCurrentPattern) {
-                    actions.add(new PatternListItemAction(this.onPerformed));
-                }
-                for (var pattern : patterns) {
-                    actions.add(new PatternListItemAction(this.onPerformed, pattern.getName(), pattern.getId()));
+            if (application.isCliInstalled()) {
+                var patterns = Try.andHandle(project,
+                                             application::listPatterns,
+                                             AutomateBundle.message("action.PatternsListToolbar.ListAllPatterns.Failure.Message"));
+                var isAnyPatterns = patterns != null && !patterns.isEmpty();
+                if (isAnyPatterns) {
+                    var isNoCurrentPattern = patterns.stream()
+                      .noneMatch(PatternLite::getIsCurrent);
+                    if (isNoCurrentPattern) {
+                        actions.add(new PatternListItemAction(this.onPerformed));
+                    }
+                    for (var pattern : patterns) {
+                        actions.add(new PatternListItemAction(this.onPerformed, pattern.getName(), pattern.getId()));
+                    }
                 }
             }
         }

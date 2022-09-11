@@ -11,6 +11,7 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetaile
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
+import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,10 +26,28 @@ public interface IAutomateApplication {
     }
 
     @NotNull
-    String getDefaultInstallLocation();
+    String getExecutableName();
 
-    @Nullable
-    String tryGetExecutableVersion(@NotNull String executablePath);
+    @NotNull
+    String getDefaultExecutableLocation();
+
+    @NotNull
+    CliExecutableStatus tryGetExecutableStatus(@NotNull String executablePath);
+
+    boolean isCliInstalled();
+
+    void addPropertyListener(@NotNull PropertyChangeListener listener);
+
+    void removePropertyListener(@NotNull PropertyChangeListener listener);
+
+    void addConfigurationListener(@NotNull PropertyChangeListener listener);
+
+    void removeConfigurationListener(@NotNull PropertyChangeListener listener);
+
+    @NotNull
+    List<CliLogEntry> getCliLogEntries();
+
+    boolean getViewCliLog();
 
     @NotNull
     List<PatternLite> listPatterns();
@@ -77,20 +96,7 @@ public interface IAutomateApplication {
     void installToolkit(@NotNull String location) throws Exception;
 
     @NotNull
-    AllStateLite refreshLocalState();
-
-    void addPropertyListener(@NotNull PropertyChangeListener listener);
-
-    void removePropertyListener(@NotNull PropertyChangeListener listener);
-
-    void addConfigurationListener(@NotNull PropertyChangeListener listener);
-
-    void removeConfigurationListener(@NotNull PropertyChangeListener listener);
-
-    @NotNull
-    List<CliLogEntry> getCliLogEntries();
-
-    boolean getViewCliLog();
+    AllStateLite listAllAutomation(boolean forceRefresh);
 
     Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 

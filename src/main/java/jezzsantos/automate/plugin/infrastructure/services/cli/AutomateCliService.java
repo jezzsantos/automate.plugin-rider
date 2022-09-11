@@ -14,6 +14,8 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetaile
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
+import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
+import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,13 +62,13 @@ public class AutomateCliService implements IAutomateService {
 
         this.configuration.addListener(e -> {
 
-            if (e.getPropertyName().equals("executablePath")) {
+            if (e.getPropertyName().equalsIgnoreCase("ExecutablePath")) {
                 var path = (String) e.getNewValue();
                 logChangeInExecutablePath(path);
             }
         });
-        var executablePath = getExecutablePathSafe(this.configuration.getExecutablePath());
-        logChangeInExecutablePath(executablePath);
+
+        logChangeInExecutablePath(this.configuration.getExecutablePath());
     }
 
     @NotNull
@@ -79,21 +82,67 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public String getDefaultInstallLocation() {
+    public String getDefaultExecutableLocation() {
 
         return Paths.get(this.platform.getDotNetInstallationDirectory()).resolve(this.getExecutableName()).toString();
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public String tryGetExecutableVersion(@NotNull String executablePath) {
+    public CliExecutableStatus tryGetExecutableStatus(@NotNull String executablePath) {
 
-        var result = this.cliRunner.execute(getExecutablePathSafe(executablePath), new ArrayList<>(List.of("--version")));
-        if (result.isError()) {
-            return null;
+        var location = getExecutablePathSafe(executablePath);
+        var file = new File(location);
+        var executableName = getExecutableName();
+
+        if (!file.isFile()) {
+            return new CliExecutableStatus(executableName);
         }
 
-        return result.getOutput();
+        if (!file.getName().equalsIgnoreCase(executableName)) {
+            return new CliExecutableStatus(executableName);
+        }
+
+        var result = this.cliRunner.execute(location, new ArrayList<>(List.of("--version")));
+        if (result.isError()) {
+            return new CliExecutableStatus(executableName);
+        }
+
+        return new CliExecutableStatus(executableName, result.getOutput());
+    }
+
+    @NotNull
+    @Override
+    public List<CliLogEntry> getCliLog() {
+
+        return this.cliRunner.getLogs();
+    }
+
+    @Override
+    public boolean isCliInstalled() {
+
+        return this.cache.isCliInstalled(() -> {
+            var executableStatus = tryGetExecutableStatus(this.configuration.getExecutablePath());
+            return executableStatus.getCompatibility() == CliVersionCompatibility.Supported;
+        });
+    }
+
+    @Override
+    public void refreshCliExecutableStatus() {
+
+        this.cache.invalidateIsCliInstalled();
+    }
+
+    @Override
+    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
+
+        this.cliRunner.addLogListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
+
+        this.cliRunner.removeLogListener(listener);
     }
 
     @NotNull
@@ -319,25 +368,6 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @Override
-    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
-
-        this.cliRunner.addLogListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
-
-        this.cliRunner.removeLogListener(listener);
-    }
-
-    @NotNull
-    @Override
-    public List<CliLogEntry> getCliLog() {
-
-        return this.cliRunner.getLogs();
-    }
-
-    @Override
     public Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
         var args = new ArrayList<>(List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type, "--aschildof", editPath));
@@ -393,6 +423,10 @@ public class AutomateCliService implements IAutomateService {
     @NotNull
     private <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull List<String> args) {
 
+        if (!isCliInstalled()) {
+            throw new RuntimeException(AutomateBundle.message("exception.AutomateCliService.CliNotInstalled.Message"));
+        }
+
         var executablePath = this.configuration.getExecutablePath();
         return this.cliRunner.executeStructured(outputClass, getExecutablePathSafe(executablePath), args);
     }
@@ -401,13 +435,35 @@ public class AutomateCliService implements IAutomateService {
     private String getExecutablePathSafe(@NotNull String executablePath) {
 
         return executablePath.isEmpty()
-          ? getDefaultInstallLocation()
+          ? getDefaultExecutableLocation()
           : executablePath;
     }
 
     private void logChangeInExecutablePath(String path) {
 
-        var entry = new CliLogEntry(AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Message", path), CliLogEntryType.Normal);
+        var executableStatus = tryGetExecutableStatus(path);
+        this.cache.setIsCliInstalled(executableStatus.getCompatibility() == CliVersionCompatibility.Supported);
+
+        String message;
+        CliLogEntryType type;
+        var executablePath = getExecutablePathSafe(path);
+        switch (executableStatus.getCompatibility()) {
+            case UnSupported:
+                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", executablePath,
+                                                 executableStatus.getMinCompatibleVersion());
+                type = CliLogEntryType.Error;
+                break;
+            case Supported:
+                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Supported.Message", executablePath);
+                type = CliLogEntryType.Normal;
+                break;
+            default:
+                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Unknown.Message", executablePath);
+                type = CliLogEntryType.Error;
+                break;
+        }
+
+        var entry = new CliLogEntry(message, type);
         this.cliRunner.log(entry);
     }
 }

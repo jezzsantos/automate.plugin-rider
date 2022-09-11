@@ -4,8 +4,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,8 +46,8 @@ public class DraftListItemAction extends AnAction {
             presentation.setIcon(isCurrentDraft
                                    ? AllIcons.Actions.Checked
                                    : null);
-            presentation.setEnabledAndVisible(true);
         }
+        presentation.setEnabledAndVisible(true);
     }
 
     @Override
@@ -57,12 +57,10 @@ public class DraftListItemAction extends AnAction {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
-                try {
-                    application.setCurrentDraft(this.id);
-                    this.onPerformed.run();
-                } catch (Exception ex) {
-                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.DraftListItem.FailureNotification.Title"));
-                }
+                Try.andHandle(project,
+                              () -> application.setCurrentDraft(this.id),
+                              this.onPerformed,
+                              AutomateBundle.message("action.DraftListItem.SetCurrentDraft.Failure.Message"));
             }
         }
     }

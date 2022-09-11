@@ -147,6 +147,21 @@ public class AutomateCliRunnerTests {
     }
 
     @Test
+    public void whenExecuteStructuredAndReturnsException_ThenReturnsTextualResultAndLogs() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createFailedWithException(new Exception("amessage")));
+
+        var result = this.runner.executeStructured(TestStructure.class, "anexecutablepath", List.of());
+
+        assertTrue(result.isError());
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError().getErrorMessage());
+        assertEquals(2, this.logs.size());
+        assertEquals(CliLogEntryType.Error, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), this.logs.get(1).Text);
+    }
+
+    @Test
     public void whenExecuteStructuredAndIncludesStructureOutputArguments_ThenDoesNotAppend() {
 
         var outputJson = new Gson().toJson(new TestStructure("avalue"));

@@ -8,8 +8,8 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Action;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternAttributeDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternFolderPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
@@ -62,12 +62,13 @@ public class AddPatternAttributeAction extends AnAction {
                                                            new NewPatternAttributeDialog.NewPatternAttributeDialogContext(attributes, AutomateConstants.AttributeDataTypes));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    try {
-                        var attribute = application.addPatternAttribute(parent.getEditPath(), context.Name, context.IsRequired, context.DataType, context.DefaultValue,
-                                                                        context.Choices);
+                    var attribute = Try.andHandle(project,
+                                                  () -> application.addPatternAttribute(parent.getEditPath(), context.Name, context.IsRequired, context.DataType,
+                                                                                        context.DefaultValue,
+                                                                                        context.Choices),
+                                                  AutomateBundle.message("action.AddPatternAttribute.NewAttribute.Failure.Message"));
+                    if (attribute != null) {
                         this.onSuccess.run(model -> model.insertAttribute(attribute));
-                    } catch (Exception ex) {
-                        ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AddPatternAttribute.FailureNotification.Title"));
                     }
                 }
             }

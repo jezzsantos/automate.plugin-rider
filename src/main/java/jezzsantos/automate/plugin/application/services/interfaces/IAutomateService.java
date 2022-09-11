@@ -27,10 +27,21 @@ public interface IAutomateService {
     String getExecutableName();
 
     @NotNull
-    String getDefaultInstallLocation();
+    String getDefaultExecutableLocation();
 
-    @Nullable
-    String tryGetExecutableVersion(@NotNull String executablePath);
+    @NotNull
+    CliExecutableStatus tryGetExecutableStatus(@NotNull String executablePath);
+
+    boolean isCliInstalled();
+
+    void refreshCliExecutableStatus();
+
+    @NotNull
+    List<CliLogEntry> getCliLog();
+
+    void addPropertyChangedListener(@NotNull PropertyChangeListener listener);
+
+    void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
 
     @NotNull
     AllStateLite listAllAutomation(boolean forceRefresh);
@@ -73,16 +84,10 @@ public interface IAutomateService {
 
     void publishCurrentPattern(boolean installLocally) throws Exception;
 
-    void addPropertyChangedListener(@NotNull PropertyChangeListener listener);
-
-    void removePropertyChangedListener(@NotNull PropertyChangeListener listener);
-
-    @NotNull
-    List<CliLogEntry> getCliLog();
-
     Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
     void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception;
 
     void deleteDraftElement(@NotNull String expression) throws Exception;
 }
+

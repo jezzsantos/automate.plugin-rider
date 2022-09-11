@@ -2,7 +2,6 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.jetbrains.rd.util.UsedImplicitly;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ public final class StructuredError {
 
     }
 
-    @TestOnly
     public StructuredError(@NotNull String message) {
 
         this.Error = new StructuredOutputError(message);

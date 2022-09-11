@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,13 +32,15 @@ public class InstallToolkitToolbarAction extends AnAction {
         presentation.setText(message);
         presentation.setIcon(AllIcons.Actions.Install);
 
+        boolean isInstalled = false;
         boolean isDraftEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
+            isInstalled = application.isCliInstalled();
             isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
         }
-        presentation.setEnabledAndVisible(isDraftEditingMode);
+        presentation.setEnabledAndVisible(isInstalled && isDraftEditingMode);
     }
 
     @Override
@@ -50,12 +52,10 @@ public class InstallToolkitToolbarAction extends AnAction {
             var dialog = new InstallToolkitDialog(project, new InstallToolkitDialog.InstallToolkitDialogContext());
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
-                try {
-                    application.installToolkit(context.ToolkitLocation);
-                    this.onPerformed.run();
-                } catch (Exception ex) {
-                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.InstallToolkit.FailureNotification.Title"));
-                }
+                Try.andHandle(project,
+                              () -> application.installToolkit(context.ToolkitLocation),
+                              this.onPerformed,
+                              AutomateBundle.message("action.InstallToolkit.Failure.Message"));
             }
         }
     }

@@ -62,11 +62,14 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
         presentation.setText(message);
         presentation.setIcon(AllIcons.Actions.EditScheme);
 
+        boolean isInstalled = false;
+        boolean isAuthoringMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var isAuthoringMode = application.isAuthoringMode();
-            presentation.setEnabledAndVisible(isAuthoringMode);
+            isInstalled = application.isCliInstalled();
+            isAuthoringMode = application.isAuthoringMode();
         }
+        presentation.setEnabledAndVisible(isInstalled && isAuthoringMode);
     }
 }

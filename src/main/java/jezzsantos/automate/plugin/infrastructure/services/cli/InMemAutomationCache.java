@@ -28,6 +28,7 @@ public class InMemAutomationCache implements IAutomationCache {
     private DraftDetailed currentDraft;
     @Nullable
     private ToolkitDetailed currentToolkit;
+    private Boolean isCliInstalled;
 
     public void setAllLists(@NotNull AllStateLite all) {
 
@@ -132,6 +133,15 @@ public class InMemAutomationCache implements IAutomationCache {
     }
 
     @Override
+    public boolean isCliInstalled(@NotNull Supplier<Boolean> supplier) {
+
+        if (this.isCliInstalled == null) {
+            this.isCliInstalled = supplier.get();
+        }
+        return this.isCliInstalled;
+    }
+
+    @Override
     public void invalidateAllLocalState() {
 
         invalidateAllPatterns();
@@ -178,4 +188,15 @@ public class InMemAutomationCache implements IAutomationCache {
         this.currentDraft = null;
     }
 
+    @Override
+    public void invalidateIsCliInstalled() {
+
+        this.isCliInstalled = null;
+    }
+
+    @Override
+    public void setIsCliInstalled(boolean isInstalled) {
+
+        this.isCliInstalled = isInstalled;
+    }
 }

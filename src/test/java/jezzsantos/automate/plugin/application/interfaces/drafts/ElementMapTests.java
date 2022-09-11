@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,10 +102,10 @@ public class ElementMapTests {
         var element1 = new DraftElement("aname1", Map.of(), false);
         var element2 = new DraftElement("aname2", Map.of(), false);
 
-        var map = new ElementMap(Map.of(
-          "aname1", element1,
-          "aname2", element2
-        ));
+        var map = new ElementMap(new LinkedHashMap<>() {{
+            put("aname1", element1);
+            put("aname2", element2);
+        }});
 
         var counter = 0;
         for (var item : map) {

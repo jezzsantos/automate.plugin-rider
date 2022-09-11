@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,22 +30,26 @@ public class DraftsListToolbarAction extends ComboBoxAction {
 
         super.update(e);
 
-        String message = AutomateBundle.message("action.DraftsListToolbarAction.NoSelected.Message");
+        String message = AutomateBundle.message("action.DraftsListToolbar.NoSelected.Message");
+        boolean isInstalled = false;
         boolean isDraftEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
+            isInstalled = application.isCliInstalled();
             isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
-            var currentDraft = application.getCurrentDraftInfo();
-            if (currentDraft != null) {
-                message = currentDraft.getName();
+            if (isInstalled) {
+                var currentDraft = Try.andHandle(project, application::getCurrentDraftInfo, AutomateBundle.message("action.DraftsListToolbar.GetCurrentDraft.Failure.Message"));
+                if (currentDraft != null) {
+                    message = currentDraft.getName();
+                }
             }
         }
 
         var presentation = e.getPresentation();
-        presentation.setDescription(AutomateBundle.message("action.DraftsListToolbarAction.Title"));
+        presentation.setDescription(AutomateBundle.message("action.DraftsListToolbar.Title"));
         presentation.setText(message);
-        presentation.setEnabledAndVisible(isDraftEditingMode);
+        presentation.setEnabledAndVisible(isInstalled && isDraftEditingMode);
     }
 
     @Override
@@ -55,16 +60,19 @@ public class DraftsListToolbarAction extends ComboBoxAction {
         var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var drafts = application.listDrafts();
-            var isAnyDrafts = !drafts.isEmpty();
-            if (isAnyDrafts) {
-                var isNoCurrentDraft = drafts.stream()
-                  .noneMatch(DraftLite::getIsCurrent);
-                if (isNoCurrentDraft) {
-                    actions.add(new DraftListItemAction(this.onPerformed));
-                }
-                for (var draft : drafts) {
-                    actions.add(new DraftListItemAction(this.onPerformed, draft.getName(), draft.getId()));
+            if (application.isCliInstalled()) {
+                var drafts = Try.andHandle(project, application::listDrafts,
+                                           AutomateBundle.message("action.DraftsListToolbar.ListAllDrafts.Failure.Message"));
+                var isAnyDrafts = drafts != null && !drafts.isEmpty();
+                if (isAnyDrafts) {
+                    var isNoCurrentDraft = drafts.stream()
+                      .noneMatch(DraftLite::getIsCurrent);
+                    if (isNoCurrentDraft) {
+                        actions.add(new DraftListItemAction(this.onPerformed));
+                    }
+                    for (var draft : drafts) {
+                        actions.add(new DraftListItemAction(this.onPerformed, draft.getName(), draft.getId()));
+                    }
                 }
             }
         }

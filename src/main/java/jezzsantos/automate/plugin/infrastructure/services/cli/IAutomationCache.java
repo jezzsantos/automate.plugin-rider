@@ -34,6 +34,8 @@ public interface IAutomationCache {
 
     @NotNull DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception;
 
+    boolean isCliInstalled(@NotNull Supplier<Boolean> supplier);
+
     void invalidateAllLocalState();
 
     void invalidateAllPatterns();
@@ -47,4 +49,8 @@ public interface IAutomationCache {
     void invalidateCurrentToolkit();
 
     void invalidateCurrentDraft();
+
+    void invalidateIsCliInstalled();
+
+    void setIsCliInstalled(boolean isInstalled);
 }

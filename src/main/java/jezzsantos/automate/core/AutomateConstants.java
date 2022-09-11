@@ -13,6 +13,7 @@ public class AutomateConstants {
     public static final List<String> OutputStructuredAliases = List.of(OutputStructuredShorthand, "--output-structured");
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
+    public static String MinimumSupportedVersion = "0.2.7-preview";
 
     public enum ElementCardinality {
         One,

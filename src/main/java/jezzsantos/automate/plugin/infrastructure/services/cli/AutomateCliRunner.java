@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.intellij.openapi.Disposable;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
@@ -250,7 +251,11 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     private static StructuredError getStructuredError(String error) {
 
         var gson = new Gson();
-        return gson.fromJson(error, StructuredError.class);
+        try {
+            return gson.fromJson(error, StructuredError.class);
+        } catch (JsonSyntaxException ex) {
+            return new StructuredError(error);
+        }
     }
 
     private static <TResult> TResult getStructuredOutput(Class<TResult> outputClass, String output) {

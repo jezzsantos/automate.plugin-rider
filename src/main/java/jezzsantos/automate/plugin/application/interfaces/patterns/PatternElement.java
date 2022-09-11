@@ -82,7 +82,7 @@ public class PatternElement {
     @NotNull
     public String getDisplayName() {
 
-        return this.displayName != null
+        return (this.displayName != null && !this.displayName.isEmpty())
           ? this.displayName
           : this.name;
     }

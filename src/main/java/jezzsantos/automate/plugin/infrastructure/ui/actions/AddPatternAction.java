@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.NewPatternDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,15 +32,17 @@ public class AddPatternAction extends AnAction {
         presentation.setText(message);
         presentation.setIcon(AllIcons.General.Add);
 
+        boolean isInstalled = false;
         boolean isAuthoringMode = false;
         boolean isPatternEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
+            isInstalled = application.isCliInstalled();
             isAuthoringMode = application.isAuthoringMode();
             isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
         }
-        presentation.setEnabledAndVisible(isAuthoringMode && isPatternEditingMode);
+        presentation.setEnabledAndVisible(isInstalled && isAuthoringMode && isPatternEditingMode);
     }
 
     @Override
@@ -53,12 +55,12 @@ public class AddPatternAction extends AnAction {
             var dialog = new NewPatternDialog(project, new NewPatternDialog.NewPatternDialogContext(patterns));
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
-                try {
-                    application.createPattern(context.Name);
-                } catch (Exception ex) {
-                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.AppPattern.FailureNotification.Title"));
+                var pattern = Try.andHandle(project,
+                                            () -> application.createPattern(context.Name),
+                                            AutomateBundle.message("action.AppPattern.FailureNotification.Title"));
+                if (pattern != null) {
+                    this.onPerformed.run();
                 }
-                this.onPerformed.run();
             }
         }
     }

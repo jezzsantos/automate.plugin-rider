@@ -42,7 +42,7 @@ public class PatternElementTests {
     }
 
     @Test
-    public void whenGetDisplayNameAndOne_ThenReturnsDisplayName() {
+    public void whenGetDisplayName_ThenReturnsDisplayName() {
 
         var element = new PatternElement("anid", "aname");
         element.setDisplayName("adisplayname");

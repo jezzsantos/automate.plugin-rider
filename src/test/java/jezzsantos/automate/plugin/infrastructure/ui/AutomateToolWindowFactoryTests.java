@@ -5,6 +5,7 @@ import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,6 +21,16 @@ public class AutomateToolWindowFactoryTests {
     @Nested
     class GivenNoPatterns {
 
+        private IAutomateApplication application;
+
+        @BeforeEach
+        public void setUp() {
+
+            this.application = Mockito.mock(IAutomateApplication.class);
+            Mockito.when(this.application.isCliInstalled())
+              .thenReturn(true);
+        }
+
         @Nested
         class GivenNoAuthoringMode {
 
@@ -29,16 +40,15 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite());
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenNoPatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(application).setEditingMode(EditingMode.Drafts);
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
 
@@ -48,19 +58,18 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenNoPatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(application).setEditingMode(EditingMode.Drafts);
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
 
@@ -75,16 +84,15 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite());
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenNoPatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(application).setEditingMode(EditingMode.Drafts);
-                    Mockito.verify(application).setAuthoringMode(false);
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application).setAuthoringMode(false);
                 }
             }
 
@@ -94,19 +102,18 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenNoPatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(application).setEditingMode(EditingMode.Drafts);
-                    Mockito.verify(application).setAuthoringMode(false);
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application).setAuthoringMode(false);
                 }
             }
 
@@ -117,6 +124,16 @@ public class AutomateToolWindowFactoryTests {
     @Nested
     class GivenSomePatterns {
 
+        private IAutomateApplication application;
+
+        @BeforeEach
+        public void setUp() {
+
+            this.application = Mockito.mock(IAutomateApplication.class);
+            Mockito.when(this.application.isCliInstalled())
+              .thenReturn(true);
+        }
+
         @Nested
         class GivenNoAuthoringMode {
 
@@ -126,19 +143,18 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToPatternMode() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", "aversion", false)),
                         List.of(),
                         List.of()));
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(application).setEditingMode(EditingMode.Patterns);
-                    Mockito.verify(application).setAuthoringMode(true);
+                    Mockito.verify(GivenSomePatterns.this.application).setEditingMode(EditingMode.Patterns);
+                    Mockito.verify(GivenSomePatterns.this.application).setAuthoringMode(true);
                 }
             }
 
@@ -148,41 +164,39 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupStateAndEditingDrafts_ThenDoesNothing() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", "aversion", false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
-                    Mockito.when(application.getEditingMode())
+                    Mockito.when(GivenSomePatterns.this.application.getEditingMode())
                       .thenReturn(EditingMode.Drafts);
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(application, never()).setEditingMode(any());
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setEditingMode(any());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
 
                 @Test
                 public void whenInitStartupStateAndEditingPatterns_ThenDoesNothing() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", "aversion", false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
-                    Mockito.when(application.getEditingMode())
+                    Mockito.when(GivenSomePatterns.this.application.getEditingMode())
                       .thenReturn(EditingMode.Patterns);
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(application, never()).setEditingMode(any());
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setEditingMode(any());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
 
@@ -197,19 +211,18 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", "aversion", false)),
                         List.of(),
                         List.of()));
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(application).setEditingMode(EditingMode.Patterns);
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenSomePatterns.this.application).setEditingMode(EditingMode.Patterns);
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
 
@@ -219,41 +232,39 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupStateAndEditingDrafts_ThenDoesNothing() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", "aversion", false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
-                    Mockito.when(application.getEditingMode())
+                    Mockito.when(GivenSomePatterns.this.application.getEditingMode())
                       .thenReturn(EditingMode.Drafts);
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(application, never()).setEditingMode(any());
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setEditingMode(any());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
 
                 @Test
                 public void whenInitStartupStateAndEditingPatterns_ThenDoesNothing() {
 
-                    var application = Mockito.mock(IAutomateApplication.class);
-                    Mockito.when(application.refreshLocalState())
+                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", "aversion", false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
-                    Mockito.when(application.getEditingMode())
+                    Mockito.when(GivenSomePatterns.this.application.getEditingMode())
                       .thenReturn(EditingMode.Patterns);
-                    Mockito.when(application.isAuthoringMode())
+                    Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 
-                    AutomateToolWindowFactory.initStartupState(application);
+                    AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(application, never()).setEditingMode(any());
-                    Mockito.verify(application, never()).setAuthoringMode(anyBoolean());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setEditingMode(any());
+                    Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
 

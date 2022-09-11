@@ -4,8 +4,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,13 +42,15 @@ public class PatternListItemAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var currentPattern = application.getCurrentPatternInfo();
+            var currentPattern = Try.andHandle(project,
+                                               application::getCurrentPatternInfo,
+                                               AutomateBundle.message("action.PatternListItem.GetCurrentPattern.Failure.Message"));
             var isCurrentPattern = currentPattern != null && currentPattern.getId().equals(this.id);
             presentation.setIcon(isCurrentPattern
                                    ? AllIcons.Actions.Checked
                                    : null);
-            presentation.setEnabledAndVisible(true);
         }
+        presentation.setEnabledAndVisible(true);
     }
 
     @Override
@@ -58,12 +60,10 @@ public class PatternListItemAction extends AnAction {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
-                try {
-                    application.setCurrentPattern(this.id);
-                    this.onPerformed.run();
-                } catch (Exception ex) {
-                    ExceptionHandler.handle(project, ex, AutomateBundle.message("action.PatternsListToolbarItem.FailureNotification.Title"));
-                }
+                Try.andHandle(project,
+                              () -> application.setCurrentPattern(this.id),
+                              this.onPerformed,
+                              AutomateBundle.message("action.PatternListItem.SetCurrentPattern.Message"));
             }
         }
     }

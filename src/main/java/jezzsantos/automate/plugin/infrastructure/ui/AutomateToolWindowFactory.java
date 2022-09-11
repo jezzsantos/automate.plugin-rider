@@ -24,22 +24,24 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
     @TestOnly
     public static void initStartupState(@NotNull IAutomateApplication application) {
 
-        var localState = application.refreshLocalState();
-        if (localState.getPatterns().isEmpty()) {
-            if (application.getEditingMode() != EditingMode.Drafts) {
-                application.setEditingMode(EditingMode.Drafts);
-            }
-            if (application.isAuthoringMode()) {
-                application.setAuthoringMode(false);
-            }
-        }
-        else {
-            if (localState.getToolkits().isEmpty()) {
-                if (application.getEditingMode() != EditingMode.Patterns) {
-                    application.setEditingMode(EditingMode.Patterns);
+        if (application.isCliInstalled()) {
+            var localState = application.listAllAutomation(false);
+            if (localState.getPatterns().isEmpty()) {
+                if (application.getEditingMode() != EditingMode.Drafts) {
+                    application.setEditingMode(EditingMode.Drafts);
                 }
-                if (!application.isAuthoringMode()) {
-                    application.setAuthoringMode(true);
+                if (application.isAuthoringMode()) {
+                    application.setAuthoringMode(false);
+                }
+            }
+            else {
+                if (localState.getToolkits().isEmpty()) {
+                    if (application.getEditingMode() != EditingMode.Patterns) {
+                        application.setEditingMode(EditingMode.Patterns);
+                    }
+                    if (!application.isAuthoringMode()) {
+                        application.setAuthoringMode(true);
+                    }
                 }
             }
         }

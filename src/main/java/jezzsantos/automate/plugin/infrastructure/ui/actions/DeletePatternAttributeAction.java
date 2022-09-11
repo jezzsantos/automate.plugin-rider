@@ -8,8 +8,8 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Action;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.ConfirmDeleteDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
@@ -58,12 +58,10 @@ public class DeletePatternAttributeAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    try {
-                        application.deletePatternAttribute(selected.parent.getEditPath(), selected.attribute.getName());
-                        this.onSuccess.run(model -> model.deleteAttribute(selected.attribute));
-                    } catch (Exception ex) {
-                        ExceptionHandler.handle(project, ex, AutomateBundle.message("action.DeletePatternAttribute.FailureNotification.Title"));
-                    }
+                    Try.andHandle(project,
+                                  () -> application.deletePatternAttribute(selected.parent.getEditPath(), selected.attribute.getName()),
+                                  () -> this.onSuccess.run(model -> model.deleteAttribute(selected.attribute)),
+                                  AutomateBundle.message("action.DeletePatternAttribute.DeleteAttribute.Failure.Message"));
                 }
             }
         }

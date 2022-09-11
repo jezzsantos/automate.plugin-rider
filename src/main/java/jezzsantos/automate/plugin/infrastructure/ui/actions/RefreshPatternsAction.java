@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,8 +37,10 @@ public class RefreshPatternsAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            application.refreshLocalState();
+            Try.andHandle(project,
+                          () -> application.listAllAutomation(true),
+                          this.onPerformed,
+                          AutomateBundle.message("action.RefreshPatterns.ListAllItems.Failure.Message"));
         }
-        this.onPerformed.run();
     }
 }

@@ -12,10 +12,12 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetaile
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
+import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateService;
 import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -30,22 +32,41 @@ public class AutomateApplication implements IAutomateApplication {
     @UsedImplicitly
     public AutomateApplication(@NotNull Project project) {
 
-        this.configuration = project.getService(IConfiguration.class);
-        this.automateService = project.getService(IAutomateService.class);
+        this(project.getService(IConfiguration.class), project.getService(IAutomateService.class));
+    }
+
+    @TestOnly
+    public AutomateApplication(@NotNull IConfiguration configuration, @NotNull IAutomateService automateService) {
+
+        this.configuration = configuration;
+        this.automateService = automateService;
     }
 
     @NotNull
     @Override
-    public String getDefaultInstallLocation() {
+    public String getExecutableName() {
 
-        return this.automateService.getDefaultInstallLocation();
+        return this.automateService.getExecutableName();
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public String tryGetExecutableVersion(@NotNull String executablePath) {
+    public String getDefaultExecutableLocation() {
 
-        return this.automateService.tryGetExecutableVersion(executablePath);
+        return this.automateService.getDefaultExecutableLocation();
+    }
+
+    @NotNull
+    @Override
+    public CliExecutableStatus tryGetExecutableStatus(@NotNull String executablePath) {
+
+        return this.automateService.tryGetExecutableStatus(executablePath);
+    }
+
+    @Override
+    public boolean isCliInstalled() {
+
+        return this.automateService.isCliInstalled();
     }
 
     @NotNull
@@ -165,9 +186,16 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public AllStateLite refreshLocalState() {
+    public AllStateLite listAllAutomation(boolean forceRefresh) {
 
-        return this.automateService.listAllAutomation(true);
+        if (forceRefresh) {
+            this.automateService.refreshCliExecutableStatus();
+            var isCliInstalled = this.automateService.isCliInstalled();
+            if (!isCliInstalled) {
+                return new AllStateLite();
+            }
+        }
+        return this.automateService.listAllAutomation(forceRefresh);
     }
 
     @Override

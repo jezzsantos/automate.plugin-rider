@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -32,6 +33,7 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliRunner;
+import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree;
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +93,8 @@ public class AutomateToolWindow implements Disposable {
     @Override
     public void dispose() {
 
-        this.application.removeConfigurationListener(configurationChangedListener());
+        this.application.removeConfigurationListener(executablePathChangedListener());
+        this.application.removeConfigurationListener(viewCliLogsChangedListener());
         this.application.removePropertyListener(cliLogUpdatedListener());
     }
 
@@ -113,7 +116,6 @@ public class AutomateToolWindow implements Disposable {
         var expandCollapseActions = new ArrayList<>(List.of(new TreeActionsGroup(this.automateTree).getChildActionsOrStubs()));
         Collections.reverse(expandCollapseActions);
         this.toolwindow.setTitleActions(expandCollapseActions);
-        this.automateTreeExpander = new DefaultTreeExpander(this.automateTree);
     }
 
     @NotNull
@@ -146,7 +148,7 @@ public class AutomateToolWindow implements Disposable {
 
     private void setupCliLogs() {
 
-        this.application.addConfigurationListener(configurationChangedListener());
+        this.application.addConfigurationListener(viewCliLogsChangedListener());
         this.application.addPropertyListener(cliLogUpdatedListener());
         displayCliLogPane(this.application.getViewCliLog());
 
@@ -160,7 +162,17 @@ public class AutomateToolWindow implements Disposable {
     }
 
     @NotNull
-    private PropertyChangeListener configurationChangedListener() {
+    private PropertyChangeListener executablePathChangedListener() {
+
+        return event -> {
+            if (event.getPropertyName().equalsIgnoreCase("ExecutablePath")) {
+                refreshTree();
+            }
+        };
+    }
+
+    @NotNull
+    private PropertyChangeListener viewCliLogsChangedListener() {
 
         return event -> {
             if (event.getPropertyName().equalsIgnoreCase("ViewCliLog")) {
@@ -208,6 +220,8 @@ public class AutomateToolWindow implements Disposable {
 
     private void initTree() {
 
+        this.application.addConfigurationListener(executablePathChangedListener());
+        this.automateTreeExpander = new DefaultTreeExpander(this.automateTree);
         PopupHandler.installPopupMenu(this.automateTree, addTreeContextMenu(), "TreePopup");
         this.automateTree.setCellRenderer(new ColoredTreeCellRenderer() {
             @Override
@@ -294,7 +308,6 @@ public class AutomateToolWindow implements Disposable {
                             }
                         }
                     }
-
                 }
             }
         });
@@ -325,39 +338,47 @@ public class AutomateToolWindow implements Disposable {
         if (this.currentSelectionListener != null) {
             this.automateTree.removeTreeSelectionListener(this.currentSelectionListener);
         }
-        var editingMode = this.application.getEditingMode();
-        this.automateTree.getEmptyText().setText(editingMode == EditingMode.Patterns
-                                                   ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
-                                                   : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
-        this.automateTree.invalidate();
-
-        if (editingMode == EditingMode.Patterns) {
-            var currentPattern = this.application.getCurrentPatternInfo();
-            if (currentPattern != null) {
-                var pattern = Try.safely(this.application::getCurrentPatternDetailed);
-                if (pattern != null) {
-                    var model = new PatternTreeModel(pattern);
-                    this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
-                    this.automateTree.setModel(model);
-                    this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
-                }
-            }
+        var isInstalled = this.application.isCliInstalled();
+        EditingMode editingMode = null;
+        if (isInstalled) {
+            editingMode = this.application.getEditingMode();
+            setGuidance(editingMode == EditingMode.Patterns
+                          ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
+                          : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
         }
         else {
-            var currentDraft = this.application.getCurrentDraftInfo();
-            if (currentDraft != null) {
-                var draft = Try.safely(this.application::getCurrentDraftDetailed);
-                var toolkit = Try.safely(this.application::getCurrentToolkitDetailed);
-                if (draft != null && toolkit != null) {
-                    var model = new DraftTreeModel(draft.getRoot(), toolkit.getPattern());
-                    this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
-                    this.automateTree.setModel(model);
-                    this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
+            setGuidance(AutomateBundle.message("toolWindow.StartupError.Message", this.application.getExecutableName()));
+        }
 
+        if (isInstalled) {
+            if (editingMode == EditingMode.Patterns) {
+                var currentPattern = this.application.getCurrentPatternInfo();
+                if (currentPattern != null) {
+                    var pattern = Try.safely(this.application::getCurrentPatternDetailed);
+                    if (pattern != null) {
+                        var model = new PatternTreeModel(pattern);
+                        this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
+                        this.automateTree.setModel(model);
+                        this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
+                    }
                 }
             }
+            else {
+                var currentDraft = this.application.getCurrentDraftInfo();
+                if (currentDraft != null) {
+                    var draft = Try.safely(this.application::getCurrentDraftDetailed);
+                    var toolkit = Try.safely(this.application::getCurrentToolkitDetailed);
+                    if (draft != null && toolkit != null) {
+                        var model = new DraftTreeModel(draft.getRoot(), toolkit.getPattern());
+                        this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
+                        this.automateTree.setModel(model);
+                        this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
+                    }
+                }
+            }
+
+            this.automateTreeExpander.expandAll();
         }
-        this.automateTreeExpander.expandAll();
     }
 
     @NotNull
@@ -369,11 +390,28 @@ public class AutomateToolWindow implements Disposable {
 
         actions.add(new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
         actions.add(new AddDraftElementListActionGroup(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
+        actions.add(new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
         actions.addSeparator();
         actions.add(new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
         actions.add(new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
 
         return actions;
+    }
+
+    private void setGuidance(String text) {
+
+        var statusText = this.automateTree.getEmptyText();
+        statusText.clear();
+        var lines = text.split(System.lineSeparator());
+        for (var line : lines) {
+            statusText.appendLine(line);
+        }
+        this.automateTree.invalidate();
+    }
+
+    private void showSettings() {
+
+        ShowSettingsUtil.getInstance().showSettingsDialog(AutomateToolWindow.this.project, ProjectSettingsConfigurable.class);
     }
 
     private static class PatternModelTreeSelectionListener implements TreeSelectionListener {
