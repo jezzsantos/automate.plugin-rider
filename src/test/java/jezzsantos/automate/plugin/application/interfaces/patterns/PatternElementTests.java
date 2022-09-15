@@ -206,7 +206,7 @@ public class PatternElementTests {
     @Test
     public void whenToStringAndIsRequiredDescendant_ThenReturnsString() {
 
-        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.One);
+        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.ONE);
         var childElement = new PatternElement("achildid", "aname");
         var rootElement = new PatternElement("arootid", "aname");
         childElement.addElement(grandChildElement);
@@ -220,7 +220,7 @@ public class PatternElementTests {
     @Test
     public void whenToStringAndIsOptionalDescendant_ThenReturnsString() {
 
-        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.ZeroOrOne);
+        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.ZERO_OR_ONE);
         var childElement = new PatternElement("achildid", "aname");
         var rootElement = new PatternElement("arootid", "aname");
         childElement.addElement(grandChildElement);
@@ -234,7 +234,7 @@ public class PatternElementTests {
     @Test
     public void whenToStringAndIsOptionalDescendantCollection_ThenReturnsString() {
 
-        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.ZeroOrMany);
+        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.ZERO_OR_MANY);
         var childElement = new PatternElement("achildid", "aname");
         var rootElement = new PatternElement("arootid", "aname");
         childElement.addElement(grandChildElement);
@@ -248,7 +248,7 @@ public class PatternElementTests {
     @Test
     public void whenToStringAndIsRequiredDescendantCollection_ThenReturnsString() {
 
-        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.OneOrMany);
+        var grandChildElement = new PatternElement("adescendantid", "aname", AutomateConstants.ElementCardinality.ONE_OR_MANY);
         var childElement = new PatternElement("achildid", "aname");
         var rootElement = new PatternElement("arootid", "aname");
         childElement.addElement(grandChildElement);

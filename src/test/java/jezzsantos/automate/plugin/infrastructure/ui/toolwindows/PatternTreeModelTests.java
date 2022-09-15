@@ -66,7 +66,6 @@ public class PatternTreeModelTests {
         var result = this.model.getChild(parent, 1);
 
         assertNull(result);
-
     }
 
     @Test
@@ -583,6 +582,54 @@ public class PatternTreeModelTests {
         var result = this.model.getIndexOfChild(parent, element2);
 
         assertEquals(-1, result);
+    }
+
+    @Test
+    public void whenInsertAttributeAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.insertAttribute(new Attribute("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasInsertEventBeenRaised());
+    }
+
+    @Test
+    public void whenInsertAttributeAndSelectedPathIsNotAPlaceholder_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.insertAttribute(new Attribute("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasInsertEventBeenRaised());
+    }
+
+    @Test
+    public void whenInsertAttributeOnRootElement_ThenRaisesEvent() {
+
+        var patternElement = new PatternElement("aparentid", "aname");
+        var attribute = new Attribute("anid", "aname");
+        patternElement.addAttribute(attribute);
+
+        this.model.setSelectedPath(new TreePath(new Object[]{patternElement}));
+
+        this.model.insertAttribute(attribute);
+
+        assertTrue(this.treeModelListener.hasInserted(0, attribute));
+    }
+
+    @Test
+    public void whenInsertAttributeOnDescendantElement_ThenRaisesEvent() {
+
+        var patternElement = new PatternElement("aparentid", "aname");
+        var attribute = new Attribute("anid", "aname");
+        patternElement.addAttribute(attribute);
+
+        this.model.setSelectedPath(new TreePath(new Object[]{patternElement,}));
+
+        this.model.insertAttribute(attribute);
+
+        assertTrue(this.treeModelListener.hasInserted(0, attribute));
     }
 
     @Test

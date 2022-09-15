@@ -9,18 +9,23 @@ import org.jetbrains.annotations.Nullable;
 public class DraftElementPlaceholderNode {
 
     @NotNull
-    private final DraftElement element;
-    @NotNull
     private final String name;
     @NotNull
     private final PatternElement pattern;
     private final boolean isCollectionItem;
+    @NotNull
+    private DraftElement element;
 
-    public DraftElementPlaceholderNode(@NotNull PatternElement pattern, @NotNull DraftElement element, boolean isCollectionItem, @NotNull String displayName) {
+    public DraftElementPlaceholderNode(@NotNull PatternElement pattern, @NotNull DraftElement element, boolean isCollectionItem) {
 
         this.pattern = pattern;
-        this.name = displayName;
+        this.name = String.format("%s", element.getName());
         this.isCollectionItem = isCollectionItem;
+        this.element = element;
+    }
+
+    public void updateElement(@NotNull DraftElement element) {
+
         this.element = element;
     }
 
@@ -28,12 +33,6 @@ public class DraftElementPlaceholderNode {
     public DraftElement getElement() {
 
         return this.element;
-    }
-
-    @Override
-    public String toString() {
-
-        return this.name;
     }
 
     public boolean isCollectionItem() {
@@ -50,5 +49,11 @@ public class DraftElementPlaceholderNode {
         }
 
         return this.pattern.findSchema(schemaId);
+    }
+
+    @Override
+    public String toString() {
+
+        return this.name;
     }
 }

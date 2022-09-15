@@ -6,12 +6,15 @@ import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.Action;
+import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.EditDraftElementDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftElementPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftTreeModel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.TreePath;
+import java.util.Objects;
 
 public class EditDraftElementAction extends AnAction {
 
@@ -38,16 +41,35 @@ public class EditDraftElementAction extends AnAction {
             isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
         }
 
-        var isElementSite = getParentElement(e) != null;
+        var isElementSite = getElement(e) != null;
         presentation.setEnabledAndVisible(isDraftEditingMode && isElementSite);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
+        var project = e.getProject();
+        if (project != null) {
+            var application = IAutomateApplication.getInstance(project);
+            var selectedNode = getElement(e);
+            if (selectedNode != null) {
+                var element = selectedNode.getElement();
+                var schema = Objects.requireNonNull(selectedNode.getSchema()).getSchema();
+                var dialog = new EditDraftElementDialog(project, new EditDraftElementDialog.EditDraftElementDialogContext(element, schema));
+                if (dialog.showAndGet()) {
+                    var context = dialog.getContext();
+                    var updated = Try.andHandle(project,
+                                                () -> application.updateDraftElement(Objects.requireNonNull(element.getConfigurePath()), context.getValues()),
+                                                AutomateBundle.message("action.EditDraftElement.UpdateElement.Failure.Message"));
+                    if (updated != null) {
+                        this.onSuccess.run(model -> model.updateDraftElement(updated));
+                    }
+                }
+            }
+        }
     }
 
-    private DraftElementPlaceholderNode getParentElement(AnActionEvent e) {
+    private DraftElementPlaceholderNode getElement(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {

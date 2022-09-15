@@ -50,4 +50,20 @@ public class ElementMap implements Iterable<DraftElement> {
 
         return this.map.values().iterator();
     }
+
+    public int indexOf(DraftElement childElement) {
+
+        if (this.map.isEmpty()) {
+            return -1;
+        }
+
+        var index = -1;
+        for (var value : this.map.values()) {
+            index++;
+            if (value.equals(childElement)) {
+                return index;
+            }
+        }
+        return -1;
+    }
 }

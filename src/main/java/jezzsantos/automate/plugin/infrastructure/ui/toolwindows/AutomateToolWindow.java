@@ -256,15 +256,15 @@ public class AutomateToolWindow implements Disposable {
                                 if (value instanceof Automation) {
                                     var automation = (Automation) value;
                                     switch (automation.getType()) {
-                                        case CodeTemplateCommand:
+                                        case CODE_TEMPLATE_COMMAND:
                                             setIcon(AllIcons.Actions.GeneratedFolder);
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplateCommand.Tooltip"));
                                             break;
-                                        case CliCommand:
+                                        case CLI_COMMAND:
                                             setIcon(AllIcons.Debugger.Console);
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CliCommand.Tooltip"));
                                             break;
-                                        case CommandLaunchPoint:
+                                        case COMMAND_LAUNCH_POINT:
                                             setIcon(AllIcons.Diff.MagicResolve);
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CommandLaunchPoint.Tooltip"));
                                             break;

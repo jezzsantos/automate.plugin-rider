@@ -14,7 +14,7 @@ public class AutomationTests {
         var result = Automation.createCodeTemplateCommand("anid", "aname", "atemplateid", true, "atargetpath")
           .toString();
 
-        assertEquals("aname (CodeTemplateCommand) (template: atemplateid, onceonly, path: atargetpath)", result);
+        assertEquals("aname (CodeTemplate Command) (template: atemplateid, onceonly, path: atargetpath)", result);
     }
 
     @Test
@@ -23,7 +23,7 @@ public class AutomationTests {
         var result = Automation.createCodeTemplateCommand("anid", "aname", "atemplateid", false, "atargetpath")
           .toString();
 
-        assertEquals("aname (CodeTemplateCommand) (template: atemplateid, always, path: atargetpath)", result);
+        assertEquals("aname (CodeTemplate Command) (template: atemplateid, always, path: atargetpath)", result);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class AutomationTests {
         var result = Automation.createCliCommand("anid", "aname", "anapplicationname", "arguments")
           .toString();
 
-        assertEquals("aname (CliCommand) (app: anapplicationname, args: arguments)", result);
+        assertEquals("aname (CLI Command) (app: anapplicationname, args: arguments)", result);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class AutomationTests {
         var result = Automation.createLaunchPoint("anid", "aname", List.of())
           .toString();
 
-        assertEquals("aname (CommandLaunchPoint) (ids: none)", result);
+        assertEquals("aname (LaunchPoint) (ids: none)", result);
     }
 
     @Test
@@ -50,6 +50,6 @@ public class AutomationTests {
         var result = Automation.createLaunchPoint("anid", "aname", List.of("acommandid1", "acommandid2", "acommandid3"))
           .toString();
 
-        assertEquals("aname (CommandLaunchPoint) (ids: acommandid1;acommandid2;acommandid3)", result);
+        assertEquals("aname (LaunchPoint) (ids: acommandid1;acommandid2;acommandid3)", result);
     }
 }

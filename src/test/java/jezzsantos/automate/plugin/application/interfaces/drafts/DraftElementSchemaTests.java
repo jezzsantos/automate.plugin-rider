@@ -43,10 +43,10 @@ public class DraftElementSchemaTests {
     @Test
     public void whenListMissingElementsAndHasElementsOfSingularCardinalityThatDontExistInDraftElement_ThenReturnsElementsSchema() {
 
-        var element1 = new PatternElement("anelementid1", "anelementname1", AutomateConstants.ElementCardinality.One);
-        var element2 = new PatternElement("anelementid2", "anelementname2", AutomateConstants.ElementCardinality.ZeroOrOne);
-        var element3 = new PatternElement("anelementid3", "anelementname3", AutomateConstants.ElementCardinality.ZeroOrMany);
-        var element4 = new PatternElement("anelementid4", "anelementname4", AutomateConstants.ElementCardinality.OneOrMany);
+        var element1 = new PatternElement("anelementid1", "anelementname1", AutomateConstants.ElementCardinality.ONE);
+        var element2 = new PatternElement("anelementid2", "anelementname2", AutomateConstants.ElementCardinality.ZERO_OR_ONE);
+        var element3 = new PatternElement("anelementid3", "anelementname3", AutomateConstants.ElementCardinality.ZERO_OR_MANY);
+        var element4 = new PatternElement("anelementid4", "anelementname4", AutomateConstants.ElementCardinality.ONE_OR_MANY);
         var patternElement = new PatternElement("anid", "aname");
         patternElement.addElement(element1);
         patternElement.addElement(element2);
@@ -64,10 +64,10 @@ public class DraftElementSchemaTests {
     @Test
     public void whenListMissingElementsAndHasElementsOfSingularCardinalityThatExistInDraftElement_ThenReturnsEmpty() {
 
-        var element1 = new PatternElement("anelementid1", "anelementname1", AutomateConstants.ElementCardinality.One);
-        var element2 = new PatternElement("anelementid2", "anelementname2", AutomateConstants.ElementCardinality.ZeroOrOne);
-        var element3 = new PatternElement("anelementid3", "anelementname3", AutomateConstants.ElementCardinality.ZeroOrMany);
-        var element4 = new PatternElement("anelementid4", "anelementname4", AutomateConstants.ElementCardinality.OneOrMany);
+        var element1 = new PatternElement("anelementid1", "anelementname1", AutomateConstants.ElementCardinality.ONE);
+        var element2 = new PatternElement("anelementid2", "anelementname2", AutomateConstants.ElementCardinality.ZERO_OR_ONE);
+        var element3 = new PatternElement("anelementid3", "anelementname3", AutomateConstants.ElementCardinality.ZERO_OR_MANY);
+        var element4 = new PatternElement("anelementid4", "anelementname4", AutomateConstants.ElementCardinality.ONE_OR_MANY);
         var patternElement = new PatternElement("anid", "aname");
         patternElement.addElement(element1);
         patternElement.addElement(element2);

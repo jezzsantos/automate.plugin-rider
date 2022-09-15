@@ -12,6 +12,7 @@ import java.util.List;
 
 public class PatternTreeModel extends AbstractTreeModel {
 
+    private static final int NO_INDEX = -1;
     private static final int CodeTemplatesIndex = 0;
     private static final int AutomationIndex = 1;
     private static final int AttributesIndex = 2;
@@ -148,12 +149,22 @@ public class PatternTreeModel extends AbstractTreeModel {
             }
         }
 
-        return -1;
+        return NO_INDEX;
     }
 
     @Override
     public void valueForPathChanged(TreePath path, Object value) {
 
+    }
+
+    public void setSelectedPath(@Nullable TreePath path) {
+
+        this.selectedPath = path;
+    }
+
+    public void resetSelectedPath() {
+
+        this.selectedPath = null;
     }
 
     public void insertAttribute(@NotNull Attribute attribute) {
@@ -162,24 +173,27 @@ public class PatternTreeModel extends AbstractTreeModel {
             return;
         }
 
-        var selectedNode = this.selectedPath.getLastPathComponent();
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
 
-        if (selectedNode instanceof PatternElement) {
-            var parentElement = (PatternElement) selectedNode;
-            var newIndexInModel = addAttribute(parentElement, attribute);
-
-            var folderNode = (PatternFolderPlaceholderNode) getChild(parentElement, AttributesIndex);
-            var folderPath = TreePathUtil.createTreePath(this.selectedPath, folderNode);
-            treeNodesInserted(folderPath, new int[]{newIndexInModel}, new Object[]{attribute});
+        if (selectedTreeNode instanceof PatternElement) {
+            var selectedElementTreeNode = (PatternElement) selectedTreeNode;
+            var indexOfAttributeOfElement = addAttribute(selectedElementTreeNode, attribute);
+            var parentTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, AttributesIndex);
+            var parentTreeNodePath = TreePathUtil.createTreePath(this.selectedPath, parentTreeNode);
+            if (indexOfAttributeOfElement > NO_INDEX) {
+                treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttributeOfElement}, new Object[]{attribute});
+            }
         }
         else {
-            if (selectedNode instanceof PatternFolderPlaceholderNode) {
-                var folder = (PatternFolderPlaceholderNode) selectedNode;
-                if (isAttributesPlaceholder(folder)) {
-                    var folderPath = this.selectedPath;
-                    var parentElement = (PatternElement) folderPath.getParentPath().getLastPathComponent();
-                    var newIndexInModel = addAttribute(parentElement, attribute);
-                    treeNodesInserted(folderPath, new int[]{newIndexInModel}, new Object[]{attribute});
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode) {
+                var selectedFolderTreeNode = (PatternFolderPlaceholderNode) selectedTreeNode;
+                if (isAttributesPlaceholder(selectedFolderTreeNode)) {
+                    var parentTreeNodePath = this.selectedPath;
+                    var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
+                    var indexOfAttributeOfElement = addAttribute(parentElement, attribute);
+                    if (indexOfAttributeOfElement > NO_INDEX) {
+                        treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttributeOfElement}, new Object[]{attribute});
+                    }
                 }
             }
         }
@@ -191,28 +205,18 @@ public class PatternTreeModel extends AbstractTreeModel {
             return;
         }
 
-        var selectedNode = this.selectedPath.getLastPathComponent();
-        if (selectedNode instanceof Attribute) {
-            var folderPath = this.selectedPath.getParentPath();
-            if (folderPath != null) {
-                var parentElement = (PatternElement) folderPath.getParentPath().getLastPathComponent();
-                var existingIndexInTree = getIndexOfAttribute(parentElement, attribute);
-                if (existingIndexInTree >= 0) {
-                    parentElement.removeAttribute(attribute);
-                    treeNodesRemoved(folderPath, new int[]{existingIndexInTree}, new Object[]{attribute});
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof Attribute) {
+            var parentTreeNodePath = this.selectedPath.getParentPath();
+            if (parentTreeNodePath != null) {
+                var patternElementTreeNode = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
+                var indexOfAttributeOfElement = getIndexOfAttribute(patternElementTreeNode, attribute);
+                if (indexOfAttributeOfElement > NO_INDEX) {
+                    patternElementTreeNode.removeAttribute(attribute);
+                    treeNodesRemoved(parentTreeNodePath, new int[]{indexOfAttributeOfElement}, new Object[]{attribute});
                 }
             }
         }
-    }
-
-    public void setSelectedPath(@Nullable TreePath path) {
-
-        this.selectedPath = path;
-    }
-
-    public void resetSelectedPath() {
-
-        this.selectedPath = null;
     }
 
     private int addAttribute(PatternElement element, Attribute attribute) {
@@ -238,7 +242,7 @@ public class PatternTreeModel extends AbstractTreeModel {
             return ((List<T>) placeholder.getChild()).indexOf(instance);
         }
 
-        return -1;
+        return NO_INDEX;
     }
 
     private boolean isCodeTemplatesPlaceholder(PatternFolderPlaceholderNode placeholder) {
@@ -264,7 +268,6 @@ public class PatternTreeModel extends AbstractTreeModel {
     private int getIndexOfAttribute(PatternElement element, Attribute attribute) {
 
         return element.getAttributes().indexOf(attribute);
-
     }
 }
 

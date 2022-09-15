@@ -43,7 +43,7 @@ public class PatternElement {
 
     public PatternElement(@NotNull String id, @NotNull String name) {
 
-        this(id, name, AutomateConstants.ElementCardinality.One);
+        this(id, name, AutomateConstants.ElementCardinality.ONE);
     }
 
     @TestOnly
@@ -53,8 +53,8 @@ public class PatternElement {
         this.name = name;
         this.cardinality = cardinality;
         this.isCollection =
-          cardinality == AutomateConstants.ElementCardinality.ZeroOrMany
-            || cardinality == AutomateConstants.ElementCardinality.OneOrMany;
+          cardinality == AutomateConstants.ElementCardinality.ZERO_OR_MANY
+            || cardinality == AutomateConstants.ElementCardinality.ONE_OR_MANY;
     }
 
     public void setRoot() {
@@ -191,11 +191,11 @@ public class PatternElement {
             return "";
         }
         switch (cardinality) {
-            case One:
-            case OneOrMany:
+            case ONE:
+            case ONE_OR_MANY:
                 return AutomateBundle.message("general.PatternElement.Cardinality.Required.Title");
-            case ZeroOrOne:
-            case ZeroOrMany:
+            case ZERO_OR_ONE:
+            case ZERO_OR_MANY:
                 return AutomateBundle.message("general.PatternElement.Cardinality.Optional.Title");
             default:
                 return "";

@@ -15,7 +15,7 @@ public class DraftElementValue {
     @Nullable
     private List<DraftElement> collectionItems;
 
-    public DraftElementValue(@NotNull String property) {
+    public DraftElementValue(@Nullable String property) {
 
         this.property = property;
     }

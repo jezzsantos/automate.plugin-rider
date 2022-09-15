@@ -54,7 +54,7 @@ public class DraftElement {
     }
 
     @Nullable
-    public String getPath() {
+    public String getConfigurePath() {
 
         if (!this.map.containsKey("ConfigurePath")) {
             return null;
@@ -130,6 +130,32 @@ public class DraftElement {
         return this.name;
     }
 
+    public void removeElement(@NotNull DraftElement element) {
+
+        var key = element.getName();
+        this.map.remove(key);
+    }
+
+    public boolean isNotRoot() {
+
+        return !this.isRoot;
+    }
+
+    public void addElement(@NotNull DraftElement element) {
+
+        this.map.put(element.name, new DraftElementValue(element.name, element.map));
+    }
+
+    public void addProperty(DraftProperty property) {
+
+        this.map.put(property.getName(), new DraftElementValue(property.getValue()));
+    }
+
+    public int indexOf(@NotNull DraftElement childElement) {
+
+        return this.getElements().indexOf(childElement);
+    }
+
     @Override
     public boolean equals(Object other) {
 
@@ -155,17 +181,6 @@ public class DraftElement {
         return Objects.hash(this.getId());
     }
 
-    public void removeElement(@NotNull DraftElement element) {
-
-        var key = element.getName();
-        this.map.remove(key);
-    }
-
-    public boolean isNotRoot() {
-
-        return !this.isRoot;
-    }
-
     @SuppressWarnings("unchecked")
     @NotNull
     private static DraftElementValue parseObjectValue(@NotNull String name, @NotNull Object value) {
@@ -186,7 +201,12 @@ public class DraftElement {
             var objectMap = (Map<String, Object>) value;
             var itemMap = new HashMap<String, DraftElementValue>();
             objectMap
-              .forEach((key, val) -> itemMap.put(key, parseObjectValue(key, val)));
+              .forEach((key, val) -> {
+                  var listItemName = isItemsList(key, val)
+                    ? name
+                    : key;
+                  itemMap.put(key, parseObjectValue(listItemName, val));
+              });
             return new DraftElementValue(name, itemMap);
         }
 
@@ -195,14 +215,20 @@ public class DraftElement {
             var elementList = new ArrayList<DraftElement>();
             objectMapList.stream()
               .filter(Objects::nonNull)
-              .forEach(map -> elementList.add(new DraftElement(name,
-                                                               map.entrySet().stream()
-                                                                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseObjectValue(entry.getKey(), entry.getValue()))),
-                                                               false)));
+              .forEach(map -> {
+                  var properties = map.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseObjectValue(entry.getKey(), entry.getValue())));
+                  elementList.add(new DraftElement(name, properties, false));
+              });
 
             return new DraftElementValue(elementList);
         }
 
         return new DraftElementValue(value.toString());
+    }
+
+    private static boolean isItemsList(String key, Object value) {
+
+        return (value instanceof ArrayList<?>) && (key.equals("Items"));
     }
 }

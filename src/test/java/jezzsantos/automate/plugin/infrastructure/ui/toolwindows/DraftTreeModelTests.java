@@ -57,7 +57,7 @@ public class DraftTreeModelTests {
     public void whenGetChildAndIsNotPropertyNorElementNorItem_ThenReturnsNull() {
 
         var parent = new DraftElementPlaceholderNode(new PatternElement("anid", "aname"),
-                                                     new DraftElement("aname", Map.of(), false), false, "adisplayname");
+                                                     new DraftElement("aname", Map.of(), false), false);
 
         var result = this.model.getChild(parent, 0);
 
@@ -72,7 +72,7 @@ public class DraftTreeModelTests {
                                                        "apropertyname1", new DraftElementValue("avalue1"),
                                                        "apropertyname2", new DraftElementValue("avalue2"),
                                                        "apropertyname3", new DraftElementValue("avalue3")
-                                                     ), false), false, "adisplayname");
+                                                     ), false), false);
 
         var result = (DraftPropertyPlaceholderNode) this.model.getChild(parent, 0);
 
@@ -93,7 +93,7 @@ public class DraftTreeModelTests {
                                                            ), false)
                                                          ))
                                                        ))
-                                                     ), false), true, "adisplayname");
+                                                     ), false), true);
 
         var result = (DraftElementPlaceholderNode) this.model.getChild(parent, 0);
 
@@ -110,7 +110,7 @@ public class DraftTreeModelTests {
                                                        "anelementname1", new DraftElementValue("anelementname1", Map.of(
                                                          "Id", new DraftElementValue("anelementid")
                                                        ))
-                                                     ), false), false, "adisplayname");
+                                                     ), false), false);
 
         var result = (DraftElementPlaceholderNode) this.model.getChild(parent, 0);
 
@@ -144,7 +144,7 @@ public class DraftTreeModelTests {
                                                            ), false)
                                                          ))
                                                        ))
-                                                     ), false), true, "adisplayname");
+                                                     ), false), true);
 
         var result = this.model.getChildCount(parent);
 
@@ -163,7 +163,7 @@ public class DraftTreeModelTests {
     public void whenIsLeafAndPlaceholderNode_ThenReturnsFalse() {
 
         var parent = new DraftElementPlaceholderNode(new PatternElement("anid", "aname"),
-                                                     new DraftElement("aname", Map.of(), false), true, "adisplayname");
+                                                     new DraftElement("aname", Map.of(), false), true);
         var result = this.model.isLeaf(parent);
 
         assertFalse(result);
@@ -181,7 +181,7 @@ public class DraftTreeModelTests {
     public void whenGetIndexOfChildAndChildIsNotEitherPlaceholderNode_ThenReturnsOutOfBounds() {
 
         var parent = new DraftElementPlaceholderNode(new PatternElement("aparentid", "aname"),
-                                                     new DraftElement("aname", Map.of(), false), false, "adisplayname");
+                                                     new DraftElement("aname", Map.of(), false), false);
 
         var result = this.model.getIndexOfChild(parent, new Object());
 
@@ -192,8 +192,8 @@ public class DraftTreeModelTests {
     public void whenGetIndexOfChildAndChildIsUnknownProperty_ThenReturnsOutOfBounds() {
 
         var parent = new DraftElementPlaceholderNode(new PatternElement("aparentid", "aname"),
-                                                     new DraftElement("aname", Map.of(), false), false, "adisplayname");
-        var child = new DraftPropertyPlaceholderNode(new DraftProperty("apropertyname", new DraftElementValue("avalue")), "adisplayname");
+                                                     new DraftElement("aname", Map.of(), false), false);
+        var child = new DraftPropertyPlaceholderNode(new DraftProperty("apropertyname", new DraftElementValue("avalue")));
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -208,8 +208,8 @@ public class DraftTreeModelTests {
                                                        "apropertyname1", new DraftElementValue("avalue1"),
                                                        "apropertyname2", new DraftElementValue("avalue2"),
                                                        "apropertyname3", new DraftElementValue("avalue3")
-                                                     ), false), false, "adisplayname");
-        var child = new DraftPropertyPlaceholderNode(new DraftProperty("apropertyname2", new DraftElementValue("avalue")), "adisplayname");
+                                                     ), false), false);
+        var child = new DraftPropertyPlaceholderNode(new DraftProperty("apropertyname2", new DraftElementValue("avalue")));
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -220,9 +220,9 @@ public class DraftTreeModelTests {
     public void whenGetIndexOfChildAndChildIsUnknownElement_ThenReturnsOutOfBounds() {
 
         var parent = new DraftElementPlaceholderNode(new PatternElement("aparentid", "aname"),
-                                                     new DraftElement("aname", Map.of(), false), false, "adisplayname");
+                                                     new DraftElement("aname", Map.of(), false), false);
         var child = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
-                                                    new DraftElement("aname", Map.of(), false), false, "adisplayname");
+                                                    new DraftElement("aname", Map.of(), false), false);
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -243,11 +243,11 @@ public class DraftTreeModelTests {
                                                        "anelementname3", new DraftElementValue("anelementname3", Map.of(
                                                          "Id", new DraftElementValue("anelementid3")
                                                        ))
-                                                     ), false), false, "adisplayname");
+                                                     ), false), false);
         var child = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
                                                     new DraftElement("anelementname2", Map.of(
                                                       "Id", new DraftElementValue("anelementid2")
-                                                    ), false), false, "adisplayname");
+                                                    ), false), false);
 
         var result = this.model.getIndexOfChild(parent, child);
 
@@ -279,15 +279,100 @@ public class DraftTreeModelTests {
                                                        //                                                       "anelementname3", new DraftElementValue("anelementname3", Map.of(
                                                        //                                                         "Id", new DraftElementValue("anelementid3")
                                                        //                                                       ))
-                                                     ), false), false, "adisplayname");
+                                                     ), false), false);
         var child = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
                                                     new DraftElement("acollectionitemname2", Map.of(
                                                       "Id", new DraftElementValue("acollectionitemid2")
-                                                    ), false), true, "adisplayname");
+                                                    ), false), true);
 
         var result = this.model.getIndexOfChild(parent, child);
 
         assertEquals(1, result);
+    }
+
+    @Test
+    public void whenInsertDraftElementAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.insertDraftElement(new DraftElement("aname", Map.of(), false), false);
+
+        assertFalse(this.treeModelListener.hasInsertEventBeenRaised());
+    }
+
+    @Test
+    public void whenInsertDraftElementAndSelectedPathIsNotAPlaceholder_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.insertDraftElement(new DraftElement("aname", Map.of(), false), false);
+
+        assertFalse(this.treeModelListener.hasInsertEventBeenRaised());
+    }
+
+    @Test
+    public void whenInsertDraftElement_ThenRaisesEvent() {
+
+        var schema = new PatternElement("anid", "aname");
+        var element = new DraftElementPlaceholderNode(schema,
+                                                      new DraftElement("aparentelementname", new HashMap<>() {{
+                                                          put("Id", new DraftElementValue("aparentelementid"));
+                                                      }}, false),
+                                                      false);
+        var draftElement = new DraftElement("anelementname", Map.of(
+          "Id", new DraftElementValue("anelementid")), false);
+        this.model.setSelectedPath(new TreePath(new Object[]{element}));
+
+        this.model.insertDraftElement(draftElement, false);
+
+        assertTrue(this.treeModelListener.hasInserted(0, draftElement));
+    }
+
+    @Test
+    public void whenUpdateDraftElementAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.updateDraftElement(new DraftElement("aname", Map.of(), false));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdateDraftElementAndSelectedPathIsNotAPlaceholder_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.updateDraftElement(new DraftElement("aname", Map.of(), false));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdateDraftElement_ThenRaisesEvent() {
+
+        var parentElement = new DraftElementPlaceholderNode(new PatternElement("aparentid", "aname"),
+                                                            new DraftElement("aparentelementname", new HashMap<>(Map.of(
+                                                              "Id", new DraftElementValue("aparentelementid"),
+                                                              "achildelementname", new DraftElementValue("achildelementname", Map.of(
+                                                                "Id", new DraftElementValue("achildelementid")
+                                                              ))
+                                                            )), true), false);
+        var element = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
+                                                      new DraftElement("achildelementname", new HashMap<>() {{
+                                                          put("Id", new DraftElementValue("achildelementid"));
+                                                      }}, false),
+                                                      false);
+        var draftElement = new DraftElement("anelementname", new HashMap<>(Map.of(
+          "Id", new DraftElementValue("achildelementid")
+        )), false);
+        var draftProperty = new DraftProperty("apropertyname1", new DraftElementValue("avalue"));
+        draftElement.addProperty(draftProperty);
+        this.model.setSelectedPath(new TreePath(new Object[]{parentElement, element}));
+
+        this.model.updateDraftElement(draftElement);
+
+        assertTrue(this.treeModelListener.hasChanged(0, new DraftPropertyPlaceholderNode(draftProperty)));
     }
 
     @Test
@@ -317,7 +402,7 @@ public class DraftTreeModelTests {
           "Id", new DraftElementValue("anelementid")
         ), false);
         var element = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
-                                                      draftElement, false, "adisplayname");
+                                                      draftElement, false);
         this.model.setSelectedPath(new TreePath(element));
 
         this.model.deleteDraftElement(draftElement);
@@ -335,18 +420,17 @@ public class DraftTreeModelTests {
                                                             "anelementname", new DraftElementValue("anelementname", Map.of(
                                                               "Id", new DraftElementValue("anelementid")
                                                             ))
-                                                          )), true), false, "adisplayname");
+                                                          )), true), false);
         var draftElement = new DraftElement("anelementname", Map.of(
           "Id", new DraftElementValue("anelementid")
         ), false);
         var element = new DraftElementPlaceholderNode(patternElement,
-                                                      draftElement, false, "adisplayname");
+                                                      draftElement, false);
         this.model.setSelectedPath(new TreePath(new Object[]{rootElement, element}));
 
         this.model.deleteDraftElement(draftElement);
 
         assertTrue(this.treeModelListener.hasRemoved(0, element));
     }
-
 }
 

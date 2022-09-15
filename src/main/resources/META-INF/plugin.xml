@@ -32,6 +32,7 @@
                 displayName="automate"
                 nonDefaultProject="true"/>
         <toolWindow id="automate" secondary="false" icon="AllIcons.Actions.Lightning" anchor="left"
+                    canCloseContents="false"
                     factoryClass="jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory"/>
         <notificationGroup
                 displayType="STICKY_BALLOON"

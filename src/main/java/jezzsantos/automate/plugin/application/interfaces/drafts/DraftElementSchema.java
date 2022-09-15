@@ -31,14 +31,13 @@ public class DraftElementSchema {
         return this.schema.getElements().stream()
           .filter(childSchema -> !singularInstanceAlreadyExists(childSchema, draftElement))
           .collect(Collectors.toList());
-
     }
 
     private boolean singularInstanceAlreadyExists(@NotNull PatternElement childSchema, @NotNull DraftElement parentDraftElement) {
 
         var cardinality = childSchema.getCardinality();
-        if (cardinality == AutomateConstants.ElementCardinality.One
-          || cardinality == AutomateConstants.ElementCardinality.ZeroOrOne) {
+        if (cardinality == AutomateConstants.ElementCardinality.ONE
+          || cardinality == AutomateConstants.ElementCardinality.ZERO_OR_ONE) {
             var schemaId = childSchema.getId();
             var properties = parentDraftElement.getElements();
             for (var property : properties) {

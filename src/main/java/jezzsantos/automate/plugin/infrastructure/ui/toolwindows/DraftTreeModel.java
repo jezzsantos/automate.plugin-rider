@@ -12,19 +12,90 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DraftTreeModel extends AbstractTreeModel {
 
+    private static final int NO_INDEX = -1;
     @NotNull
     private final DraftElementPlaceholderNode draft;
     @NotNull
     private final PatternElement pattern;
+    @Nullable
     private TreePath selectedPath;
 
     public DraftTreeModel(@NotNull DraftElement draft, @NotNull PatternElement pattern) {
 
-        this.draft = new DraftElementPlaceholderNode(pattern, draft, false, draft.getName());
+        this.draft = new DraftElementPlaceholderNode(pattern, draft, false);
         this.pattern = pattern;
+    }
+
+    public void setSelectedPath(@Nullable TreePath path) {
+
+        this.selectedPath = path;
+    }
+
+    public void resetSelectedPath() {
+
+        this.selectedPath = null;
+    }
+
+    public void insertDraftElement(@NotNull DraftElement element, boolean isCollection) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
+            var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
+            var indexOfElementOfParent = addElement(selectedElementTreeNode, element, isCollection);
+            if (indexOfElementOfParent > NO_INDEX) {
+                treeNodesInserted(this.selectedPath, new int[]{indexOfElementOfParent}, new Object[]{element});
+            }
+        }
+    }
+
+    public void updateDraftElement(DraftElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
+            var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
+            selectedElementTreeNode.updateElement(element);
+            var properties = element.getProperties();
+            var indexesOfAllProperties = createArrayOfIndexes(properties.size());
+            var allProperties = new ArrayList<DraftPropertyPlaceholderNode>();
+            properties.forEach(property -> allProperties.add(new DraftPropertyPlaceholderNode(property)));
+            treeNodesChanged(this.selectedPath, indexesOfAllProperties, allProperties.toArray());
+        }
+    }
+
+    public void deleteDraftElement(@NotNull DraftElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
+            var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
+            if (selectedElementTreeNode.getElement().isNotRoot()) {
+                var parentTreeNodePath = this.selectedPath.getParentPath();
+                if (parentTreeNodePath != null) {
+                    var parentElementTreeNode = ((DraftElementPlaceholderNode) parentTreeNodePath.getLastPathComponent());
+                    var indexOfElementOfParent = getIndexOfChild(parentElementTreeNode, selectedElementTreeNode);
+                    if (indexOfElementOfParent > NO_INDEX) {
+                        parentElementTreeNode.getElement().removeElement(element);
+                        treeNodesRemoved(parentTreeNodePath, new int[]{indexOfElementOfParent}, new Object[]{selectedElementTreeNode});
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -43,20 +114,20 @@ public class DraftTreeModel extends AbstractTreeModel {
             var properties = draftElement.getProperties();
             if (relativeIndex < properties.size()) {
                 var property = Objects.requireNonNull(properties.get(relativeIndex));
-                return new DraftPropertyPlaceholderNode(property, String.format("%s: %s", property.getName(), property.getValue()));
+                return new DraftPropertyPlaceholderNode(property);
             }
             relativeIndex = relativeIndex - properties.size();
             var collectedItems = getCollectedItemsFromAllCollections(draftElement);
             if (relativeIndex < collectedItems.size()) {
                 var item = collectedItems.get(relativeIndex);
-                return new DraftElementPlaceholderNode(this.pattern, item.collectionItem, true, String.format("%s (%s)", item.collection.getName(), item.collectionItem.getId()));
+                return new DraftElementPlaceholderNode(this.pattern, item, true);
             }
 
             relativeIndex = relativeIndex - collectedItems.size();
             var elements = draftElement.getElements();
             if (relativeIndex < elements.size()) {
                 var element = Objects.requireNonNull(elements.get(relativeIndex));
-                return new DraftElementPlaceholderNode(this.pattern, element, false, String.format("%s (%s)", element.getName(), element.getId()));
+                return new DraftElementPlaceholderNode(this.pattern, element, false);
             }
         }
 
@@ -99,13 +170,13 @@ public class DraftTreeModel extends AbstractTreeModel {
 
                 for (var propertyOfElement : elementProperties) {
 
-                    if (Objects.equals(propertyOfElement, placeholderProperty)) {
+                    if (propertyOfElement.equals(placeholderProperty)) {
                         return relativeIndex;
                     }
                     relativeIndex++;
                 }
 
-                return -1;
+                return NO_INDEX;
             }
 
             if (child instanceof DraftElementPlaceholderNode) {
@@ -114,7 +185,7 @@ public class DraftTreeModel extends AbstractTreeModel {
                 relativeIndex = elementProperties.size();
                 var collectedItems = getCollectedItemsFromAllCollections(parentElement);
                 for (var collectedItem : collectedItems) {
-                    if (Objects.equals(collectedItem.collectionItem, childElement)) {
+                    if (collectedItem.equals(childElement)) {
                         return relativeIndex;
                     }
                     relativeIndex++;
@@ -122,17 +193,17 @@ public class DraftTreeModel extends AbstractTreeModel {
 
                 var elements = parentElement.getElements();
                 for (var element : elements) {
-                    if (Objects.equals(element, childElement)) {
+                    if (element.equals(childElement)) {
                         return relativeIndex;
                     }
                     relativeIndex++;
                 }
 
-                return -1;
+                return NO_INDEX;
             }
         }
 
-        return -1;
+        return NO_INDEX;
     }
 
     @Override
@@ -140,65 +211,31 @@ public class DraftTreeModel extends AbstractTreeModel {
 
     }
 
-    public void deleteDraftElement(@NotNull DraftElement element) {
+    private int[] createArrayOfIndexes(int size) {
 
-        if (this.selectedPath == null) {
-            return;
+        if (size == 0) {
+            return new int[0];
         }
 
-        var selectedNode = this.selectedPath.getLastPathComponent();
-        if (selectedNode instanceof DraftElementPlaceholderNode) {
-            var elementNode = (DraftElementPlaceholderNode) selectedNode;
-            if (elementNode.getElement().isNotRoot()) {
-                var parentPath = this.selectedPath.getParentPath();
-                if (parentPath != null) {
-                    var parentElementNode = ((DraftElementPlaceholderNode) parentPath.getLastPathComponent());
-                    var existingIndexInTree = getIndexOfChild(parentElementNode, elementNode);
-                    if (existingIndexInTree >= 0) {
-                        parentElementNode.getElement().removeElement(element);
-                        treeNodesRemoved(parentPath, new int[]{existingIndexInTree}, new Object[]{elementNode});
-                    }
-                }
-            }
-        }
+        return IntStream.range(0, size).toArray();
     }
 
-    public void setSelectedPath(@Nullable TreePath path) {
+    private int addElement(DraftElementPlaceholderNode parentElement, DraftElement element, boolean isCollection) {
 
-        this.selectedPath = path;
+        parentElement.getElement().addElement(element);
+        return getIndexOfChild(parentElement, new DraftElementPlaceholderNode(this.pattern, element, isCollection));
     }
 
-    public void resetSelectedPath() {
+    private List<DraftElement> getCollectedItemsFromAllCollections(DraftElement element) {
 
-        this.selectedPath = null;
-    }
-
-    private List<CollectedItemDescriptor> getCollectedItemsFromAllCollections(DraftElement item) {
-
-        var collections = item.getCollections();
-        var items = new ArrayList<CollectedItemDescriptor>();
+        var collections = element.getCollections();
+        var collectionItems = new ArrayList<DraftElement>();
         for (var collection : collections.entrySet()) {
-            items.addAll(collection.getValue().getCollectionItems().stream()
-                           .map(element -> new CollectedItemDescriptor(collection.getValue(), element))
-                           .sorted(Comparator.comparing(descriptor -> Objects.requireNonNullElse(descriptor.collectionItem.getId(), "")))
-                           .collect(Collectors.toList()));
+            collectionItems.addAll(collection.getValue().getCollectionItems().stream()
+                                     .sorted(Comparator.comparing(item -> Objects.requireNonNullElse(item.getId(), "")))
+                                     .collect(Collectors.toList()));
         }
 
-        return items;
-    }
-
-    private static class CollectedItemDescriptor {
-
-        @NotNull
-        private final DraftElement collection;
-        @NotNull
-        private final DraftElement collectionItem;
-
-        public CollectedItemDescriptor(@NotNull DraftElement collection, @NotNull DraftElement collectionItem) {
-
-            this.collection = collection;
-            this.collectionItem = collectionItem;
-        }
-
+        return collectionItems;
     }
 }

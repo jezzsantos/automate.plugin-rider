@@ -2,10 +2,12 @@ package jezzsantos.automate.plugin.application;
 
 import com.intellij.openapi.project.Project;
 import com.jetbrains.rd.util.UsedImplicitly;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Map;
 
 public class AutomateApplication implements IAutomateApplication {
 
@@ -234,16 +237,31 @@ public class AutomateApplication implements IAutomateApplication {
         return this.configuration.getViewCliLog();
     }
 
+    @NotNull
     @Override
-    public Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
-        return this.automateService.addPatternAttribute(editPath, name, isRequired, type, defaultValue, choices);
+        return this.automateService.addPatternAttribute(parentEditPath, name, isRequired, type, defaultValue, choices);
     }
 
     @Override
     public void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception {
 
         this.automateService.deletePatternAttribute(editPath, name);
+    }
+
+    @NotNull
+    @Override
+    public DraftElement addDraftElement(@NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception {
+
+        return this.automateService.addDraftElement(parentConfigurePath, isCollection, elementName, nameValuePairs);
+    }
+
+    @NotNull
+    @Override
+    public DraftElement updateDraftElement(@NotNull String configurationPath, @NotNull Map<String, String> nameValuePairs) throws Exception {
+
+        return this.automateService.updateDraftElement(configurationPath, nameValuePairs);
     }
 
     @Override

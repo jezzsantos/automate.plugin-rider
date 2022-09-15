@@ -3,6 +3,7 @@ package jezzsantos.automate.plugin.application.interfaces.drafts;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,7 +107,7 @@ public class DraftElementTests {
 
         var element = new DraftElement("apropertyname", map, false);
 
-        var result = element.getPath();
+        var result = element.getConfigurePath();
 
         assertNull(result);
     }
@@ -120,7 +121,7 @@ public class DraftElementTests {
 
         var element = new DraftElement("apropertyname", map, false);
 
-        var result = element.getPath();
+        var result = element.getConfigurePath();
 
         assertEquals("avalue", result);
     }
@@ -450,5 +451,32 @@ public class DraftElementTests {
         var result = element.isNotRoot();
 
         assertTrue(result);
+    }
+
+    @Test
+    public void whenIndexOfWithUnknownElement_ThenReturnsOutOfBounds() {
+
+        var element = new DraftElement("anelementname", Map.of(), false);
+        var anotherElement = new DraftElement("anothername", Map.of(), false);
+
+        var result = element.indexOf(anotherElement);
+
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void whenIndexOfWithChildElement_ThenReturnsIndex() {
+
+        var element = new DraftElement("anelementname", new LinkedHashMap<>(), false);
+        var child1 = new DraftElement("achildname1", Map.of("Id", new DraftElementValue("achildid1")), false);
+        var child2 = new DraftElement("achildname2", Map.of("Id", new DraftElementValue("achildid2")), false);
+        var child3 = new DraftElement("achildname3", Map.of("Id", new DraftElementValue("achildid3")), false);
+        element.addElement(child1);
+        element.addElement(child2);
+        element.addElement(child3);
+
+        var result = element.indexOf(child2);
+
+        assertEquals(1, result);
     }
 }

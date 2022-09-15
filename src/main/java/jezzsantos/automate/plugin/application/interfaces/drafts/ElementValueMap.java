@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class ElementValueMap implements Iterable<DraftProperty> {
 
@@ -65,5 +67,12 @@ public class ElementValueMap implements Iterable<DraftProperty> {
                 return new DraftProperty(name, value);
             }
         };
+    }
+
+    public ElementValueMap sortedByName() {
+
+        return new ElementValueMap(this.map.entrySet().stream()
+                                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                                               (val1, val2) -> val1, TreeMap::new)));
     }
 }

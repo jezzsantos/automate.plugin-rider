@@ -44,6 +44,31 @@ public class NewDraftDialog extends DialogWrapper {
         }
     }
 
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        return this.contents;
+    }
+
+    @Override
+    protected @Nullable ValidationInfo doValidate() {
+
+        var selectedToolkit = (ToolkitLite) this.toolkits.getSelectedItem();
+        var name = this.name.getText();
+        return doValidate(this.context, selectedToolkit, name);
+    }
+
+    @Override
+    protected void doOKAction() {
+
+        super.doOKAction();
+        this.context.Name = this.name.getText();
+        var selectedToolkit = (ToolkitLite) this.toolkits.getSelectedItem();
+        if (selectedToolkit != null) {
+            this.context.ToolkitName = selectedToolkit.getName();
+        }
+    }
+
     @TestOnly
     public static @Nullable ValidationInfo doValidate(NewDraftDialogContext context, ToolkitLite selectedToolkit, String name) {
 
@@ -68,7 +93,7 @@ public class NewDraftDialog extends DialogWrapper {
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
 
-        return this.toolkits;
+        return this.name;
     }
 
     public NewDraftDialogContext getContext() {
@@ -87,31 +112,6 @@ public class NewDraftDialog extends DialogWrapper {
 
             this.InstalledToolkits = installedToolkits;
             this.Drafts = drafts;
-        }
-    }
-
-    @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        return this.contents;
-    }
-
-    @Override
-    protected @Nullable ValidationInfo doValidate() {
-
-        var selectedToolkit = (ToolkitLite) this.toolkits.getSelectedItem();
-        var name = this.name.getText();
-        return doValidate(this.context, selectedToolkit, name);
-    }
-
-    @Override
-    protected void doOKAction() {
-
-        super.doOKAction();
-        this.context.Name = this.name.getText();
-        var selectedToolkit = (ToolkitLite) this.toolkits.getSelectedItem();
-        if (selectedToolkit != null) {
-            this.context.ToolkitName = selectedToolkit.getName();
         }
     }
 }

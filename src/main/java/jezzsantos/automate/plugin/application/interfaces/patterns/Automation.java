@@ -32,7 +32,7 @@ public class Automation {
 
     public Automation(@NotNull String id, @NotNull String name) {
 
-        this(id, name, AutomateConstants.AutomationType.CodeTemplateCommand);
+        this(id, name, AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND);
     }
 
     public Automation(@NotNull String id, @NotNull String name, @NotNull AutomateConstants.AutomationType type) {
@@ -45,7 +45,7 @@ public class Automation {
     @TestOnly
     public static Automation createCodeTemplateCommand(@NotNull String id, @NotNull String name, @NotNull String templateId, boolean isOneOff, @NotNull String targetPath) {
 
-        var automation = new Automation(id, name, AutomateConstants.AutomationType.CodeTemplateCommand);
+        var automation = new Automation(id, name, AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND);
         automation.templateId = templateId;
         automation.isOneOff = isOneOff;
         automation.targetPath = targetPath;
@@ -55,7 +55,7 @@ public class Automation {
     @TestOnly
     public static Automation createCliCommand(@NotNull String id, @NotNull String name, @NotNull String applicationName, @NotNull String arguments) {
 
-        var automation = new Automation(id, name, AutomateConstants.AutomationType.CliCommand);
+        var automation = new Automation(id, name, AutomateConstants.AutomationType.CLI_COMMAND);
         automation.applicationName = applicationName;
         automation.arguments = arguments;
         return automation;
@@ -64,7 +64,7 @@ public class Automation {
     @TestOnly
     public static Automation createLaunchPoint(@NotNull String id, @NotNull String name, @NotNull List<String> commandIds) {
 
-        var automation = new Automation(id, name, AutomateConstants.AutomationType.CommandLaunchPoint);
+        var automation = new Automation(id, name, AutomateConstants.AutomationType.COMMAND_LAUNCH_POINT);
         automation.cmdIds = commandIds;
         return automation;
     }
@@ -79,7 +79,7 @@ public class Automation {
 
         String data = "";
         switch (this.type) {
-            case CodeTemplateCommand:
+            case CODE_TEMPLATE_COMMAND:
                 var onceOnly = this.isOneOff
                   ? String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.True.Title"))
                   : String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.False.Title"));
@@ -87,14 +87,14 @@ public class Automation {
                                      AutomateBundle.message("general.Automation.CodeTemplateCommand.Template.Title"),
                                      this.templateId, onceOnly, this.targetPath);
                 break;
-            case CliCommand:
+            case CLI_COMMAND:
                 data = String.format("%s: %s, %s: %s",
                                      AutomateBundle.message("general.Automation.CliCommand.ApplicationName.Title"),
                                      this.applicationName,
                                      AutomateBundle.message("general.Automation.CliCommand.Arguments.Title"),
                                      this.arguments);
                 break;
-            case CommandLaunchPoint:
+            case COMMAND_LAUNCH_POINT:
                 data = String.format("%s: %s",
                                      AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.Title"),
                                      this.cmdIds.isEmpty()
@@ -103,7 +103,7 @@ public class Automation {
                 break;
         }
 
-        return String.format("%s (%s) (%s)", this.name, this.type, data);
+        return String.format("%s (%s) (%s)", this.name, this.type.getDisplayName(), data);
     }
 
     public AutomateConstants.AutomationType getType() {

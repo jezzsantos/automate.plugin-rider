@@ -49,11 +49,11 @@ public class AddDraftElementListActionGroup extends ActionGroup {
         if (e != null) {
             var parentPlaceholder = getParentElement(e);
             if (parentPlaceholder != null) {
-                var newElements = Objects.requireNonNull(parentPlaceholder.getSchema()).listMissingElements(parentPlaceholder.getElement());
-                if (!newElements.isEmpty()) {
+                var missingSchemas = Objects.requireNonNull(parentPlaceholder.getSchema()).listMissingElements(parentPlaceholder.getElement());
+                if (!missingSchemas.isEmpty()) {
                     var actions = new ArrayList<AnAction>();
-                    for (var patternElement : newElements) {
-                        actions.add(new AddDraftElementAction(patternElement, this.onSuccess));
+                    for (var missingSchema : missingSchemas) {
+                        actions.add(new AddDraftElementAction(parentPlaceholder.getElement(), missingSchema, this.onSuccess));
                     }
 
                     return actions.toArray(new AnAction[0]);

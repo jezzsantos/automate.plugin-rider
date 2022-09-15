@@ -32,44 +32,8 @@ public class InstallToolkitDialog extends DialogWrapper {
         this.locationTitle.setText(AutomateBundle.message("dialog.InstallToolkit.Location.Title"));
         this.locationTitle.setLabelFor(this.location);
         this.location.setPreferredSize(new Dimension(380, this.location.getHeight()));
-        this.location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title"), null, project, FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
-    }
-
-    @TestOnly
-    public static @Nullable ValidationInfo doValidate(InstallToolkitDialogContext ignoredContext, String location) {
-
-        if (location.isEmpty()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension));
-        }
-
-        var file = new File(location);
-        if (!file.isFile()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile.Message", AutomateConstants.ToolkitFileExtension));
-        }
-
-        return null;
-    }
-
-    @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-
-        return this.contents;
-    }
-
-    public InstallToolkitDialogContext getContext() {
-
-        return this.context;
-    }
-
-    private void createUIComponents() {
-
-        this.location = new TextFieldWithBrowseButtonAndHint();
-        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
-    }
-
-    public static class InstallToolkitDialogContext {
-
-        public String ToolkitLocation;
+        this.location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title"), null, project,
+                                              FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
     }
 
     @Override
@@ -90,5 +54,42 @@ public class InstallToolkitDialog extends DialogWrapper {
 
         super.doOKAction();
         this.context.ToolkitLocation = this.location.getText();
+    }
+
+    @TestOnly
+    public static @Nullable ValidationInfo doValidate(InstallToolkitDialogContext ignoredContext, String location) {
+
+        if (location.isEmpty()) {
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension));
+        }
+
+        var file = new File(location);
+        if (!file.isFile()) {
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile.Message", AutomateConstants.ToolkitFileExtension));
+        }
+
+        return null;
+    }
+
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+
+        return this.location;
+    }
+
+    public InstallToolkitDialogContext getContext() {
+
+        return this.context;
+    }
+
+    private void createUIComponents() {
+
+        this.location = new TextFieldWithBrowseButtonAndHint();
+        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
+    }
+
+    public static class InstallToolkitDialogContext {
+
+        public String ToolkitLocation;
     }
 }

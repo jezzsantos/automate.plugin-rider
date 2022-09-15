@@ -64,8 +64,7 @@ public class AddPatternAttributeAction extends AnAction {
                     var context = dialog.getContext();
                     var attribute = Try.andHandle(project,
                                                   () -> application.addPatternAttribute(parent.getEditPath(), context.Name, context.IsRequired, context.DataType,
-                                                                                        context.DefaultValue,
-                                                                                        context.Choices),
+                                                                                        context.DefaultValue, context.Choices),
                                                   AutomateBundle.message("action.AddPatternAttribute.NewAttribute.Failure.Message"));
                     if (attribute != null) {
                         this.onSuccess.run(model -> model.insertAttribute(attribute));

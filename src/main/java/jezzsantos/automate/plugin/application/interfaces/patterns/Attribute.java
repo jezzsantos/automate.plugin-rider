@@ -7,8 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.github.hypfvieh.util.TypeUtil.isDouble;
+import static com.github.hypfvieh.util.TypeUtil.isInteger;
 
 @SuppressWarnings("unused")
 public class Attribute {
@@ -32,6 +38,12 @@ public class Attribute {
     }
 
     @TestOnly
+    public Attribute(@NotNull String id, @NotNull String name, @NotNull AutomateConstants.AttributeDataType dataType) {
+
+        this(id, name, false, null, dataType, null);
+    }
+
+    @TestOnly
     public Attribute(@NotNull String id, @NotNull String name, boolean isRequired, @Nullable String defaultValue, @Nullable AutomateConstants.AttributeDataType dataType, @Nullable List<String> choices) {
 
         this.id = id;
@@ -46,10 +58,85 @@ public class Attribute {
           : new ArrayList<>();
     }
 
-    public String getName() {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isValidDataType(@NotNull AutomateConstants.AttributeDataType dataType, String value) {
 
-        return this.name;
+        switch (dataType) {
+            case STRING:
+                return true;
+
+            case BOOLEAN:
+                if (value == null) {
+                    return false;
+                }
+                return List.of("true", "false").contains(value.toLowerCase());
+
+            case INTEGER:
+                if (value == null) {
+                    return false;
+                }
+                return isInteger(value);
+
+            case FLOAT:
+                if (value == null) {
+                    return false;
+                }
+                return isDouble(value);
+
+            case DATETIME:
+                if (value == null) {
+                    return false;
+                }
+                return isIsoDate(value);
+
+            default:
+                if (value == null) {
+                    return false;
+                }
+                return false;
+        }
     }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isOneOfChoices(@NotNull List<String> choices, @Nullable String value) {
+
+        if (choices.isEmpty()) {
+            return true;
+        }
+
+        if (value == null) {
+            return false;
+        }
+
+        return choices.contains(value);
+    }
+
+    public boolean isValidDataType(String value) {
+
+        return isValidDataType(this.dataType, value);
+    }
+
+    public boolean isOneOfChoices(@Nullable String value) {
+
+        if (value == null) {
+            return false;
+        }
+
+        return isOneOfChoices(this.choices, value);
+    }
+
+    public String getName() {return this.name;}
+
+    public String getDefaultValue() {return this.defaultValue;}
+
+    public AutomateConstants.AttributeDataType getDataType() {return this.dataType;}
+
+    public boolean hasChoices() {return !this.choices.isEmpty();}
+
+    @NotNull
+    public List<String> getChoices() {return this.choices;}
+
+    public boolean isRequired() {return this.isRequired;}
 
     @Override
     public String toString() {
@@ -67,13 +154,23 @@ public class Attribute {
           : AutomateBundle.message("general.Attribute.IsRequired.False.Title"), choices, defaultValue);
     }
 
-    public void setProperties(boolean isRequired, @NotNull String dataType, @Nullable String defaultValue, @Nullable List<String> choices) {
+    public void setProperties(boolean isRequired, @NotNull AutomateConstants.AttributeDataType dataType, @Nullable String defaultValue, @Nullable List<String> choices) {
 
         this.isRequired = isRequired;
         this.defaultValue = defaultValue;
-        this.dataType = Enum.valueOf(AutomateConstants.AttributeDataType.class, dataType);
+        this.dataType = dataType;
         this.choices = choices == null
           ? this.choices
           : choices;
+    }
+
+    private static boolean isIsoDate(String value) {
+
+        try {
+            Instant.from(DateTimeFormatter.ISO_INSTANT.parse(value));
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 }

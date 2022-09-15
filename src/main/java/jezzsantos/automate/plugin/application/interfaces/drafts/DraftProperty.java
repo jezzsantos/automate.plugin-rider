@@ -37,7 +37,7 @@ public class DraftProperty {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        DraftProperty that = (DraftProperty) other;
+        var that = (DraftProperty) other;
         return this.name.equals(that.name);
     }
 

@@ -8,6 +8,7 @@ import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AutomateCliService implements IAutomateService {
 
@@ -367,10 +369,12 @@ public class AutomateCliService implements IAutomateService {
         this.cache.invalidateAllToolkits();
     }
 
+    @NotNull
     @Override
-    public Attribute addPatternAttribute(@NotNull String editPath, @NotNull String name, boolean isRequired, @NotNull String type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
-        var args = new ArrayList<>(List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type, "--aschildof", editPath));
+        var args = new ArrayList<>(
+          List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
         if (defaultValue != null) {
             args.addAll(List.of("--defaultvalueis", defaultValue));
         }
@@ -402,6 +406,53 @@ public class AutomateCliService implements IAutomateService {
         }
     }
 
+    @NotNull
+    @Override
+    public DraftElement addDraftElement(@NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception {
+
+        var configurePath = extendConfigurePath(parentConfigurePath, elementName);
+        var args = new ArrayList<>(List.of("configure", isCollection
+          ? "add-one-to"
+          : "add", configurePath));
+        if (!nameValuePairs.isEmpty()) {
+            nameValuePairs
+              .forEach((key, value) -> {
+                  args.add("--and-set");
+                  args.add(doubleQuote(String.format("%s=%s", key, value)));
+              });
+        }
+        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentDraft();
+            return result.getOutput().getElement();
+        }
+    }
+
+    @NotNull
+    @Override
+    public DraftElement updateDraftElement(@NotNull String configurationPath, @NotNull Map<String, String> nameValuePairs) throws Exception {
+
+        var args = new ArrayList<>(List.of("configure", "on", configurationPath));
+        if (!nameValuePairs.isEmpty()) {
+            nameValuePairs
+              .forEach((key, value) -> {
+                  args.add("--and-set");
+                  args.add(doubleQuote(String.format("%s=%s", key, value)));
+              });
+        }
+        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentDraft();
+            return result.getOutput().getElement();
+        }
+    }
+
     @Override
     public void deleteDraftElement(@NotNull String expression) throws Exception {
 
@@ -415,12 +466,6 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @NotNull
-    private String doubleQuote(@Nullable String expression) {
-
-        return String.format("\"%s\"", expression);
-    }
-
-    @NotNull
     private <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull List<String> args) {
 
         if (!isCliInstalled()) {
@@ -429,6 +474,22 @@ public class AutomateCliService implements IAutomateService {
 
         var executablePath = this.configuration.getExecutablePath();
         return this.cliRunner.executeStructured(outputClass, getExecutablePathSafe(executablePath), args);
+    }
+
+    private String extendConfigurePath(String parentConfigurePath, String elementName) {
+
+        var stringToInsert = String.format(".%s", elementName);
+        var insertionIndex = parentConfigurePath.length() - 1;
+
+        var buffer = new StringBuilder(parentConfigurePath);
+        buffer.insert(insertionIndex, stringToInsert);
+        return buffer.toString();
+    }
+
+    @NotNull
+    private String doubleQuote(@Nullable String expression) {
+
+        return String.format("\"%s\"", expression);
     }
 
     @NotNull

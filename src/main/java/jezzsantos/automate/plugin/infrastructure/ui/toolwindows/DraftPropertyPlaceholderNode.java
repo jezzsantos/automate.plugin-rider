@@ -3,6 +3,8 @@ package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftProperty;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class DraftPropertyPlaceholderNode {
 
     @NotNull
@@ -10,9 +12,9 @@ public class DraftPropertyPlaceholderNode {
     @NotNull
     private final String name;
 
-    public DraftPropertyPlaceholderNode(@NotNull DraftProperty property, @NotNull String displayName) {
+    public DraftPropertyPlaceholderNode(@NotNull DraftProperty property) {
 
-        this.name = displayName;
+        this.name = String.format("%s: %s", property.getName(), property.getValue());
         this.property = property;
     }
 
@@ -26,5 +28,24 @@ public class DraftPropertyPlaceholderNode {
     public String toString() {
 
         return this.name;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        var that = (DraftPropertyPlaceholderNode) other;
+        return this.property.equals(that.property);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(this.property);
     }
 }

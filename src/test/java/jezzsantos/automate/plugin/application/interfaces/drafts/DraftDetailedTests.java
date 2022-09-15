@@ -109,7 +109,7 @@ public class DraftDetailedTests {
         var collectionName1Item1 = collectionName1Items.get(0);
         assertEquals("acollectionname1itemid1", collectionName1Item1.getId());
         assertEquals("acollectionname1itemid2", collectionName1Items.get(1).getId());
-        assertEquals("Items", collectionName1Items.get(1).getName());
+        assertEquals("ACollectionName1", collectionName1Items.get(1).getName());
         assertEquals(4, collectionName1Item1.getProperties().size());
         assertEquals("APropertyName1", collectionName1Item1.getProperty("APropertyName1").getName());
         assertEquals("avalue", collectionName1Item1.getProperty("APropertyName1").getValue());
