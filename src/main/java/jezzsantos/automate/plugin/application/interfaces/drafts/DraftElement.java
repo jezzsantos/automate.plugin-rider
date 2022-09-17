@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
+import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +74,20 @@ public class DraftElement {
         return Objects.requireNonNull(this.map.get("Schema").getElement()).getId();
     }
 
+    public boolean isSchemaType(@NotNull AutomateConstants.SchemaType type) {
+
+        if (!this.map.containsKey("Schema")) {
+            return false;
+        }
+
+        var schemaType = Objects.requireNonNull(this.map.get("Schema").getElement()).getProperty("Type");
+        if (schemaType == null) {
+            return false;
+        }
+
+        return type.getValue().equals(schemaType.getValue());
+    }
+
     @NotNull
     public ElementValueMap getProperties() {
 
@@ -80,6 +95,7 @@ public class DraftElement {
                                      .filter(entry -> entry.getValue().isProperty()
                                        && !entry.getKey().equalsIgnoreCase("Id")
                                        && !entry.getKey().equalsIgnoreCase("ConfigurePath")
+                                       && !entry.getKey().equalsIgnoreCase("Schema")
                                        && !entry.getKey().equalsIgnoreCase("Items"))
                                      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (val1, val2) -> val1, TreeMap::new)));
     }
@@ -130,10 +146,44 @@ public class DraftElement {
         return this.name;
     }
 
-    public void removeElement(@NotNull DraftElement element) {
+    public void deleteElement(@NotNull String elementId) {
 
-        var key = element.getName();
+        var element = this.getElements().entrySet().stream()
+          .filter(ele -> Objects.requireNonNull(ele.getValue().getId()).equals(elementId))
+          .findFirst();
+        if (element.isEmpty()) {
+            return;
+        }
+
+        var key = element.get().getKey();
         this.map.remove(key);
+    }
+
+    public void deleteDescendantCollectionItem(@NotNull String collectionItemId) {
+
+        for (var collection : this.getCollections().entrySet()) {
+
+            var collectionItems = collection.getValue().getCollectionItems();
+            var collectionItem = collectionItems.stream()
+              .filter(item -> Objects.requireNonNull(item.getId()).equals(collectionItemId))
+              .findFirst();
+            if (collectionItem.isEmpty()) {
+                continue;
+            }
+
+            collection.getValue().deleteCollectionItem(collectionItem.get());
+            break;
+        }
+    }
+
+    public void deleteCollectionItem(@NotNull DraftElement collectionItem) {
+
+        if (!this.map.containsKey("Items")) {
+            return;
+        }
+
+        var items = this.map.get("Items");
+        items.deleteCollectionItem(collectionItem);
     }
 
     public boolean isNotRoot() {

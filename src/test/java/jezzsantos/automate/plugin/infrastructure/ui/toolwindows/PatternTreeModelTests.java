@@ -4,22 +4,26 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.swing.tree.TreePath;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.argThat;
 
 public class PatternTreeModelTests {
 
     private PatternDetailed pattern;
     private PatternTreeModel model;
     private TestModelTreeListener treeModelListener;
+    private ITreeSelector treeSelector;
 
     @BeforeEach
     public void setUp() {
 
         this.pattern = new PatternDetailed("anid", "aname", "aversion", new PatternElement("anid", "aname"));
-        this.model = new PatternTreeModel(this.pattern);
+        this.treeSelector = Mockito.mock(ITreeSelector.class);
+        this.model = new PatternTreeModel(this.treeSelector, this.pattern);
         this.treeModelListener = new TestModelTreeListener();
         this.model.addTreeModelListener(this.treeModelListener);
     }
@@ -605,31 +609,34 @@ public class PatternTreeModelTests {
     }
 
     @Test
-    public void whenInsertAttributeOnRootElement_ThenRaisesEvent() {
+    public void whenInsertAttributeOnPatternElement_ThenRaisesEventAndSelectsNode() {
 
-        var patternElement = new PatternElement("aparentid", "aname");
-        var attribute = new Attribute("anid", "aname");
-        patternElement.addAttribute(attribute);
+        var parentNode = new PatternElement("aparentid", "aname");
+        var attributeNode = new Attribute("anid", "aname");
+        parentNode.addAttribute(attributeNode);
 
-        this.model.setSelectedPath(new TreePath(new Object[]{patternElement}));
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode}));
 
-        this.model.insertAttribute(attribute);
+        this.model.insertAttribute(attributeNode);
 
-        assertTrue(this.treeModelListener.hasInserted(0, attribute));
+        assertTrue(this.treeModelListener.hasInserted(0, attributeNode));
+        Mockito.verify(this.treeSelector).selectAndExpandPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
     }
 
     @Test
-    public void whenInsertAttributeOnDescendantElement_ThenRaisesEvent() {
+    public void whenInsertAttributeOnAttributesPlaceholder_ThenRaisesEventAndSelectsNode() {
 
-        var patternElement = new PatternElement("aparentid", "aname");
-        var attribute = new Attribute("anid", "aname");
-        patternElement.addAttribute(attribute);
+        var parentNode = new PatternElement("aparentid", "aname");
+        var attributeNode = new Attribute("anid", "aname");
+        parentNode.addAttribute(attributeNode);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getAttributes(), "adisplayname");
 
-        this.model.setSelectedPath(new TreePath(new Object[]{patternElement,}));
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode}));
 
-        this.model.insertAttribute(attribute);
+        this.model.insertAttribute(attributeNode);
 
-        assertTrue(this.treeModelListener.hasInserted(0, attribute));
+        assertTrue(this.treeModelListener.hasInserted(0, attributeNode));
+        Mockito.verify(this.treeSelector).selectAndExpandPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
     }
 
     @Test
@@ -655,25 +662,72 @@ public class PatternTreeModelTests {
     @Test
     public void whenDeleteAttributeAndNoParentPath_ThenDoesNothing() {
 
-        var attribute = new Attribute("anid", "aname");
-        this.model.setSelectedPath(new TreePath(attribute));
+        var attributeNode = new Attribute("anid", "aname");
+        this.model.setSelectedPath(new TreePath(attributeNode));
 
-        this.model.deleteAttribute(attribute);
+        this.model.deleteAttribute(attributeNode);
 
         assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
     }
 
     @Test
-    public void whenDeleteAttribute_ThenRaisesEvent() {
+    public void whenDeleteAttributeWithOnlyAttribute_ThenRaisesEventAndSelectsPlaceholderFolder() {
 
-        var patternElement = new PatternElement("aparentid", "aname");
-        var attribute = new Attribute("anid", "aname");
-        patternElement.addAttribute(attribute);
+        var parentNode = new PatternElement("aparentid", "aname");
+        var attributeNode = new Attribute("anattributeid", "anattributename");
+        parentNode.addAttribute(attributeNode);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getAttributes(), "adisplayname");
 
-        this.model.setSelectedPath(new TreePath(new Object[]{patternElement, new Object(), attribute}));
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, attributeNode}));
 
-        this.model.deleteAttribute(attribute);
+        assertEquals(1, parentNode.getAttributes().size());
 
-        assertTrue(this.treeModelListener.hasRemoved(0, attribute));
+        this.model.deleteAttribute(attributeNode);
+
+        assertTrue(this.treeModelListener.hasRemoved(0, attributeNode));
+        assertEquals(0, parentNode.getAttributes().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(folderNode)));
+    }
+
+    @Test
+    public void whenDeleteAttributeWithOtherAttributeAfter_ThenRaisesEventAndSelectsOtherAttribute() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var attributeNode1 = new Attribute("anattributeid1", "anattributename1");
+        var attributeNode2 = new Attribute("anattributeid2", "anattributename2");
+        parentNode.addAttribute(attributeNode1);
+        parentNode.addAttribute(attributeNode2);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getAttributes(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, attributeNode1}));
+
+        assertEquals(2, parentNode.getAttributes().size());
+
+        this.model.deleteAttribute(attributeNode1);
+
+        assertTrue(this.treeModelListener.hasRemoved(0, attributeNode1));
+        assertEquals(1, parentNode.getAttributes().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode2)));
+    }
+
+    @Test
+    public void whenDeleteAttributeWithOtherAttributeBefore_ThenRaisesEventAndSelectsOtherAttribute() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var attributeNode1 = new Attribute("anattributeid1", "anattributename1");
+        var attributeNode2 = new Attribute("anattributeid2", "anattributename2");
+        parentNode.addAttribute(attributeNode1);
+        parentNode.addAttribute(attributeNode2);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getAttributes(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, attributeNode2}));
+
+        assertEquals(2, parentNode.getAttributes().size());
+
+        this.model.deleteAttribute(attributeNode2);
+
+        assertTrue(this.treeModelListener.hasRemoved(1, attributeNode2));
+        assertEquals(1, parentNode.getAttributes().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode1)));
     }
 }

@@ -21,11 +21,14 @@ public class DraftTreeModel extends AbstractTreeModel {
     private final DraftElementPlaceholderNode draft;
     @NotNull
     private final PatternElement pattern;
+    @NotNull
+    private final ITreeSelector treeSelector;
     @Nullable
     private TreePath selectedPath;
 
-    public DraftTreeModel(@NotNull DraftElement draft, @NotNull PatternElement pattern) {
+    public DraftTreeModel(@NotNull ITreeSelector treeSelector, @NotNull DraftElement draft, @NotNull PatternElement pattern) {
 
+        this.treeSelector = treeSelector;
         this.draft = new DraftElementPlaceholderNode(pattern, draft, false);
         this.pattern = pattern;
     }
@@ -50,9 +53,10 @@ public class DraftTreeModel extends AbstractTreeModel {
 
         if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
             var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
-            var indexOfElementOfParent = addElement(selectedElementTreeNode, element, isCollection);
-            if (indexOfElementOfParent > NO_INDEX) {
-                treeNodesInserted(this.selectedPath, new int[]{indexOfElementOfParent}, new Object[]{element});
+            var indexOfElement = addElement(selectedElementTreeNode, element, isCollection);
+            if (indexOfElement > NO_INDEX) {
+                treeNodesInserted(this.selectedPath, new int[]{indexOfElement}, new Object[]{element});
+                selectTreeNode(this.selectedPath, getChild(selectedElementTreeNode, indexOfElement));
             }
         }
     }
@@ -88,10 +92,16 @@ public class DraftTreeModel extends AbstractTreeModel {
                 var parentTreeNodePath = this.selectedPath.getParentPath();
                 if (parentTreeNodePath != null) {
                     var parentElementTreeNode = ((DraftElementPlaceholderNode) parentTreeNodePath.getLastPathComponent());
-                    var indexOfElementOfParent = getIndexOfChild(parentElementTreeNode, selectedElementTreeNode);
-                    if (indexOfElementOfParent > NO_INDEX) {
-                        parentElementTreeNode.getElement().removeElement(element);
-                        treeNodesRemoved(parentTreeNodePath, new int[]{indexOfElementOfParent}, new Object[]{selectedElementTreeNode});
+                    var indexOfElement = getIndexOfChild(parentElementTreeNode, selectedElementTreeNode);
+                    if (indexOfElement > NO_INDEX) {
+                        if (selectedElementTreeNode.isCollectionItem()) {
+                            parentElementTreeNode.getElement().deleteDescendantCollectionItem(Objects.requireNonNull(element.getId()));
+                        }
+                        else {
+                            parentElementTreeNode.getElement().deleteElement(Objects.requireNonNull(element.getId()));
+                        }
+                        treeNodesRemoved(parentTreeNodePath, new int[]{indexOfElement}, new Object[]{selectedElementTreeNode});
+                        selectNextSiblingOrParent(parentTreeNodePath, parentElementTreeNode, indexOfElement);
                     }
                 }
             }
@@ -209,6 +219,38 @@ public class DraftTreeModel extends AbstractTreeModel {
     @Override
     public void valueForPathChanged(TreePath path, Object value) {
 
+    }
+
+    private void selectNextSiblingOrParent(TreePath parentTreeNodePath, DraftElementPlaceholderNode parentElementTreeNode, int indexOfDeletedElement) {
+
+        var siblingCount = getChildCount(parentElementTreeNode);
+        if (siblingCount == 0) {
+            this.treeSelector.selectPath(parentTreeNodePath);
+        }
+        else {
+            if (siblingCount > indexOfDeletedElement) {
+                var nextSiblingTreeNodePath = parentTreeNodePath.pathByAddingChild(getChild(parentElementTreeNode, indexOfDeletedElement));
+                this.treeSelector.selectPath(nextSiblingTreeNodePath);
+            }
+            else {
+                var lastSiblingTreeNode = getChild(parentElementTreeNode, siblingCount - 1);
+                if (lastSiblingTreeNode instanceof DraftPropertyPlaceholderNode) {
+                    this.treeSelector.selectPath(parentTreeNodePath);
+                }
+                else {
+                    var lastSiblingTreeNodePath = parentTreeNodePath.pathByAddingChild(lastSiblingTreeNode);
+                    this.treeSelector.selectPath(lastSiblingTreeNodePath);
+                }
+            }
+        }
+    }
+
+    private void selectTreeNode(TreePath selectedPath, Object newTreeNode) {
+
+        var newTreeNodePath = Objects.requireNonNull(selectedPath).pathByAddingChild(newTreeNode);
+        if (newTreeNodePath != null) {
+            this.treeSelector.selectAndExpandPath(newTreeNodePath);
+        }
     }
 
     private int[] createArrayOfIndexes(int size) {

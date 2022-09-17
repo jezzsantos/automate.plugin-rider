@@ -18,6 +18,40 @@ public class AutomateConstants {
     public static String ToolkitFileExtension = "toolkit";
     public static String MinimumSupportedVersion = "0.2.7-preview";
 
+    public enum SchemaType {
+        @SerializedName("None")
+        NONE("None", "None"),
+        @SerializedName("Pattern")
+        PATTERN("Pattern", "Pattern"),
+        @SerializedName("Element")
+        ELEMENT("Element", "Element"),
+        @SerializedName("EphemeralCollection")
+        EPHEMERALCOLLECTION("EphemeralCollection", "Collection"),
+        @SerializedName("CollectionItem")
+        COLLECTIONITEM("CollectionItem", "Collection Item"),
+        @SerializedName("Attribute")
+        ATTRIBUTE("Attribute", "Attribute");
+        private final String value;
+        private final String displayName;
+
+        SchemaType(String value, String displayName) {
+
+            this.value = value;
+            this.displayName = displayName;
+        }
+
+        @SuppressWarnings("unused")
+        public String getDisplayName() {return this.displayName;}
+
+        public String getValue() {return this.value;}
+
+        @Override
+        public String toString() {
+
+            return this.displayName;
+        }
+    }
+
     public enum ElementCardinality {
         @SerializedName("One")
         ONE,

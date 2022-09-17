@@ -1,11 +1,9 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
+import jezzsantos.automate.core.AutomateConstants;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -143,10 +141,9 @@ public class DraftElementTests {
     @Test
     public void whenGetSchemaIdExists_ThenReturnsId() {
 
-        var value = new DraftElementValue("Schema",
-                                          new HashMap<>(Map.of(
-                                            "Type", new DraftElementValue("atype"),
-                                            "Id", new DraftElementValue("anid"))));
+        var value = new DraftElementValue("Schema", Map.of(
+          "Type", new DraftElementValue("atype"),
+          "Id", new DraftElementValue("anid")));
         var map = new HashMap<String, DraftElementValue>();
         map.put("Schema", value);
 
@@ -155,6 +152,52 @@ public class DraftElementTests {
         var result = element.getSchemaId();
 
         assertEquals("anid", result);
+    }
+
+    @Test
+    public void whenIsSchemaTypeAndNotExists_ThenReturnsFalse() {
+
+        var value = new DraftElementValue("avalue");
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("aname", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.isSchemaType(AutomateConstants.SchemaType.ELEMENT);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void whenIsSchemaTypeAndExistsAndNotMatch_ThenReturnsFalse() {
+
+        var value = new DraftElementValue("Schema", Map.of(
+          "Type", new DraftElementValue(AutomateConstants.SchemaType.ELEMENT.getValue()),
+          "Id", new DraftElementValue("anid")));
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("Schema", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.isSchemaType(AutomateConstants.SchemaType.COLLECTIONITEM);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void whenIsSchemaTypeMatches_ThenReturnsTrue() {
+
+        var value = new DraftElementValue("Schema", Map.of(
+          "Type", new DraftElementValue(AutomateConstants.SchemaType.ELEMENT.getValue()),
+          "Id", new DraftElementValue("anid")));
+        var map = new HashMap<String, DraftElementValue>();
+        map.put("Schema", value);
+
+        var element = new DraftElement("apropertyname", map, false);
+
+        var result = element.isSchemaType(AutomateConstants.SchemaType.ELEMENT);
+
+        assertTrue(result);
     }
 
     @Test
@@ -378,10 +421,10 @@ public class DraftElementTests {
     @Test
     public void whenEqualsAndDifferentIds_ThenReturnsFalse() {
 
-        var otherElement = new DraftElement("aname", new HashMap<>(Map.of(
-          "Id", new DraftElementValue("anid1"))), false);
-        var element = new DraftElement("aname", new HashMap<>(Map.of(
-          "Id", new DraftElementValue("anid2"))), false);
+        var otherElement = new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid1")), false);
+        var element = new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid2")), false);
 
         var result = element
           .equals(otherElement);
@@ -392,10 +435,10 @@ public class DraftElementTests {
     @Test
     public void whenEqualsAndDifferentInstancesButSameIds_ThenReturnsTrue() {
 
-        var otherElement = new DraftElement("aname", new HashMap<>(Map.of(
-          "Id", new DraftElementValue("anid"))), false);
-        var element = new DraftElement("aname", new HashMap<>(Map.of(
-          "Id", new DraftElementValue("anid"))), false);
+        var otherElement = new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid")), false);
+        var element = new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid")), false);
 
         var result = element
           .equals(otherElement);
@@ -404,33 +447,96 @@ public class DraftElementTests {
     }
 
     @Test
-    public void whenRemoveElementAndNotExist_ThenDoesNothing() {
+    public void whenDeleteElementAndNotExist_ThenDoesNothing() {
 
-        var element = new DraftElement("aname", new HashMap<>(Map.of(
-          "Id", new DraftElementValue("anid"))), false);
+        var element = new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid")), false);
 
         assertEquals(0, element.getElements().size());
 
-        element.removeElement(new DraftElement("aname", new HashMap<>(), false));
+        element.deleteElement("achildid");
 
         assertEquals(0, element.getElements().size());
     }
 
     @Test
-    public void whenRemoveElementAndExists_ThenRemoves() {
+    public void whenDeleteElementAndExists_ThenRemoves() {
 
-        var childElementProperties = new HashMap<String, DraftElementValue>();
-        var childElementValue = new DraftElementValue("anelementname", childElementProperties);
-        var childElement = new DraftElement("anelementname", childElementProperties, false);
-
-        var element = new DraftElement("aname", new HashMap<>(Map.of(
-          "anelementname", childElementValue)), false);
+        var element = new DraftElement("aname", new HashMap<>() {{
+            put("anelementname", new DraftElementValue("achildelementname", Map.of(
+              "Id", new DraftElementValue("achildid")
+            )));
+        }}, false);
 
         assertEquals(1, element.getElements().size());
 
-        element.removeElement(childElement);
+        element.deleteElement("achildid");
 
         assertEquals(0, element.getElements().size());
+    }
+
+    @Test
+    public void whenDeleteDescendantCollectionItemAndNoCollections_ThenDoesNothing() {
+
+        var element = new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid")), false);
+
+        assertEquals(0, element.getCollections().size());
+
+        element.deleteDescendantCollectionItem("acollectionitemid2");
+
+        assertEquals(0, element.getCollections().size());
+    }
+
+    @Test
+    public void whenDeleteDescendantCollectionItemAndItemNotExists_ThenDoesNothing() {
+
+        var element = new DraftElement("aname", Map.of(
+          "acollectionname1", new DraftElementValue("acollectionname1", Map.of(
+            "Id", new DraftElementValue("acollectionid1"),
+            "Items", new DraftElementValue(List.of()))),
+          "acollectionname2", new DraftElementValue("acollectionname2", Map.of(
+            "Id", new DraftElementValue("acollectionid2"),
+            "Items", new DraftElementValue(List.of())))), false);
+
+        assertEquals(2, element.getCollections().size());
+        assertEquals(0, element.getCollections().get(0).getCollectionItems().size());
+        assertEquals(0, element.getCollections().get(1).getCollectionItems().size());
+
+        element.deleteDescendantCollectionItem("anitemid");
+
+        assertEquals(2, element.getCollections().size());
+        assertEquals(0, element.getCollections().get(0).getCollectionItems().size());
+        assertEquals(0, element.getCollections().get(1).getCollectionItems().size());
+    }
+
+    @Test
+    public void whenDeleteDescendantCollectionItemAndExists_ThenRemoves() {
+
+        var element = new DraftElement("aname", Map.of(
+          "acollectionname1", new DraftElementValue("acollectionname1", Map.of(
+            "Id", new DraftElementValue("acollectionid1"),
+            "Items", new DraftElementValue(List.of(new DraftElement("aname", Map.of(
+              "Id", new DraftElementValue("acollectionitemid1")
+            ), false))))),
+          "acollectionname2", new DraftElementValue("acollectionname2", Map.of(
+            "Id", new DraftElementValue("acollectionid2"),
+            "Items", new DraftElementValue(new ArrayList<>() {{
+                add(new DraftElement("aname", Map.of(
+                  "Id", new DraftElementValue("acollectionitemid2")
+                ), false));
+            }})
+          ))), false);
+
+        assertEquals(2, element.getCollections().size());
+        assertEquals(1, element.getCollections().get(0).getCollectionItems().size());
+        assertEquals(1, element.getCollections().get(1).getCollectionItems().size());
+
+        element.deleteDescendantCollectionItem("acollectionitemid2");
+
+        assertEquals(2, element.getCollections().size());
+        assertEquals(1, element.getCollections().get(0).getCollectionItems().size());
+        assertEquals(0, element.getCollections().get(1).getCollectionItems().size());
     }
 
     @Test

@@ -335,6 +335,7 @@ public class AutomateToolWindow implements Disposable {
     private void refreshTree() {
 
         this.automateTree.setModel(null);
+        this.automateTree.setExpandsSelectedPaths(true);
         if (this.currentSelectionListener != null) {
             this.automateTree.removeTreeSelectionListener(this.currentSelectionListener);
         }
@@ -356,7 +357,7 @@ public class AutomateToolWindow implements Disposable {
                 if (currentPattern != null) {
                     var pattern = Try.safely(this.application::getCurrentPatternDetailed);
                     if (pattern != null) {
-                        var model = new PatternTreeModel(pattern);
+                        var model = new PatternTreeModel(new AutomateTreeSelector(this.automateTree), pattern);
                         this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
                         this.automateTree.setModel(model);
                         this.automateTree.addTreeSelectionListener(this.currentSelectionListener);
@@ -369,7 +370,7 @@ public class AutomateToolWindow implements Disposable {
                     var draft = Try.safely(this.application::getCurrentDraftDetailed);
                     var toolkit = Try.safely(this.application::getCurrentToolkitDetailed);
                     if (draft != null && toolkit != null) {
-                        var model = new DraftTreeModel(draft.getRoot(), toolkit.getPattern());
+                        var model = new DraftTreeModel(new AutomateTreeSelector(this.automateTree), draft.getRoot(), toolkit.getPattern());
                         this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
                         this.automateTree.setModel(model);
                         this.automateTree.addTreeSelectionListener(this.currentSelectionListener);

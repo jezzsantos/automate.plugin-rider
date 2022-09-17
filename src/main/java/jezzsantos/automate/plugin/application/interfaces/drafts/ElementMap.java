@@ -44,13 +44,6 @@ public class ElementMap implements Iterable<DraftElement> {
         return this.map.entrySet();
     }
 
-    @NotNull
-    @Override
-    public Iterator<DraftElement> iterator() {
-
-        return this.map.values().iterator();
-    }
-
     public int indexOf(DraftElement childElement) {
 
         if (this.map.isEmpty()) {
@@ -65,5 +58,12 @@ public class ElementMap implements Iterable<DraftElement> {
             }
         }
         return -1;
+    }
+
+    @NotNull
+    @Override
+    public Iterator<DraftElement> iterator() {
+
+        return this.map.values().iterator();
     }
 }

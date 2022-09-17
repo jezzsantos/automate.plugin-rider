@@ -7,26 +7,28 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.swing.tree.TreePath;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.argThat;
 
 public class DraftTreeModelTests {
 
     private DraftElement draft;
     private DraftTreeModel model;
     private TestModelTreeListener treeModelListener;
+    private ITreeSelector treeSelector;
 
     @BeforeEach
     public void setUp() {
 
         var pattern = new PatternElement("anid", "aname");
         this.draft = new DraftElement("anid", Map.of(), true);
-        this.model = new DraftTreeModel(this.draft, pattern);
+        this.treeSelector = Mockito.mock(ITreeSelector.class);
+        this.model = new DraftTreeModel(this.treeSelector, this.draft, pattern);
         this.treeModelListener = new TestModelTreeListener();
         this.model.addTreeModelListener(this.treeModelListener);
     }
@@ -311,21 +313,23 @@ public class DraftTreeModelTests {
     }
 
     @Test
-    public void whenInsertDraftElement_ThenRaisesEvent() {
+    public void whenInsertDraftElement_ThenRaisesEventAndSelectsNode() {
 
         var schema = new PatternElement("anid", "aname");
-        var element = new DraftElementPlaceholderNode(schema,
-                                                      new DraftElement("aparentelementname", new HashMap<>() {{
-                                                          put("Id", new DraftElementValue("aparentelementid"));
-                                                      }}, false),
-                                                      false);
+        var parentNode = new DraftElementPlaceholderNode(schema, new DraftElement("aparentelementname", new HashMap<>() {{
+            put("Id", new DraftElementValue("aparentelementid"));
+        }}, false),
+                                                         false);
         var draftElement = new DraftElement("anelementname", Map.of(
           "Id", new DraftElementValue("anelementid")), false);
-        this.model.setSelectedPath(new TreePath(new Object[]{element}));
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode}));
 
         this.model.insertDraftElement(draftElement, false);
 
         assertTrue(this.treeModelListener.hasInserted(0, draftElement));
+        Mockito.verify(this.treeSelector).selectAndExpandPath(argThat(path ->
+                                                                        Objects.requireNonNull(((DraftElementPlaceholderNode) path.getLastPathComponent()).getElement())
+                                                                          .equals(draftElement)));
     }
 
     @Test
@@ -351,24 +355,24 @@ public class DraftTreeModelTests {
     @Test
     public void whenUpdateDraftElement_ThenRaisesEvent() {
 
-        var parentElement = new DraftElementPlaceholderNode(new PatternElement("aparentid", "aname"),
-                                                            new DraftElement("aparentelementname", new HashMap<>(Map.of(
-                                                              "Id", new DraftElementValue("aparentelementid"),
-                                                              "achildelementname", new DraftElementValue("achildelementname", Map.of(
-                                                                "Id", new DraftElementValue("achildelementid")
-                                                              ))
-                                                            )), true), false);
-        var element = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
-                                                      new DraftElement("achildelementname", new HashMap<>() {{
-                                                          put("Id", new DraftElementValue("achildelementid"));
-                                                      }}, false),
-                                                      false);
-        var draftElement = new DraftElement("anelementname", new HashMap<>(Map.of(
-          "Id", new DraftElementValue("achildelementid")
-        )), false);
+        var parentNode = new DraftElementPlaceholderNode(new PatternElement("aparentid", "aname"),
+                                                         new DraftElement("aparentelementname", Map.of(
+                                                           "Id", new DraftElementValue("aparentelementid"),
+                                                           "achildelementname", new DraftElementValue("achildelementname", Map.of(
+                                                             "Id", new DraftElementValue("achildelementid")
+                                                           ))
+                                                         ), false), false);
+        var childNode = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
+                                                        new DraftElement("achildelementname", new HashMap<>() {{
+                                                            put("Id", new DraftElementValue("achildelementid"));
+                                                        }}, false),
+                                                        false);
+        var draftElement = new DraftElement("anelementname", new HashMap<>() {{
+            put("Id", new DraftElementValue("achildelementid"));
+        }}, false);
         var draftProperty = new DraftProperty("apropertyname1", new DraftElementValue("avalue"));
         draftElement.addProperty(draftProperty);
-        this.model.setSelectedPath(new TreePath(new Object[]{parentElement, element}));
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, childNode}));
 
         this.model.updateDraftElement(draftElement);
 
@@ -401,9 +405,9 @@ public class DraftTreeModelTests {
         var draftElement = new DraftElement("anelementname", Map.of(
           "Id", new DraftElementValue("anelementid")
         ), false);
-        var element = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
-                                                      draftElement, false);
-        this.model.setSelectedPath(new TreePath(element));
+        var parentNode = new DraftElementPlaceholderNode(new PatternElement("achildid", "aname"),
+                                                         draftElement, false);
+        this.model.setSelectedPath(new TreePath(parentNode));
 
         this.model.deleteDraftElement(draftElement);
 
@@ -411,26 +415,128 @@ public class DraftTreeModelTests {
     }
 
     @Test
-    public void whenDeleteDraftElement_ThenRaisesEvent() {
+    public void whenDeleteDraftElementWithOnlyElement_ThenRaisesEventAndSelectsParentNode() {
 
         var patternElement = new PatternElement("aparentid", "aname");
-        var rootElement = new DraftElementPlaceholderNode(patternElement,
-                                                          new DraftElement("arootelementname", new HashMap<>(Map.of(
-                                                            "Id", new DraftElementValue("arootelementid"),
-                                                            "anelementname", new DraftElementValue("anelementname", Map.of(
-                                                              "Id", new DraftElementValue("anelementid")
-                                                            ))
-                                                          )), true), false);
+        var rootNode = new DraftElementPlaceholderNode(patternElement,
+                                                       new DraftElement("arootelementname", new HashMap<>() {{
+                                                           put("Id", new DraftElementValue("arootelementid"));
+                                                           put("anelementname", new DraftElementValue("anelementname", Map.of(
+                                                             "Id", new DraftElementValue("anelementid")
+                                                           )));
+                                                       }}, true), false);
         var draftElement = new DraftElement("anelementname", Map.of(
           "Id", new DraftElementValue("anelementid")
         ), false);
-        var element = new DraftElementPlaceholderNode(patternElement,
-                                                      draftElement, false);
-        this.model.setSelectedPath(new TreePath(new Object[]{rootElement, element}));
+        var childNode = new DraftElementPlaceholderNode(patternElement, draftElement, false);
+        this.model.setSelectedPath(new TreePath(new Object[]{rootNode, childNode}));
+
+        assertEquals(1, rootNode.getElement().getElements().size());
 
         this.model.deleteDraftElement(draftElement);
 
-        assertTrue(this.treeModelListener.hasRemoved(0, element));
+        assertTrue(this.treeModelListener.hasRemoved(0, childNode));
+        assertEquals(0, rootNode.getElement().getElements().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(path ->
+                                                               Objects.requireNonNull(((DraftElementPlaceholderNode) path.getLastPathComponent()).getElement().getId())
+                                                                 .equals("arootelementid")));
+    }
+
+    @Test
+    public void whenDeleteDraftElementWithOtherElementAfter_ThenRaisesEventAndSelectsOtherElement() {
+
+        var patternElement = new PatternElement("aparentid", "aname");
+        var rootNode = new DraftElementPlaceholderNode(patternElement,
+                                                       new DraftElement("arootelementname", new HashMap<>() {{
+                                                           put("Id", new DraftElementValue("arootelementid"));
+                                                           put("anelementname1", new DraftElementValue("anelementname1", Map.of(
+                                                             "Id", new DraftElementValue("anelementid1")
+                                                           )));
+                                                           put("anelementname2", new DraftElementValue("anelementname2", Map.of(
+                                                             "Id", new DraftElementValue("anelementid2")
+                                                           )));
+                                                       }}, true), false);
+        var draftElement = new DraftElement("anelementname1", Map.of(
+          "Id", new DraftElementValue("anelementid1")
+        ), false);
+        var childNode = new DraftElementPlaceholderNode(patternElement, draftElement, false);
+        this.model.setSelectedPath(new TreePath(new Object[]{rootNode, childNode}));
+
+        assertEquals(2, rootNode.getElement().getElements().size());
+
+        this.model.deleteDraftElement(draftElement);
+
+        assertTrue(this.treeModelListener.hasRemoved(0, childNode));
+        assertEquals(1, rootNode.getElement().getElements().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(path ->
+                                                               Objects.requireNonNull(((DraftElementPlaceholderNode) path.getLastPathComponent()).getElement().getId())
+                                                                 .equals("anelementid2")));
+    }
+
+    @Test
+    public void whenDeleteDraftElementWithOtherElementBefore_ThenRaisesEventAndSelectsOtherElement() {
+
+        var patternElement = new PatternElement("aparentid", "aname");
+        var rootNode = new DraftElementPlaceholderNode(patternElement,
+                                                       new DraftElement("arootelementname", new HashMap<>() {{
+                                                           put("Id", new DraftElementValue("arootelementid"));
+                                                           put("anelementname1", new DraftElementValue("anelementname1", Map.of(
+                                                             "Id", new DraftElementValue("anelementid1")
+                                                           )));
+                                                           put("anelementname2", new DraftElementValue("anelementname2", Map.of(
+                                                             "Id", new DraftElementValue("anelementid2")
+                                                           )));
+                                                       }}, true), false);
+        var draftElement = new DraftElement("anelementname2", Map.of(
+          "Id", new DraftElementValue("anelementid2")
+        ), false);
+        var childNode = new DraftElementPlaceholderNode(patternElement, draftElement, false);
+        this.model.setSelectedPath(new TreePath(new Object[]{rootNode, childNode}));
+
+        assertEquals(2, rootNode.getElement().getElements().size());
+
+        this.model.deleteDraftElement(draftElement);
+
+        assertTrue(this.treeModelListener.hasRemoved(1, childNode));
+        assertEquals(1, rootNode.getElement().getElements().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(path ->
+                                                               Objects.requireNonNull(((DraftElementPlaceholderNode) path.getLastPathComponent()).getElement().getId())
+                                                                 .equals("anelementid1")));
+    }
+
+    @Test
+    public void whenDeleteDraftElementWithCollectionItem_ThenRaisesEventAndSelectsParentNode() {
+
+        var patternElement = new PatternElement("aparentid", "aname");
+        var rootNode = new DraftElementPlaceholderNode(patternElement,
+                                                       new DraftElement("arootelementname", new HashMap<>() {{
+                                                           put("Id", new DraftElementValue("arootelementid"));
+                                                           put("apropertyname1", new DraftElementValue("avalue"));
+                                                           put("acollectionname", new DraftElementValue("acollectionname", Map.of(
+                                                             "Items", new DraftElementValue(new ArrayList<>() {{
+                                                                 add(new DraftElement("anelementname", Map.of(
+                                                                   "Id", new DraftElementValue("acollectionitemid")
+                                                                 ), false));
+                                                             }})
+                                                           )));
+                                                       }}, true), false);
+        var draftElement = new DraftElement("anelementname", Map.of(
+          "Id", new DraftElementValue("acollectionitemid")
+        ), false);
+        var childCollectionItemNode = new DraftElementPlaceholderNode(patternElement, draftElement, true);
+        this.model.setSelectedPath(new TreePath(new Object[]{rootNode, childCollectionItemNode}));
+
+        assertEquals(1, rootNode.getElement().getCollections().size());
+        assertEquals(1, Objects.requireNonNull(rootNode.getElement().getCollections().get(0)).getCollectionItems().size());
+
+        this.model.deleteDraftElement(draftElement);
+
+        assertTrue(this.treeModelListener.hasRemoved(1, childCollectionItemNode));
+        assertEquals(1, rootNode.getElement().getCollections().size());
+        assertEquals(0, Objects.requireNonNull(rootNode.getElement().getCollections().get(0)).getCollectionItems().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(path ->
+                                                               Objects.requireNonNull(((DraftElementPlaceholderNode) path.getLastPathComponent()).getElement().getId())
+                                                                 .equals("arootelementid")));
     }
 }
 

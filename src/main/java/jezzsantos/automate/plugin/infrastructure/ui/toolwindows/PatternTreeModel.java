@@ -1,6 +1,5 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
-import com.intellij.ui.tree.TreePathUtil;
 import com.intellij.util.ui.tree.AbstractTreeModel;
 import jezzsantos.automate.plugin.application.interfaces.patterns.*;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
@@ -9,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreePath;
 import java.util.List;
+import java.util.Objects;
 
 public class PatternTreeModel extends AbstractTreeModel {
 
@@ -19,12 +19,80 @@ public class PatternTreeModel extends AbstractTreeModel {
     private static final int ElementsIndex = 3;
     @NotNull
     private final PatternDetailed pattern;
+    private final ITreeSelector treeSelector;
     @Nullable
     private TreePath selectedPath;
 
-    public PatternTreeModel(@NotNull PatternDetailed pattern) {
+    public PatternTreeModel(@NotNull ITreeSelector treeSelector, @NotNull PatternDetailed pattern) {
 
+        this.treeSelector = treeSelector;
         this.pattern = pattern;
+    }
+
+    public void setSelectedPath(@Nullable TreePath path) {
+
+        this.selectedPath = path;
+    }
+
+    public void resetSelectedPath() {
+
+        this.selectedPath = null;
+    }
+
+    public void insertAttribute(@NotNull Attribute attribute) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement) {
+            var selectedElementTreeNode = (PatternElement) selectedTreeNode;
+            var indexOfAttribute = addAttribute(selectedElementTreeNode, attribute);
+            var parentFolderTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, AttributesIndex);
+            var parentFolderTreeNodePath = this.selectedPath.pathByAddingChild(parentFolderTreeNode);
+            if (indexOfAttribute > NO_INDEX) {
+                treeNodesInserted(parentFolderTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
+                selectTreeNode(this.selectedPath, getChild(parentFolderTreeNode, indexOfAttribute));
+            }
+        }
+        else {
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode) {
+                var selectedFolderTreeNode = (PatternFolderPlaceholderNode) selectedTreeNode;
+                if (isAttributesPlaceholder(selectedFolderTreeNode)) {
+                    var parentTreeNodePath = this.selectedPath;
+                    var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
+                    var indexOfAttribute = addAttribute(parentElement, attribute);
+                    if (indexOfAttribute > NO_INDEX) {
+                        treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
+                        selectTreeNode(this.selectedPath, getChild(selectedFolderTreeNode, indexOfAttribute));
+                    }
+                }
+            }
+        }
+    }
+
+    public void deleteAttribute(@NotNull Attribute attribute) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof Attribute) {
+            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
+            if (parentFolderTreeNodePath != null) {
+                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
+                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
+                var indexOfAttribute = getIndexOfAttribute(patternElementTreeNode, attribute);
+                if (indexOfAttribute > NO_INDEX) {
+                    patternElementTreeNode.removeAttribute(attribute);
+                    treeNodesRemoved(parentFolderTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
+                    selectNextSiblingOrParent(parentFolderTreeNodePath, parentFolderTreeNode, indexOfAttribute);
+                }
+            }
+        }
     }
 
     @Override
@@ -157,65 +225,30 @@ public class PatternTreeModel extends AbstractTreeModel {
 
     }
 
-    public void setSelectedPath(@Nullable TreePath path) {
+    private void selectNextSiblingOrParent(TreePath parentTreeNodePath, PatternFolderPlaceholderNode parentFolderTreeNode, int indexOfDeletedAttribute) {
 
-        this.selectedPath = path;
-    }
-
-    public void resetSelectedPath() {
-
-        this.selectedPath = null;
-    }
-
-    public void insertAttribute(@NotNull Attribute attribute) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-
-        if (selectedTreeNode instanceof PatternElement) {
-            var selectedElementTreeNode = (PatternElement) selectedTreeNode;
-            var indexOfAttributeOfElement = addAttribute(selectedElementTreeNode, attribute);
-            var parentTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, AttributesIndex);
-            var parentTreeNodePath = TreePathUtil.createTreePath(this.selectedPath, parentTreeNode);
-            if (indexOfAttributeOfElement > NO_INDEX) {
-                treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttributeOfElement}, new Object[]{attribute});
-            }
+        var siblingCount = getChildCount(parentFolderTreeNode);
+        if (siblingCount == 0) {
+            this.treeSelector.selectPath(parentTreeNodePath);
         }
         else {
-            if (selectedTreeNode instanceof PatternFolderPlaceholderNode) {
-                var selectedFolderTreeNode = (PatternFolderPlaceholderNode) selectedTreeNode;
-                if (isAttributesPlaceholder(selectedFolderTreeNode)) {
-                    var parentTreeNodePath = this.selectedPath;
-                    var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
-                    var indexOfAttributeOfElement = addAttribute(parentElement, attribute);
-                    if (indexOfAttributeOfElement > NO_INDEX) {
-                        treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttributeOfElement}, new Object[]{attribute});
-                    }
-                }
+            if (siblingCount > indexOfDeletedAttribute) {
+                var nextSiblingTreeNodePath = parentTreeNodePath.pathByAddingChild(getChild(parentFolderTreeNode, indexOfDeletedAttribute));
+                this.treeSelector.selectPath(nextSiblingTreeNodePath);
+            }
+            else {
+                var lastSiblingTreeNode = getChild(parentFolderTreeNode, siblingCount - 1);
+                var lastSiblingTreeNodePath = parentTreeNodePath.pathByAddingChild(lastSiblingTreeNode);
+                this.treeSelector.selectPath(lastSiblingTreeNodePath);
             }
         }
     }
 
-    public void deleteAttribute(@NotNull Attribute attribute) {
+    private void selectTreeNode(TreePath selectedPath, Object treeNode) {
 
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof Attribute) {
-            var parentTreeNodePath = this.selectedPath.getParentPath();
-            if (parentTreeNodePath != null) {
-                var patternElementTreeNode = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
-                var indexOfAttributeOfElement = getIndexOfAttribute(patternElementTreeNode, attribute);
-                if (indexOfAttributeOfElement > NO_INDEX) {
-                    patternElementTreeNode.removeAttribute(attribute);
-                    treeNodesRemoved(parentTreeNodePath, new int[]{indexOfAttributeOfElement}, new Object[]{attribute});
-                }
-            }
+        var newTreeNodePath = Objects.requireNonNull(selectedPath).pathByAddingChild(treeNode);
+        if (newTreeNodePath != null) {
+            this.treeSelector.selectAndExpandPath(newTreeNodePath);
         }
     }
 

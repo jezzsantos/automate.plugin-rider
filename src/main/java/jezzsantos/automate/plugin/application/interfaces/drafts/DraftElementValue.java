@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
+import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class DraftElementValue {
 
+    @NotNull
+    private final DraftElementValueType elementValueType;
     @Nullable
     private String property;
     @Nullable
@@ -17,45 +20,37 @@ public class DraftElementValue {
 
     public DraftElementValue(@Nullable String property) {
 
+        this.elementValueType = DraftElementValueType.PROPERTY;
         this.property = property;
     }
 
     public DraftElementValue(@NotNull String name, @NotNull Map<String, DraftElementValue> element) {
 
         this.element = new DraftElement(name, element, false);
+        this.elementValueType = detectCollection(this.element)
+          ? DraftElementValueType.COLLECTION
+          : DraftElementValueType.ELEMENT;
     }
 
     public DraftElementValue(@NotNull List<DraftElement> collectionItems) {
 
+        this.elementValueType = DraftElementValueType.ELEMENT;
         this.collectionItems = collectionItems;
     }
 
     public boolean isProperty() {
 
-        return this.property != null
-          && !isElement()
-          && !isCollection();
+        return this.elementValueType == DraftElementValueType.PROPERTY;
     }
 
     public boolean isElement() {
 
-        return this.element != null
-          && !this.element.containsKey("Items")
-          && !isProperty();
+        return this.elementValueType == DraftElementValueType.ELEMENT;
     }
 
     public boolean isCollection() {
 
-        return this.element != null
-          && this.element.containsKey("Items")
-          && !isProperty();
-    }
-
-    public boolean hasCollectionItems() {
-
-        return this.collectionItems != null
-          && !isElement()
-          && !isProperty();
+        return this.elementValueType == DraftElementValueType.COLLECTION;
     }
 
     @Nullable
@@ -95,10 +90,39 @@ public class DraftElementValue {
             return new ArrayList<>();
         }
 
-        assert this.collectionItems != null;
-        //noinspection ConstantConditions
-        return Objects.requireNonNull(this.collectionItems.stream()
-                                        .sorted(Comparator.comparing(DraftElement::getId))
+        return Objects.requireNonNull(Objects.requireNonNull(this.collectionItems).stream()
+                                        .sorted(Comparator.comparing(item -> Objects.requireNonNull(item.getId())))
                                         .collect(Collectors.toList()));
+    }
+
+    public void deleteCollectionItem(@NotNull DraftElement collectionItem) {
+
+        if (!hasCollectionItems()) {
+            return;
+        }
+
+        Objects.requireNonNull(this.collectionItems).remove(collectionItem);
+    }
+
+    private static boolean detectCollection(DraftElement element) {
+
+        var containsItemsCollection = element.containsKey("Items");
+        var hasCollectionSchema = element.containsKey("Schema")
+          && element.isSchemaType(AutomateConstants.SchemaType.EPHEMERALCOLLECTION);
+
+        return containsItemsCollection || hasCollectionSchema;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean hasCollectionItems() {
+
+        return isElement()
+          && this.collectionItems != null;
+    }
+
+    private enum DraftElementValueType {
+        PROPERTY,
+        ELEMENT,
+        COLLECTION
     }
 }

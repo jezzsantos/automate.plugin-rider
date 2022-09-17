@@ -2,8 +2,7 @@ package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +16,6 @@ public class DraftElementValueTests {
         assertTrue(result.isProperty());
         assertFalse(result.isElement());
         assertFalse(result.isCollection());
-        assertFalse(result.hasCollectionItems());
     }
 
     @Test
@@ -28,18 +26,19 @@ public class DraftElementValueTests {
         assertFalse(result.isProperty());
         assertTrue(result.isElement());
         assertFalse(result.isCollection());
-        assertFalse(result.hasCollectionItems());
     }
 
     @Test
-    public void whenConstructedWithListOfElements_ThenIsCollectionItems() {
+    public void whenConstructedWithListOfElements_ThenHasCollectionItems() {
 
-        var result = new DraftElementValue(new ArrayList<>());
+        var list = List.of(new DraftElement("aname", Map.of(), false));
+
+        var result = new DraftElementValue(list);
 
         assertFalse(result.isProperty());
-        assertFalse(result.isElement());
+        assertTrue(result.isElement());
         assertFalse(result.isCollection());
-        assertTrue(result.hasCollectionItems());
+        assertEquals(1, result.getCollectionItems().size());
     }
 
     @Test
@@ -106,13 +105,26 @@ public class DraftElementValueTests {
     }
 
     @Test
-    public void whenGetCollectionAndCollectionItems_ThenReturnsNull() {
+    public void whenGetCollectionAndHasCollectionItems_ThenReturnsNull() {
 
         var value = new DraftElementValue(new ArrayList<>());
 
         var result = value.getCollection();
 
         assertNull(result);
+    }
+
+    @Test
+    public void whenGetCollectionAndCollection_ThenReturnsCollection() {
+
+        var value = new DraftElementValue("aname", new HashMap<>() {{
+            put("Id", new DraftElementValue("anid"));
+            put("Items", new DraftElementValue(List.of(new DraftElement("anelementname", Map.of(), false))));
+        }});
+
+        var result = value.getCollection();
+
+        assertEquals("anid", Objects.requireNonNull(result).getId());
     }
 
     @Test
@@ -128,11 +140,13 @@ public class DraftElementValueTests {
     @Test
     public void whenGetElementAndElement_ThenReturnsElement() {
 
-        var value = new DraftElementValue("aname", new HashMap<>());
+        var value = new DraftElementValue("aname", new HashMap<>() {{
+            put("Id", new DraftElementValue("anid"));
+        }});
 
         var result = value.getElement();
 
-        assertNotNull(result);
+        assertEquals("anid", Objects.requireNonNull(result).getId());
     }
 
     @Test
@@ -174,5 +188,67 @@ public class DraftElementValueTests {
         var result = value.getCollectionItems();
 
         assertEquals(list, result);
+    }
+
+    @Test
+    public void whenDeleteCollectionItemAndProperty_ThenDoesNothing() {
+
+        var value = new DraftElementValue("astringvalue");
+
+        value.deleteCollectionItem(new DraftElement("aname", Map.of(), false));
+    }
+
+    @Test
+    public void whenDeleteCollectionItemAndElement_ThenDoesNothing() {
+
+        var value = new DraftElementValue("aname", new HashMap<>());
+
+        value.deleteCollectionItem(new DraftElement("aname", Map.of(), false));
+    }
+
+    @Test
+    public void whenDeleteCollectionItemAndCollectionItemsAndNoItems_ThenDoesNothing() {
+
+        var list = new ArrayList<DraftElement>();
+        var value = new DraftElementValue(list);
+
+        value.deleteCollectionItem(new DraftElement("aname", Map.of(), false));
+
+        assertEquals(0, value.getCollectionItems().size());
+    }
+
+    @Test
+    public void whenDeleteCollectionItemAndCollectionItemsAndUnknownItem_ThenDoesNothing() {
+
+        var list = new ArrayList<DraftElement>() {{
+            add(new DraftElement("aname", Map.of(
+              "Id", new DraftElementValue("anid")
+            ), false));
+        }};
+        var value = new DraftElementValue(list);
+
+        value.deleteCollectionItem(new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anunknownid")
+        ), false));
+
+        assertEquals(1, value.getCollectionItems().size());
+        assertEquals("anid", value.getCollectionItems().get(0).getId());
+    }
+
+    @Test
+    public void whenDeleteCollectionItemAndCollectionItemsExistingItem_ThenDeletesItem() {
+
+        var list = new ArrayList<DraftElement>() {{
+            add(new DraftElement("aname", Map.of(
+              "Id", new DraftElementValue("anid")
+            ), false));
+        }};
+        var value = new DraftElementValue(list);
+
+        value.deleteCollectionItem(new DraftElement("aname", Map.of(
+          "Id", new DraftElementValue("anid")
+        ), false));
+
+        assertEquals(0, value.getCollectionItems().size());
     }
 }
