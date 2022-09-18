@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.tree.TreePath;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class PatternTreeModel extends AbstractTreeModel {
 
@@ -68,6 +69,29 @@ public class PatternTreeModel extends AbstractTreeModel {
                         treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
                         selectTreeNode(this.selectedPath, getChild(selectedFolderTreeNode, indexOfAttribute));
                     }
+                }
+            }
+        }
+    }
+
+    public void updateAttribute(Attribute attribute) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof Attribute) {
+            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
+            if (parentFolderTreeNodePath != null) {
+                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
+                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
+                var indexOfAttribute = updateAttribute(patternElementTreeNode, attribute);
+                var attributes = patternElementTreeNode.getAttributes();
+                var indexesOfAllAttributes = createArrayOfIndexes(attributes.size());
+                treeNodesChanged(parentFolderTreeNodePath, indexesOfAllAttributes, attributes.toArray());
+                if (indexOfAttribute > NO_INDEX) {
+                    selectTreeNode(parentFolderTreeNodePath, getChild(parentFolderTreeNode, indexOfAttribute));
                 }
             }
         }
@@ -248,7 +272,7 @@ public class PatternTreeModel extends AbstractTreeModel {
 
         var newTreeNodePath = Objects.requireNonNull(selectedPath).pathByAddingChild(treeNode);
         if (newTreeNodePath != null) {
-            this.treeSelector.selectAndExpandPath(newTreeNodePath);
+            this.treeSelector.selectPath(newTreeNodePath);
         }
     }
 
@@ -256,6 +280,12 @@ public class PatternTreeModel extends AbstractTreeModel {
 
         element.addAttribute(attribute);
         return getIndexOfAttribute(element, attribute);
+    }
+
+    private int updateAttribute(PatternElement element, Attribute attribute) {
+
+        element.updateAttribute(attribute);
+        return element.getAttributes().indexOf(attribute);
     }
 
     private Object getItemAtIndex(List<?> list, int index) {
@@ -301,6 +331,15 @@ public class PatternTreeModel extends AbstractTreeModel {
     private int getIndexOfAttribute(PatternElement element, Attribute attribute) {
 
         return element.getAttributes().indexOf(attribute);
+    }
+
+    private int[] createArrayOfIndexes(int size) {
+
+        if (size == 0) {
+            return new int[0];
+        }
+
+        return IntStream.range(0, size).toArray();
     }
 }
 

@@ -620,7 +620,7 @@ public class PatternTreeModelTests {
         this.model.insertAttribute(attributeNode);
 
         assertTrue(this.treeModelListener.hasInserted(0, attributeNode));
-        Mockito.verify(this.treeSelector).selectAndExpandPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
     }
 
     @Test
@@ -636,7 +636,43 @@ public class PatternTreeModelTests {
         this.model.insertAttribute(attributeNode);
 
         assertTrue(this.treeModelListener.hasInserted(0, attributeNode));
-        Mockito.verify(this.treeSelector).selectAndExpandPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
+    }
+
+    @Test
+    public void whenUpdateAttributeAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.updateAttribute(new Attribute("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdateAttributeAndSelectedPathIsNotAnAttribute_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.updateAttribute(new Attribute("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdateAttribute_ThenRaisesEvent() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var attributeNode = new Attribute("anattributeid", "anattributename");
+        parentNode.addAttribute(attributeNode);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getAttributes(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, attributeNode}));
+
+        this.model.updateAttribute(attributeNode);
+
+        assertTrue(this.treeModelListener.hasChanged(0, attributeNode));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode)));
     }
 
     @Test

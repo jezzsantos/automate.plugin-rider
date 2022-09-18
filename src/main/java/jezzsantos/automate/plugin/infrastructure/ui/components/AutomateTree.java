@@ -28,6 +28,7 @@ import org.jetbrains.annotations.TestOnly;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 
@@ -131,6 +132,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
     private void init() {
 
         this.application.addConfigurationListener(executablePathChangedListener());
+        this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.automateTreeExpander = new DefaultTreeExpander(this);
         PopupHandler.installPopupMenu(this, addTreeContextMenu(), "TreePopup");
         this.setCellRenderer(new ColoredTreeCellRenderer() {
@@ -256,6 +258,9 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var addDraftElement = new AddDraftElementListActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         addDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addDraftElement);
+        var editPatternAttribute = new EditPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        editPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
+        actions.add(editPatternAttribute);
         var editDraftElement = new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         editDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
         actions.add(editDraftElement);

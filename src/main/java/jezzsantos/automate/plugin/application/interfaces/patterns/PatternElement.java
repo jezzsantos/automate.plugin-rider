@@ -148,6 +148,20 @@ public class PatternElement {
         this.attributes.add(attribute);
     }
 
+    public void updateAttribute(@NotNull Attribute attribute) {
+
+        var id = attribute.getId();
+        var oldAttribute = this.attributes.stream()
+          .filter(attr -> attr.getId().equals(id))
+          .findFirst();
+        if (oldAttribute.isEmpty()) {
+            return;
+        }
+
+        var indexOfAttribute = this.attributes.indexOf(oldAttribute.get());
+        this.attributes.set(indexOfAttribute, attribute);
+    }
+
     public void removeAttribute(@NotNull Attribute attribute) {
 
         this.attributes.remove(attribute);

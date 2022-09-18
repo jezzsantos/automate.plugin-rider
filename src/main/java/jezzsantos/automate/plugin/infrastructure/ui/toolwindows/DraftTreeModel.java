@@ -76,6 +76,7 @@ public class DraftTreeModel extends AbstractTreeModel {
             var allProperties = new ArrayList<DraftPropertyPlaceholderNode>();
             properties.forEach(property -> allProperties.add(new DraftPropertyPlaceholderNode(property)));
             treeNodesChanged(this.selectedPath, indexesOfAllProperties, allProperties.toArray());
+            selectTreeNode(this.selectedPath);
         }
     }
 
@@ -225,24 +226,29 @@ public class DraftTreeModel extends AbstractTreeModel {
 
         var siblingCount = getChildCount(parentElementTreeNode);
         if (siblingCount == 0) {
-            this.treeSelector.selectPath(parentTreeNodePath);
+            selectTreeNode(parentTreeNodePath);
         }
         else {
             if (siblingCount > indexOfDeletedElement) {
                 var nextSiblingTreeNodePath = parentTreeNodePath.pathByAddingChild(getChild(parentElementTreeNode, indexOfDeletedElement));
-                this.treeSelector.selectPath(nextSiblingTreeNodePath);
+                selectTreeNode(nextSiblingTreeNodePath);
             }
             else {
                 var lastSiblingTreeNode = getChild(parentElementTreeNode, siblingCount - 1);
                 if (lastSiblingTreeNode instanceof DraftPropertyPlaceholderNode) {
-                    this.treeSelector.selectPath(parentTreeNodePath);
+                    selectTreeNode(parentTreeNodePath);
                 }
                 else {
                     var lastSiblingTreeNodePath = parentTreeNodePath.pathByAddingChild(lastSiblingTreeNode);
-                    this.treeSelector.selectPath(lastSiblingTreeNodePath);
+                    selectTreeNode(lastSiblingTreeNodePath);
                 }
             }
         }
+    }
+
+    private void selectTreeNode(TreePath selectedPath) {
+
+        this.treeSelector.selectPath(selectedPath);
     }
 
     private void selectTreeNode(TreePath selectedPath, Object newTreeNode) {

@@ -361,7 +361,7 @@ public class AutomateCliService implements IAutomateService {
         if (installLocally) {
             args.add("--install");
         }
-        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, new ArrayList<>(args));
+        var result = runAutomateForStructuredOutput(BuildToolkitStructuredOutput.class, new ArrayList<>(args));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -371,11 +371,11 @@ public class AutomateCliService implements IAutomateService {
 
     @NotNull
     @Override
-    public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
         var args = new ArrayList<>(
-          List.of("edit", "add-attribute", name, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
-        if (defaultValue != null) {
+          List.of("edit", "add-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
+        if (defaultValue != null && !defaultValue.isEmpty()) {
             args.addAll(List.of("--defaultvalueis", defaultValue));
         }
         if (choices != null && !choices.isEmpty()) {
@@ -387,9 +387,32 @@ public class AutomateCliService implements IAutomateService {
         }
         else {
             this.cache.invalidateCurrentPattern();
-            var attribute = result.getOutput().getAttribute();
-            attribute.setProperties(isRequired, type, defaultValue, choices);
-            return attribute;
+            return result.getOutput().getAttribute();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Attribute updatePatternAttribute(@NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("edit", "update-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
+        if (name != null) {
+            args.addAll(List.of("--name", name));
+        }
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            args.addAll(List.of("--defaultvalueis", defaultValue));
+        }
+        if (choices != null && !choices.isEmpty()) {
+            args.addAll(List.of("--isoneof", String.join(";", choices)));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getAttribute();
         }
     }
 

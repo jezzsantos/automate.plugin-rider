@@ -102,7 +102,10 @@ public interface IAutomateApplication {
     AllStateLite listAllAutomation(boolean forceRefresh);
 
     @NotNull
-    Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
+    Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
+
+    @NotNull
+    Attribute updatePatternAttribute(@NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
     void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception;
 

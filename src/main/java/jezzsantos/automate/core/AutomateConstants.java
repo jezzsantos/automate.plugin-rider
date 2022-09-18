@@ -2,7 +2,6 @@ package jezzsantos.automate.core;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AutomateConstants {
@@ -10,13 +9,14 @@ public class AutomateConstants {
     public static final String PatternNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
     public static final String DraftNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
     public static final String AttributeNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
-    public static final List<AutomateConstants.AttributeDataType> AttributeDataTypes = new ArrayList<>(
-      List.of(AttributeDataType.STRING, AttributeDataType.BOOLEAN, AttributeDataType.INTEGER, AttributeDataType.FLOAT, AttributeDataType.DATETIME));
+    public static final List<AutomateConstants.AttributeDataType> AttributeDataTypes =
+      List.of(AttributeDataType.STRING, AttributeDataType.BOOLEAN, AttributeDataType.INTEGER, AttributeDataType.FLOAT, AttributeDataType.DATETIME);
     public static final String OutputStructuredShorthand = "--os";
     public static final List<String> OutputStructuredAliases = List.of(OutputStructuredShorthand, "--output-structured");
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
     public static String MinimumSupportedVersion = "0.2.7-preview";
+    public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
 
     public enum SchemaType {
         @SerializedName("None")

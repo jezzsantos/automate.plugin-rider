@@ -377,6 +377,7 @@ public class DraftTreeModelTests {
         this.model.updateDraftElement(draftElement);
 
         assertTrue(this.treeModelListener.hasChanged(0, new DraftPropertyPlaceholderNode(draftProperty)));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(childNode)));
     }
 
     @Test

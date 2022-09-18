@@ -3,6 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
@@ -10,17 +11,17 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.ui.dialogs.ConfirmDeleteDialog;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.EditPatternAttributeDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.TreePath;
 
-public class DeletePatternAttributeAction extends AnAction {
+public class EditPatternAttributeAction extends AnAction {
 
     private final Action<PatternTreeModel> onSuccess;
 
-    public DeletePatternAttributeAction(Action<PatternTreeModel> onSuccess) {
+    public EditPatternAttributeAction(Action<PatternTreeModel> onSuccess) {
 
         super();
         this.onSuccess = onSuccess;
@@ -31,7 +32,7 @@ public class DeletePatternAttributeAction extends AnAction {
 
         super.update(e);
 
-        var message = AutomateBundle.message("action.DeletePatternAttribute.Title");
+        var message = AutomateBundle.message("action.EditPatternAttribute.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
@@ -54,20 +55,27 @@ public class DeletePatternAttributeAction extends AnAction {
         if (project != null) {
             var selected = getAttribute(e);
             if (selected != null) {
-                if (ConfirmDeleteDialog.confirms(project,
-                                                 AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Title"),
-                                                 AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Message"))) {
-                    var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
-                                  () -> application.deletePatternAttribute(selected.getParent().getEditPath(), selected.getAttribute().getName()),
-                                  () -> this.onSuccess.run(model -> model.deleteAttribute(selected.getAttribute())),
-                                  AutomateBundle.message("action.DeletePatternAttribute.DeleteAttribute.Failure.Message"));
+                var application = IAutomateApplication.getInstance(project);
+                var attributes = selected.getParent().getAttributes();
+                var dialog = new EditPatternAttributeDialog(project,
+                                                            new EditPatternAttributeDialog.EditPatternAttributeDialogContext(selected.getAttribute(), attributes,
+                                                                                                                             AutomateConstants.AttributeDataTypes));
+                if (dialog.showAndGet()) {
+                    var context = dialog.getContext();
+                    var attribute = Try.andHandle(project,
+                                                  () -> application.updatePatternAttribute(selected.getParent().getEditPath(), context.getId(), context.getName(),
+                                                                                           context.getIsRequired(),
+                                                                                           context.getDataType(), context.getDefaultValue(), context.getChoices()),
+                                                  AutomateBundle.message("action.EditPatternAttribute.UpdateAttribute.Failure.Message"));
+                    if (attribute != null) {
+                        this.onSuccess.run(model -> model.updateAttribute(attribute));
+                    }
                 }
             }
         }
     }
 
-    private EditPatternAttributeAction.SelectedAttribute getAttribute(AnActionEvent e) {
+    private SelectedAttribute getAttribute(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
@@ -78,12 +86,28 @@ public class DeletePatternAttributeAction extends AnAction {
                     var parent = path.getParentPath().getParentPath().getLastPathComponent();
                     if (parent instanceof PatternElement) {
                         var parentElement = (PatternElement) parent;
-                        return new EditPatternAttributeAction.SelectedAttribute(parentElement, (Attribute) leaf);
+                        return new SelectedAttribute(parentElement, (Attribute) leaf);
                     }
                 }
             }
         }
 
         return null;
+    }
+
+    static class SelectedAttribute {
+
+        private final Attribute attribute;
+        private final PatternElement parent;
+
+        public SelectedAttribute(@NotNull PatternElement parent, @NotNull Attribute attribute) {
+
+            this.parent = parent;
+            this.attribute = attribute;
+        }
+
+        public PatternElement getParent() {return this.parent;}
+
+        public Attribute getAttribute() {return this.attribute;}
     }
 }

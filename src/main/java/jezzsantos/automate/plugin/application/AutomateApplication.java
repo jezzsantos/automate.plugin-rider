@@ -239,9 +239,16 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
-        return this.automateService.addPatternAttribute(parentEditPath, name, isRequired, type, defaultValue, choices);
+        return this.automateService.addPatternAttribute(parentEditPath, id, isRequired, type, defaultValue, choices);
+    }
+
+    @NotNull
+    @Override
+    public Attribute updatePatternAttribute(@NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+
+        return this.automateService.updatePatternAttribute(parentEditPath, id, name, isRequired, type, defaultValue, choices);
     }
 
     @Override

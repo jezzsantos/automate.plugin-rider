@@ -125,10 +125,16 @@ public class Attribute {
         return isOneOfChoices(this.choices, value);
     }
 
+    @NotNull
+    public String getId() {return this.id;}
+
+    @NotNull
     public String getName() {return this.name;}
 
+    @Nullable
     public String getDefaultValue() {return this.defaultValue;}
 
+    @NotNull
     public AutomateConstants.AttributeDataType getDataType() {return this.dataType;}
 
     public boolean hasChoices() {return !this.choices.isEmpty();}
@@ -137,16 +143,6 @@ public class Attribute {
     public List<String> getChoices() {return this.choices;}
 
     public boolean isRequired() {return this.isRequired;}
-
-    public void setProperties(boolean isRequired, @NotNull AutomateConstants.AttributeDataType dataType, @Nullable String defaultValue, @Nullable List<String> choices) {
-
-        this.isRequired = isRequired;
-        this.defaultValue = defaultValue;
-        this.dataType = dataType;
-        this.choices = choices == null
-          ? this.choices
-          : choices;
-    }
 
     @Override
     public String toString() {
@@ -164,7 +160,7 @@ public class Attribute {
           : AutomateBundle.message("general.Attribute.IsRequired.False.Title"), choices, defaultValue);
     }
 
-    private static boolean isIsoDate(String value) {
+    private static boolean isIsoDate(@NotNull String value) {
 
         try {
             Instant.from(DateTimeFormatter.ISO_INSTANT.parse(value));

@@ -15,9 +15,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndNameIsEmpty_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>());
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>());
 
-        var result = NewPatternAttributeDialog.doValidate(context, "", null, "", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "", null, "", new ArrayList<>());
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"), result.message);
@@ -27,9 +27,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndNameIsInvalid_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>());
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>());
 
-        var result = NewPatternAttributeDialog.doValidate(context, "^aninvalidname^", null, "", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "^aninvalidname^", null, "", new ArrayList<>());
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"), result.message);
@@ -39,9 +39,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndNameIsReserved_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(List.of(new Attribute("anid", "anattributename"))), new ArrayList<>());
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(List.of(new Attribute("anid", "anattributename"))), new ArrayList<>());
 
-        var result = NewPatternAttributeDialog.doValidate(context, "anattributename", null, "", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "anattributename", null, "", new ArrayList<>());
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.NameValidation.Exists.Message"), result.message);
@@ -51,9 +51,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndDataTypeIsEmpty_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
 
-        var result = NewPatternAttributeDialog.doValidate(context, "aname", null, "", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "aname", null, "", new ArrayList<>());
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", AutomateConstants.AttributeDataType.STRING.getDisplayName()),
@@ -64,9 +64,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndDataTypeIsInvalid_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
 
-        var result = NewPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "", new ArrayList<>());
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", AutomateConstants.AttributeDataType.STRING.getDisplayName()),
@@ -77,9 +77,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndDefaultValueNotMatchDataType_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.INTEGER)));
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.INTEGER)));
 
-        var result = NewPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "notanintegervalue", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "notanintegervalue", new ArrayList<>());
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotDataType.Message", AutomateConstants.AttributeDataType.INTEGER.getDisplayName()),
@@ -90,10 +90,10 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndDefaultValueIsNotAChoice_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
 
-        var result = NewPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.STRING, "notachoice",
-                                                          new ArrayList<>(List.of("achoice1", "achoice2", "achoice3")));
+        var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.STRING, "notachoice",
+                                                           new ArrayList<>(List.of("achoice1", "achoice2", "achoice3")));
 
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotAChoice.Message"), result.message);
@@ -103,9 +103,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidateAndAChoiceNotMatchDataType_ThenReturnsError() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.INTEGER)));
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.INTEGER)));
 
-        var result = NewPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "", new ArrayList<>(List.of("1", "notaninteger", "3")));
+        var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "", new ArrayList<>(List.of("1", "notaninteger", "3")));
 
         assertNotNull(result);
         assertEquals(
@@ -117,9 +117,9 @@ public class NewAttributeDialogTests {
     @Test
     public void whenDoValidate_ThenReturnsNull() {
 
-        var context = new NewPatternAttributeDialog.NewPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
+        var context = new EditPatternAttributeDialog.EditPatternAttributeDialogContext(new ArrayList<>(), new ArrayList<>(List.of(AutomateConstants.AttributeDataType.STRING)));
 
-        var result = NewPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.STRING, "adefaultvalue", new ArrayList<>());
+        var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.STRING, "adefaultvalue", new ArrayList<>());
 
         assertNull(result);
     }

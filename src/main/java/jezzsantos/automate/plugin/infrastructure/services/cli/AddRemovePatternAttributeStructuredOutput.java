@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import org.jetbrains.annotations.TestOnly;
 
@@ -12,6 +13,10 @@ class AddRemoveAttribute {
     public String Name;
     public String AttributeId;
     public String ParentId;
+    public boolean IsRequired;
+    public AutomateConstants.AttributeDataType DataType;
+    public String DefaultValue;
+    public List<String> Choices;
 }
 
 public class AddRemovePatternAttributeStructuredOutput extends StructuredOutput<AddRemoveAttribute> {
@@ -27,6 +32,6 @@ public class AddRemovePatternAttributeStructuredOutput extends StructuredOutput<
     public Attribute getAttribute() {
 
         var values = this.Output.get(0).Values;
-        return new Attribute(values.AttributeId, values.Name);
+        return new Attribute(values.AttributeId, values.Name, values.IsRequired, values.DefaultValue, values.DataType, values.Choices);
     }
 }
