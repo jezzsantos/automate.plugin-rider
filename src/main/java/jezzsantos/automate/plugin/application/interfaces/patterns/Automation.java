@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
@@ -69,9 +70,16 @@ public class Automation {
         return automation;
     }
 
+    @NotNull
     public String getName() {
 
         return this.name;
+    }
+
+    @Nullable
+    public AutomateConstants.AutomationType getType() {
+
+        return this.type;
     }
 
     @Override
@@ -104,10 +112,5 @@ public class Automation {
         }
 
         return String.format("%s (%s) (%s)", this.name, this.type.getDisplayName(), data);
-    }
-
-    public AutomateConstants.AutomationType getType() {
-
-        return this.type;
     }
 }

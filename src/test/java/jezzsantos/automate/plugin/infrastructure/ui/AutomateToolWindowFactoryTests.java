@@ -72,7 +72,6 @@ public class AutomateToolWindowFactoryTests {
                     Mockito.verify(GivenNoPatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
-
         }
 
         @Nested
@@ -116,9 +115,7 @@ public class AutomateToolWindowFactoryTests {
                     Mockito.verify(GivenNoPatterns.this.application).setAuthoringMode(false);
                 }
             }
-
         }
-
     }
 
     @Nested
@@ -199,7 +196,6 @@ public class AutomateToolWindowFactoryTests {
                     Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
-
         }
 
         @Nested
@@ -267,8 +263,6 @@ public class AutomateToolWindowFactoryTests {
                     Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
-
         }
     }
-
 }

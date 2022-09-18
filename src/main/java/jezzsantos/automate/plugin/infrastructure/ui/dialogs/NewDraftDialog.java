@@ -44,6 +44,32 @@ public class NewDraftDialog extends DialogWrapper {
         }
     }
 
+    @TestOnly
+    public static @Nullable ValidationInfo doValidate(NewDraftDialogContext context, ToolkitLite selectedToolkit, String name) {
+
+        if (selectedToolkit == null) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.ToolkitValidation.None.Message"));
+        }
+        if (!context.InstalledToolkits.contains(selectedToolkit)) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.ToolkitValidation.None.Message"));
+        }
+        if (!name.matches(AutomateConstants.DraftNameRegex)) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.NameValidation.NotMatch.Message"));
+        }
+        var draftExists = context.Drafts.stream()
+          .anyMatch(draft -> draft.getName().equalsIgnoreCase(name));
+        if (draftExists) {
+            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.NameValidation.Exists.Message"));
+        }
+
+        return null;
+    }
+
+    public NewDraftDialogContext getContext() {
+
+        return this.context;
+    }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
 
@@ -69,36 +95,10 @@ public class NewDraftDialog extends DialogWrapper {
         }
     }
 
-    @TestOnly
-    public static @Nullable ValidationInfo doValidate(NewDraftDialogContext context, ToolkitLite selectedToolkit, String name) {
-
-        if (selectedToolkit == null) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.ToolkitValidation.None.Message"));
-        }
-        if (!context.InstalledToolkits.contains(selectedToolkit)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.ToolkitValidation.None.Message"));
-        }
-        if (!name.matches(AutomateConstants.DraftNameRegex)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.NameValidation.NotMatch.Message"));
-        }
-        var draftExists = context.Drafts.stream()
-          .anyMatch(draft -> draft.getName().equalsIgnoreCase(name));
-        if (draftExists) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewDraft.NameValidation.Exists.Message"));
-        }
-
-        return null;
-    }
-
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
 
         return this.name;
-    }
-
-    public NewDraftDialogContext getContext() {
-
-        return this.context;
     }
 
     public static class NewDraftDialogContext {

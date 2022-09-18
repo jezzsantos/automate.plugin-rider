@@ -62,44 +62,6 @@ public class NewPatternAttributeDialog extends DialogWrapper {
         this.choices.setModel(new CollectionListModel<>());
     }
 
-    @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        //        var decorator = ToolbarDecorator.createDecorator(choices);
-        //        decorator.setAddAction(anActionButton -> {
-        //
-        //        });
-        //        decorator.setRemoveAction(anActionButton -> {
-        //
-        //        });
-        //        decorator.disableUpDownActions();
-        //        //contents.add(decorator.createPanel(), new GridConstraints());
-        //        decorator.createPanel();
-
-        return this.contents;
-    }
-
-    @Override
-    protected @Nullable ValidationInfo doValidate() {
-
-        var dataType = this.dataTypes.getSelectedItem() != null
-          ? (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem()
-          : null;
-        var choices = ((CollectionListModel<String>) this.choices.getModel()).toList();
-        return doValidate(this.context, this.name.getText(), dataType, this.defaultValue.getText(), choices);
-    }
-
-    @Override
-    protected void doOKAction() {
-
-        super.doOKAction();
-        this.context.Name = this.name.getText();
-        this.context.IsRequired = this.isRequired.isSelected();
-        this.context.DefaultValue = this.defaultValue.getText();
-        this.context.DataType = (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem();
-        this.context.Choices = this.choices.getSelectedValuesList();
-    }
-
     @TestOnly
     public static @Nullable ValidationInfo doValidate(NewPatternAttributeDialogContext context, String name, AutomateConstants.AttributeDataType dataType, String defaultValue, List<String> choices) {
 
@@ -142,15 +104,53 @@ public class NewPatternAttributeDialog extends DialogWrapper {
         return null;
     }
 
+    public NewPatternAttributeDialogContext getContext() {
+
+        return this.context;
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        //        var decorator = ToolbarDecorator.createDecorator(choices);
+        //        decorator.setAddAction(anActionButton -> {
+        //
+        //        });
+        //        decorator.setRemoveAction(anActionButton -> {
+        //
+        //        });
+        //        decorator.disableUpDownActions();
+        //        //contents.add(decorator.createPanel(), new GridConstraints());
+        //        decorator.createPanel();
+
+        return this.contents;
+    }
+
+    @Override
+    protected @Nullable ValidationInfo doValidate() {
+
+        var dataType = this.dataTypes.getSelectedItem() != null
+          ? (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem()
+          : null;
+        var choices = ((CollectionListModel<String>) this.choices.getModel()).toList();
+        return doValidate(this.context, this.name.getText(), dataType, this.defaultValue.getText(), choices);
+    }
+
+    @Override
+    protected void doOKAction() {
+
+        super.doOKAction();
+        this.context.Name = this.name.getText();
+        this.context.IsRequired = this.isRequired.isSelected();
+        this.context.DefaultValue = this.defaultValue.getText();
+        this.context.DataType = (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem();
+        this.context.Choices = this.choices.getSelectedValuesList();
+    }
+
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
 
         return this.name;
-    }
-
-    public NewPatternAttributeDialogContext getContext() {
-
-        return this.context;
     }
 
     public static class NewPatternAttributeDialogContext {

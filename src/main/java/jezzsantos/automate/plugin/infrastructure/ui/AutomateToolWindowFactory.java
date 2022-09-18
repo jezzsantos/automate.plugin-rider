@@ -70,5 +70,4 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
         var application = IAutomateApplication.getInstance(project);
         initStartupState(application);
     }
-
 }

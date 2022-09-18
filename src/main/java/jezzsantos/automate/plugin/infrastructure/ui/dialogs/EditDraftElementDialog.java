@@ -42,25 +42,6 @@ public class EditDraftElementDialog extends DialogWrapper {
                           : AutomateBundle.message("dialog.EditDraftElement.UpdateElement.Confirm.Title"));
     }
 
-    @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        return this.contents;
-    }
-
-    @Override
-    protected @Nullable ValidationInfo doValidate() {
-
-        return doValidate(this.context);
-    }
-
-    @Override
-    protected void doOKAction() {
-
-        super.doOKAction();
-        this.context.commitValues();
-    }
-
     @TestOnly
     public static @Nullable ValidationInfo doValidate(EditDraftElementDialog.@NotNull EditDraftElementDialogContext context) {
 
@@ -99,6 +80,30 @@ public class EditDraftElementDialog extends DialogWrapper {
         contents.revalidate();
     }
 
+    public EditDraftElementDialog.EditDraftElementDialogContext getContext() {
+
+        return this.context;
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        return this.contents;
+    }
+
+    @Override
+    protected @Nullable ValidationInfo doValidate() {
+
+        return doValidate(this.context);
+    }
+
+    @Override
+    protected void doOKAction() {
+
+        super.doOKAction();
+        this.context.commitValues();
+    }
+
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
 
@@ -109,11 +114,6 @@ public class EditDraftElementDialog extends DialogWrapper {
         else {
             return behaviours.entrySet().iterator().next().getValue().getComponent();
         }
-    }
-
-    public EditDraftElementDialog.EditDraftElementDialogContext getContext() {
-
-        return this.context;
     }
 
     @NotNull

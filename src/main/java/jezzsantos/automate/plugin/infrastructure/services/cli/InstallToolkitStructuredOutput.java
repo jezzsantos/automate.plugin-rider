@@ -21,5 +21,4 @@ public class InstallToolkitStructuredOutput extends StructuredOutput<InstallTool
             this.Values = new InstallToolkit();
         }})));
     }
-
 }

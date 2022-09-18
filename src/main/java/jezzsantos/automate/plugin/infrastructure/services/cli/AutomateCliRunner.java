@@ -33,7 +33,6 @@ enum FailureCause {
 interface IProcessRunner extends Disposable {
 
     ProcessResult start(List<String> commandLineAndArguments, IOsPlatform platform);
-
 }
 
 class ProcessResult {
@@ -313,7 +312,6 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                 }
                 default:
                     throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
-
             }
         }
     }
@@ -330,5 +328,4 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         this.listeners.firePropertyChange(PropertyChanged_Logs, oldValue, newValue);
     }
-
 }

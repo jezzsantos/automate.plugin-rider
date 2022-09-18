@@ -138,6 +138,16 @@ public class Attribute {
 
     public boolean isRequired() {return this.isRequired;}
 
+    public void setProperties(boolean isRequired, @NotNull AutomateConstants.AttributeDataType dataType, @Nullable String defaultValue, @Nullable List<String> choices) {
+
+        this.isRequired = isRequired;
+        this.defaultValue = defaultValue;
+        this.dataType = dataType;
+        this.choices = choices == null
+          ? this.choices
+          : choices;
+    }
+
     @Override
     public String toString() {
 
@@ -152,16 +162,6 @@ public class Attribute {
         return String.format("%s  (%s, %s%s%s)", this.name, this.dataType, this.isRequired
           ? AutomateBundle.message("general.Attribute.IsRequired.True.Title")
           : AutomateBundle.message("general.Attribute.IsRequired.False.Title"), choices, defaultValue);
-    }
-
-    public void setProperties(boolean isRequired, @NotNull AutomateConstants.AttributeDataType dataType, @Nullable String defaultValue, @Nullable List<String> choices) {
-
-        this.isRequired = isRequired;
-        this.defaultValue = defaultValue;
-        this.dataType = dataType;
-        this.choices = choices == null
-          ? this.choices
-          : choices;
     }
 
     private static boolean isIsoDate(String value) {

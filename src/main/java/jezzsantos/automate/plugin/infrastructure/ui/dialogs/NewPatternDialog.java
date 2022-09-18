@@ -46,26 +46,15 @@ public class NewPatternDialog extends DialogWrapper {
         return null;
     }
 
-    @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-
-        return this.name;
-    }
-
     public NewPatternDialogContext getContext() {
 
         return this.context;
     }
 
-    public static class NewPatternDialogContext {
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
 
-        public List<PatternLite> Patterns;
-        public String Name;
-
-        public NewPatternDialogContext(@NotNull List<PatternLite> patterns) {
-
-            this.Patterns = patterns;
-        }
+        return this.name;
     }
 
     @Override
@@ -86,5 +75,16 @@ public class NewPatternDialog extends DialogWrapper {
 
         super.doOKAction();
         this.context.Name = this.name.getText();
+    }
+
+    public static class NewPatternDialogContext {
+
+        public List<PatternLite> Patterns;
+        public String Name;
+
+        public NewPatternDialogContext(@NotNull List<PatternLite> patterns) {
+
+            this.Patterns = patterns;
+        }
     }
 }

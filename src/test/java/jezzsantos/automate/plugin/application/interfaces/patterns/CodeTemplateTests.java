@@ -13,6 +13,5 @@ public class CodeTemplateTests {
           .toString();
 
         assertEquals("aname (original: afilename)", result);
-
     }
 }

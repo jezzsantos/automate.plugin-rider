@@ -30,5 +30,4 @@ public class AutomateBundle extends DynamicBundle {
 
         return INSTANCE.getLazyMessage(key, params);
     }
-
 }

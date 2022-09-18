@@ -46,6 +46,14 @@ public class ElementValueMap implements Iterable<DraftProperty> {
     }
 
     @NotNull
+    public ElementValueMap sortedByName() {
+
+        return new ElementValueMap(this.map.entrySet().stream()
+                                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                                               (val1, val2) -> val1, TreeMap::new)));
+    }
+
+    @NotNull
     @Override
     public Iterator<DraftProperty> iterator() {
 
@@ -67,12 +75,5 @@ public class ElementValueMap implements Iterable<DraftProperty> {
                 return new DraftProperty(name, value);
             }
         };
-    }
-
-    public ElementValueMap sortedByName() {
-
-        return new ElementValueMap(this.map.entrySet().stream()
-                                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                                               (val1, val2) -> val1, TreeMap::new)));
     }
 }

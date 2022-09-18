@@ -99,6 +99,7 @@ public class PatternElement {
         return this.editPath;
     }
 
+    @Nullable
     public AutomateConstants.ElementCardinality getCardinality() {
 
         return this.cardinality;
@@ -157,18 +158,6 @@ public class PatternElement {
         this.elements.add(element);
     }
 
-    @Override
-    public String toString() {
-
-        var cardinality = toCardinalityString(this.cardinality);
-        var type = this.isRoot
-          ? ""
-          : this.isCollection
-            ? String.format("(collection, %s)", cardinality)
-            : String.format("(%s)", cardinality);
-        return String.format("%s %s", this.name, type);
-    }
-
     public boolean isCollection() {
 
         return this.isCollection;
@@ -185,7 +174,19 @@ public class PatternElement {
         return schema;
     }
 
-    private static String toCardinalityString(AutomateConstants.ElementCardinality cardinality) {
+    @Override
+    public String toString() {
+
+        var cardinality = toCardinalityString(this.cardinality);
+        var type = this.isRoot
+          ? ""
+          : this.isCollection
+            ? String.format("(collection, %s)", cardinality)
+            : String.format("(%s)", cardinality);
+        return String.format("%s %s", this.name, type);
+    }
+
+    private static String toCardinalityString(@Nullable AutomateConstants.ElementCardinality cardinality) {
 
         if (cardinality == null) {
             return "";

@@ -35,15 +35,15 @@ public class DraftDetailed {
         return this.id;
     }
 
-    @Override
-    public String toString() {
-
-        return String.format("%s (%s)", this.name, this.id);
-    }
-
+    @NotNull
     public DraftElement getRoot() {
 
         return new DraftElement(this.name, DraftElement.toElementValueMap(this.configuration), true);
     }
 
+    @Override
+    public String toString() {
+
+        return String.format("%s (%s)", this.name, this.id);
+    }
 }

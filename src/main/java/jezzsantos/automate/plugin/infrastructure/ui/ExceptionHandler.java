@@ -16,5 +16,4 @@ public class ExceptionHandler {
           .createNotification(title, exception.getMessage(), NotificationType.ERROR)
           .notify(project);
     }
-
 }

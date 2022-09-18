@@ -8,6 +8,15 @@ import org.junit.jupiter.api.Test;
 
 public class ShowSettingsMenuActionTests extends BasePlatformTestCase {
 
+    @Test
+    @Disabled
+    public void whenConstructed_ThenIsEnabledAndVisible() {
+
+        var presentation = this.myFixture.testAction(new ShowSettingsMenuAction());
+
+        assertTrue(presentation.isEnabledAndVisible());
+    }
+
     @BeforeEach
     @Override
     public void setUp() throws Exception {
@@ -20,14 +29,5 @@ public class ShowSettingsMenuActionTests extends BasePlatformTestCase {
     public void tearDown() throws Exception {
 
         super.tearDown();
-    }
-
-    @Test
-    @Disabled
-    public void whenConstructed_ThenIsEnabledAndVisible() {
-
-        var presentation = this.myFixture.testAction(new ShowSettingsMenuAction());
-
-        assertTrue(presentation.isEnabledAndVisible());
     }
 }

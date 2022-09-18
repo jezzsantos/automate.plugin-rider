@@ -36,6 +36,26 @@ public class InstallToolkitDialog extends DialogWrapper {
                                               FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
     }
 
+    @TestOnly
+    public static @Nullable ValidationInfo doValidate(InstallToolkitDialogContext ignoredContext, String location) {
+
+        if (location.isEmpty()) {
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension));
+        }
+
+        var file = new File(location);
+        if (!file.isFile()) {
+            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile.Message", AutomateConstants.ToolkitFileExtension));
+        }
+
+        return null;
+    }
+
+    public InstallToolkitDialogContext getContext() {
+
+        return this.context;
+    }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
 
@@ -56,30 +76,10 @@ public class InstallToolkitDialog extends DialogWrapper {
         this.context.ToolkitLocation = this.location.getText();
     }
 
-    @TestOnly
-    public static @Nullable ValidationInfo doValidate(InstallToolkitDialogContext ignoredContext, String location) {
-
-        if (location.isEmpty()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.None.Message", AutomateConstants.ToolkitFileExtension));
-        }
-
-        var file = new File(location);
-        if (!file.isFile()) {
-            return new ValidationInfo(AutomateBundle.message("dialog.InstallToolkit.LocationValidation.NotAFile.Message", AutomateConstants.ToolkitFileExtension));
-        }
-
-        return null;
-    }
-
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
 
         return this.location;
-    }
-
-    public InstallToolkitDialogContext getContext() {
-
-        return this.context;
     }
 
     private void createUIComponents() {

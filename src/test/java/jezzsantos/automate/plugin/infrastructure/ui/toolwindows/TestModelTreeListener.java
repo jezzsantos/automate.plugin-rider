@@ -15,6 +15,36 @@ public class TestModelTreeListener implements TreeModelListener {
     private int indexChanged = -1;
     private Object childChanged = null;
 
+    public boolean hasInserted(int index, Object node) {
+
+        return (this.indexInserted == index && this.childInserted.equals(node));
+    }
+
+    public boolean hasRemoved(int index, Object node) {
+
+        return (this.indexRemoved == index && this.childRemoved.equals(node));
+    }
+
+    public boolean hasChanged(int index, Object node) {
+
+        return (this.indexChanged == index && this.childChanged.equals(node));
+    }
+
+    public boolean hasRemoveEventBeenRaised() {
+
+        return this.hasRemovedBeenCalled;
+    }
+
+    public boolean hasInsertEventBeenRaised() {
+
+        return this.hasInsertedBeenCalled;
+    }
+
+    public boolean hasChangeEventBeenRaised() {
+
+        return this.hasChangedBeenCalled;
+    }
+
     @Override
     public void treeNodesChanged(TreeModelEvent e) {
 
@@ -46,35 +76,5 @@ public class TestModelTreeListener implements TreeModelListener {
     @Override
     public void treeStructureChanged(TreeModelEvent e) {
 
-    }
-
-    public boolean hasInserted(int index, Object node) {
-
-        return (this.indexInserted == index && this.childInserted.equals(node));
-    }
-
-    public boolean hasRemoved(int index, Object node) {
-
-        return (this.indexRemoved == index && this.childRemoved.equals(node));
-    }
-
-    public boolean hasChanged(int index, Object node) {
-
-        return (this.indexChanged == index && this.childChanged.equals(node));
-    }
-
-    public boolean hasRemoveEventBeenRaised() {
-
-        return this.hasRemovedBeenCalled;
-    }
-
-    public boolean hasInsertEventBeenRaised() {
-
-        return this.hasInsertedBeenCalled;
-    }
-
-    public boolean hasChangeEventBeenRaised() {
-
-        return this.hasChangedBeenCalled;
     }
 }
