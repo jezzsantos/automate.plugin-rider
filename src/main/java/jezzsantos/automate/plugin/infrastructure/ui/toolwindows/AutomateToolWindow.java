@@ -4,10 +4,7 @@ import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DefaultTreeExpander;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorFontType;
@@ -44,6 +41,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -389,14 +387,31 @@ public class AutomateToolWindow implements Disposable {
 
         var actions = new DefaultActionGroup();
 
-        actions.add(new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
-        actions.add(new AddDraftElementListActionGroup(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
-        actions.add(new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
+        var addPatternAttribute = new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel()));
+        addPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this.automateTree);
+        actions.add(addPatternAttribute);
+        var addDraftElement = new AddDraftElementListActionGroup(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel()));
+        addDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this.automateTree);
+        actions.add(addDraftElement);
+        var editDraftElement = new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel()));
+        editDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_SPACE), this.automateTree);
+        actions.add(editDraftElement);
+
         actions.addSeparator();
-        actions.add(new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel())));
-        actions.add(new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel())));
+
+        var deletePatternAttribute = new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.automateTree.getModel()));
+        deletePatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this.automateTree);
+        actions.add(deletePatternAttribute);
+        var deleteDraftElement = new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.automateTree.getModel()));
+        deleteDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this.automateTree);
+        actions.add(deleteDraftElement);
 
         return actions;
+    }
+
+    private ShortcutSet getKeyboardShortcut(int key) {
+
+        return new CustomShortcutSet(KeyStroke.getKeyStroke(key, 0));
     }
 
     private void setGuidance(String text) {
