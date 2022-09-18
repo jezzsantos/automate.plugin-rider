@@ -8,13 +8,13 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="59f60" class="com.intellij.openapi.actionSystem.impl.ActionToolbarImpl" binding="toolbar" custom-create="true">
+      <component id="59f60" class="jezzsantos.automate.plugin.infrastructure.ui.components.AutomateToolbar" binding="toolbar" custom-create="true">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
-      <splitpane id="6ef13" binding="windowSplit">
+      <splitpane id="6ef13" binding="splitter">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -34,7 +34,7 @@
             <properties/>
             <border type="empty"/>
             <children>
-              <component id="4cf3c" class="jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree" binding="automateTree">
+              <component id="4cf3c" class="jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree" binding="tree" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>
@@ -47,7 +47,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="b3e09" class="javax.swing.JTextPane" binding="cliLog">
+              <component id="b3e09" class="jezzsantos.automate.plugin.infrastructure.ui.components.CliLogsPane" binding="cliLogsPane" custom-create="true">
                 <constraints/>
                 <properties>
                   <editable value="false"/>
