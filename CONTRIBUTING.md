@@ -18,7 +18,8 @@ Essentially, we are building high-quality products (tools) for other developers 
 
 There is no suggestion or contribution that you could make that would be too minor or meaningless.
 
-We are all human and we all make mistakes every day, so even minor typos and corrections to any part of this product are
+We are all human, and we all make mistakes every day, so even minor typos and corrections to any part of this product
+are
 always more than welcome.
 
 Improving the clarity of the code and of the documentation is very welcome and super important. No one person can get
@@ -110,8 +111,8 @@ people you're leaving and take the proper steps to ensure that others can pick u
 
 ### Set expectations for behavior (yours, and theirs).
 
-This includes not just how to communicate with others (being respectful, considerate, etc) but also technical
-responsibilities (importance of testing, project dependencies, etc). Mention and link to your code of conduct, if you
+This includes not just how to communicate with others (being respectful, considerate, etc.) but also technical
+responsibilities (importance of testing, project dependencies, etc.). Mention and link to your code of conduct, if you
 have one.
 
 # Ground Rules for Contributing Code
@@ -179,7 +180,8 @@ We recommend using JetBrains IntelliJ to develop this codebase.
 * Clone the repo locally
 * Open the root directory
 * Set the environment variable (in your Terminal) `JAVA_HOME` to your local installation of the `corretto-17.0.3` JDK.
-  Which this project currently uses. By default IntelliJ installs to (on Windows): `%userprofile%\.jdks\corretto-17.0.3`
+  Which this project currently uses. By default, IntelliJ installs to (on
+  Windows): `%userprofile%\.jdks\corretto-17.0.3`
   .
 
 ## Building the code
@@ -215,15 +217,18 @@ When you push your changes (or push your pull requests), they will be built and 
 >
 > If this is a 'pre-release' version (using `-preview`) we only ever increase the Minor number for breaking changes.
 
-1. In `build.gradle`, update the `version` number
-1. Commit message `#vx.x.x-preview`
-1. Tag the commit `vx.x.x-preview`
-1. Push commit and tags
+1. In `gradle.properties`, update the `pluginVersion` property
+2. In `CHANGES.md`, insert change notes into the `[Unreleased]` sections of the document (e.g. under headings such
+   as: `## Preamble`, `## Added`, `## Fixed` etc)
+3. Run: `./gradlew patchChangelog`
+4. Commit message `#vx.x.x-preview`
+5. Tag the commit `vx.x.x-preview`
+6. Push commit and tags
 
 Wait until the latest build goes green, at which point:
 
-1. A new [Github Draft Release](https://github.com/jezzsantos/automate.plugin-rider/releases) has already been created
-1. A new [JetBrains Marketplace release](https://plugins.jetbrains.com/plugin/19421-automate) has also already been
+1. A new [GitHub Draft Release](https://github.com/jezzsantos/automate.plugin-rider/releases) has already been created
+2. A new [JetBrains Marketplace release](https://plugins.jetbrains.com/plugin/19421-automate) has also already been
    published
 
 **Final Step**: Open the [Draft Release](https://github.com/jezzsantos/automate.plugin-rider/releases), check the
@@ -240,8 +245,8 @@ Either:
 OR:
 
 1. Package the nuget: `dotnet pack --configuration Release /p:Version=x.x.x-preview CLI/CLI.csproj`
-1. Uninstall existing tool: `dotnet tool uninstall automate --global`
-1. Install the local tool: `dotnet tool install automate --global --add-source CLI\nupkg --version x.x.x-preview`
+2. Uninstall existing tool: `dotnet tool uninstall automate --global`
+3. Install the local tool: `dotnet tool install automate --global --add-source CLI\nupkg --version x.x.x-preview`
 
 ### Public Release
 
@@ -259,7 +264,7 @@ MANUALLY:
 3. Click 'Upload Update'
 4. Select the plugin zip file from the `build/distributions` directory
 
-#### Github.com
+#### GitHub.com
 
 The GitHub Action that has run in response to you pushing the tag, has already created a GitHub release and published
 all artifacts.
@@ -267,13 +272,13 @@ all artifacts.
 MANUALLY:
 
 1. Create a new Draft Release: https://github.com/jezzsantos/automate.plugin-rider/releases
-1. Set the release title: `vx.x.x-preview`
-1. Attach the build NuGet package from `src/CLI/nupkg`
-1. Download the `Win-x64 Binary`, `Linux-64 Binary` and `OSX-64 Binary` built artifacts from the last successful build (
+2. Set the release title: `vx.x.x-preview`
+3. Attach the build NuGet package from `src/CLI/nupkg`
+4. Download the `Win-x64 Binary`, `Linux-64 Binary` and `OSX-64 Binary` built artifacts from the last successful build (
    of the #vx.x.x-preview commit) at: https://github.com/jezzsantos/automate.plugin-rider/actions
-1. Attach those zip files to the draft release
-1. Tick: pre-release
-1. Publish release
+5. Attach those zip files to the draft release
+6. Tick: pre-release
+7. Publish release
 
 # Your First Contribution
 

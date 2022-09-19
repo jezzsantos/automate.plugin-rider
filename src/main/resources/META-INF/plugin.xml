@@ -2,7 +2,7 @@
 <idea-plugin url="https://github.com/jezzsantos/automate.plugin-rider">
     <id>automate</id>
     <name>Automate</name>
-    <!-- <version> and other attributes are patched by build.gradle file -->
+    <!-- tags like: <version>, <change-notes> and others are patched by build.gradle file -->
     <vendor url="https://github.com/jezzsantos">Jezz Santos</vendor>
     <description><![CDATA[
     <p>Templatize patterns from your own codebase, make them programmable, then share them with your team</p>

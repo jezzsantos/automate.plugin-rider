@@ -15,7 +15,7 @@ public class AutomateConstants {
     public static final List<String> OutputStructuredAliases = List.of(OutputStructuredShorthand, "--output-structured");
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "0.2.7-preview";
+    public static String MinimumSupportedVersion = "1.0.1";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
 
     public enum SchemaType {
