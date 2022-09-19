@@ -59,7 +59,7 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 
         var window = new AutomateToolWindow(project, toolWindow);
-        var contentFactory = ContentFactory.SERVICE.getInstance();
+        var contentFactory = ContentFactory.getInstance();
         var content = contentFactory.createContent(window.getContent(), "", false);
         toolWindow.getContentManager().addContent(content);
         content.setDisposer(window);
