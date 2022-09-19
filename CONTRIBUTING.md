@@ -227,26 +227,8 @@ When you push your changes (or push your pull requests), they will be built and 
 
 Wait until the latest build goes green, at which point:
 
-1. A new [GitHub Draft Release](https://github.com/jezzsantos/automate.plugin-rider/releases) has already been created
-2. A new [JetBrains Marketplace release](https://plugins.jetbrains.com/plugin/19421-automate) has also already been
+1. A new [JetBrains Marketplace release](https://plugins.jetbrains.com/plugin/19421-automate) has also already been
    published
-
-**Final Step**: Open the [Draft Release](https://github.com/jezzsantos/automate.plugin-rider/releases), check the
-details, and Publish it.
-
-### Local Release
-
-Either:
-
-1. Build the solution in `Release` build configuration.
-
-> In the 'Release' configuration the dotnet tool is built, packed, and installed.
-
-OR:
-
-1. Package the nuget: `dotnet pack --configuration Release /p:Version=x.x.x-preview CLI/CLI.csproj`
-2. Uninstall existing tool: `dotnet tool uninstall automate --global`
-3. Install the local tool: `dotnet tool install automate --global --add-source CLI\nupkg --version x.x.x-preview`
 
 ### Public Release
 
@@ -255,30 +237,14 @@ OR:
 The GitHub Action that has run in response to you pushing the tag, has already built and published the Plugin to the
 JetBrains Marketplace.
 
-https://plugins.jetbrains.com/plugin/19421-automate
+[Plugin Homepage](https://plugins.jetbrains.com/plugin/19421-automate)
 
 MANUALLY:
 
-1. Package the plugin: `./gradlew :buildPlugin -PbuildType=stable`
+1. Build the plugin: `./gradlew :buildPlugin -PbuildType=stable`
 2. Log into https://plugins.jetbrains.com/plugin/19421-automate, and
 3. Click 'Upload Update'
 4. Select the plugin zip file from the `build/distributions` directory
-
-#### GitHub.com
-
-The GitHub Action that has run in response to you pushing the tag, has already created a GitHub release and published
-all artifacts.
-
-MANUALLY:
-
-1. Create a new Draft Release: https://github.com/jezzsantos/automate.plugin-rider/releases
-2. Set the release title: `vx.x.x-preview`
-3. Attach the build NuGet package from `src/CLI/nupkg`
-4. Download the `Win-x64 Binary`, `Linux-64 Binary` and `OSX-64 Binary` built artifacts from the last successful build (
-   of the #vx.x.x-preview commit) at: https://github.com/jezzsantos/automate.plugin-rider/actions
-5. Attach those zip files to the draft release
-6. Tick: pre-release
-7. Publish release
 
 # Your First Contribution
 
