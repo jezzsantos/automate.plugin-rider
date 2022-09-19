@@ -31,15 +31,6 @@ test {
     useJUnitPlatform()
 }
 
-publishPlugin {
-    token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
-    channels.set(List.of(("${pluginVersion}".split("-").length > 1) ? "${pluginVersion}".split("-")[1] : "default"))
-
-    patchPluginXml {
-        changeNotes.set(changelog.get("${pluginVersion}").toHTML())
-    }
-}
-
 intellij {
     type = "${platformType}"
     version = "${platformVersion}"
@@ -48,6 +39,12 @@ intellij {
 
     patchPluginXml {
         changeNotes.set(changelog.getUnreleased().toHTML())
+    }
+
+    publishPlugin {
+        token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
+        channels.set(List.of(("${pluginVersion}".split("-").length > 1) ? "${pluginVersion}".split("-")[1] : "default"))
+        patchPluginXml.changeNotes.set(changelog.get("${pluginVersion}").toHTML())
     }
 }
 
