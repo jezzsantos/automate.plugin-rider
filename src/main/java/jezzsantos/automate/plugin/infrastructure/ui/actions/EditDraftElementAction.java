@@ -73,8 +73,7 @@ public class EditDraftElementAction extends AnAction {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
-            if (selection instanceof TreePath) {
-                var path = (TreePath) selection;
+            if (selection instanceof TreePath path) {
                 var leaf = path.getLastPathComponent();
                 if (leaf instanceof DraftElementPlaceholderNode) {
                     return ((DraftElementPlaceholderNode) leaf);

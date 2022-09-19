@@ -48,8 +48,7 @@ public class PatternTreeModel extends AbstractTreeModel {
 
         var selectedTreeNode = this.selectedPath.getLastPathComponent();
 
-        if (selectedTreeNode instanceof PatternElement) {
-            var selectedElementTreeNode = (PatternElement) selectedTreeNode;
+        if (selectedTreeNode instanceof PatternElement selectedElementTreeNode) {
             var indexOfAttribute = addAttribute(selectedElementTreeNode, attribute);
             var parentFolderTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, AttributesIndex);
             var parentFolderTreeNodePath = this.selectedPath.pathByAddingChild(parentFolderTreeNode);
@@ -59,8 +58,7 @@ public class PatternTreeModel extends AbstractTreeModel {
             }
         }
         else {
-            if (selectedTreeNode instanceof PatternFolderPlaceholderNode) {
-                var selectedFolderTreeNode = (PatternFolderPlaceholderNode) selectedTreeNode;
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode selectedFolderTreeNode) {
                 if (isAttributesPlaceholder(selectedFolderTreeNode)) {
                     var parentTreeNodePath = this.selectedPath;
                     var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
@@ -128,8 +126,7 @@ public class PatternTreeModel extends AbstractTreeModel {
     @Override
     public Object getChild(Object parent, int index) {
 
-        if (parent instanceof PatternElement) {
-            var element = ((PatternElement) parent);
+        if (parent instanceof PatternElement element) {
             if (index == CodeTemplatesIndex) {
                 return new PatternFolderPlaceholderNode(element, element.getCodeTemplates(), AutomateBundle.message("toolWindow.Tree.Element.CodeTemplates.Title"));
             }
@@ -144,8 +141,7 @@ public class PatternTreeModel extends AbstractTreeModel {
             }
         }
 
-        if (parent instanceof PatternFolderPlaceholderNode) {
-            var placeholder = ((PatternFolderPlaceholderNode) parent);
+        if (parent instanceof PatternFolderPlaceholderNode placeholder) {
             var element = placeholder.getParent();
             if (isCodeTemplatesPlaceholder(placeholder)) {
                 return getItemAtIndex(element.getCodeTemplates(), index);
@@ -171,8 +167,7 @@ public class PatternTreeModel extends AbstractTreeModel {
             return 4;
         }
 
-        if (parent instanceof PatternFolderPlaceholderNode) {
-            var placeholder = ((PatternFolderPlaceholderNode) parent);
+        if (parent instanceof PatternFolderPlaceholderNode placeholder) {
             var element = placeholder.getParent();
             if (isCodeTemplatesPlaceholder(placeholder)) {
                 return element.getCodeTemplates().size();
@@ -208,8 +203,7 @@ public class PatternTreeModel extends AbstractTreeModel {
     public int getIndexOfChild(Object parent, Object child) {
 
         if (parent instanceof PatternElement) {
-            if (child instanceof PatternFolderPlaceholderNode) {
-                var placeholder = ((PatternFolderPlaceholderNode) child);
+            if (child instanceof PatternFolderPlaceholderNode placeholder) {
                 if (isCodeTemplatesPlaceholder(placeholder)) {
                     return CodeTemplatesIndex;
                 }
@@ -225,8 +219,7 @@ public class PatternTreeModel extends AbstractTreeModel {
             }
         }
 
-        if (parent instanceof PatternFolderPlaceholderNode) {
-            var placeholder = ((PatternFolderPlaceholderNode) parent);
+        if (parent instanceof PatternFolderPlaceholderNode placeholder) {
             if (isCodeTemplatesPlaceholder(placeholder)) {
                 return getIndexOfChild(placeholder, child, CodeTemplate.class);
             }

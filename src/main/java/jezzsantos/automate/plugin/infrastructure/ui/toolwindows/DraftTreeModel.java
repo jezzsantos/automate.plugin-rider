@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DraftTreeModel extends AbstractTreeModel {
@@ -51,8 +50,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
         var selectedTreeNode = this.selectedPath.getLastPathComponent();
 
-        if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
-            var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
+        if (selectedTreeNode instanceof DraftElementPlaceholderNode selectedElementTreeNode) {
             var indexOfElement = addElement(selectedElementTreeNode, element, isCollection);
             if (indexOfElement > NO_INDEX) {
                 treeNodesInserted(this.selectedPath, new int[]{indexOfElement}, new Object[]{element});
@@ -68,8 +66,7 @@ public class DraftTreeModel extends AbstractTreeModel {
         }
 
         var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
-            var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
+        if (selectedTreeNode instanceof DraftElementPlaceholderNode selectedElementTreeNode) {
             selectedElementTreeNode.updateElement(element);
             var properties = element.getProperties();
             var indexesOfAllProperties = createArrayOfIndexes(properties.size());
@@ -87,8 +84,7 @@ public class DraftTreeModel extends AbstractTreeModel {
         }
 
         var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof DraftElementPlaceholderNode) {
-            var selectedElementTreeNode = (DraftElementPlaceholderNode) selectedTreeNode;
+        if (selectedTreeNode instanceof DraftElementPlaceholderNode selectedElementTreeNode) {
             if (selectedElementTreeNode.getElement().isNotRoot()) {
                 var parentTreeNodePath = this.selectedPath.getParentPath();
                 if (parentTreeNodePath != null) {
@@ -175,8 +171,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
             var elementProperties = parentElement.getProperties();
             var relativeIndex = 0;
-            if (child instanceof DraftPropertyPlaceholderNode) {
-                var placeholder = (DraftPropertyPlaceholderNode) child;
+            if (child instanceof DraftPropertyPlaceholderNode placeholder) {
                 var placeholderProperty = placeholder.getProperty();
 
                 for (var propertyOfElement : elementProperties) {
@@ -190,8 +185,7 @@ public class DraftTreeModel extends AbstractTreeModel {
                 return NO_INDEX;
             }
 
-            if (child instanceof DraftElementPlaceholderNode) {
-                var placeholder = (DraftElementPlaceholderNode) child;
+            if (child instanceof DraftElementPlaceholderNode placeholder) {
                 var childElement = placeholder.getElement();
                 relativeIndex = elementProperties.size();
                 var collectedItems = getCollectedItemsFromAllCollections(parentElement);
@@ -281,7 +275,7 @@ public class DraftTreeModel extends AbstractTreeModel {
         for (var collection : collections.entrySet()) {
             collectionItems.addAll(collection.getValue().getCollectionItems().stream()
                                      .sorted(Comparator.comparing(item -> Objects.requireNonNullElse(item.getId(), "")))
-                                     .collect(Collectors.toList()));
+                                     .toList());
         }
 
         return collectionItems;

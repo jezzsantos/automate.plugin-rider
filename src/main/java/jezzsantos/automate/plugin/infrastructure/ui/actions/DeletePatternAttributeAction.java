@@ -71,13 +71,11 @@ public class DeletePatternAttributeAction extends AnAction {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
-            if (selection instanceof TreePath) {
-                var path = (TreePath) selection;
+            if (selection instanceof TreePath path) {
                 var leaf = path.getLastPathComponent();
                 if (leaf instanceof Attribute) {
                     var parent = path.getParentPath().getParentPath().getLastPathComponent();
-                    if (parent instanceof PatternElement) {
-                        var parentElement = (PatternElement) parent;
+                    if (parent instanceof PatternElement parentElement) {
                         return new EditPatternAttributeAction.SelectedAttribute(parentElement, (Attribute) leaf);
                     }
                 }

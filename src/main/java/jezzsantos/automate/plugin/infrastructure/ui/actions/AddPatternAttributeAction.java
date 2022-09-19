@@ -78,15 +78,13 @@ public class AddPatternAttributeAction extends AnAction {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
-            if (selection instanceof TreePath) {
-                var path = (TreePath) selection;
+            if (selection instanceof TreePath path) {
                 var leaf = path.getLastPathComponent();
                 if (leaf instanceof PatternElement) {
                     return (PatternElement) leaf;
                 }
                 else {
-                    if (leaf instanceof PatternFolderPlaceholderNode) {
-                        var placeholder = (PatternFolderPlaceholderNode) leaf;
+                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
                         return (placeholder.getChild() == placeholder.getParent().getAttributes())
                           ? placeholder.getParent()
                           : null;
