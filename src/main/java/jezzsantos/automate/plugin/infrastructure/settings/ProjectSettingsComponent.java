@@ -18,6 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
 
 public class ProjectSettingsComponent {
 
@@ -26,6 +29,7 @@ public class ProjectSettingsComponent {
     private final JBCheckBox viewCliLog = new JBCheckBox(AutomateBundle.message("settings.ViewCliLog.Label.Title"));
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
+    private final JBLabel helpLink = new JBLabel();
 
     public ProjectSettingsComponent(@NotNull Project project) {
 
@@ -41,12 +45,15 @@ public class ProjectSettingsComponent {
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
+        initHelpLink(AutomateConstants.InstallationInstructionsUrl, AutomateBundle.message("settings.HelpLink.Title"));
+        this.helpLink.setVisible(false);
 
         this.minPanel = FormBuilder.createFormBuilder()
           .addComponent(this.authoringMode, 1)
           .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1,
                                false)
           .addComponentToRightColumn(this.testPathToAutomateResult)
+          .addComponentToRightColumn(this.helpLink)
           .addComponent(this.viewCliLog, 1)
           .addComponentFillVertically(new JPanel(), 0)
           .getPanel();
@@ -111,21 +118,39 @@ public class ProjectSettingsComponent {
         var compatibility = executableStatus.getCompatibility();
         var executableName = executableStatus.getExecutableName();
         switch (compatibility) {
-            case Supported:
+            case Supported -> {
+                this.helpLink.setVisible(false);
                 this.testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
                 this.testPathToAutomateResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Supported.Message", executableName, executableStatus.getVersion()));
-                break;
-            case UnSupported:
+            }
+            case UnSupported -> {
+                this.helpLink.setVisible(true);
                 this.testPathToAutomateResult.setForeground(DarculaColors.RED);
                 this.testPathToAutomateResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Unsupported.Message", executableName, executableStatus.getMinCompatibleVersion()));
-                break;
-
-            default:
+            }
+            default -> {
+                this.helpLink.setVisible(true);
                 this.testPathToAutomateResult.setForeground(DarculaColors.RED);
                 this.testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Unknown.Message", executableName));
-                break;
+            }
         }
+    }
+
+    private void initHelpLink(final String url, String text) {
+
+        this.helpLink.setText("<html><a href=\"\">" + text + "</a></html>");
+        this.helpLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        this.helpLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception ignored) {
+                }
+            }
+        });
     }
 }

@@ -17,6 +17,7 @@ public class AutomateConstants {
     public static String ToolkitFileExtension = "toolkit";
     public static String MinimumSupportedVersion = "1.0.1";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
+    public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
 
     public enum SchemaType {
         @SerializedName("None")
