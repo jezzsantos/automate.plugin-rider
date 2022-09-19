@@ -28,6 +28,7 @@ import org.jetbrains.annotations.TestOnly;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
@@ -41,17 +42,20 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
     @NotNull
     private final IAutomateApplication application;
+    @NotNull
+    private final Project project;
     private TreeSelectionListener currentSelectionListener;
     private DefaultTreeExpander automateTreeExpander;
 
     public AutomateTree(@NotNull Project project) {
 
-        this(IAutomateApplication.getInstance(project));
+        this(project, IAutomateApplication.getInstance(project));
     }
 
     @TestOnly
-    public AutomateTree(@NotNull IAutomateApplication application) {
+    public AutomateTree(@NotNull Project project, @NotNull IAutomateApplication application) {
 
+        this.project = project;
         this.application = application;
 
         init();
@@ -81,7 +85,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
     private void refreshTree() {
 
-        this.setModel(null);
+        this.setModel(new DefaultTreeModel(null));
         this.setExpandsSelectedPaths(true);
         if (this.currentSelectionListener != null) {
             this.removeTreeSelectionListener(this.currentSelectionListener);
@@ -102,7 +106,8 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             if (editingMode == EditingMode.Patterns) {
                 var currentPattern = this.application.getCurrentPatternInfo();
                 if (currentPattern != null) {
-                    var pattern = Try.safely(this.application::getCurrentPatternDetailed);
+                    var pattern = Try.andHandle(this.project, this.application::getCurrentPatternDetailed,
+                                                AutomateBundle.message("general.AutomateTree.CurrentPattern.Failed.Message"));
                     if (pattern != null) {
                         var model = new PatternTreeModel(new AutomateTreeSelector(this), pattern);
                         this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
@@ -114,8 +119,10 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             else {
                 var currentDraft = this.application.getCurrentDraftInfo();
                 if (currentDraft != null) {
-                    var draft = Try.safely(this.application::getCurrentDraftDetailed);
-                    var toolkit = Try.safely(this.application::getCurrentToolkitDetailed);
+                    var draft = Try.andHandle(this.project, this.application::getCurrentDraftDetailed,
+                                              AutomateBundle.message("general.AutomateTree.CurrentDraft.Failed.Message"));
+                    var toolkit = Try.andHandle(this.project, this.application::getCurrentToolkitDetailed,
+                                                AutomateBundle.message("general.AutomateTree.CurrentToolkit.Failed.Message"));
                     if (draft != null && toolkit != null) {
                         var model = new DraftTreeModel(new AutomateTreeSelector(this), draft.getRoot(), toolkit.getPattern());
                         this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
@@ -146,8 +153,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                         append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
                     }
                     else {
-                        if (value instanceof PatternElement) {
-                            var element = (PatternElement) value;
+                        if (value instanceof PatternElement element) {
                             setIcon(element.isRoot()
                                       ? AllIcons.General.ProjectStructure
                                       : element.isCollection()
@@ -165,21 +171,20 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                                 append(value.toString());
                             }
                             else {
-                                if (value instanceof Automation) {
-                                    var automation = (Automation) value;
+                                if (value instanceof Automation automation) {
                                     switch (automation.getType()) {
-                                        case CODE_TEMPLATE_COMMAND:
+                                        case CODE_TEMPLATE_COMMAND -> {
                                             setIcon(AllIcons.Actions.GeneratedFolder);
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplateCommand.Tooltip"));
-                                            break;
-                                        case CLI_COMMAND:
+                                        }
+                                        case CLI_COMMAND -> {
                                             setIcon(AllIcons.Debugger.Console);
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CliCommand.Tooltip"));
-                                            break;
-                                        case COMMAND_LAUNCH_POINT:
+                                        }
+                                        case COMMAND_LAUNCH_POINT -> {
                                             setIcon(AllIcons.Diff.MagicResolve);
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CommandLaunchPoint.Tooltip"));
-                                            break;
+                                        }
                                     }
                                     append(value.toString());
                                 }
@@ -208,8 +213,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                             append(value.toString());
                         }
                         else {
-                            if (value instanceof DraftElementPlaceholderNode) {
-                                var placeholder = (DraftElementPlaceholderNode) value;
+                            if (value instanceof DraftElementPlaceholderNode placeholder) {
                                 setIcon(placeholder.isCollectionItem()
                                           ? AllIcons.Actions.DynamicUsages
                                           : AllIcons.Debugger.Db_muted_breakpoint);
