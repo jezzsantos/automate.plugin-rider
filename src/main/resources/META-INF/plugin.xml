@@ -4,9 +4,9 @@
     <name>Automate</name>
     <!-- tags like: <version>, <change-notes> and others are patched by build.gradle file -->
     <vendor url="https://github.com/jezzsantos">Jezz Santos</vendor>
-    <description><![CDATA[
-    <p>Templatize patterns from your own codebase, make them programmable, then share them with your team</p>
-    ]]></description>
+    <description><![CDATA[<p>Allows you to reuse coding patterns extracted from your own code bases, and apply them to other code bases</p>
+    <p>Provides you a new tool window, where you can create 'drafts' from toolkits that other coders can create, and can install into your codebase</p>
+    <p>If you are feeling crafty enough, you can even use the tool window to create your own toolkits for others to use! Use the secret settings to display those authoring tools!</p>]]></description>
 
     <depends>com.intellij.modules.rider</depends>
     <depends>com.intellij.modules.platform</depends>
