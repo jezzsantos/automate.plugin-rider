@@ -441,7 +441,7 @@ public class AutomateCliService implements IAutomateService {
             nameValuePairs
               .forEach((key, value) -> {
                   args.add("--and-set");
-                  args.add(doubleQuote(String.format("%s=%s", key, value)));
+                  args.add(String.format("%s=%s", key, value));
               });
         }
         var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, args);
@@ -463,7 +463,7 @@ public class AutomateCliService implements IAutomateService {
             nameValuePairs
               .forEach((key, value) -> {
                   args.add("--and-set");
-                  args.add(doubleQuote(String.format("%s=%s", key, value)));
+                  args.add(String.format("%s=%s", key, value));
               });
         }
         var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, args);
@@ -479,7 +479,7 @@ public class AutomateCliService implements IAutomateService {
     @Override
     public void deleteDraftElement(@NotNull String expression) throws Exception {
 
-        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, new ArrayList<>(List.of("configure", "delete", doubleQuote(expression))));
+        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, new ArrayList<>(List.of("configure", "delete", expression)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -510,12 +510,6 @@ public class AutomateCliService implements IAutomateService {
     }
 
     @NotNull
-    private String doubleQuote(@Nullable String expression) {
-
-        return String.format("\"%s\"", expression);
-    }
-
-    @NotNull
     private String getExecutablePathSafe(@NotNull String executablePath) {
 
         return executablePath.isEmpty()
@@ -532,19 +526,19 @@ public class AutomateCliService implements IAutomateService {
         CliLogEntryType type;
         var executablePath = getExecutablePathSafe(path);
         switch (executableStatus.getCompatibility()) {
-            case UnSupported:
+            case UnSupported -> {
                 message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", executablePath,
                                                  executableStatus.getMinCompatibleVersion());
                 type = CliLogEntryType.Error;
-                break;
-            case Supported:
+            }
+            case Supported -> {
                 message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Supported.Message", executablePath);
                 type = CliLogEntryType.Normal;
-                break;
-            default:
+            }
+            default -> {
                 message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Unknown.Message", executablePath);
                 type = CliLogEntryType.Error;
-                break;
+            }
         }
 
         var entry = new CliLogEntry(message, type);
