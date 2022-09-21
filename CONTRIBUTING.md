@@ -219,10 +219,10 @@ When you push your changes (or push your pull requests), they will be built and 
 
 1. In `gradle.properties`, update the `pluginVersion` property
 2. In `CHANGELOG.md`, insert change notes into the `[Unreleased]` sections of the document (e.g. under headings such
-   as: `## Preamble`, `## Added`, `## Fixed` etc)
+   as: `## Preamble`, `## Added`, `## Fixed` etc). Only leave sections with items in them ( delete the unused sections)
 3. Run: `./gradlew patchChangelog`
-4. Commit message `#vx.x.x-preview`
-5. Tag the commit `vx.x.x-preview`
+4. Commit changes with message like `#vx.x.x` (or `#vx.x.x-Stable`)
+5. Tag that commit `vx.x.x` (or `#vx.x.x-Stable` if you want an unpublished release)
 6. Push commit and tags
 
 Wait until the latest build goes green, at which point:

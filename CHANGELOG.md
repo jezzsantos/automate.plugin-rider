@@ -7,19 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Preamble
-
-### Added
-
-### Changed
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 
-### Security
+- General: Fixed #9. CLI commands are no longer wrapped in double-quotes, which do not work reliably on macOS or Linux
+- Drafts: Fixed #4. Adding a new draft or selecting another draft does not update the selected item in the dropdown list
+  in the toolbar.
 
 ## [1.0.2] - 2022-09-20
 

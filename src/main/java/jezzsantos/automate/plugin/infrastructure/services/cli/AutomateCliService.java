@@ -324,7 +324,7 @@ public class AutomateCliService implements IAutomateService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
-            this.cache.invalidateCurrentDraft();
+            this.cache.invalidateAllDrafts();
             this.cache.invalidateCurrentToolkit();
             result.getOutput().getDraft();
         }
@@ -339,7 +339,7 @@ public class AutomateCliService implements IAutomateService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
-            this.cache.invalidateCurrentDraft();
+            this.cache.invalidateAllDrafts();
             return result.getOutput().getDraft();
         }
     }
