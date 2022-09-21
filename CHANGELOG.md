@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Preamble
+
+## [1.0.3]
+
 ### Fixed
 
 - General: Fixed #9. CLI commands are no longer wrapped in double-quotes, which do not work reliably on macOS or Linux
