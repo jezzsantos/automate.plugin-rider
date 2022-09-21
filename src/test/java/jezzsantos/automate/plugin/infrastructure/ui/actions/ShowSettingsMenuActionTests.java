@@ -1,33 +1,31 @@
 package jezzsantos.automate.plugin.infrastructure.ui.actions;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.jetbrains.rider.test.base.BaseTestWithSolution;
+import org.jetbrains.annotations.NotNull;
+import org.mockito.Mockito;
+import org.testng.annotations.Test;
 
-public class ShowSettingsMenuActionTests extends BasePlatformTestCase {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class ShowSettingsMenuActionTests extends BaseTestWithSolution {
 
     @Test
-    @Disabled
     public void whenConstructed_ThenIsEnabledAndVisible() {
 
-        var presentation = this.myFixture.testAction(new ShowSettingsMenuAction());
+        var action = new ShowSettingsMenuAction();
+        var dataContext = Mockito.mock(DataContext.class);
+        var event = AnActionEvent.createFromDataContext("aplace", null, dataContext);
 
-        assertTrue(presentation.isEnabledAndVisible());
+        action.update(event);
+        assertTrue(event.getPresentation().isEnabledAndVisible());
     }
 
-    @BeforeEach
+    @NotNull
     @Override
-    public void setUp() throws Exception {
+    protected String getSolutionDirectoryName() {
 
-        super.setUp();
-    }
-
-    @AfterEach
-    @Override
-    public void tearDown() throws Exception {
-
-        super.tearDown();
+        return "TestSolution";
     }
 }
