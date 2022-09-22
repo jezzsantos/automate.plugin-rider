@@ -192,15 +192,16 @@ public class EditDraftElementDialog extends DialogWrapper {
         private LinkedHashMap<String, Behaviour> populatePairs(ElementValueMap properties, List<Attribute> attributes) {
 
             var pairs = new LinkedHashMap<String, Behaviour>();
-            properties
-              .sortedByName()
-              .forEach(property -> attributes.stream()
-                .filter(attr -> attr.getName().equals(property.getName()))
-                .findFirst()
-                .ifPresent(attribute -> {
-                    var name = property.getName();
-                    pairs.put(name, new Behaviour(name, property.getValue(), attribute));
-                }));
+
+            attributes.stream()
+              .sorted(Comparator.comparing(Attribute::getName))
+              .forEach(attribute -> {
+                  var name = attribute.getName();
+                  var property = properties.get(name);
+                  pairs.put(name, new Behaviour(name, property == null
+                    ? attribute.getDefaultValue()
+                    : property.getValue(), attribute));
+              });
 
             return pairs;
         }

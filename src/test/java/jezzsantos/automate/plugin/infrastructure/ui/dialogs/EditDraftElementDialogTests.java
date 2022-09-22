@@ -2,14 +2,18 @@ package jezzsantos.automate.plugin.infrastructure.ui.dialogs;
 
 import com.intellij.openapi.ui.ComboBox;
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElementValue;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,6 +83,62 @@ public class EditDraftElementDialogTests {
         assertNotNull(result);
         assertEquals(AutomateBundle.message("dialog.EditDraftElement.Validation.RequiredAndMissing.Message", "anattributename"), result.message);
         assertFalse(result.okEnabled);
+    }
+
+    @Nested
+    class EditDraftElementDialogContextTests {
+
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        public void whenConstructedWithDraftElementAndNoConfiguredProperties_ThenCreatesAllBehavioursWithDefaultValues() {
+
+            var schema = new PatternElement("anid", "aname");
+            var attribute1 = new Attribute("anattributeid1", "anattributename1", false, "adefaultvalue1", null, null);
+            var attribute2 = new Attribute("anattributeid2", "anattributename2", false, "adefaultvalue2", null, null);
+            var attribute3 = new Attribute("anattributeid3", "anattributename3", false, "adefaultvalue3", null, null);
+            schema.addAttribute(attribute1);
+            schema.addAttribute(attribute2);
+            schema.addAttribute(attribute3);
+            var element = new DraftElement("aname", Map.of(), false);
+
+            var context = new EditDraftElementDialog.EditDraftElementDialogContext(element, schema);
+            var result = context.getBehaviours();
+
+            assertEquals(3, result.size());
+            assertEquals("anattributename1", result.get("anattributename1").getComponentLabel().getText());
+            assertEquals("adefaultvalue1", ((JTextField) result.get("anattributename1").getComponent()).getText());
+            assertEquals("anattributename2", result.get("anattributename2").getComponentLabel().getText());
+            assertEquals("adefaultvalue2", ((JTextField) result.get("anattributename2").getComponent()).getText());
+            assertEquals("anattributename3", result.get("anattributename3").getComponentLabel().getText());
+            assertEquals("adefaultvalue3", ((JTextField) result.get("anattributename3").getComponent()).getText());
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        public void whenConstructedWithDraftElementSomeConfiguredProperties_ThenCreatesAllBehavioursWithValuesAndDefaults() {
+
+            var schema = new PatternElement("anid", "aname");
+            var attribute1 = new Attribute("anattributeid1", "anattributename1", false, "adefaultvalue1", null, null);
+            var attribute2 = new Attribute("anattributeid2", "anattributename2", false, "adefaultvalue2", null, null);
+            var attribute3 = new Attribute("anattributeid3", "anattributename3", false, "adefaultvalue3", null, null);
+            schema.addAttribute(attribute1);
+            schema.addAttribute(attribute2);
+            schema.addAttribute(attribute3);
+            var element = new DraftElement("aname", Map.of(
+              "anattributename2", new DraftElementValue("avalue2")
+            ), false);
+
+            var context = new EditDraftElementDialog.EditDraftElementDialogContext(element, schema);
+            var result = context.getBehaviours();
+
+            assertEquals(3, result.size());
+            assertEquals("anattributename1", result.get("anattributename1").getComponentLabel().getText());
+            assertEquals("adefaultvalue1", ((JTextField) result.get("anattributename1").getComponent()).getText());
+            assertEquals("anattributename2", result.get("anattributename2").getComponentLabel().getText());
+            assertEquals("avalue2", ((JTextField) result.get("anattributename2").getComponent()).getText());
+            assertEquals("anattributename3", result.get("anattributename3").getComponentLabel().getText());
+            assertEquals("adefaultvalue3", ((JTextField) result.get("anattributename3").getComponent()).getText());
+        }
     }
 }
 
