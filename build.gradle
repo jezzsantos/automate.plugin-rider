@@ -32,7 +32,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    //useTestNG()
+    useTestNG()
     testLogging {
         showStandardStreams = true
         exceptionFormat = TestExceptionFormat.FULL
