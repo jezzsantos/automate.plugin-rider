@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Preamble
 
+### Fixed
+
+- Drafts: Fixed #10. Able to edit draft properties that have no value.
+- General: Fixed #11. Moved settings to non-source controlled persistence.
+
 ## [1.0.3]
 
 ### Fixed
