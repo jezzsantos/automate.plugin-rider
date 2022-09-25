@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-###    
+###        
 
 - Minimum compatibility with `automate` version 1.0.2
 
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drafts: Fixed #10. Able to edit draft properties that have no value.
 - General: Fixed #11. Moved settings to non-source controlled persistence.
 - Drafts: #5. Added menu items for running commands.
+- Patterns: Fixed #13. Added editing of choices for attributes.
 
 ## [1.0.3]
 

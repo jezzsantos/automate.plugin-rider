@@ -20,7 +20,7 @@ public class NewAttributeDialogTests {
         var result = EditPatternAttributeDialog.doValidate(context, "", null, "", new ArrayList<>());
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"), result.message);
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.NameValidation.NotMatch.Message"), result.message);
         assertFalse(result.okEnabled);
     }
 
@@ -32,7 +32,7 @@ public class NewAttributeDialogTests {
         var result = EditPatternAttributeDialog.doValidate(context, "^aninvalidname^", null, "", new ArrayList<>());
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"), result.message);
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.NameValidation.NotMatch.Message"), result.message);
         assertFalse(result.okEnabled);
     }
 
@@ -44,7 +44,7 @@ public class NewAttributeDialogTests {
         var result = EditPatternAttributeDialog.doValidate(context, "anattributename", null, "", new ArrayList<>());
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.NameValidation.Exists.Message"), result.message);
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.NameValidation.Exists.Message"), result.message);
         assertFalse(result.okEnabled);
     }
 
@@ -56,7 +56,7 @@ public class NewAttributeDialogTests {
         var result = EditPatternAttributeDialog.doValidate(context, "aname", null, "", new ArrayList<>());
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", AutomateConstants.AttributeDataType.STRING.getDisplayName()),
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.DataTypeValidation.NotMatch.Message", AutomateConstants.AttributeDataType.STRING.getDisplayName()),
                      result.message);
         assertFalse(result.okEnabled);
     }
@@ -69,7 +69,7 @@ public class NewAttributeDialogTests {
         var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "", new ArrayList<>());
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", AutomateConstants.AttributeDataType.STRING.getDisplayName()),
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.DataTypeValidation.NotMatch.Message", AutomateConstants.AttributeDataType.STRING.getDisplayName()),
                      result.message);
         assertFalse(result.okEnabled);
     }
@@ -82,7 +82,7 @@ public class NewAttributeDialogTests {
         var result = EditPatternAttributeDialog.doValidate(context, "aname", AutomateConstants.AttributeDataType.INTEGER, "notanintegervalue", new ArrayList<>());
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotDataType.Message", AutomateConstants.AttributeDataType.INTEGER.getDisplayName()),
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.DefaultValueValidation.NotDataType.Message", AutomateConstants.AttributeDataType.INTEGER.getDisplayName()),
                      result.message);
         assertFalse(result.okEnabled);
     }
@@ -96,7 +96,7 @@ public class NewAttributeDialogTests {
                                                            new ArrayList<>(List.of("achoice1", "achoice2", "achoice3")));
 
         assertNotNull(result);
-        assertEquals(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotAChoice.Message"), result.message);
+        assertEquals(AutomateBundle.message("dialog.EditPatternAttribute.DefaultValueValidation.NotAChoice.Message"), result.message);
         assertFalse(result.okEnabled);
     }
 
@@ -109,7 +109,7 @@ public class NewAttributeDialogTests {
 
         assertNotNull(result);
         assertEquals(
-          AutomateBundle.message("dialog.NewAttribute.ChoicesValidation.NotDataType.Message", "notaninteger", AutomateConstants.AttributeDataType.INTEGER.getDisplayName()),
+          AutomateBundle.message("dialog.EditPatternAttribute.ChoicesValidation.NotDataType.Message", "notaninteger", AutomateConstants.AttributeDataType.INTEGER.getDisplayName()),
           result.message);
         assertFalse(result.okEnabled);
     }

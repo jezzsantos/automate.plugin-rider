@@ -5,7 +5,9 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.CollectionListModel;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
@@ -23,6 +25,7 @@ import java.util.stream.Stream;
 public class EditPatternAttributeDialog extends DialogWrapper {
 
     private final EditPatternAttributeDialogContext context;
+    private final Project project;
     private JTextField name;
     private JTextField defaultValue;
     private ComboBox<AutomateConstants.AttributeDataType> dataTypes;
@@ -34,66 +37,69 @@ public class EditPatternAttributeDialog extends DialogWrapper {
     private JLabel choicesTitle;
     private JBList<String> choices;
 
-    public EditPatternAttributeDialog(Project project, @NotNull EditPatternAttributeDialog.EditPatternAttributeDialogContext context) {
+    public EditPatternAttributeDialog(@NotNull Project project, @NotNull EditPatternAttributeDialog.EditPatternAttributeDialogContext context) {
 
         super(project);
 
         this.context = context;
+        this.project = project;
 
         this.init();
         this.setTitle(context.getIsNew()
-                        ? AutomateBundle.message("dialog.EditAttribute.NewElement.Title")
-                        : AutomateBundle.message("dialog.EditAttribute.UpdateElement.Title"));
-        this.nameTitle.setText(AutomateBundle.message("dialog.NewAttribute.Name.Title"));
+                        ? AutomateBundle.message("dialog.EditPatternAttribute.NewElement.Title")
+                        : AutomateBundle.message("dialog.EditPatternAttribute.UpdateElement.Title"));
+        this.nameTitle.setText(AutomateBundle.message("dialog.EditPatternAttribute.Name.Title"));
         this.name.setText(this.context.getName());
-        this.isRequired.setText(AutomateBundle.message("dialog.NewAttribute.IsRequired.Title"));
+        this.isRequired.setText(AutomateBundle.message("dialog.EditPatternAttribute.IsRequired.Title"));
         this.isRequired.setSelected(this.context.getIsRequired());
-        this.defaultValueTitle.setText(AutomateBundle.message("dialog.NewAttribute.DefaultValue.Title"));
+        this.defaultValueTitle.setText(AutomateBundle.message("dialog.EditPatternAttribute.DefaultValue.Title"));
         this.defaultValue.setText(this.context.getDefaultValue());
-        this.dataTypeTitle.setText(AutomateBundle.message("dialog.EditAttribute.DataType.Title"));
+        this.dataTypeTitle.setText(AutomateBundle.message("dialog.EditPatternAttribute.DataType.Title"));
         this.dataTypes.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
             var label = new JLabel();
-            label.setText(Objects.requireNonNullElseGet(value.getDisplayName(), () -> AutomateBundle.message("dialog.NewAttribute.NoDataTypes.Message")));
+            label.setText(Objects.requireNonNullElseGet(value.getDisplayName(), () -> AutomateBundle.message("dialog.EditPatternAttribute.NoDataTypes.Message")));
             return label;
         });
         for (var type : this.context.getAvailableDataTypes()) {
             this.dataTypes.addItem(type);
         }
         this.dataTypes.setSelectedItem(this.context.getDataType());
-        this.choicesTitle.setText(AutomateBundle.message("dialog.NewAttribute.Choices.Title"));
-        this.choices.getEmptyText().setText(AutomateBundle.message("dialog.NewAttribute.EmptyChoices.Message"));
-        this.choices.setModel(new CollectionListModel<>());
+        this.choicesTitle.setText(AutomateBundle.message("dialog.EditPatternAttribute.Choices.Title"));
+        this.choices.getEmptyText().setText(AutomateBundle.message("dialog.EditPatternAttribute.EmptyChoices.Message"));
+        var model = new CollectionListModel<String>();
+        this.context.choices.forEach(model::add);
+        this.choices.setModel(model);
         setOKButtonText(context.getIsNew()
-                          ? AutomateBundle.message("dialog.EditAttribute.NewElement.Confirm.Title")
-                          : AutomateBundle.message("dialog.EditAttribute.UpdateElement.Confirm.Title"));
+                          ? AutomateBundle.message("dialog.EditPatternAttribute.NewElement.Confirm.Title")
+                          : AutomateBundle.message("dialog.EditPatternAttribute.UpdateElement.Confirm.Title"));
     }
 
     @TestOnly
     public static @Nullable ValidationInfo doValidate(@NotNull EditPatternAttributeDialogContext context, @NotNull String name, @Nullable AutomateConstants.AttributeDataType dataType, @NotNull String defaultValue, @NotNull List<String> choices) {
 
         if (!context.isValidName(name)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.NotMatch.Message"));
+            return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.NameValidation.NotMatch.Message"));
         }
         if (!context.isAvailableName(name)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.NameValidation.Exists.Message"));
+            return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.NameValidation.Exists.Message"));
         }
         if (!context.isValidDataType(dataType)) {
-            return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DataTypeValidation.NotMatch.Message", context.getAvailableDataTypesAsString()));
+            return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.DataTypeValidation.NotMatch.Message", context.getAvailableDataTypesAsString()));
         }
         if (!defaultValue.isEmpty()) {
             if (!context.isValidValue(dataType, defaultValue)) {
-                return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotDataType.Message", dataType));
+                return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.DefaultValueValidation.NotDataType.Message", dataType));
             }
         }
         if (!choices.isEmpty()) {
             if (!defaultValue.isEmpty()) {
                 if (!context.isValidChoice(choices, defaultValue)) {
-                    return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.DefaultValueValidation.NotAChoice.Message"));
+                    return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.DefaultValueValidation.NotAChoice.Message"));
                 }
             }
             var invalidChoice = context.getNextInvalidChoice(Objects.requireNonNull(dataType), choices);
             if (invalidChoice != null) {
-                return new ValidationInfo(AutomateBundle.message("dialog.NewAttribute.ChoicesValidation.NotDataType.Message", invalidChoice, dataType));
+                return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.ChoicesValidation.NotDataType.Message", invalidChoice, dataType.getDisplayName()));
             }
         }
 
@@ -108,16 +114,37 @@ public class EditPatternAttributeDialog extends DialogWrapper {
     @Override
     protected @Nullable JComponent createCenterPanel() {
 
-        //        var decorator = ToolbarDecorator.createDecorator(choices);
-        //        decorator.setAddAction(anActionButton -> {
-        //
-        //        });
-        //        decorator.setRemoveAction(anActionButton -> {
-        //
-        //        });
-        //        decorator.disableUpDownActions();
-        //        //contents.add(decorator.createPanel(), new GridConstraints());
-        //        decorator.createPanel();
+        var decorator = ToolbarDecorator.createDecorator(this.choices);
+        decorator.setAddAction(anActionButton -> {
+            var dialog = new EditValueDialog(this.project, new EditValueDialog.EditValueDialogContext(true, AutomateBundle.message(
+              "dialog.EditPatternAttribute.Choices.NewValue.Title"), value -> {
+                var existingValues = ((CollectionListModel<String>) this.choices.getModel()).toList();
+                if (existingValues.contains(value)) {
+                    return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.ChoicesValidation.Exists.Message", value));
+                }
+                var dataType = this.dataTypes.getSelectedItem() != null
+                  ? (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem()
+                  : AutomateConstants.AttributeDataType.STRING;
+                if (!Attribute.isValidDataType(dataType, value)) {
+                    return new ValidationInfo(AutomateBundle.message("dialog.EditPatternAttribute.ChoicesValidation.NotDataType.Message", value, dataType.getDisplayName()));
+                }
+                return null;
+            }));
+            if (dialog.showAndGet()) {
+                var model = ((CollectionListModel<String>) this.choices.getModel());
+                model.add(dialog.getContext().Value);
+            }
+        });
+        decorator.setRemoveAction(anActionButton -> {
+            var selectedValue = this.choices.getSelectedValue();
+            if (selectedValue != null) {
+                var model = ((CollectionListModel<String>) this.choices.getModel());
+                model.remove(selectedValue);
+            }
+        });
+
+        var constraints = ((GridLayoutManager) this.contents.getLayout()).getConstraintsForComponent(this.choices);
+        this.contents.add(decorator.createPanel(), constraints);
 
         return this.contents;
     }
@@ -140,7 +167,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
         this.context.setIsRequired(this.isRequired.isSelected());
         this.context.setDefaultValue(this.defaultValue.getText());
         this.context.setDataType((AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem());
-        this.context.setChoices(this.choices.getSelectedValuesList());
+        this.context.setChoices(((CollectionListModel<String>) this.choices.getModel()).toList());
     }
 
     @Override
@@ -186,6 +213,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
 
         public boolean getIsNew() {return this.isNew;}
 
+        @NotNull
         public String getId() {
 
             return this.isNew
@@ -193,6 +221,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
               : this.originalName;
         }
 
+        @NotNull
         public String getName() {
 
             return this.name;
@@ -217,6 +246,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
             this.dataType = dataType;
         }
 
+        @Nullable
         public String getDefaultValue() {return this.defaultValue;}
 
         public void setDefaultValue(@Nullable String value) {
@@ -224,6 +254,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
             this.defaultValue = value;
         }
 
+        @NotNull
         public List<String> getChoices() {return this.choices;}
 
         public void setChoices(List<String> choices) {
@@ -249,6 +280,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
             }
         }
 
+        @NotNull
         public String getAvailableDataTypesAsString() {
 
             return this.dataTypes.stream()
@@ -256,6 +288,7 @@ public class EditPatternAttributeDialog extends DialogWrapper {
               .collect(Collectors.joining(", "));
         }
 
+        @NotNull
         public List<AutomateConstants.AttributeDataType> getAvailableDataTypes() {
 
             return this.dataTypes;
@@ -292,11 +325,11 @@ public class EditPatternAttributeDialog extends DialogWrapper {
             return Attribute.isOneOfChoices(choices, defaultValue);
         }
 
-        public @Nullable String getNextInvalidChoice(@NotNull AutomateConstants.AttributeDataType dataType, @NotNull List<String> choices) {
+        @Nullable
+        public String getNextInvalidChoice(@NotNull AutomateConstants.AttributeDataType dataType, @NotNull List<String> choices) {
 
             var invalidChoices = choices.stream()
-              .filter((choice -> !Attribute.isValidDataType(dataType, choice)))
-              .collect(Collectors.toList());
+              .filter((choice -> !Attribute.isValidDataType(dataType, choice))).toList();
             if (!invalidChoices.isEmpty()) {
                 return invalidChoices.get(0);
             }
