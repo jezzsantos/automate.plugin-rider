@@ -15,7 +15,7 @@ public class AutomateConstants {
     public static final List<String> OutputStructuredAliases = List.of(OutputStructuredShorthand, "--output-structured");
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "1.0.1";
+    public static String MinimumSupportedVersion = "1.0.2";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
     public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
 
@@ -110,6 +110,28 @@ public class AutomateConstants {
         }
 
         public String getDisplayName() {return this.displayName;}
+
+        @Override
+        public String toString() {
+
+            return this.displayName;
+        }
+    }
+
+    public enum CommandExecutionLogItemType {
+
+        @SerializedName("Succeeded")
+        SUCCEEDED("Succeeded"),
+        @SerializedName("Warning")
+        WARNING("Warning"),
+        @SerializedName("Failed")
+        FAILED("Failed");
+        private final String displayName;
+
+        CommandExecutionLogItemType(String displayName) {
+
+            this.displayName = displayName;
+        }
 
         @Override
         public String toString() {

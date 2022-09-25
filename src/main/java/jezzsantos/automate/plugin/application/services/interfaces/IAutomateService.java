@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.drafts.LaunchPointExecutionResult;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
@@ -103,5 +104,8 @@ public interface IAutomateService {
     DraftElement updateDraftElement(@NotNull String configurationPath, @NotNull Map<String, String> nameValuePairs) throws Exception;
 
     void deleteDraftElement(@NotNull String expression) throws Exception;
+
+    @NotNull
+    LaunchPointExecutionResult executeLaunchPoint(@NotNull String configurationPath, @NotNull String launchPointName) throws Exception;
 }
 

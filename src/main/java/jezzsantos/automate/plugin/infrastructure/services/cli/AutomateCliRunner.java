@@ -291,18 +291,18 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         else {
             var cause = Objects.requireNonNull(result.getFailureCause());
             switch (cause) {
-                case FailedToStart: {
+                case FailedToStart -> {
                     var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.FailedToStart.Message", executablePath);
                     logEntry(error, CliLogEntryType.Error);
                     return new CliTextResult(error, "");
                 }
-                case ThrewException: {
+                case ThrewException -> {
                     var exception = Objects.requireNonNull(result.getException());
                     var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
                     logEntry(error, CliLogEntryType.Error);
                     return new CliTextResult(error, "");
                 }
-                case FailedWithError: {
+                case FailedWithError -> {
                     var error = Objects.requireNonNull(result.getError());
                     var message = isStructured
                       ? getStructuredError(error).getErrorMessage()
@@ -310,8 +310,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                     logEntry(AutomateBundle.message("general.AutomateCliRunner.Outcome.FailedWithError.Message", message), CliLogEntryType.Error);
                     return new CliTextResult(error, "");
                 }
-                default:
-                    throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+                default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
             }
         }
     }

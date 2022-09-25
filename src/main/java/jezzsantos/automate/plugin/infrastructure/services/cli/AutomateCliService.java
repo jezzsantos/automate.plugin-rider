@@ -10,6 +10,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
+import jezzsantos.automate.plugin.application.interfaces.drafts.LaunchPointExecutionResult;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
@@ -485,6 +486,20 @@ public class AutomateCliService implements IAutomateService {
         }
         else {
             this.cache.invalidateCurrentDraft();
+        }
+    }
+
+    @Override
+    @NotNull
+    public LaunchPointExecutionResult executeLaunchPoint(@NotNull String configurationPath, @NotNull String launchPointName) throws Exception {
+
+        var result = runAutomateForStructuredOutput(ExecuteLaunchPointStructuredOutput.class,
+                                                    new ArrayList<>(List.of("execute", "command", launchPointName, "--on", configurationPath)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            return result.getOutput().getResult();
         }
     }
 

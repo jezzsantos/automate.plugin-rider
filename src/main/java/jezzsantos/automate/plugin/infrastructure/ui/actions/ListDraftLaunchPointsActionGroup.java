@@ -16,11 +16,11 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class AddDraftElementListActionGroup extends ActionGroup {
+public class ListDraftLaunchPointsActionGroup extends ActionGroup {
 
     private final Action<DraftTreeModel> onSuccess;
 
-    public AddDraftElementListActionGroup(Action<DraftTreeModel> onSuccess) {
+    public ListDraftLaunchPointsActionGroup(Action<DraftTreeModel> onSuccess) {
 
         super();
         this.onSuccess = onSuccess;
@@ -49,11 +49,11 @@ public class AddDraftElementListActionGroup extends ActionGroup {
         if (e != null) {
             var parentPlaceholder = getParentElement(e);
             if (parentPlaceholder != null) {
-                var missingSchemas = Objects.requireNonNull(parentPlaceholder.getSchema()).listMissingElements(parentPlaceholder.getElement());
-                if (!missingSchemas.isEmpty()) {
+                var launchPoints = Objects.requireNonNull(parentPlaceholder.getSchema()).listLaunchPoints();
+                if (!launchPoints.isEmpty()) {
                     var actions = new ArrayList<AnAction>();
-                    for (var missingSchema : missingSchemas) {
-                        actions.add(new AddDraftElementAction(parentPlaceholder.getElement(), missingSchema, this.onSuccess));
+                    for (var launchPoint : launchPoints) {
+                        actions.add(new ExecuteDraftLaunchPointAction(parentPlaceholder.getElement(), launchPoint, this.onSuccess));
                     }
 
                     return actions.toArray(new AnAction[0]);

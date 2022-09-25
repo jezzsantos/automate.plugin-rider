@@ -1,9 +1,9 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Automation;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,6 @@ public class DraftElementSchema {
     }
 
     @NotNull
-    @TestOnly
     public PatternElement getSchema() {
 
         return this.schema;
@@ -30,6 +29,14 @@ public class DraftElementSchema {
 
         return this.schema.getElements().stream()
           .filter(childSchema -> !singularInstanceAlreadyExists(childSchema, draftElement))
+          .collect(Collectors.toList());
+    }
+
+    @NotNull
+    public List<Automation> listLaunchPoints() {
+
+        return this.schema.getAutomation().stream()
+          .filter(automation -> automation.getType() == AutomateConstants.AutomationType.COMMAND_LAUNCH_POINT)
           .collect(Collectors.toList());
     }
 

@@ -11,7 +11,6 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.Tree;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Automation;
 import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
@@ -201,9 +200,13 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                 }
 
                 if (editingMode == EditingMode.Drafts) {
-                    if (value instanceof DraftDetailed) {
-                        setIcon(AllIcons.Actions.GeneratedFolder);
-                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Root.Tooltip"));
+                    if (value instanceof DraftElementPlaceholderNode placeholder) {
+                        setIcon(placeholder.isCollectionItem()
+                                  ? AllIcons.Actions.DynamicUsages
+                                  : AllIcons.Debugger.Db_muted_breakpoint);
+                        setToolTipText(placeholder.isCollectionItem()
+                                         ? AutomateBundle.message("toolWindow.Tree.Draft.CollectionItem.Tooltip")
+                                         : AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
                         append(value.toString());
                     }
                     else {
@@ -211,17 +214,6 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                             setIcon(AllIcons.Gutter.ExtAnnotation);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Property.Tooltip"));
                             append(value.toString());
-                        }
-                        else {
-                            if (value instanceof DraftElementPlaceholderNode placeholder) {
-                                setIcon(placeholder.isCollectionItem()
-                                          ? AllIcons.Actions.DynamicUsages
-                                          : AllIcons.Debugger.Db_muted_breakpoint);
-                                setToolTipText(placeholder.isCollectionItem()
-                                                 ? AutomateBundle.message("toolWindow.Tree.Draft.CollectionItem.Tooltip")
-                                                 : AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
-                                append(value.toString());
-                            }
                         }
                     }
                 }
@@ -259,7 +251,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var addPatternAttribute = new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         addPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addPatternAttribute);
-        var addDraftElement = new AddDraftElementListActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
+        var addDraftElement = new ListDraftElementsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         addDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addDraftElement);
         var editPatternAttribute = new EditPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
@@ -277,6 +269,11 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var deleteDraftElement = new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         deleteDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deleteDraftElement);
+
+        actions.addSeparator();
+
+        var executeDraftLaunchPoints = new ListDraftLaunchPointsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
+        actions.add(executeDraftLaunchPoints);
 
         return actions;
     }
