@@ -1,16 +1,16 @@
 package jezzsantos.automate.plugin.application.services.interfaces;
 
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.application.ApplicationManager;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeListener;
 
-public interface IConfiguration {
+public interface IApplicationConfiguration {
 
-    static IConfiguration getInstance(Project project) {
+    static IApplicationConfiguration getInstance() {
 
-        return project.getService(IConfiguration.class);
+        return ApplicationManager.getApplication().getService(IApplicationConfiguration.class);
     }
 
     @NotNull
@@ -22,6 +22,7 @@ public interface IConfiguration {
 
     void setAuthoringMode(boolean on);
 
+    @NotNull
     EditingMode getEditingMode();
 
     void setEditingMode(EditingMode mode);

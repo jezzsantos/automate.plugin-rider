@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface IOsPlatform {
 
-    @NotNull String getCurrentDirectory();
-
     boolean getIsWindowsOs();
 
     @NotNull String getDotNetInstallationDirectory();

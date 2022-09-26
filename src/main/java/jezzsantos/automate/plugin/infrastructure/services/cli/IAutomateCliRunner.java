@@ -9,9 +9,9 @@ import java.util.List;
 public interface IAutomateCliRunner {
 
     @NotNull
-    CliTextResult execute(@NotNull String executablePath, @NotNull List<String> args);
+    CliTextResult execute(@NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args);
 
-    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args);
+    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args);
 
     @NotNull
     List<CliLogEntry> getLogs();

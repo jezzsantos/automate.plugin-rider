@@ -7,29 +7,17 @@ import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.SimpleModificationTracker;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.intellij.util.xmlb.annotations.OptionTag;
 import com.jetbrains.rd.util.UsedImplicitly;
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
-import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
-import jezzsantos.automate.plugin.infrastructure.settings.converters.EditingModePropertyConverter;
-import jezzsantos.automate.plugin.infrastructure.settings.converters.StringPropertyConverter;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 @State(name = "jezzsantos.automate.infrastructure.settings.ProjectSettingsState", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
 public class ProjectSettingsState implements PersistentStateComponentWithModificationTracker<ProjectSettingsState> {
 
-    @OptionTag(converter = BooleanPropertyConverter.class)
-    public final Property<Boolean> authoringMode = new Property<>(false);
-    @OptionTag(converter = EditingModePropertyConverter.class)
-    public final Property<EditingMode> editingMode = new Property<>(EditingMode.Drafts);
-    @OptionTag(converter = StringPropertyConverter.class)
-    public final Property<String> pathToAutomateExecutable = new Property<>("");
-    @OptionTag(converter = BooleanPropertyConverter.class)
-    public final Property<Boolean> viewCliLog = new Property<>(false);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     @UsedImplicitly
@@ -65,10 +53,6 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
 
     private void registerAllPropertyToIncrementTrackerOnChanges(@NotNull ProjectSettingsState state) {
 
-        incrementTrackerWhenPropertyChanges(state.authoringMode);
-        incrementTrackerWhenPropertyChanges(state.editingMode);
-        incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
-        incrementTrackerWhenPropertyChanges(state.viewCliLog);
     }
 
     private <T> void incrementTrackerWhenPropertyChanges(Property<T> property) {

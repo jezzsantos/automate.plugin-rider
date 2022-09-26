@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable;
+import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowSettingsToolbarAction extends AnAction {
@@ -43,7 +43,7 @@ public class ShowSettingsToolbarAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, ProjectSettingsConfigurable.class);
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, ApplicationSettingsConfigurable.class);
         }
     }
 }

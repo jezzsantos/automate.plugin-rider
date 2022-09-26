@@ -1,17 +1,17 @@
 package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.DarculaColors;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
-import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
+import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.services.cli.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
 
-public class ProjectSettingsComponent {
+public class ApplicationSettingsComponent {
 
     private final JPanel minPanel;
     private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.AuthoringMode.Label.Message"));
@@ -30,21 +30,22 @@ public class ProjectSettingsComponent {
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
     private final JBLabel helpLink = new JBLabel();
+    private final String currentDirectory;
 
-    public ProjectSettingsComponent(@NotNull Project project) {
+    public ApplicationSettingsComponent(@NotNull IOsPlatform platform) {
 
-        var application = IAutomateApplication.getInstance(project);
-        var defaultInstallLocation = application.getDefaultExecutableLocation();
+        var automateService = IAutomateCliService.getInstance();
+        var defaultInstallLocation = automateService.getDefaultExecutableLocation();
         this.pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
         this.pathToAutomateExecutable.setPreferredSize(new Dimension(380, this.pathToAutomateExecutable.getHeight()));
-        this.pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, project,
+        this.pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, null,
                                                               FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
         testPathToAutomatePanel.add(this.pathToAutomateExecutable, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
-        testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, application));
+        testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateService));
         initHelpLink(AutomateConstants.InstallationInstructionsUrl, AutomateBundle.message("settings.HelpLink.Title"));
         this.helpLink.setVisible(false);
 
@@ -58,9 +59,10 @@ public class ProjectSettingsComponent {
           .addComponentFillVertically(new JPanel(), 0)
           .getPanel();
 
-        if (!application.isCliInstalled()) {
-            var configuration = IConfiguration.getInstance(project);
-            var status = application.tryGetExecutableStatus(configuration.getExecutablePath());
+        this.currentDirectory = platform.getDotNetInstallationDirectory();
+        if (!automateService.isCliInstalled(this.currentDirectory)) {
+            var configuration = IApplicationConfiguration.getInstance();
+            var status = automateService.tryGetExecutableStatus(this.currentDirectory, configuration.getExecutablePath());
             displayVersionInfo(status);
         }
     }
@@ -105,10 +107,10 @@ public class ProjectSettingsComponent {
         this.pathToAutomateExecutable.setText(value);
     }
 
-    private void onTestPathToAutomate(ActionEvent ignored, IAutomateApplication automateApplication) {
+    private void onTestPathToAutomate(ActionEvent ignored, IAutomateCliService automateService) {
 
         var executablePath = this.pathToAutomateExecutable.getText();
-        var executableStatus = automateApplication.tryGetExecutableStatus(executablePath);
+        var executableStatus = automateService.tryGetExecutableStatus(this.currentDirectory, executablePath);
 
         displayVersionInfo(executableStatus);
     }

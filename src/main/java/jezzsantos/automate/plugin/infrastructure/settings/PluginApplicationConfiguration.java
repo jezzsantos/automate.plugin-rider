@@ -1,9 +1,8 @@
 package jezzsantos.automate.plugin.infrastructure.settings;
 
-import com.intellij.openapi.project.Project;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.services.interfaces.IConfiguration;
+import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,16 +10,16 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Objects;
 
-public class PluginConfiguration implements IConfiguration {
+public class PluginApplicationConfiguration implements IApplicationConfiguration {
 
     @NotNull
-    private final ProjectSettingsState settings;
+    private final ApplicationSettingsState settings;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     @UsedImplicitly
-    public PluginConfiguration(@NotNull Project project) {
+    public PluginApplicationConfiguration() {
 
-        this.settings = ProjectSettingsState.getInstance(project);
+        this.settings = ApplicationSettingsState.getInstance();
     }
 
     @NotNull
@@ -56,6 +55,7 @@ public class PluginConfiguration implements IConfiguration {
         }
     }
 
+    @NotNull
     @Override
     public EditingMode getEditingMode() {
 

@@ -32,7 +32,7 @@ enum FailureCause {
 
 interface IProcessRunner extends Disposable {
 
-    ProcessResult start(List<String> commandLineAndArguments, IOsPlatform platform);
+    ProcessResult start(@NotNull List<String> commandLineAndArguments, @NotNull String currentDirectory);
 }
 
 class ProcessResult {
@@ -136,12 +136,12 @@ class ProcessRunner implements IProcessRunner {
     }
 
     @Override
-    public ProcessResult start(List<String> commandLineAndArguments, IOsPlatform platform) {
+    public ProcessResult start(@NotNull List<String> commandLineAndArguments, @NotNull String currentDirectory) {
 
         var builder = new ProcessBuilder(commandLineAndArguments);
         builder.redirectErrorStream(false);
 
-        builder.directory(new File(platform.getCurrentDirectory()));
+        builder.directory(new File(currentDirectory));
 
         Process process = null;
         try {
@@ -184,31 +184,28 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     public static final String PropertyChanged_Logs = "CliLogs";
     @NotNull
-    private final IOsPlatform platform;
-    @NotNull
     private final IProcessRunner processRunner;
     @NotNull
     private final List<CliLogEntry> logs = new ArrayList<>();
     @NotNull
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
-    public AutomateCliRunner(@NotNull IOsPlatform platform) {
+    public AutomateCliRunner() {
 
-        this(platform, new ProcessRunner());
+        this(new ProcessRunner());
     }
 
     @TestOnly
-    public AutomateCliRunner(@NotNull IOsPlatform platform, @NotNull IProcessRunner processRunner) {
+    public AutomateCliRunner(@NotNull IProcessRunner processRunner) {
 
         this.processRunner = processRunner;
-        this.platform = platform;
     }
 
     @NotNull
     @Override
-    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String executablePath, @NotNull List<String> args) {
+    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args) {
 
-        var result = executeInternal(executablePath, args, true);
+        var result = executeInternal(currentDirectory, executablePath, args, true);
         if (result.isError()) {
             return new CliStructuredResult<>(getStructuredError(result.getError()), null);
         }
@@ -218,9 +215,9 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     @NotNull
     @Override
-    public CliTextResult execute(@NotNull String executablePath, @NotNull List<String> args) {
+    public CliTextResult execute(@NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args) {
 
-        return executeInternal(executablePath, args, false);
+        return executeInternal(currentDirectory, executablePath, args, false);
     }
 
     @Override
@@ -263,7 +260,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         return gson.fromJson(output, outputClass);
     }
 
-    private CliTextResult executeInternal(@NotNull String executablePath, @NotNull List<String> args, boolean isStructured) {
+    private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args, boolean isStructured) {
 
         var command = new ArrayList<String>();
         command.add(executablePath);
@@ -282,7 +279,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.Started.Message", String.join(" ", args)), CliLogEntryType.Normal);
 
-        var result = this.processRunner.start(command, this.platform);
+        var result = this.processRunner.start(command, currentDirectory);
         if (result.getSuccess()) {
             logEntry(AutomateBundle.message("general.AutomateCliRunner.Outcome.Success.Message"), CliLogEntryType.Success);
             var output = Objects.requireNonNull(result.getOutput());

@@ -14,7 +14,6 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetaile
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
-import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,12 +30,6 @@ public interface IAutomateApplication {
 
     @NotNull
     String getExecutableName();
-
-    @NotNull
-    String getDefaultExecutableLocation();
-
-    @NotNull
-    CliExecutableStatus tryGetExecutableStatus(@NotNull String executablePath);
 
     boolean isCliInstalled();
 

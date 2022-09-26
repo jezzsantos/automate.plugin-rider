@@ -14,23 +14,27 @@
     <resource-bundle>messages.AutomateBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService
-                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IConfiguration"
-                serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.PluginConfiguration"/>
-        <projectService
-                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IAutomateService"
+        <applicationService
+                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService"
                 serviceImplementation="jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliService"/>
+        <applicationService
+                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration"
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.PluginApplicationConfiguration"/>
+        <applicationService
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsState"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable"
+                id="jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable"
+                displayName="automate"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.IAutomateApplication"
                 serviceImplementation="jezzsantos.automate.plugin.application.AutomateApplication"/>
         <projectService
+                serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration"
+                serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.PluginProjectConfiguration"/>
+        <projectService
                 serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState"/>
-        <projectConfigurable
-                parentId="tools"
-                instance="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable"
-                id="jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsConfigurable"
-                displayName="automate"
-                nonDefaultProject="true"/>
         <toolWindow id="automate" secondary="false" icon="AllIcons.Actions.Lightning" anchor="left"
                     canCloseContents="false"
                     factoryClass="jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory"/>
