@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.application.services.interfaces;
 
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.Objects;
@@ -9,24 +10,20 @@ import java.util.Objects;
 public class CliExecutableStatus {
 
     private static final String minSupportedVersion = AutomateConstants.MinimumSupportedVersion;
-    private final String version;
-    private final CliVersionCompatibility compatibility;
     private final String executableName;
+    private String version;
+    private CliVersionCompatibility compatibility;
 
     public CliExecutableStatus(@NotNull String executableName) {
 
         this.executableName = executableName;
-        this.compatibility = CliVersionCompatibility.Unknown;
-        this.version = "";
+        initCompatabilityAndVersion(null);
     }
 
     public CliExecutableStatus(@NotNull String executableName, @NotNull String version) {
 
         this.executableName = executableName;
-        this.compatibility = calculateCompatibility(version);
-        this.version = this.compatibility != CliVersionCompatibility.Unknown
-          ? version
-          : "";
+        initCompatabilityAndVersion(version);
     }
 
     @NotNull
@@ -50,17 +47,31 @@ public class CliExecutableStatus {
         return this.executableName;
     }
 
+    private void initCompatabilityAndVersion(@Nullable String version) {
+
+        if (version == null) {
+            this.compatibility = CliVersionCompatibility.UNKNOWN;
+            this.version = "";
+            return;
+        }
+
+        this.compatibility = calculateCompatibility(version);
+        this.version = this.compatibility != CliVersionCompatibility.UNKNOWN
+          ? version
+          : "";
+    }
+
     private CliVersionCompatibility calculateCompatibility(@NotNull String version) {
 
         var currentVersion = parseVersion(version);
         if (currentVersion == null) {
-            return CliVersionCompatibility.Unknown;
+            return CliVersionCompatibility.UNKNOWN;
         }
         var minimumVersion = parseVersion(minSupportedVersion);
         if (currentVersion.compareTo(Objects.requireNonNull(minimumVersion)) >= 0) {
-            return CliVersionCompatibility.Supported;
+            return CliVersionCompatibility.COMPATIBLE;
         }
-        return CliVersionCompatibility.UnSupported;
+        return CliVersionCompatibility.INCOMPATIBLE;
     }
 
     private Version parseVersion(String version) {

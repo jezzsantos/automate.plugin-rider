@@ -93,7 +93,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         EditingMode editingMode = null;
         if (isInstalled) {
             editingMode = this.application.getEditingMode();
-            setGuidance(editingMode == EditingMode.Patterns
+            setGuidance(editingMode == EditingMode.PATTERNS
                           ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
                           : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
         }
@@ -102,7 +102,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         }
 
         if (isInstalled) {
-            if (editingMode == EditingMode.Patterns) {
+            if (editingMode == EditingMode.PATTERNS) {
                 var currentPattern = this.application.getCurrentPatternInfo();
                 if (currentPattern != null) {
                     var pattern = Try.andHandle(this.project, this.application::getCurrentPatternDetailed,
@@ -146,7 +146,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
                 var editingMode = AutomateTree.this.application.getEditingMode();
-                if (editingMode == EditingMode.Patterns) {
+                if (editingMode == EditingMode.PATTERNS) {
                     if (value instanceof PatternFolderPlaceholderNode) {
                         setIcon(AllIcons.Nodes.Folder);
                         append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
@@ -199,7 +199,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                     }
                 }
 
-                if (editingMode == EditingMode.Drafts) {
+                if (editingMode == EditingMode.DRAFTS) {
                     if (value instanceof DraftElementPlaceholderNode placeholder) {
                         setIcon(placeholder.isCollectionItem()
                                   ? AllIcons.Actions.DynamicUsages

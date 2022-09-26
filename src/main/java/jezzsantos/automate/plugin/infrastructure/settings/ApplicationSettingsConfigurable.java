@@ -61,6 +61,7 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         var modified = this.settingsComponent.getAuthoringMode() != this.configuration.getAuthoringMode();
         modified |= !Objects.equals(this.settingsComponent.getPathToAutomateExecutable(), this.configuration.getExecutablePath());
         modified |= !Objects.equals(this.settingsComponent.getViewCliLog(), this.configuration.getViewCliLog());
+        modified |= !Objects.equals(this.settingsComponent.getCliInstallPolicy(), this.configuration.getCliInstallPolicy());
         return modified;
     }
 
@@ -70,6 +71,7 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         this.configuration.setAuthoringMode(this.settingsComponent.getAuthoringMode());
         this.configuration.setExecutablePath(this.settingsComponent.getPathToAutomateExecutable());
         this.configuration.setViewCliLog(this.settingsComponent.getViewCliLog());
+        this.configuration.setCliInstallPolicy(this.settingsComponent.getCliInstallPolicy());
     }
 
     @Override
@@ -78,6 +80,7 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         this.settingsComponent.setAuthoringMode(this.configuration.getAuthoringMode());
         this.settingsComponent.setPathToAutomateExecutable(this.configuration.getExecutablePath());
         this.settingsComponent.setViewCliLog(this.configuration.getViewCliLog());
+        this.settingsComponent.setCliInstallPolicy(this.configuration.getCliInstallPolicy());
     }
 
     @Override

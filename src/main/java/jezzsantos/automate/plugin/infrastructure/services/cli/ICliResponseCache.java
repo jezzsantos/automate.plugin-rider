@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public interface IAutomationCache {
+public interface ICliResponseCache {
 
     @NotNull AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh);
 

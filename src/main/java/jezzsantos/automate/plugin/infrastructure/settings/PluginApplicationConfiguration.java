@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.jetbrains.rd.util.UsedImplicitly;
+import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import kotlin.jvm.internal.Intrinsics;
@@ -85,6 +86,22 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
         if (!Intrinsics.areEqual(oldValue, view)) {
             this.settings.viewCliLog.setValue(view);
             this.support.firePropertyChange("ViewCliLog", oldValue, view);
+        }
+    }
+
+    @Override
+    public @NotNull CliInstallPolicy getCliInstallPolicy() {
+
+        return this.settings.cliInstallPolicy.getValue();
+    }
+
+    @Override
+    public void setCliInstallPolicy(CliInstallPolicy policy) {
+
+        var oldValue = (CliInstallPolicy) this.settings.cliInstallPolicy.getValue();
+        if (!Intrinsics.areEqual(oldValue, policy)) {
+            this.settings.cliInstallPolicy.setValue(policy);
+            this.support.firePropertyChange("CliInstallPolicy", oldValue, policy);
         }
     }
 

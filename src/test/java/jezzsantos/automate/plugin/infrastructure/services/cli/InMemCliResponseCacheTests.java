@@ -12,14 +12,14 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class InMemAutomationCacheTests {
+public class InMemCliResponseCacheTests {
 
-    private InMemAutomationCache cache;
+    private InMemCliResponseCache cache;
 
     @BeforeEach
     public void setUp() {
 
-        this.cache = new InMemAutomationCache();
+        this.cache = new InMemCliResponseCache();
     }
 
     @Test

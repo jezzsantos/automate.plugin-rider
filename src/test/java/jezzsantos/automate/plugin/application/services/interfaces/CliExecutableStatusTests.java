@@ -14,7 +14,7 @@ public class CliExecutableStatusTests {
 
         var status = new CliExecutableStatus("anexecutablename");
 
-        assertEquals(CliVersionCompatibility.Unknown, status.getCompatibility());
+        assertEquals(CliVersionCompatibility.UNKNOWN, status.getCompatibility());
         assertEquals("", status.getVersion());
         assertEquals(AutomateConstants.MinimumSupportedVersion, status.getMinCompatibleVersion());
         assertEquals("anexecutablename", status.getExecutableName());
@@ -27,7 +27,7 @@ public class CliExecutableStatusTests {
 
         var result = status.getCompatibility();
 
-        assertEquals(CliVersionCompatibility.Unknown, result);
+        assertEquals(CliVersionCompatibility.UNKNOWN, result);
         assertEquals("", status.getVersion());
         assertEquals(AutomateConstants.MinimumSupportedVersion, status.getMinCompatibleVersion());
         assertEquals("anexecutablename", status.getExecutableName());
@@ -42,7 +42,7 @@ public class CliExecutableStatusTests {
 
         var result = status.getCompatibility();
 
-        assertEquals(CliVersionCompatibility.UnSupported, result);
+        assertEquals(CliVersionCompatibility.INCOMPATIBLE, result);
         assertEquals("0.0.1-preview", status.getVersion());
         assertEquals(AutomateConstants.MinimumSupportedVersion, status.getMinCompatibleVersion());
         assertEquals("anexecutablename", status.getExecutableName());
@@ -57,7 +57,7 @@ public class CliExecutableStatusTests {
 
         var result = status.getCompatibility();
 
-        assertEquals(CliVersionCompatibility.Supported, result);
+        assertEquals(CliVersionCompatibility.COMPATIBLE, result);
         assertEquals(AutomateConstants.MinimumSupportedVersion, status.getVersion());
         assertEquals(AutomateConstants.MinimumSupportedVersion, status.getMinCompatibleVersion());
         assertEquals("anexecutablename", status.getExecutableName());
@@ -72,7 +72,7 @@ public class CliExecutableStatusTests {
 
         var result = status.getCompatibility();
 
-        assertEquals(CliVersionCompatibility.Supported, result);
+        assertEquals(CliVersionCompatibility.COMPATIBLE, result);
         assertEquals("100.0.0", status.getVersion());
         assertEquals(AutomateConstants.MinimumSupportedVersion, status.getMinCompatibleVersion());
         assertEquals("anexecutablename", status.getExecutableName());

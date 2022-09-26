@@ -37,7 +37,7 @@ public class DraftsListToolbarAction extends ComboBoxAction {
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             isInstalled = application.isCliInstalled();
-            isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
+            isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
             if (isInstalled) {
                 var currentDraft = Try.andHandle(project, application::getCurrentDraftInfo, AutomateBundle.message("action.DraftsListToolbar.GetCurrentDraft.Failure.Message"));
                 if (currentDraft != null) {

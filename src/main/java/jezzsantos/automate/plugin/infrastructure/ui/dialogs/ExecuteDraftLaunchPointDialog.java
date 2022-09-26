@@ -1,9 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.ui.dialogs;
 
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -16,6 +13,8 @@ import jezzsantos.automate.plugin.AutomateIcons;
 import jezzsantos.automate.plugin.application.interfaces.drafts.LaunchPointExecutionResult;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
+import jezzsantos.automate.plugin.infrastructure.IntelliJTaskRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -30,7 +29,7 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
     private final ExecuteDraftLaunchPointDialogContext context;
     private final ILogFileEditor fileEditor;
     private final Project project;
-    private final IDraftExecutionRunner runner;
+    private final ITaskRunner taskRunner;
     private LaunchPointExecutionResult executionResult;
     private JPanel contents;
     private JBList<ListItem> logs;
@@ -39,16 +38,16 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
 
     public ExecuteDraftLaunchPointDialog(@NotNull Project project, @NotNull ExecuteDraftLaunchPointDialogContext context) {
 
-        this(project, new ExecuteDraftRunner(), new TemporaryFileViewer(project), context);
+        this(project, new TemporaryFileViewer(project), new IntelliJTaskRunner(), context);
     }
 
     @TestOnly
-    public ExecuteDraftLaunchPointDialog(@NotNull Project project, @NotNull IDraftExecutionRunner runner, @NotNull ILogFileEditor fileEditor, @NotNull ExecuteDraftLaunchPointDialogContext context) {
+    public ExecuteDraftLaunchPointDialog(@NotNull Project project, @NotNull ILogFileEditor fileEditor, @NotNull ITaskRunner taskRunner, @NotNull ExecuteDraftLaunchPointDialogContext context) {
 
         super(project);
         this.project = project;
-        this.runner = runner;
         this.fileEditor = fileEditor;
+        this.taskRunner = taskRunner;
         this.context = context;
 
         init();
@@ -86,7 +85,11 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
 
     public void initResults() {
 
-        this.executionResult = this.runner.execute(this.project, this.context.getExecutor());
+        try {
+            this.executionResult = this.taskRunner.runToCompletion(this.project, AutomateBundle.message("general.RunLaunchPoint.Title"), () -> this.context.getExecutor().get());
+        } catch (Exception ex) {
+            this.executionResult = LaunchPointExecutionResult.failure(ex.getMessage());
+        }
 
         var isSuccess = this.executionResult.isSuccess();
         var hasValidationErrors = this.executionResult.hasValidationErrors();
@@ -149,11 +152,6 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
         }
     }
 
-    interface IDraftExecutionRunner {
-
-        LaunchPointExecutionResult execute(@NotNull Project project, @NotNull Supplier<LaunchPointExecutionResult> executor);
-    }
-
     interface TemporaryFile {
 
         void appendLine(@NotNull String text);
@@ -166,28 +164,6 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
         void openFile();
 
         TemporaryFile createFile() throws Exception;
-    }
-
-    static class ExecuteDraftRunner implements IDraftExecutionRunner {
-
-        @Override
-        public LaunchPointExecutionResult execute(@NotNull Project project, @NotNull Supplier<LaunchPointExecutionResult> executor) {
-
-            try {
-
-                return ProgressManager.getInstance()
-                  .run(new Task.WithResult<LaunchPointExecutionResult, Exception>(project, AutomateBundle.message("general.RunLaunchPoint.Title"), false) {
-
-                      @Override
-                      protected LaunchPointExecutionResult compute(@NotNull ProgressIndicator progressIndicator) {
-
-                          return executor.get();
-                      }
-                  });
-            } catch (Exception ex) {
-                return LaunchPointExecutionResult.failure(ex.getMessage());
-            }
-        }
     }
 
     static class TemporaryFileViewer implements ILogFileEditor {

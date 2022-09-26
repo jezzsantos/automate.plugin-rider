@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.services.interfaces;
 
 import com.intellij.openapi.application.ApplicationManager;
+import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +31,11 @@ public interface IApplicationConfiguration {
     boolean getViewCliLog();
 
     void setViewCliLog(boolean view);
+
+    @NotNull
+    CliInstallPolicy getCliInstallPolicy();
+
+    void setCliInstallPolicy(CliInstallPolicy policy);
 
     void addListener(@NotNull PropertyChangeListener listener);
 

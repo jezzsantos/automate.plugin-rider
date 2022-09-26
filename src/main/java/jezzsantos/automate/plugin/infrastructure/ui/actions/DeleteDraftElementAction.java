@@ -41,7 +41,7 @@ public class DeleteDraftElementAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
+            isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
         var isPropertySite = getElement(e) != null;

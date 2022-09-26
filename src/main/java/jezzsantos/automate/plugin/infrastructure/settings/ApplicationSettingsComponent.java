@@ -7,6 +7,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
 import jezzsantos.automate.core.AutomateConstants;
+import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
@@ -16,6 +17,8 @@ import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrow
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -30,6 +33,7 @@ public class ApplicationSettingsComponent {
     private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel testPathToAutomateResult = new JBLabel();
     private final JBLabel helpLink = new JBLabel();
+    private final JBCheckBox cliInstallPolicy = new JBCheckBox(AutomateBundle.message("settings.CliInstallPolicy.Label.Title"));
     private final String currentDirectory;
 
     public ApplicationSettingsComponent(@NotNull IOsPlatform platform) {
@@ -40,6 +44,16 @@ public class ApplicationSettingsComponent {
         this.pathToAutomateExecutable.setPreferredSize(new Dimension(380, this.pathToAutomateExecutable.getHeight()));
         this.pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, null,
                                                               FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
+        this.pathToAutomateExecutable.getTextField().getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {setCliInstallPolicyEnabled();}
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {setCliInstallPolicyEnabled();}
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {setCliInstallPolicyEnabled();}
+        });
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
         testPathToAutomatePanel.add(this.pathToAutomateExecutable, BorderLayout.LINE_START);
@@ -55,6 +69,7 @@ public class ApplicationSettingsComponent {
                                false)
           .addComponentToRightColumn(this.testPathToAutomateResult)
           .addComponentToRightColumn(this.helpLink)
+          .addComponentToRightColumn(this.cliInstallPolicy)
           .addComponent(this.viewCliLog, 1)
           .addComponentFillVertically(new JPanel(), 0)
           .getPanel();
@@ -97,6 +112,7 @@ public class ApplicationSettingsComponent {
         this.viewCliLog.setSelected(value);
     }
 
+    @NotNull
     public String getPathToAutomateExecutable() {
 
         return this.pathToAutomateExecutable.getText();
@@ -107,7 +123,26 @@ public class ApplicationSettingsComponent {
         this.pathToAutomateExecutable.setText(value);
     }
 
-    private void onTestPathToAutomate(ActionEvent ignored, IAutomateCliService automateService) {
+    @NotNull
+    public CliInstallPolicy getCliInstallPolicy() {
+
+        return this.cliInstallPolicy.isSelected()
+          ? CliInstallPolicy.AUTO_UPGRADE
+          : CliInstallPolicy.NONE;
+    }
+
+    public void setCliInstallPolicy(CliInstallPolicy value) {
+
+        this.cliInstallPolicy.setSelected(value == CliInstallPolicy.AUTO_UPGRADE);
+    }
+
+    private void setCliInstallPolicyEnabled() {
+
+        var text = this.pathToAutomateExecutable.getText();
+        this.cliInstallPolicy.setEnabled(text.isEmpty());
+    }
+
+    private void onTestPathToAutomate(ActionEvent ignored, @NotNull IAutomateCliService automateService) {
 
         var executablePath = this.pathToAutomateExecutable.getText();
         var executableStatus = automateService.tryGetExecutableStatus(this.currentDirectory, executablePath);
@@ -120,13 +155,13 @@ public class ApplicationSettingsComponent {
         var compatibility = executableStatus.getCompatibility();
         var executableName = executableStatus.getExecutableName();
         switch (compatibility) {
-            case Supported -> {
+            case COMPATIBLE -> {
                 this.helpLink.setVisible(false);
                 this.testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
                 this.testPathToAutomateResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Supported.Message", executableName, executableStatus.getVersion()));
             }
-            case UnSupported -> {
+            case INCOMPATIBLE -> {
                 this.helpLink.setVisible(true);
                 this.testPathToAutomateResult.setForeground(DarculaColors.RED);
                 this.testPathToAutomateResult.setText(

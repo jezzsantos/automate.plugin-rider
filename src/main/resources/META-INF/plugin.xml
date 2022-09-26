@@ -40,7 +40,7 @@
                     factoryClass="jezzsantos.automate.plugin.infrastructure.ui.AutomateToolWindowFactory"/>
         <notificationGroup
                 displayType="STICKY_BALLOON"
-                id="automate Errors"
+                id="automate notifications"
                 isLogByDefault="true"
                 key="notification.group.name"/>
     </extensions>

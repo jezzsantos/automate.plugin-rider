@@ -38,7 +38,7 @@ public class EditDraftElementAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
+            isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
         var isElementSite = getElement(e) != null;

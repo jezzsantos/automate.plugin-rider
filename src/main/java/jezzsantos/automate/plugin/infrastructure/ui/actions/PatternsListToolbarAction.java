@@ -40,7 +40,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
             var application = IAutomateApplication.getInstance(project);
             isInstalled = application.isCliInstalled();
             isAuthoringMode = application.isAuthoringMode();
-            isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
+            isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
             if (isInstalled) {
                 var currentPattern = Try.andHandle(project,
                                                    application::getCurrentPatternInfo,

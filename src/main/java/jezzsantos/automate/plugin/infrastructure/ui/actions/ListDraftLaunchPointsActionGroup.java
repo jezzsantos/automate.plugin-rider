@@ -35,7 +35,7 @@ public class ListDraftLaunchPointsActionGroup extends ActionGroup {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
+            isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
         var isElementSite = getParentElement(e) != null;

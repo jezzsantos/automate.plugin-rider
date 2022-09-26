@@ -10,8 +10,10 @@ import com.intellij.util.xmlb.annotations.OptionTag;
 import com.jetbrains.rd.util.UsedImplicitly;
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
+import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
+import jezzsantos.automate.plugin.infrastructure.settings.converters.CliInstallPolicyPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.EditingModePropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.StringPropertyConverter;
 import kotlin.Unit;
@@ -24,11 +26,13 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
     @OptionTag(converter = EditingModePropertyConverter.class)
-    public final Property<EditingMode> editingMode = new Property<>(EditingMode.Drafts);
+    public final Property<EditingMode> editingMode = new Property<>(EditingMode.DRAFTS);
     @OptionTag(converter = StringPropertyConverter.class)
     public final Property<String> pathToAutomateExecutable = new Property<>("");
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> viewCliLog = new Property<>(false);
+    @OptionTag(converter = CliInstallPolicyPropertyConverter.class)
+    public final Property<CliInstallPolicy> cliInstallPolicy = new Property<>(CliInstallPolicy.AUTO_UPGRADE);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     @UsedImplicitly
@@ -68,6 +72,7 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
         incrementTrackerWhenPropertyChanges(state.editingMode);
         incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
         incrementTrackerWhenPropertyChanges(state.viewCliLog);
+        incrementTrackerWhenPropertyChanges(state.cliInstallPolicy);
     }
 
     private <T> void incrementTrackerWhenPropertyChanges(Property<T> property) {

@@ -101,8 +101,8 @@ public class AutomateApplication implements IAutomateApplication {
 
         this.configuration.setAuthoringMode(on);
         this.configuration.setEditingMode(on
-                                            ? EditingMode.Patterns
-                                            : EditingMode.Drafts);
+                                            ? EditingMode.PATTERNS
+                                            : EditingMode.DRAFTS);
     }
 
     @Override

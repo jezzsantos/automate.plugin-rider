@@ -20,6 +20,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.CliVersionComp
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.IntelliJNotifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,11 +30,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AutomateCliService implements IAutomateCliService {
 
     @NotNull
-    private final IAutomationCache cache;
+    private final ICliResponseCache cache;
     @NotNull
     private final IApplicationConfiguration configuration;
     @NotNull
@@ -41,36 +43,52 @@ public class AutomateCliService implements IAutomateCliService {
 
     @NotNull
     private final IAutomateCliRunner cliRunner;
+    private final ICliUpgrader upgrader;
 
     @UsedImplicitly
     public AutomateCliService() {
 
-        this(IApplicationConfiguration.getInstance(), new InMemAutomationCache(), new OsPlatform());
+        this(IApplicationConfiguration.getInstance(), new InMemCliResponseCache(), new OsPlatform());
     }
 
     @NonInjectable
-    private AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull IAutomationCache cache, @NotNull IOsPlatform platform) {
+    private AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform) {
 
         this(configuration, cache, platform, new AutomateCliRunner());
     }
 
     @NonInjectable
-    public AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull IAutomationCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
+    private AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
+
+        this(configuration, cache, platform, runner, new AutomateCliUpgrader(runner, new IntelliJNotifier()));
+    }
+
+    @NonInjectable
+    public AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner, @NotNull ICliUpgrader upgrader) {
 
         this.configuration = configuration;
         this.cache = cache;
         this.platform = platform;
         this.cliRunner = runner;
+        this.upgrader = upgrader;
 
         this.configuration.addListener(e -> {
 
             if (e.getPropertyName().equalsIgnoreCase("ExecutablePath")) {
                 var path = (String) e.getNewValue();
-                logChangeInExecutablePath(path);
+                logChangeInExecutablePath(Objects.requireNonNullElse(path, ""));
             }
         });
 
-        logChangeInExecutablePath(this.configuration.getExecutablePath());
+        init();
+    }
+
+    @NotNull
+    public static String getExecutableName(@NotNull IOsPlatform platform) {
+
+        return (platform.getIsWindowsOs()
+          ? String.format("%s.exe", AutomateConstants.ExecutableName)
+          : AutomateConstants.ExecutableName);
     }
 
     @NotNull
@@ -432,9 +450,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public String getExecutableName() {
 
-        return (this.platform.getIsWindowsOs()
-          ? String.format("%s.exe", AutomateConstants.ExecutableName)
-          : AutomateConstants.ExecutableName);
+        return getExecutableName(this.platform);
     }
 
     @NotNull
@@ -480,7 +496,7 @@ public class AutomateCliService implements IAutomateCliService {
 
         return this.cache.isCliInstalled(() -> {
             var executableStatus = tryGetExecutableStatus(currentDirectory, this.configuration.getExecutablePath());
-            return executableStatus.getCompatibility() == CliVersionCompatibility.Supported;
+            return executableStatus.getCompatibility() == CliVersionCompatibility.COMPATIBLE;
         });
     }
 
@@ -502,6 +518,22 @@ public class AutomateCliService implements IAutomateCliService {
         this.cliRunner.removeLogListener(listener);
     }
 
+    private void init() {
+
+        var executablePath = this.configuration.getExecutablePath();
+        var executableStatus = refreshExecutableStatus(executablePath);
+        var installPolicy = this.configuration.getCliInstallPolicy();
+        var executableName = this.getExecutableName();
+
+        if (executableStatus.getCompatibility() != CliVersionCompatibility.COMPATIBLE) {
+            var currentDirectory = this.platform.getDotNetInstallationDirectory();
+            executableStatus = this.upgrader.upgrade(currentDirectory, executablePath, executableName, executableStatus, installPolicy);
+            saveStatusIfSupported(executableStatus);
+        }
+
+        logChangeInExecutablePath(executableStatus, executablePath);
+    }
+
     @NotNull
     private <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> runAutomateForStructuredOutput(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull List<String> args) {
 
@@ -513,7 +545,8 @@ public class AutomateCliService implements IAutomateCliService {
         return this.cliRunner.executeStructured(outputClass, currentDirectory, getExecutablePathSafe(executablePath), args);
     }
 
-    private String extendConfigurePath(String parentConfigurePath, String elementName) {
+    @NotNull
+    private String extendConfigurePath(@NotNull String parentConfigurePath, String elementName) {
 
         var stringToInsert = String.format(".%s", elementName);
         var insertionIndex = parentConfigurePath.length() - 1;
@@ -531,32 +564,50 @@ public class AutomateCliService implements IAutomateCliService {
           : executablePath;
     }
 
-    private void logChangeInExecutablePath(String path) {
+    private void logChangeInExecutablePath(@NotNull String executablePath) {
 
-        var currentDirectory = this.platform.getDotNetInstallationDirectory();
-        var executableStatus = tryGetExecutableStatus(currentDirectory, path);
-        this.cache.setIsCliInstalled(executableStatus.getCompatibility() == CliVersionCompatibility.Supported);
+        var executableStatus = refreshExecutableStatus(executablePath);
+
+        logChangeInExecutablePath(executableStatus, executablePath);
+    }
+
+    private void logChangeInExecutablePath(@NotNull CliExecutableStatus executableStatus, @NotNull String executablePath) {
 
         String message;
         CliLogEntryType type;
-        var executablePath = getExecutablePathSafe(path);
+        var path = getExecutablePathSafe(executablePath);
         switch (executableStatus.getCompatibility()) {
-            case UnSupported -> {
-                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", executablePath,
+            case INCOMPATIBLE -> {
+                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", path,
                                                  executableStatus.getMinCompatibleVersion());
-                type = CliLogEntryType.Error;
+                type = CliLogEntryType.ERROR;
             }
-            case Supported -> {
-                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Supported.Message", executablePath);
-                type = CliLogEntryType.Normal;
+            case COMPATIBLE -> {
+                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Supported.Message", path);
+                type = CliLogEntryType.NORMAL;
             }
             default -> {
-                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Unknown.Message", executablePath);
-                type = CliLogEntryType.Error;
+                message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.Unknown.Message", path);
+                type = CliLogEntryType.ERROR;
             }
         }
 
         var entry = new CliLogEntry(message, type);
         this.cliRunner.log(entry);
+    }
+
+    @NotNull
+    private CliExecutableStatus refreshExecutableStatus(@NotNull String executablePath) {
+
+        var currentDirectory = this.platform.getDotNetInstallationDirectory();
+        var executableStatus = tryGetExecutableStatus(currentDirectory, executablePath);
+        saveStatusIfSupported(executableStatus);
+
+        return executableStatus;
+    }
+
+    private void saveStatusIfSupported(CliExecutableStatus executableStatus) {
+
+        this.cache.setIsCliInstalled(executableStatus.getCompatibility() == CliVersionCompatibility.COMPATIBLE);
     }
 }

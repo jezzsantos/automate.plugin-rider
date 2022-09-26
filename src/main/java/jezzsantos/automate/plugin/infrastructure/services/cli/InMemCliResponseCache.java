@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public class InMemAutomationCache implements IAutomationCache {
+public class InMemCliResponseCache implements ICliResponseCache {
 
     @Nullable
     private List<PatternLite> patternsList;

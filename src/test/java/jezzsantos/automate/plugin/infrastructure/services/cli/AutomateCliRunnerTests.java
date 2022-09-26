@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.module.ModuleDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +44,11 @@ public class AutomateCliRunnerTests {
     @Test
     public void whenLog_ThenAddsToLogs() {
 
-        this.runner.log(new CliLogEntry("atext", CliLogEntryType.Normal));
+        this.runner.log(new CliLogEntry("atext", CliLogEntryType.NORMAL));
 
         assertEquals(1, this.logs.size());
         assertEquals("atext", this.logs.get(0).Text);
-        assertEquals(CliLogEntryType.Normal, this.logs.get(0).Type);
+        assertEquals(CliLogEntryType.NORMAL, this.logs.get(0).Type);
     }
 
     @Test
@@ -60,13 +62,13 @@ public class AutomateCliRunnerTests {
     @Test
     public void whenGetCliLogs_ThenReturnsLogs() {
 
-        this.runner.log(new CliLogEntry("atext", CliLogEntryType.Normal));
+        this.runner.log(new CliLogEntry("atext", CliLogEntryType.NORMAL));
 
         var result = this.runner.getLogs();
 
         assertEquals(1, result.size());
         assertEquals("atext", result.get(0).Text);
-        assertEquals(CliLogEntryType.Normal, result.get(0).Type);
+        assertEquals(CliLogEntryType.NORMAL, result.get(0).Type);
     }
 
     @Test
@@ -80,8 +82,8 @@ public class AutomateCliRunnerTests {
         assertFalse(result.isError());
         assertEquals("anoutput", result.getOutput());
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Success, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.Success.Message"), this.logs.get(1).Text);
+        assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
     }
 
     @Test
@@ -93,10 +95,10 @@ public class AutomateCliRunnerTests {
         var result = this.runner.execute("acurrentdirectory", "anexecutablepath", List.of());
 
         assertTrue(result.isError());
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.FailedToStart.Message", "anexecutablepath"), result.getError());
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", "anexecutablepath"), result.getError());
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Error, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.FailedToStart.Message", "anexecutablepath"), this.logs.get(1).Text);
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", "anexecutablepath"), this.logs.get(1).Text);
     }
 
     @Test
@@ -110,7 +112,7 @@ public class AutomateCliRunnerTests {
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError());
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Error, this.logs.get(1).Type);
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), this.logs.get(1).Text);
     }
 
@@ -125,8 +127,8 @@ public class AutomateCliRunnerTests {
         assertTrue(result.isError());
         assertEquals("anerror", result.getError());
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Error, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
     }
 
     @Test
@@ -141,8 +143,8 @@ public class AutomateCliRunnerTests {
         assertTrue(result.isError());
         assertEquals("anerror", result.getError().getErrorMessage());
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Error, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
     }
 
     @Test
@@ -156,7 +158,7 @@ public class AutomateCliRunnerTests {
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError().getErrorMessage());
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Error, this.logs.get(1).Type);
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), this.logs.get(1).Text);
     }
 
@@ -203,12 +205,61 @@ public class AutomateCliRunnerTests {
         assertFalse(result.isError());
         assertEquals("avalue", result.getOutput().Output.get(0).Values.AValue);
         assertEquals(2, this.logs.size());
-        assertEquals(CliLogEntryType.Success, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.Success.Message"), this.logs.get(1).Text);
+        assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
+    }
+
+    @Test
+    public void whenInstallLatestWithUninstallAndFails_ThenReturnsNull() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createFailedWithError("anerror"));
+
+        var result = this.runner.installLatest("acurrentdirectory", true);
+
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertNull(result);
+    }
+
+    @Test
+    public void whenInstallLatestWithInstallAndFails_ThenReturnsNull() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createFailedWithError("anerror"));
+
+        var result = this.runner.installLatest("acurrentdirectory", false);
+
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertNull(result);
+    }
+
+    @Test
+    public void whenInstallLatestWithInstallAndSucceedsButNoVersion_ThenThrows() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createSuccess("outputcontainsnoversionnumber"));
+
+        assertThrows(RuntimeException.class, () ->
+                       this.runner.installLatest("acurrentdirectory", false),
+                     AutomateBundle.message("general.AutomateCliRunner.InstallCommand.ParseVersion.Message"));
+
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.ParseVersion.Message"), this.logs.get(1).Text);
+    }
+
+    @Test
+    public void whenInstallLatestWithInstallAndSucceeds_ThenReturnsVersion() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createSuccess("(version '100.0.0')"));
+
+        var result = this.runner.installLatest("acurrentdirectory", false);
+
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.Success.Message", "100.0.0"), this.logs.get(1).Text);
+        assertEquals(ModuleDescriptor.Version.parse("100.0.0"), result);
     }
 
     @SuppressWarnings("unchecked")
-    private void propertyChange(PropertyChangeEvent e) {
+    private void propertyChange(@NotNull PropertyChangeEvent e) {
 
         AutomateCliRunnerTests.this.logs.addAll((List<CliLogEntry>) e.getNewValue());
     }

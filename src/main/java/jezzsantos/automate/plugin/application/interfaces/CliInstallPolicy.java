@@ -1,7 +1,6 @@
 package jezzsantos.automate.plugin.application.interfaces;
 
-public enum EditingMode {
-    DRAFTS,
-    PATTERNS
+public enum CliInstallPolicy {
+    NONE,
+    AUTO_UPGRADE,
 }
-

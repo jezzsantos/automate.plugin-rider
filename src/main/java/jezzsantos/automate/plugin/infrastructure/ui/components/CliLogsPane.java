@@ -77,11 +77,11 @@ public class CliLogsPane extends JTextPane implements Disposable {
         var errorColor = scheme.getAttributes(ConsoleViewContentType.LOG_ERROR_OUTPUT_KEY).getForegroundColor();
 
         var attributes = new SimpleAttributeSet();
-        if (entry.Type != CliLogEntryType.Normal) {
-            StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.Error
+        if (entry.Type != CliLogEntryType.NORMAL) {
+            StyleConstants.setForeground(attributes, entry.Type == CliLogEntryType.ERROR
               ? errorColor
               : infoColor);
-            StyleConstants.setBold(attributes, entry.Type == CliLogEntryType.Error);
+            StyleConstants.setBold(attributes, entry.Type == CliLogEntryType.ERROR);
         }
         var text = String.format("%s%s", entry.Text, System.lineSeparator());
         var document = this.getDocument();

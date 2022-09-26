@@ -47,7 +47,7 @@ public class AutomateToolWindowFactoryTests {
 
                     AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.DRAFTS);
                     Mockito.verify(GivenNoPatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
@@ -68,7 +68,7 @@ public class AutomateToolWindowFactoryTests {
 
                     AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.DRAFTS);
                     Mockito.verify(GivenNoPatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
@@ -90,7 +90,7 @@ public class AutomateToolWindowFactoryTests {
 
                     AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.DRAFTS);
                     Mockito.verify(GivenNoPatterns.this.application).setAuthoringMode(false);
                 }
             }
@@ -111,7 +111,7 @@ public class AutomateToolWindowFactoryTests {
 
                     AutomateToolWindowFactory.initStartupState(GivenNoPatterns.this.application);
 
-                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.Drafts);
+                    Mockito.verify(GivenNoPatterns.this.application).setEditingMode(EditingMode.DRAFTS);
                     Mockito.verify(GivenNoPatterns.this.application).setAuthoringMode(false);
                 }
             }
@@ -150,7 +150,7 @@ public class AutomateToolWindowFactoryTests {
 
                     AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(GivenSomePatterns.this.application).setEditingMode(EditingMode.Patterns);
+                    Mockito.verify(GivenSomePatterns.this.application).setEditingMode(EditingMode.PATTERNS);
                     Mockito.verify(GivenSomePatterns.this.application).setAuthoringMode(true);
                 }
             }
@@ -167,7 +167,7 @@ public class AutomateToolWindowFactoryTests {
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
-                      .thenReturn(EditingMode.Drafts);
+                      .thenReturn(EditingMode.DRAFTS);
                     Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
@@ -186,7 +186,7 @@ public class AutomateToolWindowFactoryTests {
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
-                      .thenReturn(EditingMode.Patterns);
+                      .thenReturn(EditingMode.PATTERNS);
                     Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
 
@@ -217,7 +217,7 @@ public class AutomateToolWindowFactoryTests {
 
                     AutomateToolWindowFactory.initStartupState(GivenSomePatterns.this.application);
 
-                    Mockito.verify(GivenSomePatterns.this.application).setEditingMode(EditingMode.Patterns);
+                    Mockito.verify(GivenSomePatterns.this.application).setEditingMode(EditingMode.PATTERNS);
                     Mockito.verify(GivenSomePatterns.this.application, never()).setAuthoringMode(anyBoolean());
                 }
             }
@@ -234,7 +234,7 @@ public class AutomateToolWindowFactoryTests {
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
-                      .thenReturn(EditingMode.Drafts);
+                      .thenReturn(EditingMode.DRAFTS);
                     Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 
@@ -253,7 +253,7 @@ public class AutomateToolWindowFactoryTests {
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
-                      .thenReturn(EditingMode.Patterns);
+                      .thenReturn(EditingMode.PATTERNS);
                     Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
 

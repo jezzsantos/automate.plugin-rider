@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
+import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.common.Try;
@@ -27,9 +28,10 @@ public class AutomateCliServiceTests {
     Path tempFile;
     private AutomateCliService service;
     private IAutomateCliRunner cliRunner;
-    private IAutomationCache cache;
+    private ICliResponseCache cache;
     private IApplicationConfiguration configuration;
     private IOsPlatform platform;
+    private ICliUpgrader upgrader;
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +39,7 @@ public class AutomateCliServiceTests {
         this.configuration = Mockito.mock(IApplicationConfiguration.class);
         Mockito.when(this.configuration.getExecutablePath())
           .thenReturn("anexecutablepath");
-        this.cache = Mockito.mock(IAutomationCache.class);
+        this.cache = Mockito.mock(ICliResponseCache.class);
         Mockito.when(this.cache.isCliInstalled(any()))
           .thenReturn(true);
         this.platform = Mockito.mock(IOsPlatform.class);
@@ -46,26 +48,80 @@ public class AutomateCliServiceTests {
         Mockito.when(this.platform.getDotNetInstallationDirectory())
           .thenReturn("aninstallationdirectory");
         this.cliRunner = Mockito.mock(IAutomateCliRunner.class);
-        this.service = new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner);
+        this.upgrader = Mockito.mock(ICliUpgrader.class);
+        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+          .thenAnswer(x -> x.getArgument(3));
+        this.service = new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
     }
 
     @Test
-    public void whenConstructed_ThenLogsCliInstallationStatus() {
+    public void whenConstructedAndVersionNotInstalled_ThenUpgradesLogsAndCachesResult() {
 
-        Mockito.reset(this.cliRunner, this.cache, this.configuration);
-        var filename = createTemporaryFile(this.service.getExecutableName());
+        Mockito.reset(this.cliRunner, this.cache, this.configuration, this.upgrader);
+        var executableName = this.service.getExecutableName();
+        var filename = createTemporaryFile(executableName);
         Mockito.when(this.configuration.getExecutablePath())
           .thenReturn(filename);
         Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
-          .thenReturn(new CliTextResult("", "100.0.0"));
+          .thenReturn(new CliTextResult("anerror", ""));
+        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+          .thenReturn(new CliExecutableStatus(executableName, "100.0.0"));
 
-        new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner);
+        new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
 
         Mockito.verify(this.configuration).getExecutablePath();
         Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)),
                                                argThat(x -> x.size() == 1 && x.get(0).equals("--version")));
         Mockito.verify(this.cache).setIsCliInstalled(true);
-        Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.Normal));
+        Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
+        Mockito.verify(this.upgrader)
+          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)), argThat(x -> x.equals(executableName)), any(), any());
+    }
+
+    @Test
+    public void whenConstructedAndIncompatibleVersionInstalled_ThenUpgradesLogsAndCachesResult() {
+
+        Mockito.reset(this.cliRunner, this.cache, this.configuration, this.upgrader);
+        var executableName = this.service.getExecutableName();
+        var filename = createTemporaryFile(executableName);
+        Mockito.when(this.configuration.getExecutablePath())
+          .thenReturn(filename);
+        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(new CliTextResult("", "0.0.0"));
+        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+          .thenReturn(new CliExecutableStatus(executableName, "100.0.0"));
+
+        new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
+
+        Mockito.verify(this.configuration).getExecutablePath();
+        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)),
+                                               argThat(x -> x.size() == 1 && x.get(0).equals("--version")));
+        Mockito.verify(this.cache).setIsCliInstalled(true);
+        Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
+        Mockito.verify(this.upgrader)
+          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)), argThat(x -> x.equals(executableName)), any(), any());
+    }
+
+    @Test
+    public void whenConstructedAndCompatibleVersionInstalled_ThenLogsAndCachesResult() {
+
+        Mockito.reset(this.cliRunner, this.cache, this.configuration, this.upgrader);
+        var filename = createTemporaryFile(this.service.getExecutableName());
+        Mockito.when(this.configuration.getExecutablePath())
+          .thenReturn(filename);
+        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(new CliTextResult("", "100.0.0"));
+        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+          .thenAnswer(x -> x.getArgument(3));
+
+        new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
+
+        Mockito.verify(this.configuration).getExecutablePath();
+        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)),
+                                               argThat(x -> x.size() == 1 && x.get(0).equals("--version")));
+        Mockito.verify(this.cache).setIsCliInstalled(true);
+        Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
+        Mockito.verify(this.upgrader, never()).upgrade(anyString(), anyString(), anyString(), any(), any());
     }
 
     @Test
@@ -90,7 +146,7 @@ public class AutomateCliServiceTests {
 
         var result = this.service.tryGetExecutableStatus("acurrentdirectory", "notavalidfilepath");
 
-        assertEquals(CliVersionCompatibility.Unknown, result.getCompatibility());
+        assertEquals(CliVersionCompatibility.UNKNOWN, result.getCompatibility());
     }
 
     @Test
@@ -100,7 +156,7 @@ public class AutomateCliServiceTests {
 
         var result = this.service.tryGetExecutableStatus("acurrentdirectory", filename);
 
-        assertEquals(CliVersionCompatibility.Unknown, result.getCompatibility());
+        assertEquals(CliVersionCompatibility.UNKNOWN, result.getCompatibility());
     }
 
     @Test
@@ -112,7 +168,7 @@ public class AutomateCliServiceTests {
 
         var result = this.service.tryGetExecutableStatus("acurrentdirectory", filename);
 
-        assertEquals(CliVersionCompatibility.Unknown, result.getCompatibility());
+        assertEquals(CliVersionCompatibility.UNKNOWN, result.getCompatibility());
     }
 
     @Test
@@ -125,7 +181,7 @@ public class AutomateCliServiceTests {
         var result = this.service.tryGetExecutableStatus("acurrentdirectory", filename);
 
         assertEquals("0.0.1", result.getVersion());
-        assertEquals(CliVersionCompatibility.UnSupported, result.getCompatibility());
+        assertEquals(CliVersionCompatibility.INCOMPATIBLE, result.getCompatibility());
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

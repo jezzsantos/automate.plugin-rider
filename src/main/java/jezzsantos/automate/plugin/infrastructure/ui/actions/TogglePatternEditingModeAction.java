@@ -20,20 +20,6 @@ public class TogglePatternEditingModeAction extends ToggleAction {
     }
 
     @Override
-    public void update(@NotNull AnActionEvent e) {
-
-        var project = e.getProject();
-        if (project != null) {
-            var application = IAutomateApplication.getInstance(project);
-            this.selected = application.getEditingMode() == EditingMode.Patterns;
-        }
-
-        super.update(e);
-
-        SetPresentation(e);
-    }
-
-    @Override
     public boolean isSelected(@NotNull AnActionEvent anActionEvent) {
 
         return this.selected;
@@ -50,10 +36,24 @@ public class TogglePatternEditingModeAction extends ToggleAction {
         if (project != null) {
             if (selected) {
                 var application = IAutomateApplication.getInstance(project);
-                application.setEditingMode(EditingMode.Patterns);
+                application.setEditingMode(EditingMode.PATTERNS);
                 this.onPerformed.run();
             }
         }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+
+        var project = e.getProject();
+        if (project != null) {
+            var application = IAutomateApplication.getInstance(project);
+            this.selected = application.getEditingMode() == EditingMode.PATTERNS;
+        }
+
+        super.update(e);
+
+        SetPresentation(e);
     }
 
     private void SetPresentation(@NotNull AnActionEvent e) {

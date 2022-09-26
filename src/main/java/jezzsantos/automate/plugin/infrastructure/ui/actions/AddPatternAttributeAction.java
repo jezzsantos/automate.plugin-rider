@@ -42,7 +42,7 @@ public class AddPatternAttributeAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
+            isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
         var isAttributeSite = getParentElement(e) != null;

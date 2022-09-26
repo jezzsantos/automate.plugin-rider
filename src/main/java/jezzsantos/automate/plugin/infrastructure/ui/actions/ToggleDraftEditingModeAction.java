@@ -20,20 +20,6 @@ public class ToggleDraftEditingModeAction extends ToggleAction {
     }
 
     @Override
-    public void update(@NotNull AnActionEvent e) {
-
-        var project = e.getProject();
-        if (project != null) {
-            var application = IAutomateApplication.getInstance(project);
-            this.selected = application.getEditingMode() == EditingMode.Drafts;
-        }
-
-        super.update(e);
-
-        SetPresentation(e);
-    }
-
-    @Override
     public boolean isSelected(@NotNull AnActionEvent anActionEvent) {
 
         return this.selected;
@@ -50,10 +36,24 @@ public class ToggleDraftEditingModeAction extends ToggleAction {
         if (project != null) {
             if (selected) {
                 var application = IAutomateApplication.getInstance(project);
-                application.setEditingMode(EditingMode.Drafts);
+                application.setEditingMode(EditingMode.DRAFTS);
                 this.onPerformed.run();
             }
         }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+
+        var project = e.getProject();
+        if (project != null) {
+            var application = IAutomateApplication.getInstance(project);
+            this.selected = application.getEditingMode() == EditingMode.DRAFTS;
+        }
+
+        super.update(e);
+
+        SetPresentation(e);
     }
 
     private void SetPresentation(@NotNull AnActionEvent e) {

@@ -38,7 +38,7 @@ public class InstallToolkitToolbarAction extends AnAction {
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             isInstalled = application.isCliInstalled();
-            isDraftEditingMode = application.getEditingMode() == EditingMode.Drafts;
+            isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
         presentation.setEnabledAndVisible(isInstalled && isDraftEditingMode);
     }

@@ -27,8 +27,8 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
         if (application.isCliInstalled()) {
             var localState = application.listAllAutomation(false);
             if (localState.getPatterns().isEmpty()) {
-                if (application.getEditingMode() != EditingMode.Drafts) {
-                    application.setEditingMode(EditingMode.Drafts);
+                if (application.getEditingMode() != EditingMode.DRAFTS) {
+                    application.setEditingMode(EditingMode.DRAFTS);
                 }
                 if (application.isAuthoringMode()) {
                     application.setAuthoringMode(false);
@@ -36,8 +36,8 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
             }
             else {
                 if (localState.getToolkits().isEmpty()) {
-                    if (application.getEditingMode() != EditingMode.Patterns) {
-                        application.setEditingMode(EditingMode.Patterns);
+                    if (application.getEditingMode() != EditingMode.PATTERNS) {
+                        application.setEditingMode(EditingMode.PATTERNS);
                     }
                     if (!application.isAuthoringMode()) {
                         application.setAuthoringMode(true);

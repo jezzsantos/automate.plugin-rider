@@ -40,7 +40,7 @@ public class DeletePatternAttributeAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isPatternEditingMode = application.getEditingMode() == EditingMode.Patterns;
+            isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
         var isAttributeSite = getAttribute(e) != null;
