@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.settings;
 
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.ui.DarculaColors;
 import com.intellij.ui.components.JBCheckBox;
@@ -11,6 +12,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.services.cli.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
@@ -23,15 +25,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URI;
+
+import static jezzsantos.automate.plugin.common.General.toHtmlLink;
 
 public class ApplicationSettingsComponent {
 
     private final JPanel minPanel;
     private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.AuthoringMode.Label.Message"));
     private final JBCheckBox viewCliLog = new JBCheckBox(AutomateBundle.message("settings.ViewCliLog.Label.Title"));
-    private final TextFieldWithBrowseButtonAndHint pathToAutomateExecutable = new TextFieldWithBrowseButtonAndHint();
-    private final JBLabel testPathToAutomateResult = new JBLabel();
+    private final TextFieldWithBrowseButtonAndHint executablePath = new TextFieldWithBrowseButtonAndHint();
+    private final JBLabel executablePathTestResult = new JBLabel();
     private final JBLabel helpLink = new JBLabel();
     private final JBCheckBox cliInstallPolicy = new JBCheckBox(AutomateBundle.message("settings.CliInstallPolicy.Label.Title"));
     private final String currentDirectory;
@@ -40,11 +43,11 @@ public class ApplicationSettingsComponent {
 
         var automateService = IAutomateCliService.getInstance();
         var defaultInstallLocation = automateService.getDefaultExecutableLocation();
-        this.pathToAutomateExecutable.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
-        this.pathToAutomateExecutable.setPreferredSize(new Dimension(380, this.pathToAutomateExecutable.getHeight()));
-        this.pathToAutomateExecutable.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, null,
-                                                              FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
-        this.pathToAutomateExecutable.getTextField().getDocument().addDocumentListener(new DocumentListener() {
+        this.executablePath.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
+        this.executablePath.setPreferredSize(new Dimension(380, this.executablePath.getHeight()));
+        this.executablePath.addBrowseFolderListener(AutomateBundle.message("settings.PathToAutomateExecutable.Picker.Title"), null, null,
+                                                    FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
+        this.executablePath.getTextField().getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {setCliInstallPolicyEnabled();}
 
@@ -56,18 +59,18 @@ public class ApplicationSettingsComponent {
         });
         var testPathToAutomatePanel = new JPanel();
         testPathToAutomatePanel.setLayout(new BorderLayout());
-        testPathToAutomatePanel.add(this.pathToAutomateExecutable, BorderLayout.LINE_START);
+        testPathToAutomatePanel.add(this.executablePath, BorderLayout.LINE_START);
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateService));
-        initHelpLink(AutomateConstants.InstallationInstructionsUrl, AutomateBundle.message("settings.HelpLink.Title"));
+        initHelpLink();
         this.helpLink.setVisible(false);
 
         this.minPanel = FormBuilder.createFormBuilder()
           .addComponent(this.authoringMode, 1)
           .addLabeledComponent(new JBLabel(AutomateBundle.message("settings.PathToAutomateExecutable.Label.Title", AutomateConstants.ExecutableName)), testPathToAutomatePanel, 1,
                                false)
-          .addComponentToRightColumn(this.testPathToAutomateResult)
+          .addComponentToRightColumn(this.executablePathTestResult)
           .addComponentToRightColumn(this.helpLink)
           .addComponentToRightColumn(this.cliInstallPolicy)
           .addComponent(this.viewCliLog, 1)
@@ -113,14 +116,14 @@ public class ApplicationSettingsComponent {
     }
 
     @NotNull
-    public String getPathToAutomateExecutable() {
+    public StringWithImplicitDefault getExecutablePath() {
 
-        return this.pathToAutomateExecutable.getText();
+        return ApplicationSettingsState.createExecutablePathWithValue(this.executablePath.getText());
     }
 
-    public void setPathToAutomateExecutable(String value) {
+    public void setExecutablePath(StringWithImplicitDefault value) {
 
-        this.pathToAutomateExecutable.setText(value);
+        this.executablePath.setText(value.getValue());
     }
 
     @NotNull
@@ -138,13 +141,14 @@ public class ApplicationSettingsComponent {
 
     private void setCliInstallPolicyEnabled() {
 
-        var text = this.pathToAutomateExecutable.getText();
+        var text = this.executablePath.getText();
         this.cliInstallPolicy.setEnabled(text.isEmpty());
     }
 
     private void onTestPathToAutomate(ActionEvent ignored, @NotNull IAutomateCliService automateService) {
 
-        var executablePath = this.pathToAutomateExecutable.getText();
+        var testText = this.executablePath.getText();
+        var executablePath = ApplicationSettingsState.createExecutablePathWithValue(testText);
         var executableStatus = automateService.tryGetExecutableStatus(this.currentDirectory, executablePath);
 
         displayVersionInfo(executableStatus);
@@ -157,34 +161,35 @@ public class ApplicationSettingsComponent {
         switch (compatibility) {
             case COMPATIBLE -> {
                 this.helpLink.setVisible(false);
-                this.testPathToAutomateResult.setFontColor(UIUtil.FontColor.NORMAL);
-                this.testPathToAutomateResult.setText(
+                this.executablePathTestResult.setFontColor(UIUtil.FontColor.NORMAL);
+                this.executablePathTestResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Supported.Message", executableName, executableStatus.getVersion()));
             }
             case INCOMPATIBLE -> {
                 this.helpLink.setVisible(true);
-                this.testPathToAutomateResult.setForeground(DarculaColors.RED);
-                this.testPathToAutomateResult.setText(
+                this.executablePathTestResult.setForeground(DarculaColors.RED);
+                this.executablePathTestResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Unsupported.Message", executableName, executableStatus.getMinCompatibleVersion()));
             }
             default -> {
                 this.helpLink.setVisible(true);
-                this.testPathToAutomateResult.setForeground(DarculaColors.RED);
-                this.testPathToAutomateResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Unknown.Message", executableName));
+                this.executablePathTestResult.setForeground(DarculaColors.RED);
+                this.executablePathTestResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Unknown.Message", executableName));
             }
         }
     }
 
-    private void initHelpLink(final String url, String text) {
+    private void initHelpLink() {
 
-        this.helpLink.setText("<html><a href=\"\">" + text + "</a></html>");
+        this.helpLink.setText(
+          "<html>" + toHtmlLink(AutomateConstants.InstallationInstructionsUrl, AutomateBundle.message("general.ApplicationSettingsComponent.MoreInfoLink.Title")) + "</html>");
         this.helpLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.helpLink.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
 
                 try {
-                    Desktop.getDesktop().browse(new URI(url));
+                    BrowserUtil.browse(AutomateConstants.InstallationInstructionsUrl);
                 } catch (Exception ignored) {
                 }
             }

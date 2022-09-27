@@ -5,6 +5,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.common.Try;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ public class AutomateCliServiceTests {
 
         this.configuration = Mockito.mock(IApplicationConfiguration.class);
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn("anexecutablepath");
+          .thenReturn(StringWithImplicitDefault.fromValue("anexecutablepath"));
         this.cache = Mockito.mock(ICliResponseCache.class);
         Mockito.when(this.cache.isCliInstalled(any()))
           .thenReturn(true);
@@ -49,7 +50,7 @@ public class AutomateCliServiceTests {
           .thenReturn("aninstallationdirectory");
         this.cliRunner = Mockito.mock(IAutomateCliRunner.class);
         this.upgrader = Mockito.mock(ICliUpgrader.class);
-        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
           .thenAnswer(x -> x.getArgument(3));
         this.service = new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
     }
@@ -61,21 +62,22 @@ public class AutomateCliServiceTests {
         var executableName = this.service.getExecutableName();
         var filename = createTemporaryFile(executableName);
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn(filename);
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(StringWithImplicitDefault.fromValue(filename));
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("anerror", ""));
-        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
           .thenReturn(new CliExecutableStatus(executableName, "100.0.0"));
 
         new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
 
         Mockito.verify(this.configuration).getExecutablePath();
-        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)),
+        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithImplicitDefault.fromValue(filename))),
                                                argThat(x -> x.size() == 1 && x.get(0).equals("--version")));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
         Mockito.verify(this.upgrader)
-          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)), argThat(x -> x.equals(executableName)), any(), any());
+          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithImplicitDefault.fromValue(filename))), argThat(x -> x.equals(executableName)),
+                   any(), any());
     }
 
     @Test
@@ -85,21 +87,22 @@ public class AutomateCliServiceTests {
         var executableName = this.service.getExecutableName();
         var filename = createTemporaryFile(executableName);
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn(filename);
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(StringWithImplicitDefault.fromValue(filename));
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("", "0.0.0"));
-        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
           .thenReturn(new CliExecutableStatus(executableName, "100.0.0"));
 
         new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
 
         Mockito.verify(this.configuration).getExecutablePath();
-        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)),
+        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithImplicitDefault.fromValue(filename))),
                                                argThat(x -> x.size() == 1 && x.get(0).equals("--version")));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
         Mockito.verify(this.upgrader)
-          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)), argThat(x -> x.equals(executableName)), any(), any());
+          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithImplicitDefault.fromValue(filename))), argThat(x -> x.equals(executableName)),
+                   any(), any());
     }
 
     @Test
@@ -108,20 +111,20 @@ public class AutomateCliServiceTests {
         Mockito.reset(this.cliRunner, this.cache, this.configuration, this.upgrader);
         var filename = createTemporaryFile(this.service.getExecutableName());
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn(filename);
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(StringWithImplicitDefault.fromValue(filename));
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("", "100.0.0"));
-        Mockito.when(this.upgrader.upgrade(anyString(), anyString(), anyString(), any(), any()))
+        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
           .thenAnswer(x -> x.getArgument(3));
 
         new AutomateCliService(this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
 
         Mockito.verify(this.configuration).getExecutablePath();
-        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(filename)),
+        Mockito.verify(this.cliRunner).execute(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithImplicitDefault.fromValue(filename))),
                                                argThat(x -> x.size() == 1 && x.get(0).equals("--version")));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
-        Mockito.verify(this.upgrader, never()).upgrade(anyString(), anyString(), anyString(), any(), any());
+        Mockito.verify(this.upgrader, never()).upgrade(anyString(), any(), anyString(), any(), any());
     }
 
     @Test
@@ -144,7 +147,7 @@ public class AutomateCliServiceTests {
     @Test
     public void whenTryGetExecutableStatusAndExecutableNotOnDisk_ThenReturnsStatus() {
 
-        var result = this.service.tryGetExecutableStatus("acurrentdirectory", "notavalidfilepath");
+        var result = this.service.tryGetExecutableStatus("acurrentdirectory", StringWithImplicitDefault.fromValue("notavalidfilepath"));
 
         assertEquals(CliVersionCompatibility.UNKNOWN, result.getCompatibility());
     }
@@ -154,7 +157,7 @@ public class AutomateCliServiceTests {
 
         var filename = createTemporaryFile();
 
-        var result = this.service.tryGetExecutableStatus("acurrentdirectory", filename);
+        var result = this.service.tryGetExecutableStatus("acurrentdirectory", StringWithImplicitDefault.fromValue(filename));
 
         assertEquals(CliVersionCompatibility.UNKNOWN, result.getCompatibility());
     }
@@ -163,10 +166,10 @@ public class AutomateCliServiceTests {
     public void whenTryGetExecutableStatusAndInvalidExecutable_ThenReturnsStatus() {
 
         var filename = createTemporaryFile(this.service.getExecutableName());
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("anerror", ""));
 
-        var result = this.service.tryGetExecutableStatus("acurrentdirectory", filename);
+        var result = this.service.tryGetExecutableStatus("acurrentdirectory", StringWithImplicitDefault.fromValue(filename));
 
         assertEquals(CliVersionCompatibility.UNKNOWN, result.getCompatibility());
     }
@@ -175,10 +178,10 @@ public class AutomateCliServiceTests {
     public void whenTryGetExecutableStatusAndUnsupportedVersion_ThenReturnsStatus() {
 
         var filename = createTemporaryFile(this.service.getExecutableName());
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("", "0.0.1"));
 
-        var result = this.service.tryGetExecutableStatus("acurrentdirectory", filename);
+        var result = this.service.tryGetExecutableStatus("acurrentdirectory", StringWithImplicitDefault.fromValue(filename));
 
         assertEquals("0.0.1", result.getVersion());
         assertEquals(CliVersionCompatibility.INCOMPATIBLE, result.getCompatibility());
@@ -190,7 +193,7 @@ public class AutomateCliServiceTests {
 
         var filename = createTemporaryFile();
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn(filename);
+          .thenReturn(StringWithImplicitDefault.fromValue(filename));
         Mockito.when(this.cache.isCliInstalled(any()))
           .thenAnswer((Answer) invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
 
@@ -205,8 +208,8 @@ public class AutomateCliServiceTests {
 
         var filename = createTemporaryFile(this.service.getExecutableName());
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn(filename);
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(StringWithImplicitDefault.fromValue(filename));
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("", "0.0.1"));
         Mockito.when(this.cache.isCliInstalled(any()))
           .thenAnswer((Answer) invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
@@ -222,8 +225,8 @@ public class AutomateCliServiceTests {
 
         var filename = createTemporaryFile(this.service.getExecutableName());
         Mockito.when(this.configuration.getExecutablePath())
-          .thenReturn(filename);
-        Mockito.when(this.cliRunner.execute(anyString(), anyString(), anyList()))
+          .thenReturn(StringWithImplicitDefault.fromValue(filename));
+        Mockito.when(this.cliRunner.execute(anyString(), any(), anyList()))
           .thenReturn(new CliTextResult("", "100.0.0"));
         Mockito.when(this.cache.isCliInstalled(any()))
           .thenAnswer((Answer) invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
@@ -237,7 +240,7 @@ public class AutomateCliServiceTests {
     @Test
     public void whenListAllAutomationAndNotCachedAndFails_ThenReturnsEmptyLists() {
 
-        Mockito.when(this.cliRunner.executeStructured(any(), anyString(), anyString(), anyList()))
+        Mockito.when(this.cliRunner.executeStructured(any(), anyString(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.ListAll(any(), anyBoolean()))
           .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
@@ -249,7 +252,7 @@ public class AutomateCliServiceTests {
         assertTrue(result.getDrafts().isEmpty());
         Mockito.verify(this.cliRunner).executeStructured(
           any(), argThat(x -> x.equals("acurrentdirectory")),
-          argThat(x -> x.equals("anexecutablepath")),
+          argThat(x -> x.equals(StringWithImplicitDefault.fromValue("anexecutablepath"))),
           argThat(list -> list.equals(Arrays.asList("list", "all"))));
     }
 
@@ -257,7 +260,7 @@ public class AutomateCliServiceTests {
     @Test
     public void whenListAllAutomationAndNotCached_ThenReturnsCliResult() {
 
-        Mockito.when(this.cliRunner.executeStructured(any(), anyString(), anyString(), anyList()))
+        Mockito.when(this.cliRunner.executeStructured(any(), anyString(), any(), anyList()))
           .thenReturn(new CliStructuredResult(null, new ListAllDefinitionsStructuredOutput()));
         Mockito.when(this.cache.ListAll(any(), anyBoolean()))
           .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
@@ -269,14 +272,14 @@ public class AutomateCliServiceTests {
         assertTrue(result.getDrafts().isEmpty());
         Mockito.verify(this.cliRunner).executeStructured(
           any(), argThat(x -> x.equals("acurrentdirectory")),
-          argThat(x -> x.equals("anexecutablepath")),
+          argThat(x -> x.equals(StringWithImplicitDefault.fromValue("anexecutablepath"))),
           argThat(list -> list.equals(Arrays.asList("list", "all"))));
     }
 
     @Test
     public void whenListAllAutomationAndCached_ThenReturnsCached() {
 
-        Mockito.when(this.cliRunner.executeStructured(any(), anyString(), anyString(), anyList()))
+        Mockito.when(this.cliRunner.executeStructured(any(), anyString(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.ListAll(any(), anyBoolean()))
           .thenReturn(new AllStateLite());
@@ -286,7 +289,7 @@ public class AutomateCliServiceTests {
         assertTrue(result.getPatterns().isEmpty());
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
-        Mockito.verify(this.cliRunner, never()).executeStructured(any(), anyString(), anyString(), anyList());
+        Mockito.verify(this.cliRunner, never()).executeStructured(any(), anyString(), any(), anyList());
     }
 
     private String createTemporaryFile(String name) {

@@ -5,6 +5,7 @@ import com.jetbrains.rd.util.reactive.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class StringPropertyConverter extends Converter<Property<String>> {
 
     @Override
@@ -14,8 +15,8 @@ public class StringPropertyConverter extends Converter<Property<String>> {
     }
 
     @Override
-    public @Nullable String toString(@NotNull Property<String> string) {
+    public @Nullable String toString(@NotNull Property<String> property) {
 
-        return string.getValue();
+        return property.getValue();
     }
 }

@@ -12,10 +12,13 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
+import jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliService;
+import jezzsantos.automate.plugin.infrastructure.services.cli.OsPlatform;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.CliInstallPolicyPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.EditingModePropertyConverter;
-import jezzsantos.automate.plugin.infrastructure.settings.converters.StringPropertyConverter;
+import jezzsantos.automate.plugin.infrastructure.settings.converters.StringWithDefaultPropertyConverter;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,16 +26,17 @@ import org.jetbrains.annotations.Nullable;
 @State(name = "jezzsantos.automate.infrastructure.settings.ApplicationSettingsState", storages = @Storage("automate.xml"))
 public class ApplicationSettingsState implements PersistentStateComponentWithModificationTracker<ApplicationSettingsState> {
 
+    public static final String defaultExecutablePath = AutomateCliService.getDefaultExecutableLocation(new OsPlatform());
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
     @OptionTag(converter = EditingModePropertyConverter.class)
     public final Property<EditingMode> editingMode = new Property<>(EditingMode.DRAFTS);
-    @OptionTag(converter = StringPropertyConverter.class)
-    public final Property<String> pathToAutomateExecutable = new Property<>("");
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> viewCliLog = new Property<>(false);
     @OptionTag(converter = CliInstallPolicyPropertyConverter.class)
     public final Property<CliInstallPolicy> cliInstallPolicy = new Property<>(CliInstallPolicy.AUTO_UPGRADE);
+    @OptionTag(converter = StringWithDefaultPropertyConverter.class)
+    public final Property<StringWithImplicitDefault> executablePath = new Property<>(createExecutablePathWithDefaultValue());
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     @UsedImplicitly
@@ -41,9 +45,22 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
         registerAllPropertyToIncrementTrackerOnChanges(this);
     }
 
+    @NotNull
     public static ApplicationSettingsState getInstance() {
 
         return ApplicationManager.getApplication().getService(ApplicationSettingsState.class);
+    }
+
+    @NotNull
+    public static StringWithImplicitDefault createExecutablePathWithValue(@NotNull String value) {
+
+        return new StringWithImplicitDefault(defaultExecutablePath, value);
+    }
+
+    @NotNull
+    public static StringWithImplicitDefault createExecutablePathWithDefaultValue() {
+
+        return new StringWithImplicitDefault(defaultExecutablePath);
     }
 
     @Nullable
@@ -70,7 +87,7 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
 
         incrementTrackerWhenPropertyChanges(state.authoringMode);
         incrementTrackerWhenPropertyChanges(state.editingMode);
-        incrementTrackerWhenPropertyChanges(state.pathToAutomateExecutable);
+        incrementTrackerWhenPropertyChanges(state.executablePath);
         incrementTrackerWhenPropertyChanges(state.viewCliLog);
         incrementTrackerWhenPropertyChanges(state.cliInstallPolicy);
     }

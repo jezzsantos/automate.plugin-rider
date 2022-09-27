@@ -17,8 +17,8 @@ public class CliInstallPolicyPropertyConverter extends Converter<Property<CliIns
     }
 
     @Override
-    public @Nullable String toString(@NotNull Property<CliInstallPolicy> mode) {
+    public @Nullable String toString(@NotNull Property<CliInstallPolicy> property) {
 
-        return mode.getValue().toString();
+        return property.getValue().toString();
     }
 }

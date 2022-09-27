@@ -6,6 +6,7 @@ import com.intellij.openapi.Disposable;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
@@ -205,14 +206,14 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     @NotNull
     @Override
-    public CliTextResult execute(@NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args) {
+    public CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath, @NotNull List<String> args) {
 
         return executeInternal(currentDirectory, executablePath, args, false);
     }
 
     @NotNull
     @Override
-    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args) {
+    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath, @NotNull List<String> args) {
 
         var result = executeInternal(currentDirectory, executablePath, args, true);
         if (result.isError()) {
@@ -296,6 +297,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     @Nullable
     private String getVersionFromOutput(@NotNull String output) {
 
+        @SuppressWarnings("RegExpSimplifiable")
         var pattern = Pattern.compile("\\(version '(?<ver>[\\d]{1,3}\\.[\\d]{1,3}\\.[\\d]{1,3}[\\-\\w]*)'\\)");
         var expression = pattern.matcher(output);
         if (!expression.find()) {
@@ -390,10 +392,10 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull String executablePath, @NotNull List<String> args, boolean isStructured) {
+    private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath, @NotNull List<String> args, boolean isStructured) {
 
         var command = new ArrayList<String>();
-        command.add(executablePath);
+        command.add(executablePath.getExplicitValue());
         command.addAll(args);
         if (isStructured) {
             var found = new AtomicBoolean(false);
@@ -419,7 +421,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             var cause = Objects.requireNonNull(result.getFailureCause());
             switch (cause) {
                 case FailedToStart -> {
-                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", executablePath);
+                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", executablePath.getExplicitValue());
                     logEntry(error, CliLogEntryType.ERROR);
                     return new CliTextResult(error, "");
                 }

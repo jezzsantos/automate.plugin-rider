@@ -5,6 +5,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import jezzsantos.automate.plugin.infrastructure.IntelliJTaskRunner;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.lang.module.ModuleDescriptor;
+
+import static jezzsantos.automate.plugin.common.General.toHtmlLink;
 
 public class AutomateCliUpgrader implements ICliUpgrader {
 
@@ -34,21 +37,22 @@ public class AutomateCliUpgrader implements ICliUpgrader {
     }
 
     @Override
-    public @NotNull CliExecutableStatus upgrade(@NotNull String currentDirectory, @NotNull String executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy) {
+    public @NotNull CliExecutableStatus upgrade(@NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy) {
 
         switch (executableStatus.getCompatibility()) {
             case UNKNOWN -> {
                 if (installPolicy == CliInstallPolicy.NONE) {
                     alertInstallerError(
-                      AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.NotInstalled.Message", executableName, AutomateConstants.InstallationInstructionsUrl));
+                      AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.NotInstalled.Message", executableName,
+                                             toHtmlLink(AutomateConstants.InstallationInstructionsUrl)));
                 }
                 else {
                     if (installPolicy == CliInstallPolicy.AUTO_UPGRADE) {
-                        if (executablePath.isEmpty()) {
+                        if (!executablePath.isCustomized()) {
                             var latestVersion = tryInstallLatestCli(currentDirectory, false);
                             if (latestVersion == null) {
                                 alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallFailed.Message", executableName,
-                                                                           AutomateConstants.InstallationInstructionsUrl));
+                                                                           toHtmlLink(AutomateConstants.InstallationInstructionsUrl)));
                             }
                             else {
                                 executableStatus = new CliExecutableStatus(executableName, latestVersion.toString());
@@ -58,7 +62,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                         }
                         else {
                             alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallForbidden.Message", executableName,
-                                                                       executablePath, AutomateConstants.InstallationInstructionsUrl));
+                                                                       executablePath.getExplicitValue(), toHtmlLink(AutomateConstants.InstallationInstructionsUrl)));
                         }
                     }
                 }
@@ -72,12 +76,12 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                 }
                 else {
                     if (installPolicy == CliInstallPolicy.AUTO_UPGRADE) {
-                        if (executablePath.isEmpty()) {
+                        if (!executablePath.isCustomized()) {
                             var latestVersion = tryInstallLatestCli(currentDirectory, true);
                             if (latestVersion == null) {
                                 alertInstallerError(
                                   AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeFailed.Message", executableName, currentVersion, neededVersion,
-                                                         AutomateConstants.InstallationInstructionsUrl));
+                                                         toHtmlLink(AutomateConstants.InstallationInstructionsUrl)));
                             }
                             else {
                                 executableStatus = new CliExecutableStatus(executableName, latestVersion.toString());
@@ -87,7 +91,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                         }
                         else {
                             alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeForbidden.Message", executableName,
-                                                                       executablePath, AutomateConstants.InstallationInstructionsUrl));
+                                                                       executablePath.getExplicitValue(), toHtmlLink(AutomateConstants.InstallationInstructionsUrl)));
                         }
                     }
                 }

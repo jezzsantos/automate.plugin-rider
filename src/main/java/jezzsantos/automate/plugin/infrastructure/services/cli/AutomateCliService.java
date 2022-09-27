@@ -19,6 +19,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableS
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.IntelliJNotifier;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class AutomateCliService implements IAutomateCliService {
 
@@ -75,8 +75,8 @@ public class AutomateCliService implements IAutomateCliService {
         this.configuration.addListener(e -> {
 
             if (e.getPropertyName().equalsIgnoreCase("ExecutablePath")) {
-                var path = (String) e.getNewValue();
-                logChangeInExecutablePath(Objects.requireNonNullElse(path, ""));
+                var path = (StringWithImplicitDefault) e.getNewValue();
+                logChangeInExecutablePath(path);
             }
         });
 
@@ -89,6 +89,84 @@ public class AutomateCliService implements IAutomateCliService {
         return (platform.getIsWindowsOs()
           ? String.format("%s.exe", AutomateConstants.ExecutableName)
           : AutomateConstants.ExecutableName);
+    }
+
+    @NotNull
+    public static String getDefaultExecutableLocation(@NotNull IOsPlatform platform) {
+
+        return Paths.get(platform.getDotNetInstallationDirectory()).resolve(getExecutableName(platform)).toString();
+    }
+
+    @NotNull
+    @Override
+    public String getExecutableName() {
+
+        return getExecutableName(this.platform);
+    }
+
+    @NotNull
+    @Override
+    public String getDefaultExecutableLocation() {
+
+        return getDefaultExecutableLocation(this.platform);
+    }
+
+    @NotNull
+    @Override
+    public CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath) {
+
+        var location = executablePath.getExplicitValue();
+        var file = new File(location);
+        var executableName = getExecutableName();
+
+        if (!file.isFile()) {
+            return new CliExecutableStatus(executableName);
+        }
+
+        if (!file.getName().equalsIgnoreCase(executableName)) {
+            return new CliExecutableStatus(executableName);
+        }
+
+        var result = this.cliRunner.execute(currentDirectory, executablePath, new ArrayList<>(List.of("--version")));
+        if (result.isError()) {
+            return new CliExecutableStatus(executableName);
+        }
+
+        return new CliExecutableStatus(executableName, result.getOutput());
+    }
+
+    @Override
+    public boolean isCliInstalled(@NotNull String currentDirectory) {
+
+        return this.cache.isCliInstalled(() -> {
+            var executableStatus = tryGetExecutableStatus(currentDirectory, this.configuration.getExecutablePath());
+            return executableStatus.getCompatibility() == CliVersionCompatibility.COMPATIBLE;
+        });
+    }
+
+    @Override
+    public void refreshCliExecutableStatus() {
+
+        this.cache.invalidateIsCliInstalled();
+    }
+
+    @NotNull
+    @Override
+    public List<CliLogEntry> getCliLog() {
+
+        return this.cliRunner.getLogs();
+    }
+
+    @Override
+    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
+
+        this.cliRunner.addLogListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
+
+        this.cliRunner.removeLogListener(listener);
     }
 
     @NotNull
@@ -446,78 +524,6 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
-    @NotNull
-    @Override
-    public String getExecutableName() {
-
-        return getExecutableName(this.platform);
-    }
-
-    @NotNull
-    @Override
-    public String getDefaultExecutableLocation() {
-
-        return Paths.get(this.platform.getDotNetInstallationDirectory()).resolve(this.getExecutableName()).toString();
-    }
-
-    @NotNull
-    @Override
-    public CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull String executablePath) {
-
-        var location = getExecutablePathSafe(executablePath);
-        var file = new File(location);
-        var executableName = getExecutableName();
-
-        if (!file.isFile()) {
-            return new CliExecutableStatus(executableName);
-        }
-
-        if (!file.getName().equalsIgnoreCase(executableName)) {
-            return new CliExecutableStatus(executableName);
-        }
-
-        var result = this.cliRunner.execute(currentDirectory, location, new ArrayList<>(List.of("--version")));
-        if (result.isError()) {
-            return new CliExecutableStatus(executableName);
-        }
-
-        return new CliExecutableStatus(executableName, result.getOutput());
-    }
-
-    @NotNull
-    @Override
-    public List<CliLogEntry> getCliLog() {
-
-        return this.cliRunner.getLogs();
-    }
-
-    @Override
-    public boolean isCliInstalled(@NotNull String currentDirectory) {
-
-        return this.cache.isCliInstalled(() -> {
-            var executableStatus = tryGetExecutableStatus(currentDirectory, this.configuration.getExecutablePath());
-            return executableStatus.getCompatibility() == CliVersionCompatibility.COMPATIBLE;
-        });
-    }
-
-    @Override
-    public void refreshCliExecutableStatus() {
-
-        this.cache.invalidateIsCliInstalled();
-    }
-
-    @Override
-    public void addPropertyChangedListener(@NotNull PropertyChangeListener listener) {
-
-        this.cliRunner.addLogListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangedListener(@NotNull PropertyChangeListener listener) {
-
-        this.cliRunner.removeLogListener(listener);
-    }
-
     private void init() {
 
         var executablePath = this.configuration.getExecutablePath();
@@ -542,7 +548,7 @@ public class AutomateCliService implements IAutomateCliService {
         }
 
         var executablePath = this.configuration.getExecutablePath();
-        return this.cliRunner.executeStructured(outputClass, currentDirectory, getExecutablePathSafe(executablePath), args);
+        return this.cliRunner.executeStructured(outputClass, currentDirectory, executablePath, args);
     }
 
     @NotNull
@@ -556,26 +562,18 @@ public class AutomateCliService implements IAutomateCliService {
         return buffer.toString();
     }
 
-    @NotNull
-    private String getExecutablePathSafe(@NotNull String executablePath) {
-
-        return executablePath.isEmpty()
-          ? getDefaultExecutableLocation()
-          : executablePath;
-    }
-
-    private void logChangeInExecutablePath(@NotNull String executablePath) {
+    private void logChangeInExecutablePath(@NotNull StringWithImplicitDefault executablePath) {
 
         var executableStatus = refreshExecutableStatus(executablePath);
 
         logChangeInExecutablePath(executableStatus, executablePath);
     }
 
-    private void logChangeInExecutablePath(@NotNull CliExecutableStatus executableStatus, @NotNull String executablePath) {
+    private void logChangeInExecutablePath(@NotNull CliExecutableStatus executableStatus, @NotNull StringWithImplicitDefault executablePath) {
 
         String message;
         CliLogEntryType type;
-        var path = getExecutablePathSafe(executablePath);
+        var path = executablePath.getExplicitValue();
         switch (executableStatus.getCompatibility()) {
             case INCOMPATIBLE -> {
                 message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", path,
@@ -597,7 +595,7 @@ public class AutomateCliService implements IAutomateCliService {
     }
 
     @NotNull
-    private CliExecutableStatus refreshExecutableStatus(@NotNull String executablePath) {
+    private CliExecutableStatus refreshExecutableStatus(@NotNull StringWithImplicitDefault executablePath) {
 
         var currentDirectory = this.platform.getDotNetInstallationDirectory();
         var executableStatus = tryGetExecutableStatus(currentDirectory, executablePath);

@@ -17,8 +17,8 @@ public class EditingModePropertyConverter extends Converter<Property<EditingMode
     }
 
     @Override
-    public @Nullable String toString(@NotNull Property<EditingMode> mode) {
+    public @Nullable String toString(@NotNull Property<EditingMode> property) {
 
-        return mode.getValue().toString();
+        return property.getValue().toString();
     }
 }

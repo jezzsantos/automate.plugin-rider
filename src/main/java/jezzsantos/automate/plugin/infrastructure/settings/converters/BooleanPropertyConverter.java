@@ -14,8 +14,8 @@ public class BooleanPropertyConverter extends Converter<Property<Boolean>> {
     }
 
     @Override
-    public @Nullable String toString(@NotNull Property<Boolean> booleanProperty) {
+    public @Nullable String toString(@NotNull Property<Boolean> property) {
 
-        return booleanProperty.getValue().toString();
+        return property.getValue().toString();
     }
 }

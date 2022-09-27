@@ -5,6 +5,8 @@ import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
+import jezzsantos.automate.plugin.common.General;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
@@ -45,7 +47,7 @@ public class AutomateCliUpgraderTests {
           .thenReturn(ModuleDescriptor.Version.parse("99.0.0"));
         var status = new CliExecutableStatus("anexecutablename");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", false);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.INFO), anyString(),
@@ -61,12 +63,12 @@ public class AutomateCliUpgraderTests {
           .thenReturn(null);
         var status = new CliExecutableStatus("anexecutablename");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", false);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallFailed.Message",
-                                                                                         "anexecutablename", AutomateConstants.InstallationInstructionsUrl))));
+                                                                                         "anexecutablename", General.toHtmlLink(AutomateConstants.InstallationInstructionsUrl)))));
         assertEquals(status, result);
     }
 
@@ -74,14 +76,16 @@ public class AutomateCliUpgraderTests {
     public void whenUpgradeAndNotInstalledAndCustomExecutablePath_ThenLogsAndNotifyError() {
 
         var status = new CliExecutableStatus("anexecutablename");
+        var executablePath = StringWithImplicitDefault.fromValue("anexecutablepath");
+        executablePath.setValue("acustomexecutablepath");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "acustomexecutablepath", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", executablePath, "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallForbidden.Message",
                                                                                          "anexecutablename", "acustomexecutablepath",
-                                                                                         AutomateConstants.InstallationInstructionsUrl))));
+                                                                                         General.toHtmlLink(AutomateConstants.InstallationInstructionsUrl)))));
         assertEquals(status, result);
     }
 
@@ -90,12 +94,12 @@ public class AutomateCliUpgraderTests {
 
         var status = new CliExecutableStatus("anexecutablename");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.NONE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.NONE);
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.NotInstalled.Message",
-                                                                                         "anexecutablename", AutomateConstants.InstallationInstructionsUrl))));
+                                                                                         "anexecutablename", General.toHtmlLink(AutomateConstants.InstallationInstructionsUrl)))));
         assertEquals(status, result);
     }
 
@@ -106,7 +110,7 @@ public class AutomateCliUpgraderTests {
           .thenReturn(ModuleDescriptor.Version.parse("99.0.0"));
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", true);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.INFO), anyString(),
@@ -122,13 +126,13 @@ public class AutomateCliUpgraderTests {
           .thenReturn(null);
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", true);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeFailed.Message",
                                                                                          "anexecutablename", "0.0.0", AutomateConstants.MinimumSupportedVersion,
-                                                                                         AutomateConstants.InstallationInstructionsUrl))));
+                                                                                         General.toHtmlLink(AutomateConstants.InstallationInstructionsUrl)))));
         assertEquals(status, result);
     }
 
@@ -136,14 +140,16 @@ public class AutomateCliUpgraderTests {
     public void whenUpgradeAndIncompatibleVersionInstalledAndCustomExecutablePath_ThenLogsAndNotifyError() {
 
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
+        var executablePath = StringWithImplicitDefault.fromValue("anexecutablepath");
+        executablePath.setValue("acustomexecutablepath");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "acustomexecutablepath", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", executablePath, "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeForbidden.Message",
                                                                                          "anexecutablename", "acustomexecutablepath",
-                                                                                         AutomateConstants.InstallationInstructionsUrl))));
+                                                                                         General.toHtmlLink(AutomateConstants.InstallationInstructionsUrl)))));
         assertEquals(status, result);
     }
 
@@ -152,7 +158,7 @@ public class AutomateCliUpgraderTests {
 
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.NONE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.NONE);
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
@@ -166,7 +172,7 @@ public class AutomateCliUpgraderTests {
 
         var status = new CliExecutableStatus("anexecutablename", "100.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", "", "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier, never()).alert(any(), anyString(), anyString());

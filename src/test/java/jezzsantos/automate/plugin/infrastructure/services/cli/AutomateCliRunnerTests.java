@@ -3,6 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 import com.google.gson.Gson;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -77,7 +78,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess("anoutput"));
 
-        var result = this.runner.execute("acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertFalse(result.isError());
         assertEquals("anoutput", result.getOutput());
@@ -92,7 +93,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedToStart());
 
-        var result = this.runner.execute("acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", "anexecutablepath"), result.getError());
@@ -107,7 +108,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithException(new Exception("amessage")));
 
-        var result = this.runner.execute("acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError());
@@ -122,7 +123,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithError("anerror"));
 
-        var result = this.runner.execute("acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertTrue(result.isError());
         assertEquals("anerror", result.getError());
@@ -138,7 +139,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithError(errorJson));
 
-        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertTrue(result.isError());
         assertEquals("anerror", result.getError().getErrorMessage());
@@ -153,7 +154,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithException(new Exception("amessage")));
 
-        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError().getErrorMessage());
@@ -169,12 +170,12 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess(outputJson));
 
-        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", "anexecutablepath", List.of(OutputStructuredShorthand));
+        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of(OutputStructuredShorthand));
 
         Mockito.verify(this.processRunner)
           .start(argThat(x -> x.size() == 2 && x.get(0).equals("anexecutablepath") && x.get(1).equals(OutputStructuredShorthand)), anyString());
 
-        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", "anexecutablepath", List.of("--output-structured"));
+        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of("--output-structured"));
 
         Mockito.verify(this.processRunner)
           .start(argThat(x -> x.size() == 2 && x.get(0).equals("anexecutablepath") && x.get(1).equals("--output-structured")), anyString());
@@ -187,7 +188,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess(outputJson));
 
-        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", "anexecutablepath", List.of());
+        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         Mockito.verify(this.processRunner)
           .start(argThat(x -> x.size() == 2 && x.get(0).equals("anexecutablepath") && x.get(1).equals(OutputStructuredShorthand)), anyString());
@@ -200,7 +201,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess(outputJson));
 
-        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", "anexecutablepath", List.of());
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithImplicitDefault.fromValue("anexecutablepath"), List.of());
 
         assertFalse(result.isError());
         assertEquals("avalue", result.getOutput().Output.get(0).Values.AValue);

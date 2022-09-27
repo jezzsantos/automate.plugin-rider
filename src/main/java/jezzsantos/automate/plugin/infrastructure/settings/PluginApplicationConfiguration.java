@@ -4,12 +4,12 @@ import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Objects;
 
 public class PluginApplicationConfiguration implements IApplicationConfiguration {
 
@@ -25,18 +25,18 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
 
     @NotNull
     @Override
-    public String getExecutablePath() {
+    public StringWithImplicitDefault getExecutablePath() {
 
-        return Objects.requireNonNullElse(this.settings.pathToAutomateExecutable.getValue(), "");
+        return this.settings.executablePath.getValue();
     }
 
     @Override
-    public void setExecutablePath(@NotNull String path) {
+    public void setExecutablePath(@NotNull StringWithImplicitDefault newValue) {
 
-        var oldValue = this.settings.pathToAutomateExecutable.getValue();
-        if (!Intrinsics.areEqual(oldValue, path)) {
-            this.settings.pathToAutomateExecutable.setValue(path);
-            this.support.firePropertyChange("ExecutablePath", oldValue, path);
+        var oldValue = (StringWithImplicitDefault) this.settings.executablePath.getValue();
+        if (!Intrinsics.areEqual(oldValue, newValue)) {
+            this.settings.executablePath.setValue(newValue);
+            this.support.firePropertyChange("ExecutablePath", oldValue, newValue);
         }
     }
 
@@ -47,12 +47,12 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
     }
 
     @Override
-    public void setAuthoringMode(boolean on) {
+    public void setAuthoringMode(boolean newValue) {
 
         var oldValue = (boolean) this.settings.authoringMode.getValue();
-        if (!Intrinsics.areEqual(oldValue, on)) {
-            this.settings.authoringMode.setValue(on);
-            this.support.firePropertyChange("AuthoringMode", oldValue, on);
+        if (!Intrinsics.areEqual(oldValue, newValue)) {
+            this.settings.authoringMode.setValue(newValue);
+            this.support.firePropertyChange("AuthoringMode", oldValue, newValue);
         }
     }
 
@@ -64,12 +64,12 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
     }
 
     @Override
-    public void setEditingMode(EditingMode mode) {
+    public void setEditingMode(EditingMode newValue) {
 
-        var oldValue = this.settings.editingMode.getValue();
-        if (!Intrinsics.areEqual(oldValue, mode)) {
-            this.settings.editingMode.setValue(mode);
-            this.support.firePropertyChange("EditingMode", oldValue, mode);
+        var oldValue = (EditingMode) this.settings.editingMode.getValue();
+        if (!Intrinsics.areEqual(oldValue, newValue)) {
+            this.settings.editingMode.setValue(newValue);
+            this.support.firePropertyChange("EditingMode", oldValue, newValue);
         }
     }
 
@@ -80,12 +80,12 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
     }
 
     @Override
-    public void setViewCliLog(boolean view) {
+    public void setViewCliLog(boolean newValue) {
 
         var oldValue = (boolean) this.settings.viewCliLog.getValue();
-        if (!Intrinsics.areEqual(oldValue, view)) {
-            this.settings.viewCliLog.setValue(view);
-            this.support.firePropertyChange("ViewCliLog", oldValue, view);
+        if (!Intrinsics.areEqual(oldValue, newValue)) {
+            this.settings.viewCliLog.setValue(newValue);
+            this.support.firePropertyChange("ViewCliLog", oldValue, newValue);
         }
     }
 
@@ -96,12 +96,12 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
     }
 
     @Override
-    public void setCliInstallPolicy(CliInstallPolicy policy) {
+    public void setCliInstallPolicy(CliInstallPolicy newValue) {
 
         var oldValue = (CliInstallPolicy) this.settings.cliInstallPolicy.getValue();
-        if (!Intrinsics.areEqual(oldValue, policy)) {
-            this.settings.cliInstallPolicy.setValue(policy);
-            this.support.firePropertyChange("CliInstallPolicy", oldValue, policy);
+        if (!Intrinsics.areEqual(oldValue, newValue)) {
+            this.settings.cliInstallPolicy.setValue(newValue);
+            this.support.firePropertyChange("CliInstallPolicy", oldValue, newValue);
         }
     }
 

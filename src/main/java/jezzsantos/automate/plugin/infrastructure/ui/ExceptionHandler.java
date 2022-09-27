@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui;
 
 import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
@@ -30,7 +31,7 @@ public class ExceptionHandler {
 
         NotificationGroupManager.getInstance()
           .getNotificationGroup(AutomateBundle.message("notification.group.name"))
-          .createNotification(title, message, notificationType)
+          .createNotification(title, message, notificationType, NotificationListener.URL_OPENING_LISTENER)
           .notify(project);
     }
 }
