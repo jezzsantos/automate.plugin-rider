@@ -67,8 +67,12 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
                         append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GREEN));
                     }
                     case WARNING -> {
-                        setIcon(AutomateIcons.StatusWarning);
-                        append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.ORANGE));
+                        setIcon(value.isValidationError()
+                                  ? AutomateIcons.StatusWarning
+                                  : AutomateIcons.StatusInformation);
+                        append(value.getMessage(), value.isValidationError()
+                          ? new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.ORANGE)
+                          : new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.GRAY));
                     }
                     case FAILED -> {
                         setIcon(AutomateIcons.StatusFailed);
@@ -97,10 +101,10 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
         if (hasValidationErrors) {
 
             this.executionResult.getValidationErrors().forEach(validationError -> listModel.addElement(
-              new ListItem(AutomateConstants.CommandExecutionLogItemType.WARNING, String.format("%s: %s", validationError.getPath(), validationError.getMessage()))));
+              new ListItem(AutomateConstants.CommandExecutionLogItemType.WARNING, String.format("%s: %s", validationError.getPath(), validationError.getMessage()), true)));
         }
         else {
-            this.executionResult.getExecutionItems().forEach(item -> listModel.addElement(new ListItem(item.getType(), item.getMessage())));
+            this.executionResult.getExecutionItems().forEach(item -> listModel.addElement(new ListItem(item.getType(), item.getMessage(), false)));
         }
         this.logs.setModel(listModel);
         this.result.setIcon(isSuccess
@@ -247,15 +251,19 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
 
         private final String message;
         private final AutomateConstants.CommandExecutionLogItemType type;
+        private final boolean isValidationError;
 
-        public ListItem(@NotNull AutomateConstants.CommandExecutionLogItemType type, @NotNull String message) {
+        public ListItem(@NotNull AutomateConstants.CommandExecutionLogItemType type, @NotNull String message, boolean isValidationError) {
 
             this.type = type;
             this.message = message;
+            this.isValidationError = isValidationError;
         }
 
         public String getMessage() {return this.message;}
 
         public AutomateConstants.CommandExecutionLogItemType getType() {return this.type;}
+
+        public boolean isValidationError() {return this.isValidationError;}
     }
 }

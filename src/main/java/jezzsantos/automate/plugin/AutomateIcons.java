@@ -12,4 +12,5 @@ public interface AutomateIcons {
     Icon StatusFailed = IconLoader.getIcon("/icons/StatusFailed.svg", AutomateIcons.class);
     Icon StatusSuccess = IconLoader.getIcon("/icons/StatusSuccess.svg", AutomateIcons.class);
     Icon StatusWarning = IconLoader.getIcon("/icons/StatusWarning.svg", AutomateIcons.class);
+    Icon StatusInformation = IconLoader.getIcon("/icons/StatusInformation.svg", AutomateIcons.class);
 }
