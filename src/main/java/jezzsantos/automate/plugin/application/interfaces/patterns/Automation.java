@@ -2,7 +2,7 @@ package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -86,28 +86,24 @@ public class Automation {
 
         String data = "";
         switch (this.type) {
-            case CODE_TEMPLATE_COMMAND:
+            case CODE_TEMPLATE_COMMAND -> {
                 var onceOnly = this.isOneOff
                   ? String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.True.Title"))
                   : String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.False.Title"));
                 data = String.format("%s: %s%s, path: %s",
                                      AutomateBundle.message("general.Automation.CodeTemplateCommand.Template.Title"),
                                      this.templateId, onceOnly, this.targetPath);
-                break;
-            case CLI_COMMAND:
-                data = String.format("%s: %s, %s: %s",
-                                     AutomateBundle.message("general.Automation.CliCommand.ApplicationName.Title"),
-                                     this.applicationName,
-                                     AutomateBundle.message("general.Automation.CliCommand.Arguments.Title"),
-                                     this.arguments);
-                break;
-            case COMMAND_LAUNCH_POINT:
-                data = String.format("%s: %s",
-                                     AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.Title"),
-                                     this.cmdIds.isEmpty()
-                                       ? AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.None.Title")
-                                       : String.join(";", this.cmdIds));
-                break;
+            }
+            case CLI_COMMAND -> data = String.format("%s: %s, %s: %s",
+                                                     AutomateBundle.message("general.Automation.CliCommand.ApplicationName.Title"),
+                                                     this.applicationName,
+                                                     AutomateBundle.message("general.Automation.CliCommand.Arguments.Title"),
+                                                     this.arguments);
+            case COMMAND_LAUNCH_POINT -> data = String.format("%s: %s",
+                                                              AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.Title"),
+                                                              this.cmdIds.isEmpty()
+                                                                ? AutomateBundle.message("general.Automation.CommandLaunchPoint.CommandIds.None.Title")
+                                                                : String.join(";", this.cmdIds));
         }
 
         return String.format("%s (%s) (%s)", this.name, this.type.getDisplayName(), data);

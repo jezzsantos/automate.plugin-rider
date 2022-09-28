@@ -1,9 +1,10 @@
-package jezzsantos.automate.plugin.infrastructure;
+package jezzsantos.automate.plugin.infrastructure.ui;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

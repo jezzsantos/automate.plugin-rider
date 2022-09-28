@@ -25,9 +25,9 @@ public class DraftPropertyPlaceholderNode {
     }
 
     @Override
-    public String toString() {
+    public int hashCode() {
 
-        return this.name;
+        return Objects.hash(this.property);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class DraftPropertyPlaceholderNode {
     }
 
     @Override
-    public int hashCode() {
+    public String toString() {
 
-        return Objects.hash(this.property);
+        return this.name;
     }
 }

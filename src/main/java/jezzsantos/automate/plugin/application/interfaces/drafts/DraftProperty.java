@@ -29,6 +29,12 @@ public class DraftProperty {
     }
 
     @Override
+    public int hashCode() {
+
+        return Objects.hash(this.name);
+    }
+
+    @Override
     public boolean equals(Object other) {
 
         if (this == other) {
@@ -39,11 +45,5 @@ public class DraftProperty {
         }
         var that = (DraftProperty) other;
         return this.name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(this.name);
     }
 }

@@ -4,7 +4,7 @@ import com.intellij.openapi.ui.ComboBox;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;

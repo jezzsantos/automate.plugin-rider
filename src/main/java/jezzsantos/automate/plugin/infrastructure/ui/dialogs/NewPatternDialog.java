@@ -5,7 +5,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -52,9 +52,10 @@ public class NewPatternDialog extends DialogWrapper {
     }
 
     @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
+    protected @Nullable ValidationInfo doValidate() {
 
-        return this.name;
+        var name = this.name.getText();
+        return doValidate(this.context, name);
     }
 
     @Override
@@ -64,17 +65,16 @@ public class NewPatternDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable ValidationInfo doValidate() {
-
-        var name = this.name.getText();
-        return doValidate(this.context, name);
-    }
-
-    @Override
     protected void doOKAction() {
 
         super.doOKAction();
         this.context.Name = this.name.getText();
+    }
+
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+
+        return this.name;
     }
 
     public static class NewPatternDialogContext {

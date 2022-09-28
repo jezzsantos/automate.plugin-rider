@@ -15,7 +15,7 @@ public class Try {
         try {
             return action.call();
         } catch (Exception ex) {
-            ExceptionHandler.handleError(project, errorMessage, ex);
+            ExceptionHandler.handleError(project, errorMessage, ex, null);
         }
 
         return null;
@@ -26,7 +26,7 @@ public class Try {
         try {
             action.call();
         } catch (Exception ex) {
-            ExceptionHandler.handleError(project, errorMessage, ex);
+            ExceptionHandler.handleError(project, errorMessage, ex, null);
         }
     }
 
@@ -35,7 +35,7 @@ public class Try {
         try {
             action.call();
         } catch (Exception ex) {
-            ExceptionHandler.handleError(project, errorMessage, ex);
+            ExceptionHandler.handleError(project, errorMessage, ex, null);
             return;
         }
 

@@ -2,7 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.util.ui.tree.AbstractTreeModel;
 import jezzsantos.automate.plugin.application.interfaces.patterns.*;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

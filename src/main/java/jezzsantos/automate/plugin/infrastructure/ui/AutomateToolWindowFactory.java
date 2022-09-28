@@ -48,14 +48,6 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
     }
 
     @Override
-    public void init(@NotNull ToolWindow toolWindow) {
-
-        ToolWindowFactory.super.init(toolWindow);
-        var project = toolWindow.getProject();
-        initStartupState(project);
-    }
-
-    @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 
         var window = new AutomateToolWindow(project, toolWindow);
@@ -63,6 +55,14 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
         var content = contentFactory.createContent(window.getContent(), "", false);
         toolWindow.getContentManager().addContent(content);
         content.setDisposer(window);
+    }
+
+    @Override
+    public void init(@NotNull ToolWindow toolWindow) {
+
+        ToolWindowFactory.super.init(toolWindow);
+        var project = toolWindow.getProject();
+        initStartupState(project);
     }
 
     private void initStartupState(@NotNull Project project) {

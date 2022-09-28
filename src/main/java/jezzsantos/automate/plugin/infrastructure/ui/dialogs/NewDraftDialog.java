@@ -6,7 +6,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -71,17 +71,17 @@ public class NewDraftDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        return this.contents;
-    }
-
-    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         var selectedToolkit = (ToolkitLite) this.toolkits.getSelectedItem();
         var name = this.name.getText();
         return doValidate(this.context, selectedToolkit, name);
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        return this.contents;
     }
 
     @Override

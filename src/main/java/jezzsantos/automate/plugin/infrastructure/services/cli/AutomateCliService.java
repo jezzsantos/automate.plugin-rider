@@ -19,8 +19,10 @@ import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableS
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
-import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.StringWithDefault;
+import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
+import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import jezzsantos.automate.plugin.infrastructure.ui.IntelliJNotifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +77,7 @@ public class AutomateCliService implements IAutomateCliService {
         this.configuration.addListener(e -> {
 
             if (e.getPropertyName().equalsIgnoreCase("ExecutablePath")) {
-                var path = (StringWithImplicitDefault) e.getNewValue();
+                var path = (StringWithDefault) e.getNewValue();
                 logChangeInExecutablePath(path);
             }
         });
@@ -113,9 +115,9 @@ public class AutomateCliService implements IAutomateCliService {
 
     @NotNull
     @Override
-    public CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath) {
+    public CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath) {
 
-        var location = executablePath.getExplicitValue();
+        var location = executablePath.getActualValue();
         var file = new File(location);
         var executableName = getExecutableName();
 
@@ -562,18 +564,18 @@ public class AutomateCliService implements IAutomateCliService {
         return buffer.toString();
     }
 
-    private void logChangeInExecutablePath(@NotNull StringWithImplicitDefault executablePath) {
+    private void logChangeInExecutablePath(@NotNull StringWithDefault executablePath) {
 
         var executableStatus = refreshExecutableStatus(executablePath);
 
         logChangeInExecutablePath(executableStatus, executablePath);
     }
 
-    private void logChangeInExecutablePath(@NotNull CliExecutableStatus executableStatus, @NotNull StringWithImplicitDefault executablePath) {
+    private void logChangeInExecutablePath(@NotNull CliExecutableStatus executableStatus, @NotNull StringWithDefault executablePath) {
 
         String message;
         CliLogEntryType type;
-        var path = executablePath.getExplicitValue();
+        var path = executablePath.getActualValue();
         switch (executableStatus.getCompatibility()) {
             case INCOMPATIBLE -> {
                 message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", path,
@@ -595,7 +597,7 @@ public class AutomateCliService implements IAutomateCliService {
     }
 
     @NotNull
-    private CliExecutableStatus refreshExecutableStatus(@NotNull StringWithImplicitDefault executablePath) {
+    private CliExecutableStatus refreshExecutableStatus(@NotNull StringWithDefault executablePath) {
 
         var currentDirectory = this.platform.getDotNetInstallationDirectory();
         var executableStatus = tryGetExecutableStatus(currentDirectory, executablePath);

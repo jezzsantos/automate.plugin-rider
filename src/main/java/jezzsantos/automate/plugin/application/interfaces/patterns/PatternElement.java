@@ -3,7 +3,7 @@ package jezzsantos.automate.plugin.application.interfaces.patterns;
 import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElementSchema;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -205,16 +205,10 @@ public class PatternElement {
         if (cardinality == null) {
             return "";
         }
-        switch (cardinality) {
-            case ONE:
-            case ONE_OR_MANY:
-                return AutomateBundle.message("general.PatternElement.Cardinality.Required.Title");
-            case ZERO_OR_ONE:
-            case ZERO_OR_MANY:
-                return AutomateBundle.message("general.PatternElement.Cardinality.Optional.Title");
-            default:
-                return "";
-        }
+        return switch (cardinality) {
+            case ONE, ONE_OR_MANY -> AutomateBundle.message("general.PatternElement.Cardinality.Required.Title");
+            case ZERO_OR_ONE, ZERO_OR_MANY -> AutomateBundle.message("general.PatternElement.Cardinality.Optional.Title");
+        };
     }
 
     @Nullable

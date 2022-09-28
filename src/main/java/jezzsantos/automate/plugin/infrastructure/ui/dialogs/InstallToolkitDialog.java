@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,16 +57,16 @@ public class InstallToolkitDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        return this.contents;
-    }
-
-    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         var location = this.location.getText();
         return doValidate(this.context, location);
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        return this.contents;
     }
 
     @Override

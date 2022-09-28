@@ -12,9 +12,9 @@ import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
-import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.services.cli.IOsPlatform;
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.StringWithDefault;
+import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,8 +25,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import static jezzsantos.automate.plugin.common.General.toHtmlLink;
 
 public class ApplicationSettingsComponent {
 
@@ -116,12 +114,12 @@ public class ApplicationSettingsComponent {
     }
 
     @NotNull
-    public StringWithImplicitDefault getExecutablePath() {
+    public StringWithDefault getExecutablePath() {
 
         return ApplicationSettingsState.createExecutablePathWithValue(this.executablePath.getText());
     }
 
-    public void setExecutablePath(StringWithImplicitDefault value) {
+    public void setExecutablePath(StringWithDefault value) {
 
         this.executablePath.setText(value.getValue());
     }
@@ -181,8 +179,7 @@ public class ApplicationSettingsComponent {
 
     private void initHelpLink() {
 
-        this.helpLink.setText(
-          "<html>" + toHtmlLink(AutomateConstants.InstallationInstructionsUrl, AutomateBundle.message("general.ApplicationSettingsComponent.MoreInfoLink.Title")) + "</html>");
+        this.helpLink.setText(String.format("<html><a href=\"#\">%s</a></html>", AutomateBundle.message("general.ApplicationSettingsComponent.MoreInfoLink.Title")));
         this.helpLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.helpLink.addMouseListener(new MouseAdapter() {
             @Override

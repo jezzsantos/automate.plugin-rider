@@ -10,7 +10,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -112,6 +112,16 @@ public class EditPatternAttributeDialog extends DialogWrapper {
     }
 
     @Override
+    protected @Nullable ValidationInfo doValidate() {
+
+        var dataType = this.dataTypes.getSelectedItem() != null
+          ? (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem()
+          : null;
+        var choices = ((CollectionListModel<String>) this.choices.getModel()).toList();
+        return doValidate(this.context, this.name.getText(), dataType, this.defaultValue.getText(), choices);
+    }
+
+    @Override
     protected @Nullable JComponent createCenterPanel() {
 
         var decorator = ToolbarDecorator.createDecorator(this.choices);
@@ -147,16 +157,6 @@ public class EditPatternAttributeDialog extends DialogWrapper {
         this.contents.add(decorator.createPanel(), constraints);
 
         return this.contents;
-    }
-
-    @Override
-    protected @Nullable ValidationInfo doValidate() {
-
-        var dataType = this.dataTypes.getSelectedItem() != null
-          ? (AutomateConstants.AttributeDataType) this.dataTypes.getSelectedItem()
-          : null;
-        var choices = ((CollectionListModel<String>) this.choices.getModel()).toList();
-        return doValidate(this.context, this.name.getText(), dataType, this.defaultValue.getText(), choices);
     }
 
     @Override

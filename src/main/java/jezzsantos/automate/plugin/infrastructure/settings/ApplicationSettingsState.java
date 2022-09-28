@@ -12,9 +12,9 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
+import jezzsantos.automate.plugin.common.StringWithDefault;
+import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliService;
-import jezzsantos.automate.plugin.infrastructure.services.cli.OsPlatform;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.CliInstallPolicyPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.EditingModePropertyConverter;
@@ -36,7 +36,7 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
     @OptionTag(converter = CliInstallPolicyPropertyConverter.class)
     public final Property<CliInstallPolicy> cliInstallPolicy = new Property<>(CliInstallPolicy.AUTO_UPGRADE);
     @OptionTag(converter = StringWithDefaultPropertyConverter.class)
-    public final Property<StringWithImplicitDefault> executablePath = new Property<>(createExecutablePathWithDefaultValue());
+    public final Property<StringWithDefault> executablePath = new Property<>(createExecutablePathWithDefaultValue());
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     @UsedImplicitly
@@ -52,15 +52,15 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
     }
 
     @NotNull
-    public static StringWithImplicitDefault createExecutablePathWithValue(@NotNull String value) {
+    public static StringWithDefault createExecutablePathWithValue(@NotNull String value) {
 
-        return new StringWithImplicitDefault(defaultExecutablePath, value);
+        return new StringWithDefault(defaultExecutablePath, value);
     }
 
     @NotNull
-    public static StringWithImplicitDefault createExecutablePathWithDefaultValue() {
+    public static StringWithDefault createExecutablePathWithDefaultValue() {
 
-        return new StringWithImplicitDefault(defaultExecutablePath);
+        return new StringWithDefault(defaultExecutablePath);
     }
 
     @Nullable

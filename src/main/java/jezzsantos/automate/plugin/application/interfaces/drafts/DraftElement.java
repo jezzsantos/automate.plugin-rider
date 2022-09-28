@@ -207,6 +207,12 @@ public class DraftElement {
     }
 
     @Override
+    public int hashCode() {
+
+        return Objects.hash(this.getId());
+    }
+
+    @Override
     public boolean equals(Object other) {
 
         if (this == other) {
@@ -223,12 +229,6 @@ public class DraftElement {
         }
 
         return Objects.equals(thisId, thatId);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(this.getId());
     }
 
     @SuppressWarnings("unchecked")

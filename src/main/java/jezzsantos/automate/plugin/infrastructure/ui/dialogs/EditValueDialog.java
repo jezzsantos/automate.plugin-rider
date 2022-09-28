@@ -3,7 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.dialogs;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -55,18 +55,6 @@ public class EditValueDialog extends DialogWrapper {
     public EditValueDialogContext getContext() {return this.context;}
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        return this.contents;
-    }
-
-    @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-
-        return this.value;
-    }
-
-    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         var value = this.value.getText();
@@ -74,10 +62,22 @@ public class EditValueDialog extends DialogWrapper {
     }
 
     @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        return this.contents;
+    }
+
+    @Override
     protected void doOKAction() {
 
         super.doOKAction();
         this.context.Value = this.value.getText();
+    }
+
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+
+        return this.value;
     }
 
     public static class EditValueDialogContext {

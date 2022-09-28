@@ -13,7 +13,7 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetaile
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
-import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
+import jezzsantos.automate.plugin.common.StringWithDefault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ public interface IAutomateCliService {
     String getDefaultExecutableLocation();
 
     @NotNull
-    CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull StringWithImplicitDefault executablePath);
+    CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath);
 
     boolean isCliInstalled(@NotNull String currentDirectory);
 

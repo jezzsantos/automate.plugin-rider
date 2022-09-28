@@ -4,9 +4,9 @@ import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
-import jezzsantos.automate.plugin.infrastructure.services.cli.IOsPlatform;
-import jezzsantos.automate.plugin.infrastructure.services.cli.OsPlatform;
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
+import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;

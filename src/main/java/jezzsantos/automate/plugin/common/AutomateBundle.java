@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure;
+package jezzsantos.automate.plugin.common;
 
 import com.intellij.DynamicBundle;
 import org.jetbrains.annotations.NonNls;

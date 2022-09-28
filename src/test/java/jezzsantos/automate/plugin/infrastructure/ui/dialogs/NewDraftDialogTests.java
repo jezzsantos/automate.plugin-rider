@@ -2,7 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.dialogs;
 
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

@@ -3,7 +3,7 @@ package jezzsantos.automate.plugin.application.services.interfaces;
 import com.intellij.openapi.application.ApplicationManager;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
+import jezzsantos.automate.plugin.common.StringWithDefault;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeListener;
@@ -16,9 +16,9 @@ public interface IApplicationConfiguration {
     }
 
     @NotNull
-    StringWithImplicitDefault getExecutablePath();
+    StringWithDefault getExecutablePath();
 
-    void setExecutablePath(@NotNull StringWithImplicitDefault path);
+    void setExecutablePath(@NotNull StringWithDefault path);
 
     boolean getAuthoringMode();
 

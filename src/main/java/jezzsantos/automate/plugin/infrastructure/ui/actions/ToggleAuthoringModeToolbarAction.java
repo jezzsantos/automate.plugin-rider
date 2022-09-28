@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 
 public class ToggleAuthoringModeToolbarAction extends ToggleAction {
@@ -16,20 +16,6 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
 
         super();
         this.onPerformed = onPerformed;
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-
-        var project = e.getProject();
-        if (project != null) {
-            var application = IAutomateApplication.getInstance(project);
-            this.selected = application.isAuthoringMode();
-        }
-
-        super.update(e);
-
-        SetPresentation(e);
     }
 
     @Override
@@ -51,6 +37,20 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
             application.setAuthoringMode(this.selected);
         }
         this.onPerformed.run();
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+
+        var project = e.getProject();
+        if (project != null) {
+            var application = IAutomateApplication.getInstance(project);
+            this.selected = application.isAuthoringMode();
+        }
+
+        super.update(e);
+
+        SetPresentation(e);
     }
 
     @SuppressWarnings("DialogTitleCapitalization")

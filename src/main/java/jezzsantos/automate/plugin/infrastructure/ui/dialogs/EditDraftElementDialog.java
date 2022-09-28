@@ -11,7 +11,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.drafts.ElementValueMap;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -86,15 +86,15 @@ public class EditDraftElementDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable JComponent createCenterPanel() {
-
-        return this.contents;
-    }
-
-    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         return doValidate(this.context);
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+
+        return this.contents;
     }
 
     @Override

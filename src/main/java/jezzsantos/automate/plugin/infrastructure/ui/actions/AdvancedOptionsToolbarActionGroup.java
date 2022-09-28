@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Separator;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,7 @@ public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
     public AdvancedOptionsToolbarActionGroup(@NotNull Runnable onPerformed) {
 
         super();
+        setPopup(true);
         this.onPerformed = onPerformed;
     }
 
@@ -45,11 +46,5 @@ public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
     public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
 
         return new AnAction[]{new ToggleAuthoringModeMenuAction(this.onPerformed), new Separator(), new ShowSettingsMenuAction()};
-    }
-
-    @Override
-    public boolean isPopup() {
-
-        return true;
     }
 }

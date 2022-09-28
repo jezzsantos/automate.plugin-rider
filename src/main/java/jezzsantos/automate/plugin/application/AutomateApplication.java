@@ -62,6 +62,42 @@ public class AutomateApplication implements IAutomateApplication {
         return this.automateService.isCliInstalled(this.currentDirectory);
     }
 
+    @Override
+    public void addPropertyListener(@NotNull PropertyChangeListener listener) {
+
+        this.automateService.addPropertyChangedListener(listener);
+    }
+
+    @Override
+    public void removePropertyListener(@NotNull PropertyChangeListener listener) {
+
+        this.automateService.removePropertyChangedListener(listener);
+    }
+
+    @Override
+    public void addConfigurationListener(@NotNull PropertyChangeListener listener) {
+
+        this.configuration.addListener(listener);
+    }
+
+    @Override
+    public void removeConfigurationListener(@NotNull PropertyChangeListener listener) {
+
+        this.configuration.removeListener(listener);
+    }
+
+    @NotNull
+    @Override
+    public List<CliLogEntry> getCliLogEntries() {
+
+        return this.automateService.getCliLog();
+    }
+
+    public boolean getViewCliLog() {
+
+        return this.configuration.getViewCliLog();
+    }
+
     @NotNull
     @Override
     public List<PatternLite> listPatterns() {
@@ -189,42 +225,6 @@ public class AutomateApplication implements IAutomateApplication {
             }
         }
         return this.automateService.listAllAutomation(this.currentDirectory, forceRefresh);
-    }
-
-    @Override
-    public void addPropertyListener(@NotNull PropertyChangeListener listener) {
-
-        this.automateService.addPropertyChangedListener(listener);
-    }
-
-    @Override
-    public void removePropertyListener(@NotNull PropertyChangeListener listener) {
-
-        this.automateService.removePropertyChangedListener(listener);
-    }
-
-    @Override
-    public void addConfigurationListener(@NotNull PropertyChangeListener listener) {
-
-        this.configuration.addListener(listener);
-    }
-
-    @Override
-    public void removeConfigurationListener(@NotNull PropertyChangeListener listener) {
-
-        this.configuration.removeListener(listener);
-    }
-
-    @NotNull
-    @Override
-    public List<CliLogEntry> getCliLogEntries() {
-
-        return this.automateService.getCliLog();
-    }
-
-    public boolean getViewCliLog() {
-
-        return this.configuration.getViewCliLog();
     }
 
     @NotNull

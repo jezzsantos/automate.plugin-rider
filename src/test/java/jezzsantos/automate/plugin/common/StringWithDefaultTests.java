@@ -4,32 +4,32 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StringWithImplicitDefaultTests {
+public class StringWithDefaultTests {
 
     @Test
     public void whenConstructedWithImplicitValue_ThenInitialized() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
 
-        assertEquals("animplicitvalue", string.getImplicitValue());
+        assertEquals("animplicitvalue", string.getDefaultValue());
         assertEquals("", string.getValue());
     }
 
     @Test
     public void whenConstructedWithCurrentValueAndDifferentThanImplicit_ThenInitialized() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue", "acurrentvalue");
+        var string = new StringWithDefault("animplicitvalue", "acurrentvalue");
 
-        assertEquals("animplicitvalue", string.getImplicitValue());
+        assertEquals("animplicitvalue", string.getDefaultValue());
         assertEquals("acurrentvalue", string.getValue());
     }
 
     @Test
     public void whenConstructedWithCurrentValueAndSameAsImplicit_ThenInitialized() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue", "animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue", "animplicitvalue");
 
-        assertEquals("animplicitvalue", string.getImplicitValue());
+        assertEquals("animplicitvalue", string.getDefaultValue());
         assertEquals("", string.getValue());
     }
 
@@ -37,9 +37,9 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenEqualsAndOtherIsNull_ThenReturnsFalse() {
 
-        var other = (StringWithImplicitDefault) null;
+        var other = (StringWithDefault) null;
 
-        var first = new StringWithImplicitDefault("animplicitvalue");
+        var first = new StringWithDefault("animplicitvalue");
 
         var result = first.equals(other);
 
@@ -51,7 +51,7 @@ public class StringWithImplicitDefaultTests {
 
         var other = new Object();
 
-        var first = new StringWithImplicitDefault("animplicitvalue");
+        var first = new StringWithDefault("animplicitvalue");
 
         var result = first.equals(other);
 
@@ -61,9 +61,9 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenEqualsAndOtherHasDifferentImplicitValueAndSameValue_ThenReturnsFalse() {
 
-        var other = new StringWithImplicitDefault("animplicitvalue1");
+        var other = new StringWithDefault("animplicitvalue1");
 
-        var first = new StringWithImplicitDefault("animplicitvalue2");
+        var first = new StringWithDefault("animplicitvalue2");
 
         var result = first.equals(other);
 
@@ -73,10 +73,10 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenEqualsAndOtherHasSameImplicitValueAndDifferentValue_ThenReturnsFalse() {
 
-        var other = new StringWithImplicitDefault("animplicitvalue");
+        var other = new StringWithDefault("animplicitvalue");
         other.setValue("anothervalue");
 
-        var first = new StringWithImplicitDefault("animplicitvalue");
+        var first = new StringWithDefault("animplicitvalue");
         first.setValue("avalue");
 
         var result = first.equals(other);
@@ -87,9 +87,9 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenEqualsAndOtherHasSameImplicitValueAndNoValue_ThenReturnsTrue() {
 
-        var other = new StringWithImplicitDefault("animplicitvalue");
+        var other = new StringWithDefault("animplicitvalue");
 
-        var first = new StringWithImplicitDefault("animplicitvalue");
+        var first = new StringWithDefault("animplicitvalue");
 
         var result = first.equals(other);
 
@@ -99,10 +99,10 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenEqualsAndOtherHasSameImplicitValueAndSameValue_ThenReturnsTrue() {
 
-        var other = new StringWithImplicitDefault("animplicitvalue");
+        var other = new StringWithDefault("animplicitvalue");
         other.setValue("avalue");
 
-        var first = new StringWithImplicitDefault("animplicitvalue");
+        var first = new StringWithDefault("animplicitvalue");
         first.setValue("avalue");
 
         var result = first.equals(other);
@@ -113,10 +113,10 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenEqualAndImplicitValueAndCurrentValueMatch_ThenReturnsTrue() {
 
-        var other = new StringWithImplicitDefault("animplicitvalue");
+        var other = new StringWithDefault("animplicitvalue");
         other.setValue("animplicitvalue");
 
-        var first = new StringWithImplicitDefault("animplicitvalue");
+        var first = new StringWithDefault("animplicitvalue");
 
         var result = first.equals(other);
 
@@ -126,7 +126,7 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenSetValueWithNewValue_ThenCurrentValueIsNewValue() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
         string.setValue("avalue");
 
         var result = string.getValue();
@@ -137,7 +137,7 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenSetValueWithDefaultValue_ThenCurrentValueIsDefault() {
 
-        var value = new StringWithImplicitDefault("animplicitvalue");
+        var value = new StringWithDefault("animplicitvalue");
         value.setValue("");
 
         var result = value.getValue();
@@ -148,7 +148,7 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenSetValueWithImplicitValue_ThenCurrentValueIsDefault() {
 
-        var value = new StringWithImplicitDefault("animplicitvalue");
+        var value = new StringWithDefault("animplicitvalue");
         value.setValue("animplicitvalue");
 
         var result = value.getValue();
@@ -159,7 +159,7 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenIsCustomizedWithNewValue_ThenReturnsTrue() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
         string.setValue("avalue");
 
         var result = string.isCustomized();
@@ -170,7 +170,7 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenIsCustomizedWithDefaultValue_ThenReturnsFalse() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
         string.setValue("");
 
         var result = string.isCustomized();
@@ -181,7 +181,7 @@ public class StringWithImplicitDefaultTests {
     @Test
     public void whenIsCustomizedWithImplicitValue_ThenReturnsFalse() {
 
-        var value = new StringWithImplicitDefault("animplicitvalue");
+        var value = new StringWithDefault("animplicitvalue");
         value.setValue("animplicitvalue");
 
         var result = value.isCustomized();
@@ -190,46 +190,33 @@ public class StringWithImplicitDefaultTests {
     }
 
     @Test
-    public void whenCreateCopyWithValue_ThenReturnsSameImplicitValue() {
+    public void whenGetActualValueAndHasNone_ThenReturnsDefault() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
 
-        var result = string.createCopyWithValue("anothervalue");
-
-        assertEquals(string.getImplicitValue(), result.getImplicitValue());
-        assertEquals("", string.getValue());
-        assertEquals("anothervalue", result.getValue());
-        assertNotEquals(result, string);
-    }
-
-    @Test
-    public void whenGetExplicitValueAndHasNone_ThenReturnsDefault() {
-
-        var string = new StringWithImplicitDefault("animplicitvalue");
-
-        var result = string.getExplicitValue();
+        var result = string.getActualValue();
 
         assertEquals("animplicitvalue", result);
     }
 
     @Test
-    public void whenGetExplicitValueAndCustomValue_ThenReturnsDefault() {
+    public void whenGetActualValueAndCustomValue_ThenReturnsDefault() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
         string.setValue("avalue");
 
-        var result = string.getExplicitValue();
+        var result = string.getActualValue();
 
         assertEquals("avalue", result);
     }
 
     @Test
-    public void whenGetExplicitValueAndHasImplicitValue_ThenReturnsDefault() {
+    public void whenGetActualValueAndHasImplicitValue_ThenReturnsDefault() {
 
-        var string = new StringWithImplicitDefault("animplicitvalue");
+        var string = new StringWithDefault("animplicitvalue");
         string.setValue("animplicitvalue");
 
-        var result = string.getExplicitValue();
+        var result = string.getActualValue();
 
         assertEquals("animplicitvalue", result);
     }

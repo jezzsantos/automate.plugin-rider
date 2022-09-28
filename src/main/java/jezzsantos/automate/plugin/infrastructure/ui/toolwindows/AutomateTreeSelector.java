@@ -14,16 +14,16 @@ public class AutomateTreeSelector implements ITreeSelector {
     }
 
     @Override
-    public void selectPath(TreePath path) {
-
-        this.tree.getSelectionModel().clearSelection();
-        this.tree.addSelectionPath(path);
-    }
-
-    @Override
     public void selectAndExpandPath(TreePath path) {
 
         selectPath(path);
         this.tree.expandPath(path);
+    }
+
+    @Override
+    public void selectPath(TreePath path) {
+
+        this.tree.getSelectionModel().clearSelection();
+        this.tree.addSelectionPath(path);
     }
 }

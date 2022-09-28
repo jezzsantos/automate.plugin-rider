@@ -4,7 +4,7 @@ import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
-import jezzsantos.automate.plugin.common.StringWithImplicitDefault;
+import jezzsantos.automate.plugin.common.StringWithDefault;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,15 +25,15 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
 
     @NotNull
     @Override
-    public StringWithImplicitDefault getExecutablePath() {
+    public StringWithDefault getExecutablePath() {
 
         return this.settings.executablePath.getValue();
     }
 
     @Override
-    public void setExecutablePath(@NotNull StringWithImplicitDefault newValue) {
+    public void setExecutablePath(@NotNull StringWithDefault newValue) {
 
-        var oldValue = (StringWithImplicitDefault) this.settings.executablePath.getValue();
+        var oldValue = (StringWithDefault) this.settings.executablePath.getValue();
         if (!Intrinsics.areEqual(oldValue, newValue)) {
             this.settings.executablePath.setValue(newValue);
             this.support.firePropertyChange("ExecutablePath", oldValue, newValue);

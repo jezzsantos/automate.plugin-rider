@@ -1,7 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.dialogs;
 
 import jezzsantos.automate.core.AutomateConstants;
-import jezzsantos.automate.plugin.infrastructure.AutomateBundle;
+import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
