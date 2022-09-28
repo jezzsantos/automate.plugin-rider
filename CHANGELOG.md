@@ -7,16 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-###        
+### Notes
 
 - Minimum compatibility with `automate` version 1.0.2
+
+### Added
+
+- General: Closed #2. Self-installs automate CLI tool on the local machine
+- General: Closed #2. Auto-upgrades compatible version of automate CLI on the local machine
+- Drafts: Advanced #5. Added menu items for running commands configured on drafts.
+- Patterns: Fixed #13. Added editing of choices for attributes.
 
 ### Fixed
 
 - Drafts: Fixed #10. Able to edit draft properties that have no value.
 - General: Fixed #11. Moved settings to non-source controlled persistence.
-- Drafts: #5. Added menu items for running commands.
-- Patterns: Fixed #13. Added editing of choices for attributes.
 
 ## [1.0.3]
 
@@ -28,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.2] - 2022-09-20
 
-### Preamble
+### Notes
 
 - (First public stable release)
 - Minimum compatibility with `automate` version 1.0.1
@@ -47,6 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1-Unstable] - 2022-06-24
 
-### Preamble
+### Notes
 
 - (initial version - not released to public)

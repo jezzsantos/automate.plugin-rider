@@ -64,7 +64,7 @@ changelog {
     itemPrefix = "-"
     keepUnreleasedSection = true
     unreleasedTerm = "[Unreleased]"
-    groups = ["Preamble", "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
+    groups = ["Notes", "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
 }
 
 wrapper {
