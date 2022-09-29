@@ -44,16 +44,6 @@ intellij {
     version = "${platformVersion}"
     downloadSources = false
     instrumentCode = true
-
-    patchPluginXml {
-        changeNotes.set(changelog.getUnreleased().toHTML())
-    }
-
-    publishPlugin {
-        token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
-        channels.set(List.of(("${pluginVersion}".split("-").length > 1) ? "${pluginVersion}".split("-")[1] : "default"))
-        patchPluginXml.changeNotes.set(changelog.get("${pluginVersion}").toHTML())
-    }
 }
 
 changelog {
@@ -69,4 +59,17 @@ changelog {
 
 wrapper {
     gradleVersion = "${gradleVersion}"
+}
+
+patchPluginXml {
+    changeNotes.set(changelog.getUnreleased().toHTML())
+}
+
+publishPlugin {
+    token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
+    channels.set(List.of(("${pluginVersion}".split("-").length > 1) ? "${pluginVersion}".split("-")[1] : "default"))
+    var version = changelog.getOrNull("${pluginVersion}")
+    if (version != null) {
+        patchPluginXml.changeNotes.set(version.toHTML())
+    }
 }
