@@ -179,10 +179,6 @@ We recommend using JetBrains IntelliJ to develop this codebase.
 
 * Clone the repo locally
 * Open the root directory
-* Set the environment variable (in your Terminal) `JAVA_HOME` to your local installation of the `corretto-17.0.3` JDK.
-  Which this project currently uses. By default, IntelliJ installs to (on
-  Windows): `%userprofile%\.jdks\corretto-17.0.3`
-  .
 
 ## Building the code
 
