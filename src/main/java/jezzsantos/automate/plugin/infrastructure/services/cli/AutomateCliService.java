@@ -114,7 +114,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public CliExecutableStatus tryGetExecutableStatus(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath) {
 
-        var location = executablePath.getActualValue();
+        var location = executablePath.getValueOrDefault();
         var file = new File(location);
         var executableName = getExecutableName();
 
@@ -528,6 +528,7 @@ public class AutomateCliService implements IAutomateCliService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
+            this.cache.invalidateAllDrafts();
             this.cache.invalidateCurrentDraft();
             return result.getOutput().getReport();
         }
@@ -608,7 +609,7 @@ public class AutomateCliService implements IAutomateCliService {
 
         String message;
         CliLogEntryType type;
-        var path = executablePath.getActualValue();
+        var path = executablePath.getValueOrDefault();
         switch (executableStatus.getCompatibility()) {
             case INCOMPATIBLE -> {
                 message = AutomateBundle.message("general.AutomateCliService.ExecutablePathChanged.UnSupported.Message", path,

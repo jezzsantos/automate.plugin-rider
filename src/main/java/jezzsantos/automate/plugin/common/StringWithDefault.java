@@ -44,7 +44,7 @@ public final class StringWithDefault {
     public boolean isCustomized() {return !isDefaultOrEmpty(this.currentValue);}
 
     @NotNull
-    public String getActualValue() {
+    public String getValueOrDefault() {
 
         return isCustomized()
           ? this.currentValue

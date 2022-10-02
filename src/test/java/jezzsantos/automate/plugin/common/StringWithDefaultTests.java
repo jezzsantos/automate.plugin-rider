@@ -190,33 +190,33 @@ public class StringWithDefaultTests {
     }
 
     @Test
-    public void whenGetActualValueAndHasNone_ThenReturnsDefault() {
+    public void whenGetValueOrDefaultAndHasNone_ThenReturnsDefault() {
 
         var string = new StringWithDefault("animplicitvalue");
 
-        var result = string.getActualValue();
+        var result = string.getValueOrDefault();
 
         assertEquals("animplicitvalue", result);
     }
 
     @Test
-    public void whenGetActualValueAndCustomValue_ThenReturnsDefault() {
+    public void whenGetValueOrDefaultAndCustomValue_ThenReturnsDefault() {
 
         var string = new StringWithDefault("animplicitvalue");
         string.setValue("avalue");
 
-        var result = string.getActualValue();
+        var result = string.getValueOrDefault();
 
         assertEquals("avalue", result);
     }
 
     @Test
-    public void whenGetActualValueAndHasImplicitValue_ThenReturnsDefault() {
+    public void whenGetValueOrDefaultAndHasImplicitValue_ThenReturnsDefault() {
 
         var string = new StringWithDefault("animplicitvalue");
         string.setValue("animplicitvalue");
 
-        var result = string.getActualValue();
+        var result = string.getValueOrDefault();
 
         assertEquals("animplicitvalue", result);
     }

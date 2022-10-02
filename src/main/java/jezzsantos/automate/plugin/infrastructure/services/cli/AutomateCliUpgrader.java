@@ -9,7 +9,6 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
-import jezzsantos.automate.plugin.infrastructure.ui.IntelliJTaskRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -24,7 +23,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
 
     public AutomateCliUpgrader(@NotNull IAutomateCliRunner cliRunner, @NotNull INotifier notifier) {
 
-        this(cliRunner, notifier, new IntelliJTaskRunner());
+        this(cliRunner, notifier, ITaskRunner.getInstance());
     }
 
     @TestOnly
@@ -59,7 +58,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                         }
                         else {
                             alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallForbidden.Message", executableName,
-                                                                       executablePath.getActualValue()), true);
+                                                                       executablePath.getValueOrDefault()), true);
                         }
                     }
                 }
@@ -88,7 +87,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                         }
                         else {
                             alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeForbidden.Message", executableName,
-                                                                       executablePath.getActualValue()), true);
+                                                                       executablePath.getValueOrDefault()), true);
                         }
                     }
                 }

@@ -55,18 +55,17 @@ public class UpgradeDraftAction extends AnAction {
             var application = IAutomateApplication.getInstance(project);
             var selectedNode = getSelection(e);
             if (selectedNode != null) {
-                var dialog = new UpgradeDraftDialog(project, new UpgradeDraftDialog.UpgradeDraftDialogContext(selectedNode.getFromVersion(), selectedNode.getToVersion(),
-                                                                                                              selectedNode.isIncompatibleUpgrade()));
+                var dialog = new UpgradeDraftDialog(project,
+                                                    new UpgradeDraftDialog.UpgradeDraftDialogContext(selectedNode.getFromVersion(), selectedNode.getToVersion(),
+                                                                                                     selectedNode.isIncompatibleUpgrade(),
+                                                                                                     context -> Try.andHandle(project, () -> application.upgradeDraft(
+                                                                                                                                context.getForce()),
+                                                                                                                              AutomateBundle.message(
+                                                                                                                                "action.UpgradeDraft.Failure.Message"))));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var report = Try.andHandle(project,
-                                               () -> application.upgradeDraft(context.getForce()),
-                                               AutomateBundle.message("action.UpgradeDraft.Failure.Message"));
-                    if (report != null) {
-                        var summaryDialog = new UpgradeDraftDialog(project, new UpgradeDraftDialog.UpgradeDraftDialogContext(report));
-                        if (summaryDialog.showAndGet()) {
-                            this.onPerformed.run();
-                        }
+                    if (context.isSuccess()) {
+                        this.onPerformed.run();
                     }
                 }
             }

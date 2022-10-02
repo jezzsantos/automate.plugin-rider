@@ -395,7 +395,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args, boolean isStructured) {
 
         var command = new ArrayList<String>();
-        command.add(executablePath.getActualValue());
+        command.add(executablePath.getValueOrDefault());
         command.addAll(args);
         if (isStructured) {
             var found = new AtomicBoolean(false);
@@ -421,7 +421,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             var cause = Objects.requireNonNull(result.getFailureCause());
             switch (cause) {
                 case FailedToStart -> {
-                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", executablePath.getActualValue());
+                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", executablePath.getValueOrDefault());
                     logEntry(error, CliLogEntryType.ERROR);
                     return new CliTextResult(error, "");
                 }

@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Map;
+
+import static jezzsantos.automate.plugin.common.StringExtensions.formatStructured;
 
 public class DraftUpgradeReportItem {
 
@@ -13,9 +15,9 @@ public class DraftUpgradeReportItem {
     @SerializedName(value = "MessageTemplate")
     public String messageTemplate;
     @SerializedName(value = "Arguments")
-    public List<Object> arguments;
+    public Map<String, Object> arguments;
 
-    public DraftUpgradeReportItem(@NotNull AutomateConstants.UpgradeLogType type, @NotNull String messageTemplate, @NotNull List<Object> arguments) {
+    public DraftUpgradeReportItem(@NotNull AutomateConstants.UpgradeLogType type, @NotNull String messageTemplate, @NotNull Map<String, Object> arguments) {
 
         this.type = type;
         this.messageTemplate = messageTemplate;
@@ -28,6 +30,6 @@ public class DraftUpgradeReportItem {
     @NotNull
     public String getMessage() {
 
-        return String.format(this.messageTemplate, this.arguments);
+        return formatStructured(this.messageTemplate, this.arguments);
     }
 }
