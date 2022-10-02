@@ -185,17 +185,22 @@ public class EditPatternAttributeDialog extends DialogWrapper {
         private final List<AutomateConstants.AttributeDataType> dataTypes;
         private final String originalName;
         private String name;
-        private boolean isRequired = false;
+        private boolean isRequired;
         private String defaultValue;
-        private AutomateConstants.AttributeDataType dataType = AutomateConstants.AttributeDataType.STRING;
-        private List<String> choices = new ArrayList<>();
+        private AutomateConstants.AttributeDataType dataType;
+        private List<String> choices;
 
         public EditPatternAttributeDialogContext(@NotNull List<Attribute> attributes, @NotNull List<AutomateConstants.AttributeDataType> dataTypes) {
 
             this.isNew = true;
             this.attributes = attributes;
             this.dataTypes = dataTypes;
+            this.name = "";
             this.originalName = null;
+            this.isRequired = false;
+            this.defaultValue = "";
+            this.dataType = AutomateConstants.AttributeDataType.STRING;
+            this.choices = new ArrayList<>();
         }
 
         public EditPatternAttributeDialogContext(@NotNull Attribute attribute, @NotNull List<Attribute> attributes, @NotNull List<AutomateConstants.AttributeDataType> dataTypes) {
