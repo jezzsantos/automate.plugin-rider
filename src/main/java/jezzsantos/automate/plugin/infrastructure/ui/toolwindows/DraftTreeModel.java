@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.util.ui.tree.AbstractTreeModel;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
     private static final int NO_INDEX = -1;
     @NotNull
-    private final DraftElementPlaceholderNode draft;
+    private final Object draft;
     @NotNull
     private final PatternElement pattern;
     @NotNull
@@ -25,10 +26,12 @@ public class DraftTreeModel extends AbstractTreeModel {
     @Nullable
     private TreePath selectedPath;
 
-    public DraftTreeModel(@NotNull ITreeSelector treeSelector, @NotNull DraftElement draft, @NotNull PatternElement pattern) {
+    public DraftTreeModel(@NotNull ITreeSelector treeSelector, @NotNull DraftDetailed draft, @NotNull PatternElement pattern) {
 
         this.treeSelector = treeSelector;
-        this.draft = new DraftElementPlaceholderNode(pattern, draft, false);
+        this.draft = draft.mustBeUpgraded()
+          ? new DraftMustBeUpgradedPlaceholderNode(draft.getName(), Objects.requireNonNull(draft.getUpgradeInfo()))
+          : new DraftElementPlaceholderNode(pattern, draft.getRoot(), false);
         this.pattern = pattern;
     }
 

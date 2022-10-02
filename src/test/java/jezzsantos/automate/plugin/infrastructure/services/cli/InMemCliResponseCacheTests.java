@@ -27,7 +27,7 @@ public class InMemCliResponseCacheTests {
 
         var allLists = new AllStateLite();
 
-        var result = this.cache.ListAll(() -> allLists, false);
+        var result = this.cache.listAll(() -> allLists, false);
 
         assertEquals(allLists, result);
     }
@@ -37,7 +37,7 @@ public class InMemCliResponseCacheTests {
 
         var allLists = new AllStateLite();
 
-        var result = this.cache.ListAll(() -> allLists, true);
+        var result = this.cache.listAll(() -> allLists, true);
 
         assertEquals(allLists, result);
     }
@@ -51,7 +51,7 @@ public class InMemCliResponseCacheTests {
         var allLists = new AllStateLite(patterns, toolkits, drafts);
         this.cache.setAllLists(allLists);
 
-        var result = this.cache.ListAll(Assertions::fail, false);
+        var result = this.cache.listAll(Assertions::fail, false);
 
         assertEquals(patterns, result.getPatterns());
         assertEquals(toolkits, result.getToolkits());
@@ -67,7 +67,7 @@ public class InMemCliResponseCacheTests {
         var allLists = new AllStateLite(patterns, toolkits, drafts);
         this.cache.setAllLists(allLists);
 
-        var result = this.cache.ListAll(() -> allLists, true);
+        var result = this.cache.listAll(() -> allLists, true);
 
         assertEquals(allLists, result);
     }
@@ -82,7 +82,7 @@ public class InMemCliResponseCacheTests {
         this.cache.setAllLists(allLists);
         this.cache.invalidateAllLocalState();
 
-        var result = this.cache.ListAll(() -> allLists, false);
+        var result = this.cache.listAll(() -> allLists, false);
 
         assertEquals(allLists, result);
     }

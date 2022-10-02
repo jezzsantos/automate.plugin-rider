@@ -44,8 +44,8 @@ public class DeleteDraftElementAction extends AnAction {
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
-        var isPropertySite = getElement(e) != null;
-        presentation.setEnabledAndVisible(isDraftEditingMode && isPropertySite);
+        var isElementSite = getSelection(e) != null;
+        presentation.setEnabledAndVisible(isDraftEditingMode && isElementSite);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DeleteDraftElementAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            var element = getElement(e);
+            var element = getSelection(e);
             if (element != null) {
                 if (ConfirmDeleteDialog.confirms(project,
                                                  AutomateBundle.message("dialog.ConfirmDelete.DraftElement.Title"),
@@ -68,7 +68,7 @@ public class DeleteDraftElementAction extends AnAction {
         }
     }
 
-    private DraftElement getElement(AnActionEvent e) {
+    private DraftElement getSelection(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {

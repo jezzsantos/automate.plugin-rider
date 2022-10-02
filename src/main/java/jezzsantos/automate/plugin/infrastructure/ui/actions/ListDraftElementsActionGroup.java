@@ -38,7 +38,7 @@ public class ListDraftElementsActionGroup extends ActionGroup {
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
-        var isElementSite = getParentElement(e) != null;
+        var isElementSite = getSelection(e) != null;
         var presentation = e.getPresentation();
         presentation.setEnabledAndVisible(isDraftEditingMode && isElementSite);
     }
@@ -47,7 +47,7 @@ public class ListDraftElementsActionGroup extends ActionGroup {
     public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
 
         if (e != null) {
-            var parentPlaceholder = getParentElement(e);
+            var parentPlaceholder = getSelection(e);
             if (parentPlaceholder != null) {
                 var missingSchemas = Objects.requireNonNull(parentPlaceholder.getSchema()).listMissingElements(parentPlaceholder.getElement());
                 if (!missingSchemas.isEmpty()) {
@@ -64,7 +64,7 @@ public class ListDraftElementsActionGroup extends ActionGroup {
         return new AnAction[0];
     }
 
-    private DraftElementPlaceholderNode getParentElement(AnActionEvent e) {
+    private DraftElementPlaceholderNode getSelection(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {

@@ -6,10 +6,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
-import jezzsantos.automate.plugin.application.interfaces.drafts.LaunchPointExecutionResult;
+import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
@@ -175,7 +172,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public AllStateLite listAllAutomation(@NotNull String currentDirectory, boolean forceRefresh) {
 
-        return this.cache.ListAll(() -> {
+        return this.cache.listAll(() -> {
             var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "all")));
             if (result.isError()) {
                 return new AllStateLite();
@@ -190,7 +187,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public List<PatternLite> listPatterns(@NotNull String currentDirectory) {
 
-        return this.cache.ListPatterns(() -> {
+        return this.cache.listPatterns(() -> {
             var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "patterns")));
             if (result.isError()) {
                 return new ArrayList<>();
@@ -208,7 +205,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public List<ToolkitLite> listToolkits(@NotNull String currentDirectory) {
 
-        return this.cache.ListToolkits(() -> {
+        return this.cache.listToolkits(() -> {
             var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "toolkits")));
             if (result.isError()) {
                 return new ArrayList<>();
@@ -226,7 +223,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public List<DraftLite> listDrafts(@NotNull String currentDirectory) {
 
-        return this.cache.ListDrafts(() -> {
+        return this.cache.listDrafts(() -> {
             var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "drafts")));
             if (result.isError()) {
                 return new ArrayList<>();
@@ -254,11 +251,25 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
+    @Nullable
+    @Override
+    public PatternLite getCurrentPatternInfo(@NotNull String currentDirectory) {
+
+        return this.cache.getPatternInfo(() -> {
+            var patterns = listPatterns(currentDirectory);
+
+            return patterns.stream()
+              .filter(PatternLite::getIsCurrent)
+              .findFirst()
+              .orElse(null);
+        });
+    }
+
     @NotNull
     @Override
     public PatternDetailed getCurrentPatternDetailed(@NotNull String currentDirectory) throws Exception {
 
-        return this.cache.GetPatternDetailed(() -> {
+        return this.cache.getPatternDetailed(() -> {
             var result = runAutomateForStructuredOutput(GetPatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "pattern", "--all")));
             if (result.isError()) {
                 throw new Exception(result.getError().getErrorMessage());
@@ -266,20 +277,6 @@ public class AutomateCliService implements IAutomateCliService {
             else {
                 return result.getOutput().getPattern();
             }
-        });
-    }
-
-    @Nullable
-    @Override
-    public PatternLite getCurrentPatternInfo(@NotNull String currentDirectory) {
-
-        return this.cache.GetPatternInfo(() -> {
-            var patterns = listPatterns(currentDirectory);
-
-            return patterns.stream()
-              .filter(PatternLite::getIsCurrent)
-              .findFirst()
-              .orElse(null);
         });
     }
 
@@ -294,88 +291,6 @@ public class AutomateCliService implements IAutomateCliService {
             this.cache.invalidateAllPatterns();
             result.getOutput().getPattern();
         }
-    }
-
-    @NotNull
-    @Override
-    public DraftDetailed getCurrentDraftDetailed(@NotNull String currentDirectory) throws Exception {
-
-        return this.cache.GetDraftDetailed(() -> {
-            var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "draft")));
-            if (result.isError()) {
-                throw new Exception(result.getError().getErrorMessage());
-            }
-            else {
-                return result.getOutput().getDraft();
-            }
-        });
-    }
-
-    @NotNull
-    @Override
-    public ToolkitDetailed getCurrentToolkitDetailed(@NotNull String currentDirectory) throws Exception {
-
-        return this.cache.GetToolkitDetailed(() -> {
-            var result = runAutomateForStructuredOutput(GetToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "toolkit")));
-            if (result.isError()) {
-                throw new Exception(result.getError().getErrorMessage());
-            }
-            else {
-                return result.getOutput().getToolkit();
-            }
-        });
-    }
-
-    @Nullable
-    @Override
-    public DraftLite getCurrentDraftInfo(@NotNull String currentDirectory) {
-
-        return this.cache.GetDraftInfo(() -> {
-            var drafts = listDrafts(currentDirectory);
-
-            return drafts.stream()
-              .filter(DraftLite::getIsCurrent)
-              .findFirst()
-              .orElse(null);
-        });
-    }
-
-    @Override
-    public void setCurrentDraft(@NotNull String currentDirectory, @NotNull String id) throws Exception {
-
-        var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("run", "switch", id)));
-        if (result.isError()) {
-            throw new Exception(result.getError().getErrorMessage());
-        }
-        else {
-            this.cache.invalidateAllDrafts();
-            this.cache.invalidateCurrentToolkit();
-            result.getOutput().getDraft();
-        }
-    }
-
-    @NotNull
-    @Override
-    public DraftLite createDraft(@NotNull String currentDirectory, @NotNull String toolkitName, @NotNull String name) throws Exception {
-
-        var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
-        if (result.isError()) {
-            throw new Exception(result.getError().getErrorMessage());
-        }
-        else {
-            this.cache.invalidateAllDrafts();
-            return result.getOutput().getDraft();
-        }
-    }
-
-    @Override
-    public void installToolkit(@NotNull String currentDirectory, @NotNull String location) throws Exception {
-
-        var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("install", "toolkit", location)));
-        if (result.isError()) {
-            throw new Exception(result.getError().getErrorMessage());
-        }
-        this.cache.invalidateAllToolkits();
     }
 
     @Override
@@ -453,6 +368,94 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
+    @Override
+    public void installToolkit(@NotNull String currentDirectory, @NotNull String location) throws Exception {
+
+        var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("install", "toolkit", location)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        this.cache.invalidateAllToolkits();
+    }
+
+    @NotNull
+    @Override
+    public ToolkitDetailed getCurrentToolkitDetailed(@NotNull String currentDirectory) throws Exception {
+
+        return this.cache.getToolkitDetailed(() -> {
+            var result = runAutomateForStructuredOutput(GetToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "toolkit")));
+            if (result.isError()) {
+                throw new Exception(result.getError().getErrorMessage());
+            }
+            else {
+                return result.getOutput().getToolkit();
+            }
+        });
+    }
+
+    @NotNull
+    @Override
+    public DraftLite createDraft(@NotNull String currentDirectory, @NotNull String toolkitName, @NotNull String name) throws Exception {
+
+        var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateAllDrafts();
+            return result.getOutput().getDraft();
+        }
+    }
+
+    @Nullable
+    @Override
+    public DraftLite getCurrentDraftInfo(@NotNull String currentDirectory) {
+
+        return this.cache.getDraftInfo(() -> {
+            var drafts = listDrafts(currentDirectory);
+
+            return drafts.stream()
+              .filter(DraftLite::getIsCurrent)
+              .findFirst()
+              .orElse(null);
+        });
+    }
+
+    @NotNull
+    @Override
+    public DraftDetailed getCurrentDraftDetailed(@NotNull String currentDirectory) throws Exception {
+
+        var outOfDateDraft = getOutOfDateSafely(currentDirectory);
+        if (outOfDateDraft != null) {
+            this.cache.setDraftDetailed(outOfDateDraft);
+            return outOfDateDraft;
+        }
+
+        return this.cache.getDraftDetailed(() -> {
+            var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "draft")));
+            if (result.isError()) {
+                throw new Exception(result.getError().getErrorMessage());
+            }
+            else {
+                return result.getOutput().getDraft();
+            }
+        });
+    }
+
+    @Override
+    public void setCurrentDraft(@NotNull String currentDirectory, @NotNull String id) throws Exception {
+
+        var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("run", "switch", id)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateAllDrafts();
+            this.cache.invalidateCurrentToolkit();
+            result.getOutput().getDraft();
+        }
+    }
+
     @NotNull
     @Override
     public DraftElement addDraftElement(@NotNull String currentDirectory, @NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception {
@@ -512,6 +515,24 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
+    @NotNull
+    @Override
+    public DraftUpgradeReport upgradeDraft(@NotNull String currentDirectory, boolean force) throws Exception {
+
+        var args = new ArrayList<>(List.of("upgrade", "draft"));
+        if (force) {
+            args.add("--force");
+        }
+        var result = runAutomateForStructuredOutput(UpgradeDraftStructuredOutput.class, currentDirectory, new ArrayList<>(args));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentDraft();
+            return result.getOutput().getReport();
+        }
+    }
+
     @Override
     @NotNull
     public LaunchPointExecutionResult executeLaunchPoint(@NotNull String currentDirectory, @NotNull String configurationPath, @NotNull String launchPointName) throws Exception {
@@ -524,6 +545,18 @@ public class AutomateCliService implements IAutomateCliService {
         else {
             return result.getOutput().getResult();
         }
+    }
+
+    private DraftDetailed getOutOfDateSafely(@NotNull String currentDirectory) {
+
+        var draftInfo = getCurrentDraftInfo(currentDirectory);
+        if (draftInfo != null) {
+            if (draftInfo.isOutOfDate()) {
+                return DraftDetailed.createMustUpgrade(draftInfo.getId(), draftInfo.getName(), draftInfo.getOriginalToolkitVersion(), draftInfo.getCurrentToolkitVersion());
+            }
+        }
+
+        return null;
     }
 
     private void init() {

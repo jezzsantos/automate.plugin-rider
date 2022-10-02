@@ -41,7 +41,7 @@ public class EditDraftElementAction extends AnAction {
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
-        var isElementSite = getElement(e) != null;
+        var isElementSite = getSelection(e) != null;
         presentation.setEnabledAndVisible(isDraftEditingMode && isElementSite);
     }
 
@@ -51,7 +51,7 @@ public class EditDraftElementAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var selectedNode = getElement(e);
+            var selectedNode = getSelection(e);
             if (selectedNode != null) {
                 var element = selectedNode.getElement();
                 var schema = Objects.requireNonNull(selectedNode.getSchema()).getSchema();
@@ -69,7 +69,7 @@ public class EditDraftElementAction extends AnAction {
         }
     }
 
-    private DraftElementPlaceholderNode getElement(AnActionEvent e) {
+    private DraftElementPlaceholderNode getSelection(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {

@@ -14,7 +14,7 @@ class CreateDraft {
 
     public String ToolkitName;
     public String ToolkitId;
-    public String Version;
+    public String ToolkitVersion;
 }
 
 public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
@@ -30,6 +30,6 @@ public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
     public DraftLite getDraft() {
 
         var values = this.Output.get(0).Values;
-        return new DraftLite(values.DraftId, values.Name, values.ToolkitId, values.Version, true);
+        return new DraftLite(values.DraftId, values.Name, values.ToolkitId, values.ToolkitVersion, true);
     }
 }

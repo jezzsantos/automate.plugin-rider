@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElementValue;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftProperty;
@@ -17,7 +18,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 
 public class DraftTreeModelTests {
 
-    private DraftElement draft;
+    private DraftDetailed draft;
     private DraftTreeModel model;
     private TestModelTreeListener treeModelListener;
     private ITreeSelector treeSelector;
@@ -26,7 +27,9 @@ public class DraftTreeModelTests {
     public void setUp() {
 
         var pattern = new PatternElement("anid", "aname");
-        this.draft = new DraftElement("anid", Map.of(), true);
+        this.draft = new DraftDetailed("anid", "aname", "atoolkitversion", new HashMap<>() {{
+            put("Id", "anid");
+        }});
         this.treeSelector = Mockito.mock(ITreeSelector.class);
         this.model = new DraftTreeModel(this.treeSelector, this.draft, pattern);
         this.treeModelListener = new TestModelTreeListener();
@@ -44,7 +47,7 @@ public class DraftTreeModelTests {
 
         var result = (DraftElementPlaceholderNode) this.model.getRoot();
 
-        assertEquals(this.draft, result.getElement());
+        assertEquals(this.draft.getRoot(), result.getElement());
     }
 
     @Test

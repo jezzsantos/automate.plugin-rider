@@ -43,7 +43,7 @@ public class DeletePatternAttributeAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isAttributeSite = getAttribute(e) != null;
+        var isAttributeSite = getSelection(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isAttributeSite);
     }
 
@@ -52,7 +52,7 @@ public class DeletePatternAttributeAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            var selected = getAttribute(e);
+            var selected = getSelection(e);
             if (selected != null) {
                 if (ConfirmDeleteDialog.confirms(project,
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Title"),
@@ -67,7 +67,7 @@ public class DeletePatternAttributeAction extends AnAction {
         }
     }
 
-    private EditPatternAttributeAction.SelectedAttribute getAttribute(AnActionEvent e) {
+    private EditPatternAttributeAction.SelectedAttribute getSelection(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {

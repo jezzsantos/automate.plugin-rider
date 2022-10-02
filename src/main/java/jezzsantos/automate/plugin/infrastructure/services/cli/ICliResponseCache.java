@@ -16,23 +16,23 @@ import java.util.function.Supplier;
 
 public interface ICliResponseCache {
 
-    @NotNull AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh);
+    @NotNull AllStateLite listAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh);
 
-    @NotNull List<PatternLite> ListPatterns(@NotNull Supplier<List<PatternLite>> supplier);
+    @NotNull List<PatternLite> listPatterns(@NotNull Supplier<List<PatternLite>> supplier);
 
-    @NotNull List<ToolkitLite> ListToolkits(@NotNull Supplier<List<ToolkitLite>> supplier);
+    @NotNull List<ToolkitLite> listToolkits(@NotNull Supplier<List<ToolkitLite>> supplier);
 
-    @NotNull List<DraftLite> ListDrafts(@NotNull Supplier<List<DraftLite>> supplier);
+    @NotNull List<DraftLite> listDrafts(@NotNull Supplier<List<DraftLite>> supplier);
 
-    @Nullable PatternLite GetPatternInfo(@NotNull Supplier<PatternLite> supplier);
+    @Nullable PatternLite getPatternInfo(@NotNull Supplier<PatternLite> supplier);
 
-    @NotNull PatternDetailed GetPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception;
+    @NotNull PatternDetailed getPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception;
 
-    @NotNull ToolkitDetailed GetToolkitDetailed(@NotNull Callable<ToolkitDetailed> supplier) throws Exception;
+    @NotNull ToolkitDetailed getToolkitDetailed(@NotNull Callable<ToolkitDetailed> supplier) throws Exception;
 
-    @Nullable DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier);
+    @Nullable DraftLite getDraftInfo(@NotNull Supplier<DraftLite> supplier);
 
-    @NotNull DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception;
+    @NotNull DraftDetailed getDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception;
 
     boolean isCliInstalled(@NotNull Supplier<Boolean> supplier);
 
@@ -53,4 +53,6 @@ public interface ICliResponseCache {
     void invalidateIsCliInstalled();
 
     void setIsCliInstalled(boolean isInstalled);
+
+    void setDraftDetailed(@NotNull DraftDetailed draft);
 }

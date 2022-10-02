@@ -139,4 +139,25 @@ public class AutomateConstants {
             return this.displayName;
         }
     }
+
+    public enum UpgradeLogType {
+        @SerializedName("Abort")
+        ABORT("Abort"),
+        @SerializedName("NonBreaking")
+        NON_BREAKING("Non-Breaking"),
+        @SerializedName("Breaking")
+        BREAKING("Breaking");
+        private final String displayName;
+
+        UpgradeLogType(String displayName) {
+
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.displayName;
+        }
+    }
 }

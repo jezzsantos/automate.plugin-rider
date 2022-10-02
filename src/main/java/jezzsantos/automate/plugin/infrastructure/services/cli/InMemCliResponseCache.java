@@ -39,7 +39,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
     @NotNull
     @Override
-    public AllStateLite ListAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh) {
+    public AllStateLite listAll(@NotNull Supplier<AllStateLite> supplier, boolean forceRefresh) {
 
         if (forceRefresh) {
             invalidateAllLocalState();
@@ -58,7 +58,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
     @NotNull
     @Override
-    public List<PatternLite> ListPatterns(@NotNull Supplier<List<PatternLite>> supplier) {
+    public List<PatternLite> listPatterns(@NotNull Supplier<List<PatternLite>> supplier) {
 
         if (this.patternsList == null) {
             this.patternsList = supplier.get();
@@ -69,7 +69,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
     @NotNull
     @Override
-    public List<ToolkitLite> ListToolkits(@NotNull Supplier<List<ToolkitLite>> supplier) {
+    public List<ToolkitLite> listToolkits(@NotNull Supplier<List<ToolkitLite>> supplier) {
 
         if (this.toolkitsList == null) {
             this.toolkitsList = supplier.get();
@@ -80,7 +80,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
     @NotNull
     @Override
-    public List<DraftLite> ListDrafts(@NotNull Supplier<List<DraftLite>> supplier) {
+    public List<DraftLite> listDrafts(@NotNull Supplier<List<DraftLite>> supplier) {
 
         if (this.draftsList == null) {
             this.draftsList = supplier.get();
@@ -91,14 +91,14 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
     @Nullable
     @Override
-    public PatternLite GetPatternInfo(@NotNull Supplier<PatternLite> supplier) {
+    public PatternLite getPatternInfo(@NotNull Supplier<PatternLite> supplier) {
 
         return supplier.get();
     }
 
     @NotNull
     @Override
-    public PatternDetailed GetPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception {
+    public PatternDetailed getPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception {
 
         if (this.currentPattern == null) {
             this.currentPattern = supplier.call();
@@ -107,7 +107,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
     }
 
     @Override
-    public @NotNull ToolkitDetailed GetToolkitDetailed(@NotNull Callable<ToolkitDetailed> supplier) throws Exception {
+    public @NotNull ToolkitDetailed getToolkitDetailed(@NotNull Callable<ToolkitDetailed> supplier) throws Exception {
 
         if (this.currentToolkit == null) {
             this.currentToolkit = supplier.call();
@@ -117,14 +117,14 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
     @Nullable
     @Override
-    public DraftLite GetDraftInfo(@NotNull Supplier<DraftLite> supplier) {
+    public DraftLite getDraftInfo(@NotNull Supplier<DraftLite> supplier) {
 
         return supplier.get();
     }
 
     @NotNull
     @Override
-    public DraftDetailed GetDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception {
+    public DraftDetailed getDraftDetailed(@NotNull Callable<DraftDetailed> supplier) throws Exception {
 
         if (this.currentDraft == null) {
             this.currentDraft = supplier.call();
@@ -161,6 +161,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
         this.toolkitsList = null;
         invalidateCurrentToolkit();
+        invalidateAllDrafts();
     }
 
     @Override
@@ -198,5 +199,11 @@ public class InMemCliResponseCache implements ICliResponseCache {
     public void setIsCliInstalled(boolean isInstalled) {
 
         this.isCliInstalled = isInstalled;
+    }
+
+    @Override
+    public void setDraftDetailed(@NotNull DraftDetailed draft) {
+
+        this.currentDraft = draft;
     }
 }

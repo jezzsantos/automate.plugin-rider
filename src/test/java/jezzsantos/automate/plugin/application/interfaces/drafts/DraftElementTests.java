@@ -397,7 +397,7 @@ public class DraftElementTests {
     @Test
     public void whenEqualsAndDifferentType_ThenReturnsFalse() {
 
-        var otherObject = new DraftDetailed("anid", "aname", new HashMap<>());
+        var otherObject = new DraftDetailed("anid", "aname", "atoolkitversion", new HashMap<>());
         var element = new DraftElement("aname", new HashMap<>(), false);
 
         var result = element

@@ -1,0 +1,37 @@
+package jezzsantos.automate.plugin.infrastructure.services.cli;
+
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftUpgradeReport;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftUpgradeReportItem;
+import org.jetbrains.annotations.TestOnly;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@SuppressWarnings("unused")
+class UpgradedDraft {
+
+    public String Name;
+    public String DraftId;
+    public String ToolkitName;
+    public String OldVersion;
+    public String NewVersion;
+    public List<DraftUpgradeReportItem> Log;
+}
+
+public class UpgradeDraftStructuredOutput extends StructuredOutput<UpgradedDraft> {
+
+    @TestOnly
+    public UpgradeDraftStructuredOutput() {
+
+        super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
+            this.Values = new UpgradedDraft();
+        }})));
+    }
+
+    public DraftUpgradeReport getReport() {
+
+        var values = this.Output.get(0).Values;
+        return new DraftUpgradeReport(values.OldVersion, values.NewVersion, Objects.requireNonNullElse(values.Log, List.of()));
+    }
+}

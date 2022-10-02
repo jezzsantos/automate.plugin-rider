@@ -6,10 +6,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
-import jezzsantos.automate.plugin.application.interfaces.drafts.LaunchPointExecutionResult;
+import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
@@ -267,8 +264,15 @@ public class AutomateApplication implements IAutomateApplication {
         this.automateService.deleteDraftElement(this.currentDirectory, expression);
     }
 
-    @Override
     @NotNull
+    @Override
+    public DraftUpgradeReport upgradeDraft(boolean force) throws Exception {
+
+        return this.automateService.upgradeDraft(this.currentDirectory, force);
+    }
+
+    @NotNull
+    @Override
     public LaunchPointExecutionResult executeLaunchPoint(@NotNull String configurationPath, @NotNull String launchPointName) throws Exception {
 
         return this.automateService.executeLaunchPoint(this.currentDirectory, configurationPath, launchPointName);

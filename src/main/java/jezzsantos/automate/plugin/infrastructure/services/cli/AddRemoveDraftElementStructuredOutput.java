@@ -31,3 +31,4 @@ public class AddRemoveDraftElementStructuredOutput extends StructuredOutput<AddR
         return new DraftElement(values.DraftName, DraftElement.toElementValueMap(values.Configuration), false);
     }
 }
+

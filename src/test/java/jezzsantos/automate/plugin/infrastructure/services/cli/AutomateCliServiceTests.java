@@ -2,6 +2,8 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
@@ -18,6 +20,7 @@ import org.mockito.stubbing.Answer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -243,7 +246,7 @@ public class AutomateCliServiceTests {
 
         Mockito.when(this.cliRunner.executeStructured(any(), anyString(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
-        Mockito.when(this.cache.ListAll(any(), anyBoolean()))
+        Mockito.when(this.cache.listAll(any(), anyBoolean()))
           .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
         var result = this.service.listAllAutomation("acurrentdirectory", false);
@@ -263,7 +266,7 @@ public class AutomateCliServiceTests {
 
         Mockito.when(this.cliRunner.executeStructured(any(), anyString(), any(), anyList()))
           .thenReturn(new CliStructuredResult(null, new ListAllDefinitionsStructuredOutput()));
-        Mockito.when(this.cache.ListAll(any(), anyBoolean()))
+        Mockito.when(this.cache.listAll(any(), anyBoolean()))
           .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
         var result = this.service.listAllAutomation("acurrentdirectory", false);
@@ -282,7 +285,7 @@ public class AutomateCliServiceTests {
 
         Mockito.when(this.cliRunner.executeStructured(any(), anyString(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
-        Mockito.when(this.cache.ListAll(any(), anyBoolean()))
+        Mockito.when(this.cache.listAll(any(), anyBoolean()))
           .thenReturn(new AllStateLite());
 
         var result = this.service.listAllAutomation("acurrentdirectory", false);
@@ -291,6 +294,31 @@ public class AutomateCliServiceTests {
         assertTrue(result.getToolkits().isEmpty());
         assertTrue(result.getDrafts().isEmpty());
         Mockito.verify(this.cliRunner, never()).executeStructured(any(), anyString(), any(), anyList());
+    }
+
+    @Test
+    public void whenGetCurrentDraftDetailedAndIsOutOfDate_ThenReturnsOutOfDateDraft() throws Exception {
+
+        Mockito.when(this.cache.getDraftInfo(any()))
+          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", true));
+
+        var result = this.service.getCurrentDraftDetailed("acurrentdirectory");
+
+        assertTrue(result.mustBeUpgraded());
+    }
+
+    @Test
+    public void whenGetCurrentDraftDetailedAndIsNotOutOfDate_ThenReturns() throws Exception {
+
+        Mockito.when(this.cache.getDraftInfo(any()))
+          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "anoriginaltoolkitversion", "anoriginaltoolkitversion", true));
+        var draft = new DraftDetailed("anid", "aname", "atoolkitversion", new HashMap<>());
+        Mockito.when(this.cache.getDraftDetailed(any()))
+          .thenReturn(draft);
+
+        var result = this.service.getCurrentDraftDetailed("acurrentdirectory");
+
+        assertEquals(draft, result);
     }
 
     private String createTemporaryFile(String name) {

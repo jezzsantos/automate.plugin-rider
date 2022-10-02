@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DraftDetailedTests {
 
@@ -155,7 +156,7 @@ public class DraftDetailedTests {
         var map = new HashMap<String, Object>();
         map.put("Id", "anid");
 
-        var result = new DraftDetailed("anid", "aname", map)
+        var result = new DraftDetailed("anid", "aname", "atoolkitversion", map)
           .getRoot();
 
         assertEquals("aname", result.getName());
@@ -163,9 +164,17 @@ public class DraftDetailedTests {
     }
 
     @Test
+    public void whenCreateMustUpgrade_ThenReturnsAnMustUpgradeableDraft() {
+
+        var result = DraftDetailed.createMustUpgrade("anid", "aname", "1.0.0", "2.0.0");
+
+        assertTrue(result.mustBeUpgraded());
+    }
+
+    @Test
     public void whenToString_ThenReturnsString() {
 
-        var result = new DraftDetailed("anid", "aname", new HashMap<>())
+        var result = new DraftDetailed("anid", "aname", "atoolkitversion", new HashMap<>())
           .toString();
 
         assertEquals("aname (anid)", result);

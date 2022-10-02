@@ -9,6 +9,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.Tree;
+import jezzsantos.automate.plugin.AutomateIcons;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
@@ -123,7 +124,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                     var toolkit = Try.andHandle(this.project, this.application::getCurrentToolkitDetailed,
                                                 AutomateBundle.message("general.AutomateTree.CurrentToolkit.Failed.Message"));
                     if (draft != null && toolkit != null) {
-                        var model = new DraftTreeModel(new AutomateTreeSelector(this), draft.getRoot(), toolkit.getPattern());
+                        var model = new DraftTreeModel(new AutomateTreeSelector(this), draft, toolkit.getPattern());
                         this.currentSelectionListener = new DraftModelTreeSelectionListener(model);
                         this.setModel(model);
                         this.addTreeSelectionListener(this.currentSelectionListener);
@@ -200,20 +201,27 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                 }
 
                 if (editingMode == EditingMode.DRAFTS) {
-                    if (value instanceof DraftElementPlaceholderNode placeholder) {
-                        setIcon(placeholder.isCollectionItem()
-                                  ? AllIcons.Actions.DynamicUsages
-                                  : AllIcons.Debugger.Db_muted_breakpoint);
-                        setToolTipText(placeholder.isCollectionItem()
-                                         ? AutomateBundle.message("toolWindow.Tree.Draft.CollectionItem.Tooltip")
-                                         : AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
-                        append(value.toString());
+                    if (value instanceof DraftMustBeUpgradedPlaceholderNode) {
+                        setIcon(AutomateIcons.StatusError);
+                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.MustUpgrade.Tooltip"));
+                        append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
                     }
                     else {
-                        if (value instanceof DraftPropertyPlaceholderNode) {
-                            setIcon(AllIcons.Gutter.ExtAnnotation);
-                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Property.Tooltip"));
+                        if (value instanceof DraftElementPlaceholderNode placeholder) {
+                            setIcon(placeholder.isCollectionItem()
+                                      ? AllIcons.Actions.DynamicUsages
+                                      : AllIcons.Debugger.Db_muted_breakpoint);
+                            setToolTipText(placeholder.isCollectionItem()
+                                             ? AutomateBundle.message("toolWindow.Tree.Draft.CollectionItem.Tooltip")
+                                             : AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
                             append(value.toString());
+                        }
+                        else {
+                            if (value instanceof DraftPropertyPlaceholderNode) {
+                                setIcon(AllIcons.Gutter.ExtAnnotation);
+                                setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Property.Tooltip"));
+                                append(value.toString());
+                            }
                         }
                     }
                 }
@@ -232,7 +240,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         };
     }
 
-    private void setGuidance(String text) {
+    private void setGuidance(@NotNull String text) {
 
         var statusText = this.getEmptyText();
         statusText.clear();
@@ -247,6 +255,11 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
     private ActionGroup addTreeContextMenu() {
 
         var actions = new DefaultActionGroup();
+
+        var upgradeDraft = new UpgradeDraftAction(this::refreshTree);
+        actions.add(upgradeDraft);
+
+        actions.addSeparator();
 
         var addPatternAttribute = new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         addPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
@@ -283,6 +296,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         return new CustomShortcutSet(KeyStroke.getKeyStroke(key, 0));
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static class PatternModelTreeSelectionListener implements TreeSelectionListener {
 
         @NotNull
@@ -303,6 +317,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static class DraftModelTreeSelectionListener implements TreeSelectionListener {
 
         @NotNull

@@ -45,14 +45,14 @@ public class AddPatternAttributeAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isAttributeSite = getParentElement(e) != null;
-        presentation.setEnabledAndVisible(isPatternEditingMode && isAttributeSite);
+        var isPatternSite = getSelection(e) != null;
+        presentation.setEnabledAndVisible(isPatternEditingMode && isPatternSite);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
-        var parent = getParentElement(e);
+        var parent = getSelection(e);
         if (parent != null) {
             var project = e.getProject();
             if (project != null) {
@@ -74,7 +74,7 @@ public class AddPatternAttributeAction extends AnAction {
         }
     }
 
-    private PatternElement getParentElement(AnActionEvent e) {
+    private PatternElement getSelection(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
