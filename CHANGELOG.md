@@ -9,17 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+- Minimum compatibility with `automate` version 1.0.4
+
 ### Added
 
-### Changed
-
-### Deprecated
-
-### Removed
+- Drafts: Closed #5. Out of date drafts, can now be upgraded.
+- DevOps: Integration tests can now be run
 
 ### Fixed
 
-### Security
+- Patterns: Fixed #16. Can now add new attributes to a pattern
+- Docs: Instructions for installing plugin and CLI updated.
 
 ## [1.0.4] - 2022-09-29
 
