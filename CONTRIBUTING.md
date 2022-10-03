@@ -191,8 +191,7 @@ We recommend using JetBrains IntelliJ to develop this codebase.
 
 ## Testing the code
 
-* Run all the **unit** tests (`Category=Unit`)
-* Run all the **integration** tests (`Category=Integration`)
+* `./gradlew :test --tests "jezzsantos.automate.*"`
 
 > All automated tests must pass to submit changes to the codebase
 
@@ -217,8 +216,8 @@ When you push your changes (or push your pull requests), they will be built and 
 2. In `CHANGELOG.md`, insert change notes into the `[Unreleased]` sections of the document (e.g. under headings such
    as: `### Notes`, `### Added`, `### Fixed` etc). Only leave sections with items in them ( delete the unused sections)
 3. Run: `./gradlew patchChangelog`
-4. Commit changes with message like `#vx.x.x` (or `#vx.x.x-Stable`)
-5. Tag that commit `vx.x.x` (or `#vx.x.x-Stable` if you want an unpublished release)
+4. Commit changes with message like `#vx.y.z` (or `#vx.y.z-Unstable`)
+5. Tag that commit `vx.y.z` (or `#vx.y.z-Unstable` if you want an unpublished release)
 6. Push commit and tags
 
 Wait until the latest build goes green, at which point:

@@ -9,7 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- Minimum compatibility with `automate` version 1.0.4
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.0.5] - 2022-10-03
+
+### Notes
+
+- Minimum compatibility with `automate` CLI version 1.0.4
 
 ### Added
 
@@ -25,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- Minimum compatibility with `automate` version 1.0.2
+- Minimum compatibility with `automate` CLI version 1.0.2
 
 ### Added
 
@@ -52,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - (First public stable release)
-- Minimum compatibility with `automate` version 1.0.1
+- Minimum compatibility with `automate` CLI version 1.0.1
 
 ### Added
 
