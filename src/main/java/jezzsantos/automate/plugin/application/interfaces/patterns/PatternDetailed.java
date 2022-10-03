@@ -45,6 +45,6 @@ public class PatternDetailed {
     @Override
     public String toString() {
 
-        return String.format("%s  (v.%s)", this.name, this.version);
+        return String.format("%s  (v%s)", this.name, this.version);
     }
 }

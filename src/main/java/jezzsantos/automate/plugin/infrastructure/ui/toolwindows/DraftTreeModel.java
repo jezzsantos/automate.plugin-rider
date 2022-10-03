@@ -30,7 +30,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
         this.treeSelector = treeSelector;
         this.draft = draft.mustBeUpgraded()
-          ? new DraftMustBeUpgradedPlaceholderNode(draft.getName(), Objects.requireNonNull(draft.getUpgradeInfo()))
+          ? new DraftMustBeUpgradedPlaceholderNode(draft.getName(), draft.getUpgradeInfo())
           : new DraftElementPlaceholderNode(pattern, draft.getRoot(), false);
         this.pattern = pattern;
     }

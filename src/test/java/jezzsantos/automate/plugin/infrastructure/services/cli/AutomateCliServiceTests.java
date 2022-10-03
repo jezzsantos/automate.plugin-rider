@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -296,9 +297,12 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner, never()).executeStructured(any(), anyString(), any(), anyList());
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void whenGetCurrentDraftDetailedAndIsOutOfDate_ThenReturnsOutOfDateDraft() throws Exception {
 
+        Mockito.when(this.cache.getDraftDetailed(any()))
+          .thenAnswer((Answer) invocation -> ((Callable<DraftDetailed>) invocation.getArguments()[0]).call());
         Mockito.when(this.cache.getDraftInfo(any()))
           .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", true));
 

@@ -57,7 +57,7 @@ public class UpgradeDraftAction extends AnAction {
             if (selectedNode != null) {
                 var dialog = new UpgradeDraftDialog(project,
                                                     new UpgradeDraftDialog.UpgradeDraftDialogContext(selectedNode.getFromVersion(), selectedNode.getToVersion(),
-                                                                                                     selectedNode.isIncompatibleUpgrade(),
+                                                                                                     selectedNode.mustUpgrade(),
                                                                                                      context -> Try.andHandle(project, () -> application.upgradeDraft(
                                                                                                                                 context.getForce()),
                                                                                                                               AutomateBundle.message(

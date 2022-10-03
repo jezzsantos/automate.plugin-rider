@@ -19,6 +19,7 @@ public class DraftLite {
     private String currentToolkitVersion;
     @SerializedName(value = "IsCurrent")
     private boolean isCurrent;
+    private DraftUpgradeInfo upgradeInfo;
 
     public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String originalToolkitVersion, Boolean isCurrent) {
 
@@ -34,43 +35,35 @@ public class DraftLite {
         this.currentToolkitVersion = currentToolkitVersion;
         this.toolkitId = toolkitId;
         this.isCurrent = isCurrent;
+        this.upgradeInfo = new DraftUpgradeInfo(originalToolkitVersion, currentToolkitVersion);
     }
 
     @NotNull
-    public String getName() {
+    public String getName() {return this.name;}
 
-        return this.name;
+    @NotNull
+    public String getId() {return this.id;}
+
+    public boolean getIsCurrent() {return this.isCurrent;}
+
+    public boolean mustBeUpgraded() {
+
+        if (this.upgradeInfo == null) {
+            this.upgradeInfo = new DraftUpgradeInfo(this.originalToolkitVersion, this.currentToolkitVersion);
+        }
+
+        return !this.upgradeInfo.isCompatible();
     }
 
     @NotNull
-    public String getId() {
+    public String getCurrentToolkitVersion() {return this.currentToolkitVersion;}
 
-        return this.id;
-    }
-
-    public boolean getIsCurrent() {
-
-        return this.isCurrent;
-    }
-
-    public boolean isOutOfDate() {
-
-        return !this.originalToolkitVersion.equalsIgnoreCase(this.currentToolkitVersion);
-    }
-
-    public String getCurrentToolkitVersion() {
-
-        return this.currentToolkitVersion;
-    }
-
-    public String getOriginalToolkitVersion() {
-
-        return this.originalToolkitVersion;
-    }
+    @NotNull
+    public String getOriginalToolkitVersion() {return this.originalToolkitVersion;}
 
     @Override
     public String toString() {
 
-        return String.format("%s  (v.%s)", this.name, this.originalToolkitVersion);
+        return String.format("%s  (v%s)", this.name, this.originalToolkitVersion);
     }
 }

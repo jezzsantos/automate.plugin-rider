@@ -425,13 +425,12 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public DraftDetailed getCurrentDraftDetailed(@NotNull String currentDirectory) throws Exception {
 
-        var outOfDateDraft = getOutOfDateSafely(currentDirectory);
-        if (outOfDateDraft != null) {
-            this.cache.setDraftDetailed(outOfDateDraft);
-            return outOfDateDraft;
-        }
-
         return this.cache.getDraftDetailed(() -> {
+            var outOfDateDraft = getOutOfDateSafely(currentDirectory);
+            if (outOfDateDraft != null) {
+                return outOfDateDraft;
+            }
+
             var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "draft")));
             if (result.isError()) {
                 throw new Exception(result.getError().getErrorMessage());
@@ -552,7 +551,7 @@ public class AutomateCliService implements IAutomateCliService {
 
         var draftInfo = getCurrentDraftInfo(currentDirectory);
         if (draftInfo != null) {
-            if (draftInfo.isOutOfDate()) {
+            if (draftInfo.mustBeUpgraded()) {
                 return DraftDetailed.createMustUpgrade(draftInfo.getId(), draftInfo.getName(), draftInfo.getOriginalToolkitVersion(), draftInfo.getCurrentToolkitVersion());
             }
         }

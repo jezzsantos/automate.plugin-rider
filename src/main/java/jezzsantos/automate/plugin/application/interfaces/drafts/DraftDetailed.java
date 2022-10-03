@@ -2,7 +2,6 @@ package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ public class DraftDetailed {
     private final String toolkitVersion;
     @SerializedName(value = "Configuration")
     private final Map<String, Object> configuration;
-    private final MustUpgradeInfo mustUpgradeInfo;
+    private DraftUpgradeInfo upgradeInfo;
 
     public DraftDetailed(@NotNull String id, @NotNull String name, @NotNull String toolkitVersion, @NotNull HashMap<String, Object> configuration) {
 
@@ -26,7 +25,7 @@ public class DraftDetailed {
         this.name = name;
         this.toolkitVersion = toolkitVersion;
         this.configuration = configuration;
-        this.mustUpgradeInfo = null;
+        this.upgradeInfo = new DraftUpgradeInfo(toolkitVersion, toolkitVersion);
     }
 
     private DraftDetailed(@NotNull String id, @NotNull String name, @NotNull String originalToolkitVersion, @NotNull String currentToolkitVersion) {
@@ -35,7 +34,7 @@ public class DraftDetailed {
         this.name = name;
         this.toolkitVersion = currentToolkitVersion;
         this.configuration = Map.of();
-        this.mustUpgradeInfo = new MustUpgradeInfo(originalToolkitVersion, currentToolkitVersion);
+        this.upgradeInfo = new DraftUpgradeInfo(originalToolkitVersion, currentToolkitVersion);
     }
 
     public static DraftDetailed createMustUpgrade(@NotNull String id, @NotNull String name, @NotNull String originalToolkitVersion, @NotNull String currentToolkitVersion) {
@@ -44,16 +43,10 @@ public class DraftDetailed {
     }
 
     @NotNull
-    public String getName() {
-
-        return this.name;
-    }
+    public String getName() {return this.name;}
 
     @NotNull
-    public String getId() {
-
-        return this.id;
-    }
+    public String getId() {return this.id;}
 
     @NotNull
     public DraftElement getRoot() {
@@ -61,12 +54,16 @@ public class DraftDetailed {
         return new DraftElement(this.name, DraftElement.toElementValueMap(this.configuration), true);
     }
 
-    public boolean mustBeUpgraded() {return this.mustUpgradeInfo != null;}
+    public boolean mustBeUpgraded() {return !getUpgradeInfo().isCompatible();}
 
-    @Nullable
-    public MustUpgradeInfo getUpgradeInfo() {
+    @NotNull
+    public DraftUpgradeInfo getUpgradeInfo() {
 
-        return this.mustUpgradeInfo;
+        if (this.upgradeInfo == null) {
+            this.upgradeInfo = new DraftUpgradeInfo(this.toolkitVersion, this.toolkitVersion);
+        }
+
+        return this.upgradeInfo;
     }
 
     @Override

@@ -27,6 +27,6 @@ public class PatternDetailedTests {
         var result = new PatternDetailed("anid", "aname", "aversion", pattern)
           .toString();
 
-        assertEquals("aname  (v.aversion)", result);
+        assertEquals("aname  (vaversion)", result);
     }
 }

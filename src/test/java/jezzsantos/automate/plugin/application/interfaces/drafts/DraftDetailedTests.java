@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DraftDetailedTests {
 
@@ -17,6 +16,7 @@ public class DraftDetailedTests {
         var json = "{" +
           "        \"Name\": \"adraftname\"," +
           "        \"DraftId\": \"adraftid\"," +
+          "        \"ToolkitVersion\": \"1.0.0\"," +
           "        \"Configuration\": {" +
           "          \"Id\": \"aconfigurationid\"," +
           "          \"APropertyName1\": \"avalue\"," +
@@ -87,6 +87,9 @@ public class DraftDetailedTests {
 
         var result = gson.fromJson(json, DraftDetailed.class);
 
+        assertFalse(result.mustBeUpgraded());
+        assertTrue(result.getUpgradeInfo().isCompatible());
+
         assertEquals("adraftname", result.getName());
         assertEquals("adraftid", result.getId());
         var configuration = result.getRoot();
@@ -151,12 +154,21 @@ public class DraftDetailedTests {
     }
 
     @Test
+    public void whenConstructed_ThenMustNotBeUpgraded() {
+
+        var draft = new DraftDetailed("anid", "aname", "1.0.0", new HashMap<>());
+
+        assertFalse(draft.mustBeUpgraded());
+        assertTrue(draft.getUpgradeInfo().isCompatible());
+    }
+
+    @Test
     public void whenGetRoot_ThenReturnsRoot() {
 
         var map = new HashMap<String, Object>();
         map.put("Id", "anid");
 
-        var result = new DraftDetailed("anid", "aname", "atoolkitversion", map)
+        var result = new DraftDetailed("anid", "aname", "1.0.0", map)
           .getRoot();
 
         assertEquals("aname", result.getName());
@@ -169,12 +181,13 @@ public class DraftDetailedTests {
         var result = DraftDetailed.createMustUpgrade("anid", "aname", "1.0.0", "2.0.0");
 
         assertTrue(result.mustBeUpgraded());
+        assertFalse(result.getUpgradeInfo().isCompatible());
     }
 
     @Test
     public void whenToString_ThenReturnsString() {
 
-        var result = new DraftDetailed("anid", "aname", "atoolkitversion", new HashMap<>())
+        var result = new DraftDetailed("anid", "aname", "1.0.0", new HashMap<>())
           .toString();
 
         assertEquals("aname (anid)", result);

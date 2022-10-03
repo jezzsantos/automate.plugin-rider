@@ -200,10 +200,4 @@ public class InMemCliResponseCache implements ICliResponseCache {
 
         this.isCliInstalled = isInstalled;
     }
-
-    @Override
-    public void setDraftDetailed(@NotNull DraftDetailed draft) {
-
-        this.currentDraft = draft;
-    }
 }

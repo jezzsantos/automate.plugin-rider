@@ -53,6 +53,4 @@ public interface ICliResponseCache {
     void invalidateIsCliInstalled();
 
     void setIsCliInstalled(boolean isInstalled);
-
-    void setDraftDetailed(@NotNull DraftDetailed draft);
 }
