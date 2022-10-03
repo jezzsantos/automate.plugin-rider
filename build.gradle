@@ -27,14 +27,18 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
-    //useTestNG()
     dependencies {
         testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
         testImplementation 'org.mockito:mockito-core:4.8.0'
-        testImplementation("org.testng:testng:7.6.1")
+        testImplementation 'org.testng:testng:7.6.1'
+        testRuntimeOnly 'org.junit.support:testng-engine:1.0.4'
     }
 
+    systemProperty "LOCAL_ENV_RUN", "true" //For use with 'BaseTestWithSolution' and TestNG
+    useJUnitPlatform()
+    minHeapSize = "512m"
+    maxHeapSize = "1024m"
     testLogging {
         showStandardStreams = true
         exceptionFormat = TestExceptionFormat.FULL
