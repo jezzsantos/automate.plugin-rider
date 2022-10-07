@@ -6,6 +6,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.Tree;
@@ -201,10 +202,17 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                 }
 
                 if (editingMode == EditingMode.DRAFTS) {
-                    if (value instanceof DraftMustBeUpgradedPlaceholderNode) {
-                        setIcon(AutomateIcons.StatusError);
-                        setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.MustUpgrade.Tooltip"));
-                        append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
+                    if (value instanceof DraftMustBeUpgradedPlaceholderNode placeholder) {
+                        if (placeholder.isDraftIncompatible()) {
+                            setIcon(AutomateIcons.StatusWarning);
+                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeDraft.Tooltip"));
+                            append(value.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.ORANGE));
+                        }
+                        if (placeholder.isToolkitIncompatible()) {
+                            setIcon(AutomateIcons.StatusError);
+                            setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeToolkit.Tooltip"));
+                            append(value.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.RED));
+                        }
                     }
                     else {
                         if (value instanceof DraftElementPlaceholderNode placeholder) {

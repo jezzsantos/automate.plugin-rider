@@ -426,9 +426,9 @@ public class AutomateCliService implements IAutomateCliService {
     public DraftDetailed getCurrentDraftDetailed(@NotNull String currentDirectory) throws Exception {
 
         return this.cache.getDraftDetailed(() -> {
-            var outOfDateDraft = getOutOfDateSafely(currentDirectory);
-            if (outOfDateDraft != null) {
-                return outOfDateDraft;
+            var incompatibleDraft = getInCompatibleDraftSafely(currentDirectory);
+            if (incompatibleDraft != null) {
+                return incompatibleDraft;
             }
 
             var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "draft")));
@@ -547,12 +547,13 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
-    private DraftDetailed getOutOfDateSafely(@NotNull String currentDirectory) {
+    @Nullable
+    private DraftDetailed getInCompatibleDraftSafely(@NotNull String currentDirectory) {
 
         var draftInfo = getCurrentDraftInfo(currentDirectory);
         if (draftInfo != null) {
-            if (draftInfo.mustBeUpgraded()) {
-                return DraftDetailed.createMustUpgrade(draftInfo.getId(), draftInfo.getName(), draftInfo.getOriginalToolkitVersion(), draftInfo.getCurrentToolkitVersion());
+            if (draftInfo.isIncompatible()) {
+                return DraftDetailed.createIncompatible(draftInfo.getId(), draftInfo.getName(), draftInfo.getVersion());
             }
         }
 

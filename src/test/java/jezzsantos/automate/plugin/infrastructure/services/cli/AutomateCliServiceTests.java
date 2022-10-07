@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
@@ -304,11 +305,11 @@ public class AutomateCliServiceTests {
         Mockito.when(this.cache.getDraftDetailed(any()))
           .thenAnswer((Answer) invocation -> ((Callable<DraftDetailed>) invocation.getArguments()[0]).call());
         Mockito.when(this.cache.getDraftInfo(any()))
-          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", true));
+          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT, true));
 
         var result = this.service.getCurrentDraftDetailed("acurrentdirectory");
 
-        assertTrue(result.mustBeUpgraded());
+        assertTrue(result.isIncompatible());
     }
 
     @Test
@@ -316,7 +317,7 @@ public class AutomateCliServiceTests {
 
         Mockito.when(this.cache.getDraftInfo(any()))
           .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "anoriginaltoolkitversion", "anoriginaltoolkitversion", true));
-        var draft = new DraftDetailed("anid", "aname", "atoolkitversion", new HashMap<>());
+        var draft = new DraftDetailed("anid", "aname", "atoolkitversion", "aruntimeversion", new HashMap<>());
         Mockito.when(this.cache.getDraftDetailed(any()))
           .thenReturn(draft);
 

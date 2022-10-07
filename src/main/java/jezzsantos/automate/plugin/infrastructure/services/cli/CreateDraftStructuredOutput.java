@@ -9,12 +9,13 @@ import java.util.List;
 @SuppressWarnings("unused")
 class CreateDraft {
 
-    public String Name;
+    public String DraftName;
     public String DraftId;
 
     public String ToolkitName;
     public String ToolkitId;
     public String ToolkitVersion;
+    public String RuntimeVersion;
 }
 
 public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
@@ -30,6 +31,6 @@ public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
     public DraftLite getDraft() {
 
         var values = this.Output.get(0).Values;
-        return new DraftLite(values.DraftId, values.Name, values.ToolkitId, values.ToolkitVersion, true);
+        return new DraftLite(values.DraftId, values.DraftName, values.ToolkitId, values.ToolkitVersion, values.RuntimeVersion, true);
     }
 }

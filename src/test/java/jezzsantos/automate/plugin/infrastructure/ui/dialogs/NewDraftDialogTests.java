@@ -68,7 +68,7 @@ public class NewDraftDialogTests {
     public void whenDoValidateAndNameIsReserved_ThenReturnsError() {
 
         var toolkit = new ToolkitLite("anid", "atoolkitname", "aversion");
-        var draft = new DraftLite("anid", "adraftname", "atoolkitid", "aversion", false);
+        var draft = new DraftLite("anid", "adraftname", "atoolkitid", "atoolkitversion", "aruntimeversion", false);
         var context = new NewDraftDialog.NewDraftDialogContext(new ArrayList<>(List.of(toolkit)), new ArrayList<>(List.of(draft)));
 
         var result = NewDraftDialog.doValidate(context, toolkit, "adraftname");

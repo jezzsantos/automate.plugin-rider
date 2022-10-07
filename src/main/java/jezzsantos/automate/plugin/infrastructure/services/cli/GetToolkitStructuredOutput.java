@@ -18,10 +18,10 @@ public class GetToolkitStructuredOutput extends StructuredOutput<ToolkitDetailed
 
     @SuppressWarnings("unused")
     @TestOnly
-    public GetToolkitStructuredOutput(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {
+    public GetToolkitStructuredOutput(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull String runtimeVersion, @NotNull PatternElement pattern) {
 
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            this.Values = new ToolkitDetailed(id, name, version, pattern);
+            this.Values = new ToolkitDetailed(id, name, version, runtimeVersion, pattern);
         }})));
     }
 

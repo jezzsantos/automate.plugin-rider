@@ -68,10 +68,10 @@ public class DraftsListToolbarAction extends ComboBoxAction {
                     var isNoCurrentDraft = drafts.stream()
                       .noneMatch(DraftLite::getIsCurrent);
                     if (isNoCurrentDraft) {
-                        actions.add(new DraftListItemAction(this.onPerformed));
+                        actions.add(new ViewDraftAction(this.onPerformed));
                     }
                     for (var draft : drafts) {
-                        actions.add(new DraftListItemAction(this.onPerformed, draft.getName(), draft.getId()));
+                        actions.add(new ViewDraftAction(this.onPerformed, draft));
                     }
                 }
             }

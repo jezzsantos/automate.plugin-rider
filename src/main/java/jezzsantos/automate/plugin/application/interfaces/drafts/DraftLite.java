@@ -1,41 +1,48 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.annotations.SerializedName;
+import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
 @SuppressWarnings("unused")
 public class DraftLite {
 
-    @SerializedName(value = "Id")
+    @SerializedName(value = "DraftId")
     private final String id;
-    @SerializedName(value = "Name")
+    @SerializedName(value = "DraftName")
     private final String name;
     @SerializedName(value = "ToolkitId")
     private String toolkitId;
     @SerializedName(value = "ToolkitVersion")
-    private String originalToolkitVersion;
-    @SerializedName(value = "CurrentToolkitVersion")
-    private String currentToolkitVersion;
+    private DraftVersionCompatibility toolkitVersion;
     @SerializedName(value = "IsCurrent")
     private boolean isCurrent;
-    private DraftUpgradeInfo upgradeInfo;
 
-    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String originalToolkitVersion, Boolean isCurrent) {
+    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, Boolean isCurrent) {
 
-        this(id, name, toolkitId, originalToolkitVersion, originalToolkitVersion, isCurrent);
+        this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, AutomateConstants.DraftCompatibility.COMPATIBLE), isCurrent);
     }
 
     @TestOnly
-    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String originalToolkitVersion, @NotNull String currentToolkitVersion, Boolean isCurrent) {
+    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.DraftCompatibility compatibility, Boolean isCurrent) {
+
+        this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, compatibility), isCurrent);
+    }
+
+    @TestOnly
+    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.ToolkitCompatibility compatibility, Boolean isCurrent) {
+
+        this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, compatibility), isCurrent);
+    }
+
+    private DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull DraftVersionCompatibility version, Boolean isCurrent) {
 
         this.id = id;
         this.name = name;
-        this.originalToolkitVersion = originalToolkitVersion;
-        this.currentToolkitVersion = currentToolkitVersion;
+        this.toolkitVersion = version;
         this.toolkitId = toolkitId;
         this.isCurrent = isCurrent;
-        this.upgradeInfo = new DraftUpgradeInfo(originalToolkitVersion, currentToolkitVersion);
     }
 
     @NotNull
@@ -46,24 +53,16 @@ public class DraftLite {
 
     public boolean getIsCurrent() {return this.isCurrent;}
 
-    public boolean mustBeUpgraded() {
+    public boolean isIncompatible() {
 
-        if (this.upgradeInfo == null) {
-            this.upgradeInfo = new DraftUpgradeInfo(this.originalToolkitVersion, this.currentToolkitVersion);
-        }
-
-        return !this.upgradeInfo.isCompatible();
+        return this.toolkitVersion.isDraftIncompatible() || this.toolkitVersion.isToolkitIncompatible();
     }
 
-    @NotNull
-    public String getCurrentToolkitVersion() {return this.currentToolkitVersion;}
-
-    @NotNull
-    public String getOriginalToolkitVersion() {return this.originalToolkitVersion;}
+    public DraftVersionCompatibility getVersion() {return this.toolkitVersion;}
 
     @Override
     public String toString() {
 
-        return String.format("%s  (v%s)", this.name, this.originalToolkitVersion);
+        return String.format("%s  (v%s)", this.name, this.toolkitVersion.getToolkitVersion().getInstalled());
     }
 }

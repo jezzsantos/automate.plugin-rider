@@ -1,9 +1,11 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.Gson;
+import jezzsantos.automate.core.AutomateConstants;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DraftLiteTests {
 
@@ -11,46 +13,58 @@ public class DraftLiteTests {
     public void whenDeserialized_ThenPopulates() {
 
         var json = "{" +
-          "        \"Id\": \"anid\"," +
-          "        \"Name\": \"aname\"," +
+          "        \"DraftId\": \"anid\"," +
+          "        \"DraftName\": \"aname\"," +
           "        \"ToolkitId\": \"atoolkitid\"," +
-          "        \"ToolkitVersion\": \"1.0.0\"," +
-          "        \"CurrentToolkitVersion\": \"2.0.0\"," +
+          "        \"ToolkitVersion\": {" +
+          "             \"DraftCompatibility\": \"DraftAheadOfToolkit\"," +
+          "             \"Toolkit\": {" +
+          "                 \"Created\": \"1.0.0\"," +
+          "                 \"Installed\": \"1.0.0\"" +
+          "             }," +
+          "             \"Runtime\": {" +
+          "                 \"Created\": \"2.0.0\"," +
+          "                 \"Installed\": \"2.0.0\"" +
+          "             }," +
+          "             \"Compatibility\": \"ToolkitAheadOfRuntime\"" +
+          "}," +
           "        \"IsCurrent\": true" +
           "}";
         var gson = new Gson();
 
         var result = gson.fromJson(json, DraftLite.class);
 
-        assertTrue(result.mustBeUpgraded());
+        assertTrue(result.isIncompatible());
 
         assertEquals("anid", result.getId());
         assertEquals("aname", result.getName());
-        assertEquals("1.0.0", result.getOriginalToolkitVersion());
-        assertEquals("2.0.0", result.getCurrentToolkitVersion());
+        assertEquals(AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT, result.getVersion().getDraftCompatibility());
+        assertEquals("1.0.0", result.getVersion().getToolkitVersion().getCreated());
+        assertEquals("2.0.0", result.getVersion().getRuntimeVersion().getCreated());
+        assertEquals(AutomateConstants.ToolkitCompatibility.TOOLKIT_AHEADOF_RUNTIME, result.getVersion().getToolkitCompatibility());
         assertTrue(result.getIsCurrent());
     }
 
     @Test
-    public void whenConstructedWithLaterMinorVersion_ThenMustNotBeUpgraded() {
+    public void whenCreateIncompatibleWithIncompatibleDraft_ThenReturnsAnIncompatibleDraft() {
 
-        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "1.1.0", true);
+        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT, true);
 
-        assertFalse(result.mustBeUpgraded());
+        assertTrue(result.isIncompatible());
     }
 
     @Test
-    public void whenConstructedWithLaterMajorVersion_ThenMustBeUpgraded() {
+    public void whenCreateIncompatibleWithIncompatibleToolkit_ThenReturnsAnIncompatibleDraft() {
 
-        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", true);
+        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.ToolkitCompatibility.RUNTIME_AHEADOF_TOOLKIT, true);
 
-        assertTrue(result.mustBeUpgraded());
+        assertTrue(result.isIncompatible());
     }
 
     @Test
     public void whenToString_ThenReturnsString() {
 
-        var draft = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", true);
+        var draft = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", true);
 
         var result = draft.toString();
 

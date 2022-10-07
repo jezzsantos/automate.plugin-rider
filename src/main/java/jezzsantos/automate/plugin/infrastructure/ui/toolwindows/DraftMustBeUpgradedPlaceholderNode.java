@@ -1,27 +1,29 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftUpgradeInfo;
+import jezzsantos.automate.plugin.application.interfaces.drafts.DraftVersionCompatibility;
 import org.jetbrains.annotations.NotNull;
 
 public class DraftMustBeUpgradedPlaceholderNode {
 
     @NotNull
     private final String name;
-    private final DraftUpgradeInfo info;
+    private final DraftVersionCompatibility compatibility;
 
-    public DraftMustBeUpgradedPlaceholderNode(@NotNull String name, @NotNull DraftUpgradeInfo info) {
+    public DraftMustBeUpgradedPlaceholderNode(@NotNull String name, @NotNull DraftVersionCompatibility compatibility) {
 
         this.name = name;
-        this.info = info;
+        this.compatibility = compatibility;
     }
 
     @NotNull
-    public String getFromVersion() {return this.info.getFromVersion();}
+    public String getFromVersion() {return this.compatibility.getToolkitVersion().getCreated();}
 
     @NotNull
-    public String getToVersion() {return this.info.getToVersion();}
+    public String getToVersion() {return this.compatibility.getToolkitVersion().getInstalled();}
 
-    public boolean mustUpgrade() {return !this.info.isCompatible();}
+    public boolean isDraftIncompatible() {return this.compatibility.isDraftIncompatible();}
+
+    public boolean isToolkitIncompatible() {return this.compatibility.isToolkitIncompatible();}
 
     @Override
     public String toString() {

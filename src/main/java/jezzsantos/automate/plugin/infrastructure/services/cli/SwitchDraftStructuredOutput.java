@@ -8,13 +8,14 @@ import java.util.List;
 
 class SwitchDraft {
 
-    public String Name;
+    public String DraftName;
     public String DraftId;
 
     @SuppressWarnings("unused")
     public String ToolkitName;
     public String ToolkitId;
-    public String Version;
+    public String ToolkitVersion;
+    public String RuntimeVersion;
 }
 
 public class SwitchDraftStructuredOutput extends StructuredOutput<SwitchDraft> {
@@ -31,6 +32,6 @@ public class SwitchDraftStructuredOutput extends StructuredOutput<SwitchDraft> {
     public DraftLite getDraft() {
 
         var values = this.Output.get(0).Values;
-        return new DraftLite(values.DraftId, values.Name, values.ToolkitId, values.Version, true);
+        return new DraftLite(values.DraftId, values.DraftName, values.ToolkitId, values.ToolkitVersion, values.RuntimeVersion, true);
     }
 }

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.Gson;
+import jezzsantos.automate.core.AutomateConstants;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,9 +15,10 @@ public class DraftDetailedTests {
     public void whenDeserialized_ThenPopulates() {
 
         var json = "{" +
-          "        \"Name\": \"adraftname\"," +
+          "        \"DraftName\": \"adraftname\"," +
           "        \"DraftId\": \"adraftid\"," +
           "        \"ToolkitVersion\": \"1.0.0\"," +
+          "        \"RuntimeVersion\": \"2.0.0\"," +
           "        \"Configuration\": {" +
           "          \"Id\": \"aconfigurationid\"," +
           "          \"APropertyName1\": \"avalue\"," +
@@ -87,8 +89,9 @@ public class DraftDetailedTests {
 
         var result = gson.fromJson(json, DraftDetailed.class);
 
-        assertFalse(result.mustBeUpgraded());
-        assertTrue(result.getUpgradeInfo().isCompatible());
+        assertEquals("1.0.0", result.getToolkitVersion());
+        assertEquals("2.0.0", result.getRuntimeVersion());
+        assertFalse(result.isIncompatible());
 
         assertEquals("adraftname", result.getName());
         assertEquals("adraftid", result.getId());
@@ -156,10 +159,9 @@ public class DraftDetailedTests {
     @Test
     public void whenConstructed_ThenMustNotBeUpgraded() {
 
-        var draft = new DraftDetailed("anid", "aname", "1.0.0", new HashMap<>());
+        var draft = new DraftDetailed("anid", "aname", "1.0.0", "2.0.0", new HashMap<>());
 
-        assertFalse(draft.mustBeUpgraded());
-        assertTrue(draft.getUpgradeInfo().isCompatible());
+        assertFalse(draft.isIncompatible());
     }
 
     @Test
@@ -168,7 +170,7 @@ public class DraftDetailedTests {
         var map = new HashMap<String, Object>();
         map.put("Id", "anid");
 
-        var result = new DraftDetailed("anid", "aname", "1.0.0", map)
+        var result = new DraftDetailed("anid", "aname", "1.0.0", "2.0.0", map)
           .getRoot();
 
         assertEquals("aname", result.getName());
@@ -176,18 +178,26 @@ public class DraftDetailedTests {
     }
 
     @Test
-    public void whenCreateMustUpgrade_ThenReturnsAnMustUpgradeableDraft() {
+    public void whenCreateIncompatibleWithIncompatibleDraft_ThenReturnsAnIncompatibleDraft() {
 
-        var result = DraftDetailed.createMustUpgrade("anid", "aname", "1.0.0", "2.0.0");
+        var result = DraftDetailed.createIncompatible("anid", "aname", new DraftVersionCompatibility("1.0.0", "2.0.0", AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT));
 
-        assertTrue(result.mustBeUpgraded());
-        assertFalse(result.getUpgradeInfo().isCompatible());
+        assertTrue(result.isIncompatible());
+    }
+
+    @Test
+    public void whenCreateIncompatibleWithIncompatibleToolkit_ThenReturnsAnIncompatibleDraft() {
+
+        var result = DraftDetailed.createIncompatible("anid", "aname",
+                                                      new DraftVersionCompatibility("1.0.0", "2.0.0", AutomateConstants.ToolkitCompatibility.RUNTIME_AHEADOF_TOOLKIT));
+
+        assertTrue(result.isIncompatible());
     }
 
     @Test
     public void whenToString_ThenReturnsString() {
 
-        var result = new DraftDetailed("anid", "aname", "1.0.0", new HashMap<>())
+        var result = new DraftDetailed("anid", "aname", "1.0.0", "2.0.0", new HashMap<>())
           .toString();
 
         assertEquals("aname (anid)", result);

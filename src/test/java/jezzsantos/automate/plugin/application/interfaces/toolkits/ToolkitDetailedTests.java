@@ -13,7 +13,7 @@ public class ToolkitDetailedTests {
 
         var pattern = new PatternElement("anid", "aname");
 
-        var result = new ToolkitDetailed("anid", "aname", "aversion", pattern)
+        var result = new ToolkitDetailed("anid", "aname", "aversion", "aruntimeversion", pattern)
           .getPattern();
 
         assertEquals(pattern, result);
@@ -25,7 +25,7 @@ public class ToolkitDetailedTests {
 
         var pattern = new PatternElement("anid", "aname");
 
-        var result = new ToolkitDetailed("anid", "aname", "aversion", pattern)
+        var result = new ToolkitDetailed("anid", "aname", "aversion", "aruntimeversion", pattern)
           .toString();
 
         assertEquals("aname  (anid)", result);

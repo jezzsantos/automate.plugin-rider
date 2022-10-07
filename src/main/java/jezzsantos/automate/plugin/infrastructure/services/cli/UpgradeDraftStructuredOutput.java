@@ -11,7 +11,7 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 class UpgradedDraft {
 
-    public String Name;
+    public String DraftName;
     public String DraftId;
     public String ToolkitName;
     public String OldVersion;

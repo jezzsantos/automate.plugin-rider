@@ -4,22 +4,26 @@ import com.google.gson.annotations.SerializedName;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 public class ToolkitDetailed {
 
-    @SerializedName(value = "ToolkitId")
+    @SerializedName(value = "Id")
     private String id;
     @SerializedName(value = "Name")
     private String name;
     @SerializedName(value = "Version")
     private String version;
+    @SerializedName(value = "RuntimeVersion")
+    private String runtimeVersion;
     @SerializedName(value = "Schema")
     private PatternElement pattern;
 
-    public ToolkitDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {
+    public ToolkitDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull String runtimeVersion, @NotNull PatternElement pattern) {
 
         this.id = id;
         this.name = name;
         this.version = version;
+        this.runtimeVersion = runtimeVersion;
         this.pattern = pattern;
     }
 

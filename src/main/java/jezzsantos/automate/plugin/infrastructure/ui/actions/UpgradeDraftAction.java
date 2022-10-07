@@ -43,8 +43,9 @@ public class UpgradeDraftAction extends AnAction {
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
-        var isRootSite = getSelection(e) != null;
-        presentation.setEnabledAndVisible(isDraftEditingMode && isRootSite);
+        var isUpgradeable = getSelection(e);
+        var isUpgradeSite = isUpgradeable != null && isUpgradeable.isDraftIncompatible();
+        presentation.setEnabledAndVisible(isDraftEditingMode && isUpgradeSite);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class UpgradeDraftAction extends AnAction {
             if (selectedNode != null) {
                 var dialog = new UpgradeDraftDialog(project,
                                                     new UpgradeDraftDialog.UpgradeDraftDialogContext(selectedNode.getFromVersion(), selectedNode.getToVersion(),
-                                                                                                     selectedNode.mustUpgrade(),
+                                                                                                     selectedNode.isDraftIncompatible(),
                                                                                                      context -> Try.andHandle(project, () -> application.upgradeDraft(
                                                                                                                                 context.getForce()),
                                                                                                                               AutomateBundle.message(

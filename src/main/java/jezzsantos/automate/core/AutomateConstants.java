@@ -160,4 +160,49 @@ public class AutomateConstants {
             return this.displayName;
         }
     }
+
+    public enum DraftCompatibility {
+
+        @SerializedName("Compatible")
+        COMPATIBLE("Compatible"),
+        @SerializedName("DraftAheadOfToolkit")
+        DRAFT_AHEADOF_TOOLKIT("Draft ahead of Toolkit"),
+        @SerializedName("ToolkitAheadOfDraft")
+        TOOLKIT_AHEADOF_DRAFT("Toolkit ahead of Draft");
+
+        private final String displayName;
+
+        DraftCompatibility(String displayName) {
+
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.displayName;
+        }
+    }
+
+    public enum ToolkitCompatibility {
+
+        @SerializedName("Compatible")
+        COMPATIBLE("Compatible"),
+        @SerializedName("RuntimeAheadOfToolkit")
+        RUNTIME_AHEADOF_TOOLKIT("Runtime ahead of Toolkit"),
+        @SerializedName("ToolkitAheadOfRuntime")
+        TOOLKIT_AHEADOF_RUNTIME("Toolkit ahead of Runtime");
+        private final String displayName;
+
+        ToolkitCompatibility(String displayName) {
+
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.displayName;
+        }
+    }
 }

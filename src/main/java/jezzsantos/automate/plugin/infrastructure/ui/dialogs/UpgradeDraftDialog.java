@@ -95,10 +95,9 @@ public class UpgradeDraftDialog extends DialogWrapper {
         switch (phase) {
 
             case BEFORE -> {
-                var description = bruteForceRequired
-                  ? AutomateBundle.message("dialog.UpgradeDraft.Description.Execute.Major.Message")
-                  : AutomateBundle.message("dialog.UpgradeDraft.Description.Execute.Minor.Message");
-                this.descriptionTitle.setText("<html>" + description + "</html>");
+                this.descriptionTitle.setText(bruteForceRequired
+                                                ? AutomateBundle.message("dialog.UpgradeDraft.Description.Execute.Major.Message")
+                                                : AutomateBundle.message("dialog.UpgradeDraft.Description.Execute.Minor.Message"));
                 if (bruteForceRequired) {
                     this.descriptionTitle.setIcon(AutomateIcons.StatusWarning);
                     this.descriptionTitle.setBorder(new ColoredSideBorder(JBColor.YELLOW, JBColor.YELLOW, JBColor.YELLOW, JBColor.YELLOW, 1));

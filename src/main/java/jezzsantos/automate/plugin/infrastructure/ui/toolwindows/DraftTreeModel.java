@@ -29,8 +29,8 @@ public class DraftTreeModel extends AbstractTreeModel {
     public DraftTreeModel(@NotNull ITreeSelector treeSelector, @NotNull DraftDetailed draft, @NotNull PatternElement pattern) {
 
         this.treeSelector = treeSelector;
-        this.draft = draft.mustBeUpgraded()
-          ? new DraftMustBeUpgradedPlaceholderNode(draft.getName(), draft.getUpgradeInfo())
+        this.draft = draft.isIncompatible()
+          ? new DraftMustBeUpgradedPlaceholderNode(draft.getName(), Objects.requireNonNull(draft.getCompatibility()))
           : new DraftElementPlaceholderNode(pattern, draft.getRoot(), false);
         this.pattern = pattern;
     }

@@ -74,10 +74,10 @@ public class PatternsListToolbarAction extends ComboBoxAction {
                     var isNoCurrentPattern = patterns.stream()
                       .noneMatch(PatternLite::getIsCurrent);
                     if (isNoCurrentPattern) {
-                        actions.add(new PatternListItemAction(this.onPerformed));
+                        actions.add(new ViewPatternAction(this.onPerformed));
                     }
                     for (var pattern : patterns) {
-                        actions.add(new PatternListItemAction(this.onPerformed, pattern.getName(), pattern.getId()));
+                        actions.add(new ViewPatternAction(this.onPerformed, pattern.getName(), pattern.getId()));
                     }
                 }
             }

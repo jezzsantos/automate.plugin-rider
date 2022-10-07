@@ -9,7 +9,7 @@ import jezzsantos.automate.plugin.common.Try;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PatternListItemAction extends AnAction {
+public class ViewPatternAction extends AnAction {
 
     @NotNull
     private final String name;
@@ -18,12 +18,12 @@ public class PatternListItemAction extends AnAction {
 
     private final Runnable onPerformed;
 
-    public PatternListItemAction(@NotNull Runnable onPerformed) {
+    public ViewPatternAction(@NotNull Runnable onPerformed) {
 
         this(onPerformed, "", null);
     }
 
-    public PatternListItemAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
+    public ViewPatternAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
 
         super();
         this.onPerformed = onPerformed;
