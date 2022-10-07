@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +18,9 @@ public class CodeTemplate {
     private String originalFilePath;
     @SerializedName(value = "OriginalFileExtension")
     private String originalFileExtension;
+
+    @UsedImplicitly
+    public CodeTemplate() {}
 
     public CodeTemplate(@NotNull String id, @NotNull String name) {
 

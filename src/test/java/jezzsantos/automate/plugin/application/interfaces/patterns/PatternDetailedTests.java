@@ -12,7 +12,7 @@ public class PatternDetailedTests {
 
         var pattern = new PatternElement("apatternid", "apatternname");
 
-        var result = new PatternDetailed("anid", "aname", "aversion", pattern)
+        var result = new PatternDetailed("anid", "aname", new PatternVersion("aversion"), pattern)
           .getPattern();
 
         assertEquals(pattern, result);
@@ -24,7 +24,7 @@ public class PatternDetailedTests {
 
         var pattern = new PatternElement("apatternid", "apatternname");
 
-        var result = new PatternDetailed("anid", "aname", "aversion", pattern)
+        var result = new PatternDetailed("anid", "aname", new PatternVersion("aversion"), pattern)
           .toString();
 
         assertEquals("aname  (vaversion)", result);

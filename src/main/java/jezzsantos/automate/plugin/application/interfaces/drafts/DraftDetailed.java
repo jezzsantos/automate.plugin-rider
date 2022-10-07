@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class DraftDetailed {
 
     @Nullable
-    private final DraftVersionCompatibility compatibility;
+    private DraftVersionCompatibility compatibility;
     @SerializedName(value = "DraftId")
     private String id;
     @SerializedName(value = "DraftName")
@@ -23,6 +24,9 @@ public class DraftDetailed {
     private String runtimeVersion;
     @SerializedName(value = "Configuration")
     private Map<String, Object> configuration;
+
+    @UsedImplicitly
+    public DraftDetailed() {}
 
     public DraftDetailed(@NotNull String id, @NotNull String name, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull HashMap<String, Object> configuration) {
 

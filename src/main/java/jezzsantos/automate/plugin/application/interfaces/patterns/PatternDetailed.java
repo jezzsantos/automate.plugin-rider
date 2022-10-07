@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
@@ -11,11 +12,14 @@ public class PatternDetailed {
     @SerializedName(value = "Name")
     private String name;
     @SerializedName(value = "Version")
-    private String version;
+    private PatternVersion version;
     @SerializedName(value = "Schema")
     private PatternElement pattern;
 
-    public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull PatternElement pattern) {
+    @UsedImplicitly
+    public PatternDetailed() {}
+
+    public PatternDetailed(@NotNull String id, @NotNull String name, @NotNull PatternVersion version, @NotNull PatternElement pattern) {
 
         this.id = id;
         this.name = name;
@@ -45,6 +49,6 @@ public class PatternDetailed {
     @Override
     public String toString() {
 
-        return String.format("%s  (v%s)", this.name, this.version);
+        return String.format("%s  (v%s)", this.name, this.version.getCurrent());
     }
 }

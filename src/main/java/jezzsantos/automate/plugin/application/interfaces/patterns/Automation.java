@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,9 @@ public class Automation {
     private String arguments;
     @SerializedName(value = "CommandIds")
     private List<String> cmdIds;
+
+    @UsedImplicitly
+    public Automation() {}
 
     public Automation(@NotNull String id, @NotNull String name) {
 

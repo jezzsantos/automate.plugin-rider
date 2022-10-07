@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.toolkits;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +18,9 @@ public class ToolkitDetailed {
     private String runtimeVersion;
     @SerializedName(value = "Schema")
     private PatternElement pattern;
+
+    @UsedImplicitly
+    public ToolkitDetailed() {}
 
     public ToolkitDetailed(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull String runtimeVersion, @NotNull PatternElement pattern) {
 

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.toolkits;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -13,6 +14,9 @@ public class ToolkitLite {
     private String name;
     @SerializedName(value = "Version")
     private ToolkitVersionCompatibility version;
+
+    @UsedImplicitly
+    public ToolkitLite() {}
 
     @TestOnly
     public ToolkitLite(@NotNull String id, @NotNull String name, @NotNull String version) {

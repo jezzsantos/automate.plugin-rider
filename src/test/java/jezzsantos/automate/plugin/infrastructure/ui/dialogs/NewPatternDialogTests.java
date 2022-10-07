@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.dialogs;
 
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternVersion;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ public class NewPatternDialogTests {
     @Test
     public void whenDoValidateAndEmptyName_ThenReturnsError() {
 
-        var pattern = new PatternLite("anid", "apatternname", "aversion", false);
+        var pattern = new PatternLite("anid", "apatternname", new PatternVersion("aversion"), false);
         var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "");
@@ -27,7 +28,7 @@ public class NewPatternDialogTests {
     @Test
     public void whenDoValidateAndInvalidName_ThenReturnsError() {
 
-        var pattern = new PatternLite("anid", "apatternname", "aversion", false);
+        var pattern = new PatternLite("anid", "apatternname", new PatternVersion("aversion"), false);
         var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "^aninvalidname^");
@@ -40,7 +41,7 @@ public class NewPatternDialogTests {
     @Test
     public void whenDoValidateAndNameIsReserved_ThenReturnsError() {
 
-        var pattern = new PatternLite("anid", "apatternname", "aversion", false);
+        var pattern = new PatternLite("anid", "apatternname", new PatternVersion("aversion"), false);
         var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "apatternname");
@@ -53,7 +54,7 @@ public class NewPatternDialogTests {
     @Test
     public void whenDoValidate_ThenReturnsNull() {
 
-        var pattern = new PatternLite("anid", "apatternname", "aversion", false);
+        var pattern = new PatternLite("anid", "apatternname", new PatternVersion("aversion"), false);
         var context = new NewPatternDialog.NewPatternDialogContext(new ArrayList<>(List.of(pattern)));
 
         var result = NewPatternDialog.doValidate(context, "adraftname");

@@ -2,6 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternVersion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ class CreatePattern {
 
     public String Name;
     public String PatternId;
-    public String Version;
+    public PatternVersion Version;
 }
 
 public class CreatePatternStructuredOutput extends StructuredOutput<CreatePattern> {

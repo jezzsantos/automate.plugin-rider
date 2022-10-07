@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -9,15 +10,18 @@ import org.jetbrains.annotations.TestOnly;
 public class DraftLite {
 
     @SerializedName(value = "DraftId")
-    private final String id;
+    private String id;
     @SerializedName(value = "DraftName")
-    private final String name;
+    private String name;
     @SerializedName(value = "ToolkitId")
     private String toolkitId;
     @SerializedName(value = "ToolkitVersion")
     private DraftVersionCompatibility toolkitVersion;
     @SerializedName(value = "IsCurrent")
     private boolean isCurrent;
+
+    @UsedImplicitly
+    public DraftLite() {}
 
     public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, Boolean isCurrent) {
 

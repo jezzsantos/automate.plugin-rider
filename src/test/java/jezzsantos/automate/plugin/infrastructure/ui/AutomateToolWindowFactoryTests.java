@@ -4,6 +4,7 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternVersion;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -142,7 +143,7 @@ public class AutomateToolWindowFactoryTests {
 
                     Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
-                        List.of(new PatternLite("anid", "aname", "aversion", false)),
+                        List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
@@ -163,7 +164,7 @@ public class AutomateToolWindowFactoryTests {
 
                     Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
-                        List.of(new PatternLite("anid", "aname", "aversion", false)),
+                        List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
@@ -182,7 +183,7 @@ public class AutomateToolWindowFactoryTests {
 
                     Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
-                        List.of(new PatternLite("anid", "aname", "aversion", false)),
+                        List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
@@ -209,7 +210,7 @@ public class AutomateToolWindowFactoryTests {
 
                     Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
-                        List.of(new PatternLite("anid", "aname", "aversion", false)),
+                        List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.isAuthoringMode())
@@ -230,7 +231,7 @@ public class AutomateToolWindowFactoryTests {
 
                     Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
-                        List.of(new PatternLite("anid", "aname", "aversion", false)),
+                        List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())
@@ -249,7 +250,7 @@ public class AutomateToolWindowFactoryTests {
 
                     Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
                       .thenReturn(new AllStateLite(
-                        List.of(new PatternLite("anid", "aname", "aversion", false)),
+                        List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
                         List.of()));
                     Mockito.when(GivenSomePatterns.this.application.getEditingMode())

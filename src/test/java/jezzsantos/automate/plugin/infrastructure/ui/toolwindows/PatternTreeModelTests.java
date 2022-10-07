@@ -21,7 +21,7 @@ public class PatternTreeModelTests {
     @BeforeEach
     public void setUp() {
 
-        this.pattern = new PatternDetailed("anid", "aname", "aversion", new PatternElement("anid", "aname"));
+        this.pattern = new PatternDetailed("anid", "aname", new PatternVersion("aversion"), new PatternElement("anid", "aname"));
         this.treeSelector = Mockito.mock(ITreeSelector.class);
         this.model = new PatternTreeModel(this.treeSelector, this.pattern);
         this.treeModelListener = new TestModelTreeListener();

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElementSchema;
 import jezzsantos.automate.plugin.common.AutomateBundle;
@@ -40,6 +41,9 @@ public class PatternElement {
     private List<Attribute> attributes = new ArrayList<>();
     @SerializedName(value = "Elements")
     private List<PatternElement> elements = new ArrayList<>();
+
+    @UsedImplicitly()
+    public PatternElement() {}
 
     public PatternElement(@NotNull String id, @NotNull String name) {
 

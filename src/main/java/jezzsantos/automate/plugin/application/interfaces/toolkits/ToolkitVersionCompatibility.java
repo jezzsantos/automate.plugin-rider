@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.toolkits;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -13,6 +14,9 @@ public class ToolkitVersionCompatibility {
     private ToolkitVersions toolkit;
     @SerializedName(value = "Runtime")
     private ToolkitVersions runtime;
+
+    @UsedImplicitly
+    public ToolkitVersionCompatibility() {}
 
     @TestOnly
     public ToolkitVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, AutomateConstants.ToolkitCompatibility compatibility) {

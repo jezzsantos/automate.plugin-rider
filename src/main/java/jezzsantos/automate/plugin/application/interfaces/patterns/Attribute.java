@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.application.interfaces.patterns;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,9 @@ public class Attribute {
     private List<String> choices;
     @SerializedName(value = "DefaultValue")
     private String defaultValue;
+
+    @UsedImplicitly
+    public Attribute() {}
 
     public Attribute(@NotNull String id, @NotNull String name) {
 

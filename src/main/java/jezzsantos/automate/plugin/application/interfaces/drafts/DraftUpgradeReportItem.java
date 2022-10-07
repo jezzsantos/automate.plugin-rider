@@ -1,8 +1,10 @@
 package jezzsantos.automate.plugin.application.interfaces.drafts;
 
 import com.google.gson.annotations.SerializedName;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.Map;
 
@@ -17,6 +19,10 @@ public class DraftUpgradeReportItem {
     @SerializedName(value = "Arguments")
     public Map<String, Object> arguments;
 
+    @UsedImplicitly
+    public DraftUpgradeReportItem() {}
+
+    @TestOnly
     public DraftUpgradeReportItem(@NotNull AutomateConstants.UpgradeLogType type, @NotNull String messageTemplate, @NotNull Map<String, Object> arguments) {
 
         this.type = type;

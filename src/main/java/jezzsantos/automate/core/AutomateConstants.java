@@ -205,4 +205,25 @@ public class AutomateConstants {
             return this.displayName;
         }
     }
+
+    public enum PatternVersionChange {
+        @SerializedName("NoChange")
+        NO_CHANGE("NoChange"),
+        @SerializedName("NonBreaking")
+        NON_BREAKING("Non-breaking"),
+        @SerializedName("Breaking")
+        BREAKING("Breaking");
+        private final String displayName;
+
+        PatternVersionChange(String displayName) {
+
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.displayName;
+        }
+    }
 }
