@@ -202,7 +202,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                 }
 
                 if (editingMode == EditingMode.DRAFTS) {
-                    if (value instanceof DraftMustBeUpgradedPlaceholderNode placeholder) {
+                    if (value instanceof DraftIncompatiblePlaceholderNode placeholder) {
                         if (placeholder.isDraftIncompatible()) {
                             setIcon(AutomateIcons.StatusWarning);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeDraft.Tooltip"));
@@ -290,6 +290,9 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var deleteDraftElement = new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         deleteDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deleteDraftElement);
+        var deleteDraft = new DeleteDraftAction(this::refreshTree);
+        deleteDraft.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
+        actions.add(deleteDraft);
 
         actions.addSeparator();
 

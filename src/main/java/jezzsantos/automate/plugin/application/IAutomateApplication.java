@@ -100,6 +100,8 @@ public interface IAutomateApplication {
 
     void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception;
 
+    void publishPattern(boolean installLocally, @Nullable String version) throws Exception;
+
     @NotNull
     DraftElement addDraftElement(@NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception;
 
@@ -109,10 +111,10 @@ public interface IAutomateApplication {
     void deleteDraftElement(@NotNull String expression) throws Exception;
 
     @NotNull
-    DraftUpgradeReport upgradeDraft(boolean force) throws Exception;
+    DraftUpgradeReport upgradeCurrentDraft(boolean force) throws Exception;
+
+    void deleteCurrentDraft() throws Exception;
 
     @NotNull
     LaunchPointExecutionResult executeLaunchPoint(@NotNull String configurationPath, @NotNull String launchPointName) throws Exception;
-
-    void publishPattern(boolean installLocally, @Nullable String version) throws Exception;
 }

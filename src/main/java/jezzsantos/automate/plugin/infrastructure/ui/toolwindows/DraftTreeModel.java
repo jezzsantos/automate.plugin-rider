@@ -18,11 +18,11 @@ public class DraftTreeModel extends AbstractTreeModel {
 
     private static final int NO_INDEX = -1;
     @NotNull
-    private final Object draft;
-    @NotNull
     private final PatternElement pattern;
     @NotNull
     private final ITreeSelector treeSelector;
+    @Nullable
+    private final Object draft;
     @Nullable
     private TreePath selectedPath;
 
@@ -30,7 +30,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
         this.treeSelector = treeSelector;
         this.draft = draft.isIncompatible()
-          ? new DraftMustBeUpgradedPlaceholderNode(draft.getName(), Objects.requireNonNull(draft.getCompatibility()))
+          ? new DraftIncompatiblePlaceholderNode(draft.getName(), Objects.requireNonNull(draft.getCompatibility()))
           : new DraftElementPlaceholderNode(pattern, draft.getRoot(), false);
         this.pattern = pattern;
     }

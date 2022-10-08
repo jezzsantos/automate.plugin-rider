@@ -520,7 +520,7 @@ public class AutomateCliService implements IAutomateCliService {
 
     @NotNull
     @Override
-    public DraftUpgradeReport upgradeDraft(@NotNull String currentDirectory, boolean force) throws Exception {
+    public DraftUpgradeReport upgradeCurrentDraft(@NotNull String currentDirectory, boolean force) throws Exception {
 
         var args = new ArrayList<>(List.of("upgrade", "draft"));
         if (force) {
@@ -532,8 +532,20 @@ public class AutomateCliService implements IAutomateCliService {
         }
         else {
             this.cache.invalidateAllDrafts();
-            this.cache.invalidateCurrentDraft();
             return result.getOutput().getReport();
+        }
+    }
+
+    @Override
+    public void deleteCurrentDraft(String currentDirectory) throws Exception {
+
+        var result = runAutomateForStructuredOutput(DeleteDraftStructuredOutput.class, currentDirectory, List.of("delete", "draft"));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateAllDrafts();
+            this.cache.invalidateCurrentToolkit();
         }
     }
 

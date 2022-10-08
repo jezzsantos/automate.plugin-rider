@@ -9,7 +9,7 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.UpgradeDraftDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftMustBeUpgradedPlaceholderNode;
+import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftIncompatiblePlaceholderNode;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.TreePath;
@@ -59,7 +59,7 @@ public class UpgradeDraftAction extends AnAction {
                 var dialog = new UpgradeDraftDialog(project,
                                                     new UpgradeDraftDialog.UpgradeDraftDialogContext(selectedNode.getFromVersion(), selectedNode.getToVersion(),
                                                                                                      selectedNode.isDraftIncompatible(),
-                                                                                                     context -> Try.andHandle(project, () -> application.upgradeDraft(
+                                                                                                     context -> Try.andHandle(project, () -> application.upgradeCurrentDraft(
                                                                                                                                 context.getForce()),
                                                                                                                               AutomateBundle.message(
                                                                                                                                 "action.UpgradeDraft.Failure.Message"))));
@@ -73,14 +73,14 @@ public class UpgradeDraftAction extends AnAction {
         }
     }
 
-    private DraftMustBeUpgradedPlaceholderNode getSelection(AnActionEvent e) {
+    private DraftIncompatiblePlaceholderNode getSelection(AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
             if (selection instanceof TreePath path) {
                 var leaf = path.getLastPathComponent();
-                if (leaf instanceof DraftMustBeUpgradedPlaceholderNode) {
-                    return (DraftMustBeUpgradedPlaceholderNode) leaf;
+                if (leaf instanceof DraftIncompatiblePlaceholderNode) {
+                    return (DraftIncompatiblePlaceholderNode) leaf;
                 }
             }
         }

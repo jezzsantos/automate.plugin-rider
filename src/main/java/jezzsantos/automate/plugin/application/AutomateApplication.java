@@ -244,6 +244,12 @@ public class AutomateApplication implements IAutomateApplication {
         this.automateService.deletePatternAttribute(this.currentDirectory, editPath, name);
     }
 
+    @Override
+    public void publishPattern(boolean installLocally, @Nullable String version) throws Exception {
+
+        this.automateService.publishCurrentPattern(this.currentDirectory, installLocally, version);
+    }
+
     @NotNull
     @Override
     public DraftElement addDraftElement(@NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception {
@@ -266,9 +272,15 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public DraftUpgradeReport upgradeDraft(boolean force) throws Exception {
+    public DraftUpgradeReport upgradeCurrentDraft(boolean force) throws Exception {
 
-        return this.automateService.upgradeDraft(this.currentDirectory, force);
+        return this.automateService.upgradeCurrentDraft(this.currentDirectory, force);
+    }
+
+    @Override
+    public void deleteCurrentDraft() throws Exception {
+
+        this.automateService.deleteCurrentDraft(this.currentDirectory);
     }
 
     @NotNull
@@ -276,11 +288,5 @@ public class AutomateApplication implements IAutomateApplication {
     public LaunchPointExecutionResult executeLaunchPoint(@NotNull String configurationPath, @NotNull String launchPointName) throws Exception {
 
         return this.automateService.executeLaunchPoint(this.currentDirectory, configurationPath, launchPointName);
-    }
-
-    @Override
-    public void publishPattern(boolean installLocally, @Nullable String version) throws Exception {
-
-        this.automateService.publishCurrentPattern(this.currentDirectory, installLocally, version);
     }
 }

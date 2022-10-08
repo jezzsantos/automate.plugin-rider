@@ -103,7 +103,9 @@ public interface IAutomateCliService {
     void deleteDraftElement(@NotNull String currentDirectory, @NotNull String expression) throws Exception;
 
     @NotNull
-    DraftUpgradeReport upgradeDraft(@NotNull String currentDirectory, boolean force) throws Exception;
+    DraftUpgradeReport upgradeCurrentDraft(@NotNull String currentDirectory, boolean force) throws Exception;
+
+    void deleteCurrentDraft(String currentDirectory) throws Exception;
 
     @NotNull
     LaunchPointExecutionResult executeLaunchPoint(@NotNull String currentDirectory, @NotNull String configurationPath, @NotNull String launchPointName) throws Exception;
