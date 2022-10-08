@@ -294,17 +294,21 @@ public class AutomateCliService implements IAutomateCliService {
     }
 
     @Override
-    public void publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally) throws Exception {
+    public void publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception {
 
-        var args = new ArrayList<>(List.of("build", "toolkit"));
+        var args = new ArrayList<>(List.of("publish", "toolkit"));
         if (installLocally) {
             args.add("--install");
         }
-        var result = runAutomateForStructuredOutput(BuildToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(args));
+        if (version != null) {
+            args.add("--asversion");
+            args.add(version);
+        }
+        var result = runAutomateForStructuredOutput(PublishToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(args));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
-        this.cache.invalidateCurrentPattern();
+        this.cache.invalidateAllPatterns();
         this.cache.invalidateAllToolkits();
     }
 

@@ -113,4 +113,6 @@ public interface IAutomateApplication {
 
     @NotNull
     LaunchPointExecutionResult executeLaunchPoint(@NotNull String configurationPath, @NotNull String launchPointName) throws Exception;
+
+    void publishPattern(boolean installLocally, @Nullable String version) throws Exception;
 }

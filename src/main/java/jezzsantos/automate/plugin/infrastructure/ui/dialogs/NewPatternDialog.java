@@ -28,7 +28,7 @@ public class NewPatternDialog extends DialogWrapper {
         this.init();
         this.setTitle(AutomateBundle.message("dialog.NewPattern.Title"));
         this.nameTitle.setText(AutomateBundle.message("dialog.NewPattern.Name.Title"));
-        this.name.setText(this.context.Name);
+        this.name.setText(this.context.getName());
     }
 
     @TestOnly
@@ -37,7 +37,7 @@ public class NewPatternDialog extends DialogWrapper {
         if (!name.matches(AutomateConstants.PatternNameRegex)) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.NotMatch.Message"));
         }
-        var patternExists = context.Patterns.stream()
+        var patternExists = context.patterns.stream()
           .anyMatch(pattern -> pattern.getName().equalsIgnoreCase(name));
         if (patternExists) {
             return new ValidationInfo(AutomateBundle.message("dialog.NewPattern.NameValidation.Exists.Message"));
@@ -68,7 +68,7 @@ public class NewPatternDialog extends DialogWrapper {
     protected void doOKAction() {
 
         super.doOKAction();
-        this.context.Name = this.name.getText();
+        this.context.setName(this.name.getText());
     }
 
     @Override
@@ -79,12 +79,21 @@ public class NewPatternDialog extends DialogWrapper {
 
     public static class NewPatternDialogContext {
 
-        public List<PatternLite> Patterns;
-        public String Name;
+        @NotNull
+        public List<PatternLite> patterns;
+
+        @NotNull
+        public String name;
 
         public NewPatternDialogContext(@NotNull List<PatternLite> patterns) {
 
-            this.Patterns = patterns;
+            this.patterns = patterns;
+            this.name = "";
         }
+
+        @NotNull
+        public String getName() {return this.name;}
+
+        public void setName(@NotNull String name) {this.name = name;}
     }
 }

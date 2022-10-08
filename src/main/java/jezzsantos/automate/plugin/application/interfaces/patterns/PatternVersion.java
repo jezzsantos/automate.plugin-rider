@@ -28,4 +28,6 @@ public class PatternVersion {
     }
 
     public String getCurrent() {return this.current;}
+
+    public String getNext() {return this.next;}
 }

@@ -277,4 +277,10 @@ public class AutomateApplication implements IAutomateApplication {
 
         return this.automateService.executeLaunchPoint(this.currentDirectory, configurationPath, launchPointName);
     }
+
+    @Override
+    public void publishPattern(boolean installLocally, @Nullable String version) throws Exception {
+
+        this.automateService.publishCurrentPattern(this.currentDirectory, installLocally, version);
+    }
 }

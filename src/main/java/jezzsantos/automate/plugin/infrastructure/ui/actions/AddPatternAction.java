@@ -56,7 +56,7 @@ public class AddPatternAction extends AnAction {
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
                 var pattern = Try.andHandle(project,
-                                            () -> application.createPattern(context.Name),
+                                            () -> application.createPattern(context.getName()),
                                             AutomateBundle.message("action.AppPattern.FailureNotification.Title"));
                 if (pattern != null) {
                     this.onPerformed.run();

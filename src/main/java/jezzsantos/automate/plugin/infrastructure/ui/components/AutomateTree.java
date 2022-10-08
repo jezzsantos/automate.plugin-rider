@@ -295,6 +295,8 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
         var executeDraftLaunchPoints = new ListDraftLaunchPointsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         actions.add(executeDraftLaunchPoints);
+        var publishPattern = new PublishPatternAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        actions.add(publishPattern);
 
         return actions;
     }

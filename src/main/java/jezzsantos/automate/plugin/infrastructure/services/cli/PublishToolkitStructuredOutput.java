@@ -13,10 +13,10 @@ class BuildToolkit {
     public String FilePath;
 }
 
-public class BuildToolkitStructuredOutput extends StructuredOutput<BuildToolkit> {
+public class PublishToolkitStructuredOutput extends StructuredOutput<BuildToolkit> {
 
     @UsedImplicitly
-    public BuildToolkitStructuredOutput() {
+    public PublishToolkitStructuredOutput() {
 
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
             this.Values = new BuildToolkit();

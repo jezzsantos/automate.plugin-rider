@@ -68,8 +68,7 @@ public interface IAutomateCliService {
 
     void setCurrentPattern(@NotNull String currentDirectory, @NotNull String id) throws Exception;
 
-    @SuppressWarnings("unused")
-    void publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally) throws Exception;
+    void publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception;
 
     @NotNull
     Attribute addPatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;

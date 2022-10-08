@@ -46,6 +46,8 @@ public class PatternDetailed {
         return this.pattern;
     }
 
+    public PatternVersion getVersion() {return this.version;}
+
     @Override
     public String toString() {
 

@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+- Minimum compatibility with `automate` CLI version 1.0.5
+
 ### Added
+
+- Patterns: Closed #8. Can now publish patterns
+- Drafts: Closed #18. Can now delete drafts (including out of date drafts)
 
 ### Changed
 
