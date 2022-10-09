@@ -23,7 +23,7 @@ public class ToolkitLite {
 
         this.id = id;
         this.name = name;
-        this.version = new ToolkitVersionCompatibility(version, version, AutomateConstants.ToolkitCompatibility.COMPATIBLE);
+        this.version = new ToolkitVersionCompatibility(version, version, AutomateConstants.ToolkitRuntimeVersionCompatibility.COMPATIBLE);
     }
 
     @NotNull

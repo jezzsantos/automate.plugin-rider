@@ -9,7 +9,7 @@ import org.jetbrains.annotations.TestOnly;
 public class ToolkitVersionCompatibility {
 
     @SerializedName(value = "Compatibility")
-    private AutomateConstants.ToolkitCompatibility toolkitCompatibility;
+    private AutomateConstants.ToolkitRuntimeVersionCompatibility toolkitCompatibility;
     @SerializedName(value = "Toolkit")
     private ToolkitVersions toolkit;
     @SerializedName(value = "Runtime")
@@ -19,7 +19,7 @@ public class ToolkitVersionCompatibility {
     public ToolkitVersionCompatibility() {}
 
     @TestOnly
-    public ToolkitVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, AutomateConstants.ToolkitCompatibility compatibility) {
+    public ToolkitVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, AutomateConstants.ToolkitRuntimeVersionCompatibility compatibility) {
 
         this.toolkitCompatibility = compatibility;
         this.toolkit = new ToolkitVersions(toolkitVersion);
@@ -30,11 +30,11 @@ public class ToolkitVersionCompatibility {
 
     public ToolkitVersions getRuntimeVersion() {return this.runtime;}
 
-    public AutomateConstants.ToolkitCompatibility getToolkitCompatibility() {return this.toolkitCompatibility;}
+    public AutomateConstants.ToolkitRuntimeVersionCompatibility getToolkitCompatibility() {return this.toolkitCompatibility;}
 
     public boolean isToolkitIncompatible() {
 
-        return this.toolkitCompatibility != AutomateConstants.ToolkitCompatibility.COMPATIBLE;
+        return this.toolkitCompatibility != AutomateConstants.ToolkitRuntimeVersionCompatibility.COMPATIBLE;
     }
 
     public static class ToolkitVersions {

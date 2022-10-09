@@ -9,24 +9,24 @@ import org.jetbrains.annotations.NotNull;
 public class DraftVersionCompatibility extends ToolkitVersionCompatibility {
 
     @SerializedName(value = "DraftCompatibility")
-    private AutomateConstants.DraftCompatibility draftCompatibility;
+    private AutomateConstants.DraftToolkitVersionCompatibility draftCompatibility;
 
     @UsedImplicitly
     public DraftVersionCompatibility() {}
 
-    public DraftVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.DraftCompatibility compatibility) {
+    public DraftVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.DraftToolkitVersionCompatibility compatibility) {
 
-        super(toolkitVersion, runtimeVersion, AutomateConstants.ToolkitCompatibility.COMPATIBLE);
+        super(toolkitVersion, runtimeVersion, AutomateConstants.ToolkitRuntimeVersionCompatibility.COMPATIBLE);
         this.draftCompatibility = compatibility;
     }
 
-    public DraftVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.ToolkitCompatibility compatibility) {
+    public DraftVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.ToolkitRuntimeVersionCompatibility compatibility) {
 
         super(toolkitVersion, runtimeVersion, compatibility);
-        this.draftCompatibility = AutomateConstants.DraftCompatibility.COMPATIBLE;
+        this.draftCompatibility = AutomateConstants.DraftToolkitVersionCompatibility.COMPATIBLE;
     }
 
-    public boolean isDraftIncompatible() {return this.draftCompatibility != AutomateConstants.DraftCompatibility.COMPATIBLE;}
+    public boolean isDraftIncompatible() {return this.draftCompatibility != AutomateConstants.DraftToolkitVersionCompatibility.COMPATIBLE;}
 
-    public AutomateConstants.DraftCompatibility getDraftCompatibility() {return this.draftCompatibility;}
+    public AutomateConstants.DraftToolkitVersionCompatibility getDraftCompatibility() {return this.draftCompatibility;}
 }

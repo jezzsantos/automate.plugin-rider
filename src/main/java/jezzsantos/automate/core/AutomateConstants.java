@@ -161,7 +161,7 @@ public class AutomateConstants {
         }
     }
 
-    public enum DraftCompatibility {
+    public enum DraftToolkitVersionCompatibility {
 
         @SerializedName("Compatible")
         COMPATIBLE("Compatible"),
@@ -172,7 +172,7 @@ public class AutomateConstants {
 
         private final String displayName;
 
-        DraftCompatibility(String displayName) {
+        DraftToolkitVersionCompatibility(String displayName) {
 
             this.displayName = displayName;
         }
@@ -184,17 +184,17 @@ public class AutomateConstants {
         }
     }
 
-    public enum ToolkitCompatibility {
+    public enum ToolkitRuntimeVersionCompatibility {
 
         @SerializedName("Compatible")
         COMPATIBLE("Compatible"),
-        @SerializedName("RuntimeAheadOfToolkit")
-        RUNTIME_AHEADOF_TOOLKIT("Runtime ahead of Toolkit"),
-        @SerializedName("ToolkitAheadOfRuntime")
-        TOOLKIT_AHEADOF_RUNTIME("Toolkit ahead of Runtime");
+        @SerializedName("MachineAheadOfToolkit")
+        MACHINE_AHEADOF_TOOLKIT("Machine ahead of Toolkit"),
+        @SerializedName("ToolkitAheadOfMachine")
+        TOOLKIT_AHEADOF_MACHINE("Toolkit ahead of Machine");
         private final String displayName;
 
-        ToolkitCompatibility(String displayName) {
+        ToolkitRuntimeVersionCompatibility(String displayName) {
 
             this.displayName = displayName;
         }

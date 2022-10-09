@@ -25,17 +25,17 @@ public class DraftLite {
 
     public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, Boolean isCurrent) {
 
-        this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, AutomateConstants.DraftCompatibility.COMPATIBLE), isCurrent);
+        this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, AutomateConstants.DraftToolkitVersionCompatibility.COMPATIBLE), isCurrent);
     }
 
     @TestOnly
-    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.DraftCompatibility compatibility, Boolean isCurrent) {
+    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.DraftToolkitVersionCompatibility compatibility, Boolean isCurrent) {
 
         this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, compatibility), isCurrent);
     }
 
     @TestOnly
-    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.ToolkitCompatibility compatibility, Boolean isCurrent) {
+    public DraftLite(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull AutomateConstants.ToolkitRuntimeVersionCompatibility compatibility, Boolean isCurrent) {
 
         this(id, name, toolkitId, new DraftVersionCompatibility(toolkitVersion, runtimeVersion, compatibility), isCurrent);
     }

@@ -35,7 +35,7 @@ public class DraftDetailed {
         this.toolkitVersion = toolkitVersion;
         this.runtimeVersion = runtimeVersion;
         this.configuration = configuration;
-        this.compatibility = new DraftVersionCompatibility(toolkitVersion, runtimeVersion, AutomateConstants.DraftCompatibility.COMPATIBLE);
+        this.compatibility = new DraftVersionCompatibility(toolkitVersion, runtimeVersion, AutomateConstants.DraftToolkitVersionCompatibility.COMPATIBLE);
     }
 
     private DraftDetailed(@NotNull String id, @NotNull String name, @NotNull DraftVersionCompatibility compatibility) {

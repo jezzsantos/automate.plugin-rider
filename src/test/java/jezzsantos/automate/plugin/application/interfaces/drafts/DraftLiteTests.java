@@ -26,7 +26,7 @@ public class DraftLiteTests {
           "                 \"Created\": \"2.0.0\"," +
           "                 \"Installed\": \"2.0.0\"" +
           "             }," +
-          "             \"Compatibility\": \"ToolkitAheadOfRuntime\"" +
+          "             \"Compatibility\": \"ToolkitAheadOfMachine\"" +
           "}," +
           "        \"IsCurrent\": true" +
           "}";
@@ -38,17 +38,17 @@ public class DraftLiteTests {
 
         assertEquals("anid", result.getId());
         assertEquals("aname", result.getName());
-        assertEquals(AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT, result.getVersion().getDraftCompatibility());
+        assertEquals(AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT, result.getVersion().getDraftCompatibility());
         assertEquals("1.0.0", result.getVersion().getToolkitVersion().getCreated());
         assertEquals("2.0.0", result.getVersion().getRuntimeVersion().getCreated());
-        assertEquals(AutomateConstants.ToolkitCompatibility.TOOLKIT_AHEADOF_RUNTIME, result.getVersion().getToolkitCompatibility());
+        assertEquals(AutomateConstants.ToolkitRuntimeVersionCompatibility.TOOLKIT_AHEADOF_MACHINE, result.getVersion().getToolkitCompatibility());
         assertTrue(result.getIsCurrent());
     }
 
     @Test
     public void whenCreateIncompatibleWithIncompatibleDraft_ThenReturnsAnIncompatibleDraft() {
 
-        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT, true);
+        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT, true);
 
         assertTrue(result.isIncompatible());
     }
@@ -56,7 +56,7 @@ public class DraftLiteTests {
     @Test
     public void whenCreateIncompatibleWithIncompatibleToolkit_ThenReturnsAnIncompatibleDraft() {
 
-        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.ToolkitCompatibility.RUNTIME_AHEADOF_TOOLKIT, true);
+        var result = new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.ToolkitRuntimeVersionCompatibility.MACHINE_AHEADOF_TOOLKIT, true);
 
         assertTrue(result.isIncompatible());
     }

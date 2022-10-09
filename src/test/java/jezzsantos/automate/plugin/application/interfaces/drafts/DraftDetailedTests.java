@@ -180,7 +180,8 @@ public class DraftDetailedTests {
     @Test
     public void whenCreateIncompatibleWithIncompatibleDraft_ThenReturnsAnIncompatibleDraft() {
 
-        var result = DraftDetailed.createIncompatible("anid", "aname", new DraftVersionCompatibility("1.0.0", "2.0.0", AutomateConstants.DraftCompatibility.DRAFT_AHEADOF_TOOLKIT));
+        var result = DraftDetailed.createIncompatible("anid", "aname",
+                                                      new DraftVersionCompatibility("1.0.0", "2.0.0", AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT));
 
         assertTrue(result.isIncompatible());
     }
@@ -189,7 +190,8 @@ public class DraftDetailedTests {
     public void whenCreateIncompatibleWithIncompatibleToolkit_ThenReturnsAnIncompatibleDraft() {
 
         var result = DraftDetailed.createIncompatible("anid", "aname",
-                                                      new DraftVersionCompatibility("1.0.0", "2.0.0", AutomateConstants.ToolkitCompatibility.RUNTIME_AHEADOF_TOOLKIT));
+                                                      new DraftVersionCompatibility("1.0.0", "2.0.0",
+                                                                                    AutomateConstants.ToolkitRuntimeVersionCompatibility.MACHINE_AHEADOF_TOOLKIT));
 
         assertTrue(result.isIncompatible());
     }
