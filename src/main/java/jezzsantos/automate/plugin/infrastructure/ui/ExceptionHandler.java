@@ -28,6 +28,7 @@ public class ExceptionHandler {
         switch (type) {
 
             case INFO -> notificationType = NotificationType.INFORMATION;
+            case WARNING -> notificationType = NotificationType.WARNING;
             case ERROR -> notificationType = NotificationType.ERROR;
         }
 

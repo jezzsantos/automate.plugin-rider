@@ -237,6 +237,17 @@ public class AutomateCliService implements IAutomateCliService {
         });
     }
 
+    @Nullable
+    @Override
+    public ToolkitLite findToolkitById(@NotNull String currentDirectory, @NotNull String id) {
+
+        var toolkits = listToolkits(currentDirectory);
+        return toolkits.stream()
+          .filter(toolkit -> toolkit.getId().equals(id))
+          .findFirst()
+          .orElse(null);
+    }
+
     @NotNull
     @Override
     public PatternLite createPattern(@NotNull String currentDirectory, @NotNull String name) throws Exception {
@@ -293,8 +304,9 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
+    @Nullable
     @Override
-    public void publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception {
+    public String publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception {
 
         var args = new ArrayList<>(List.of("publish", "toolkit"));
         if (installLocally) {
@@ -308,8 +320,11 @@ public class AutomateCliService implements IAutomateCliService {
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
-        this.cache.invalidateAllPatterns();
-        this.cache.invalidateAllToolkits();
+        else {
+            this.cache.invalidateAllPatterns();
+            this.cache.invalidateAllToolkits();
+            return result.getOutput().getWarning();
+        }
     }
 
     @NotNull
@@ -569,7 +584,7 @@ public class AutomateCliService implements IAutomateCliService {
         var draftInfo = getCurrentDraftInfo(currentDirectory);
         if (draftInfo != null) {
             if (draftInfo.isIncompatible()) {
-                return DraftDetailed.createIncompatible(draftInfo.getId(), draftInfo.getName(), draftInfo.getVersion());
+                return DraftDetailed.createIncompatible(draftInfo.getId(), draftInfo.getName(), draftInfo.getToolkitId(), draftInfo.getToolkitName(), draftInfo.getVersion());
             }
         }
 

@@ -31,6 +31,6 @@ public class CreateDraftStructuredOutput extends StructuredOutput<CreateDraft> {
     public DraftLite getDraft() {
 
         var values = this.Output.get(0).Values;
-        return new DraftLite(values.DraftId, values.DraftName, values.ToolkitId, values.ToolkitVersion, values.RuntimeVersion, true);
+        return new DraftLite(values.DraftId, values.DraftName, values.ToolkitId, values.ToolkitName, values.ToolkitVersion, values.RuntimeVersion, true);
     }
 }

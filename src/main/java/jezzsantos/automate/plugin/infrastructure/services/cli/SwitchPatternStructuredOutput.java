@@ -10,8 +10,8 @@ import java.util.List;
 class SwitchPattern {
 
     public String Name;
-    public String PatternId;
     public PatternVersion Version;
+    public String PatternId;
 }
 
 public class SwitchPatternStructuredOutput extends StructuredOutput<SwitchPattern> {

@@ -27,7 +27,7 @@ public class DraftTreeModelTests {
     public void setUp() {
 
         var pattern = new PatternElement("anid", "aname");
-        this.draft = new DraftDetailed("anid", "aname", "atoolkitversion", "aruntimeversion", new HashMap<>() {{
+        this.draft = new DraftDetailed("anid", "aname", "atoolkitid", "atoolkitname", "atoolkitversion", "aruntimeversion", new HashMap<>() {{
             put("Id", "anid");
         }});
         this.treeSelector = Mockito.mock(ITreeSelector.class);
@@ -42,6 +42,7 @@ public class DraftTreeModelTests {
         this.model.removeTreeModelListener(this.treeModelListener);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void whenGetRoot_ThenReturnsPlaceholder() {
 

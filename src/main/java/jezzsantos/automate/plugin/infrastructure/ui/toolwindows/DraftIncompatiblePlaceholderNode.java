@@ -1,36 +1,48 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftVersionCompatibility;
+import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitVersionCompatibility;
 import org.jetbrains.annotations.NotNull;
 
 public class DraftIncompatiblePlaceholderNode {
 
     @NotNull
-    private final String name;
+    private final String draftName;
+    @NotNull
+    private final String toolkitId;
+    @NotNull
     private final DraftVersionCompatibility compatibility;
+    @NotNull
+    private final String toolkitName;
 
-    public DraftIncompatiblePlaceholderNode(@NotNull String name, @NotNull DraftVersionCompatibility compatibility) {
+    public DraftIncompatiblePlaceholderNode(@NotNull String draftName, @NotNull String toolkitId, @NotNull String toolkitName, @NotNull DraftVersionCompatibility compatibility) {
 
-        this.name = name;
+        this.draftName = draftName;
+        this.toolkitId = toolkitId;
+        this.toolkitName = toolkitName;
         this.compatibility = compatibility;
     }
 
-    @NotNull
-    public String getFromVersion() {return this.compatibility.getToolkitVersion().getCreated();}
-
-    @NotNull
-    public String getToVersion() {return this.compatibility.getToolkitVersion().getInstalled();}
-
     public boolean isDraftIncompatible() {return this.compatibility.isDraftIncompatible();}
 
-    public boolean isToolkitIncompatible() {return this.compatibility.isToolkitIncompatible();}
+    public boolean isRuntimeIncompatible() {return this.compatibility.isRuntimeIncompatible();}
 
     @NotNull
-    public String getName() {return this.name;}
+    public String getDraftName() {return this.draftName;}
+
+    @NotNull
+    public String getToolkitName() {return this.toolkitName;}
+
+    @NotNull
+    public String getToolkitId() {return this.toolkitId;}
+
+    public DraftVersionCompatibility getDraftCompatibility() {return this.compatibility;}
+
+    public ToolkitVersionCompatibility getToolkitCompatibility() {return this.compatibility;}
 
     @Override
     public String toString() {
 
-        return this.name;
+        return this.draftName;
     }
 }

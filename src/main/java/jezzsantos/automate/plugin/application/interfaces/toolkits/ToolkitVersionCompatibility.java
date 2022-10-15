@@ -9,7 +9,7 @@ import org.jetbrains.annotations.TestOnly;
 public class ToolkitVersionCompatibility {
 
     @SerializedName(value = "Compatibility")
-    private AutomateConstants.ToolkitRuntimeVersionCompatibility toolkitCompatibility;
+    private AutomateConstants.ToolkitRuntimeVersionCompatibility runtimeCompatibility;
     @SerializedName(value = "Toolkit")
     private ToolkitVersions toolkit;
     @SerializedName(value = "Runtime")
@@ -21,7 +21,7 @@ public class ToolkitVersionCompatibility {
     @TestOnly
     public ToolkitVersionCompatibility(@NotNull String toolkitVersion, @NotNull String runtimeVersion, AutomateConstants.ToolkitRuntimeVersionCompatibility compatibility) {
 
-        this.toolkitCompatibility = compatibility;
+        this.runtimeCompatibility = compatibility;
         this.toolkit = new ToolkitVersions(toolkitVersion);
         this.runtime = new ToolkitVersions(runtimeVersion);
     }
@@ -30,27 +30,27 @@ public class ToolkitVersionCompatibility {
 
     public ToolkitVersions getRuntimeVersion() {return this.runtime;}
 
-    public AutomateConstants.ToolkitRuntimeVersionCompatibility getToolkitCompatibility() {return this.toolkitCompatibility;}
+    public AutomateConstants.ToolkitRuntimeVersionCompatibility getRuntimeCompatibility() {return this.runtimeCompatibility;}
 
-    public boolean isToolkitIncompatible() {
+    public boolean isRuntimeIncompatible() {
 
-        return this.toolkitCompatibility != AutomateConstants.ToolkitRuntimeVersionCompatibility.COMPATIBLE;
+        return this.runtimeCompatibility != AutomateConstants.ToolkitRuntimeVersionCompatibility.COMPATIBLE;
     }
 
     public static class ToolkitVersions {
 
-        @SerializedName(value = "Created")
-        private String created;
+        @SerializedName(value = "Published")
+        private String published;
         @SerializedName(value = "Installed")
         private String installed;
 
         public ToolkitVersions(@NotNull String toolkitVersion) {
 
-            this.created = toolkitVersion;
+            this.published = toolkitVersion;
             this.installed = toolkitVersion;
         }
 
-        public String getCreated() {return this.created;}
+        public String getPublished() {return this.published;}
 
         public String getInstalled() {return this.installed;}
     }

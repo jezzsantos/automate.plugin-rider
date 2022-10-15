@@ -208,7 +208,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeDraft.Tooltip"));
                             append(value.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.ORANGE));
                         }
-                        if (placeholder.isToolkitIncompatible()) {
+                        if (placeholder.isRuntimeIncompatible()) {
                             setIcon(AutomateIcons.StatusError);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeToolkit.Tooltip"));
                             append(value.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.RED));
@@ -266,6 +266,8 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
         var upgradeDraft = new UpgradeDraftAction(this::refreshTree);
         actions.add(upgradeDraft);
+        var upgradeToolkit = new UpgradeToolkitAction(this::refreshTree);
+        actions.add(upgradeToolkit);
 
         actions.addSeparator();
 

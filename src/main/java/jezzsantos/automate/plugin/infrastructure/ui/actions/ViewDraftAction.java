@@ -53,7 +53,7 @@ public class ViewDraftAction extends AnAction {
                                                                ? null
                                                                : this.draft.getId());
             var isDraftIncompatible = this.draft != null && this.draft.getVersion().isDraftIncompatible();
-            var isDraftToolkitIncompatible = this.draft != null && this.draft.getVersion().isToolkitIncompatible();
+            var isDraftToolkitIncompatible = this.draft != null && this.draft.getVersion().isRuntimeIncompatible();
             presentation.setIcon(isCurrentDraft
                                    ? AllIcons.Actions.Checked
                                    : isDraftToolkitIncompatible

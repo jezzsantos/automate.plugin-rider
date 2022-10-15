@@ -305,7 +305,8 @@ public class AutomateCliServiceTests {
         Mockito.when(this.cache.getDraftDetailed(any()))
           .thenAnswer((Answer) invocation -> ((Callable<DraftDetailed>) invocation.getArguments()[0]).call());
         Mockito.when(this.cache.getDraftInfo(any()))
-          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "1.0.0", "2.0.0", AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT, true));
+          .thenReturn(
+            new DraftLite("anid", "aname", "atoolkitid", "atoolkitname", "1.0.0", "2.0.0", AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT, true));
 
         var result = this.service.getCurrentDraftDetailed("acurrentdirectory");
 
@@ -316,8 +317,8 @@ public class AutomateCliServiceTests {
     public void whenGetCurrentDraftDetailedAndIsNotOutOfDate_ThenReturns() throws Exception {
 
         Mockito.when(this.cache.getDraftInfo(any()))
-          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "anoriginaltoolkitversion", "anoriginaltoolkitversion", true));
-        var draft = new DraftDetailed("anid", "aname", "atoolkitversion", "aruntimeversion", new HashMap<>());
+          .thenReturn(new DraftLite("anid", "aname", "atoolkitid", "atoolkitname", "anoriginaltoolkitversion", "anoriginaltoolkitversion", true));
+        var draft = new DraftDetailed("anid", "aname", "atoolkitid", "atoolkitname", "atoolkitversion", "aruntimeversion", new HashMap<>());
         Mockito.when(this.cache.getDraftDetailed(any()))
           .thenReturn(draft);
 

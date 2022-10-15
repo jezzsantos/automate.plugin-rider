@@ -57,6 +57,9 @@ public interface IAutomateCliService {
     @NotNull
     List<DraftLite> listDrafts(@NotNull String currentDirectory);
 
+    @Nullable
+    ToolkitLite findToolkitById(@NotNull String currentDirectory, @NotNull String id);
+
     @NotNull
     PatternLite createPattern(@NotNull String currentDirectory, @NotNull String name) throws Exception;
 
@@ -68,7 +71,8 @@ public interface IAutomateCliService {
 
     void setCurrentPattern(@NotNull String currentDirectory, @NotNull String id) throws Exception;
 
-    void publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception;
+    @Nullable
+    String publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception;
 
     @NotNull
     Attribute addPatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;

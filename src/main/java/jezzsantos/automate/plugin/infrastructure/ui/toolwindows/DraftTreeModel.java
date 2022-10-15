@@ -30,7 +30,7 @@ public class DraftTreeModel extends AbstractTreeModel {
 
         this.treeSelector = treeSelector;
         this.draft = draft.isIncompatible()
-          ? new DraftIncompatiblePlaceholderNode(draft.getName(), Objects.requireNonNull(draft.getCompatibility()))
+          ? new DraftIncompatiblePlaceholderNode(draft.getName(), draft.getToolkitId(), draft.getToolkitName(), Objects.requireNonNull(draft.getCompatibility()))
           : new DraftElementPlaceholderNode(pattern, draft.getRoot(), false);
         this.pattern = pattern;
     }

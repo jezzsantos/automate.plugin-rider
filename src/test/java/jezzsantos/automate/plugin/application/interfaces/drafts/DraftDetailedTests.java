@@ -159,7 +159,7 @@ public class DraftDetailedTests {
     @Test
     public void whenConstructed_ThenMustNotBeUpgraded() {
 
-        var draft = new DraftDetailed("anid", "aname", "1.0.0", "2.0.0", new HashMap<>());
+        var draft = new DraftDetailed("anid", "aname", "atoolkitid", "atoolkitname", "1.0.0", "2.0.0", new HashMap<>());
 
         assertFalse(draft.isIncompatible());
     }
@@ -170,7 +170,7 @@ public class DraftDetailedTests {
         var map = new HashMap<String, Object>();
         map.put("Id", "anid");
 
-        var result = new DraftDetailed("anid", "aname", "1.0.0", "2.0.0", map)
+        var result = new DraftDetailed("anid", "aname", "atoolkitid", "atoolkitname", "1.0.0", "2.0.0", map)
           .getRoot();
 
         assertEquals("aname", result.getName());
@@ -180,7 +180,7 @@ public class DraftDetailedTests {
     @Test
     public void whenCreateIncompatibleWithIncompatibleDraft_ThenReturnsAnIncompatibleDraft() {
 
-        var result = DraftDetailed.createIncompatible("anid", "aname",
+        var result = DraftDetailed.createIncompatible("anid", "aname", "atoolkitid", "atoolkitname",
                                                       new DraftVersionCompatibility("1.0.0", "2.0.0", AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT));
 
         assertTrue(result.isIncompatible());
@@ -189,7 +189,7 @@ public class DraftDetailedTests {
     @Test
     public void whenCreateIncompatibleWithIncompatibleToolkit_ThenReturnsAnIncompatibleDraft() {
 
-        var result = DraftDetailed.createIncompatible("anid", "aname",
+        var result = DraftDetailed.createIncompatible("anid", "aname", "atoolkitid", "atoolkitname",
                                                       new DraftVersionCompatibility("1.0.0", "2.0.0",
                                                                                     AutomateConstants.ToolkitRuntimeVersionCompatibility.MACHINE_AHEADOF_TOOLKIT));
 
@@ -199,7 +199,7 @@ public class DraftDetailedTests {
     @Test
     public void whenToString_ThenReturnsString() {
 
-        var result = new DraftDetailed("anid", "aname", "1.0.0", "2.0.0", new HashMap<>())
+        var result = new DraftDetailed("anid", "aname", "atoolkitid", "atoolkitname", "1.0.0", "2.0.0", new HashMap<>())
           .toString();
 
         assertEquals("aname (anid)", result);

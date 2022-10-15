@@ -18,6 +18,10 @@ public class DraftDetailed {
     private String id;
     @SerializedName(value = "DraftName")
     private String name;
+    @SerializedName(value = "ToolkitId")
+    private String toolkitId;
+    @SerializedName(value = "ToolkitName")
+    private String toolkitName;
     @SerializedName(value = "ToolkitVersion")
     private String toolkitVersion;
     @SerializedName(value = "RuntimeVersion")
@@ -28,29 +32,33 @@ public class DraftDetailed {
     @UsedImplicitly
     public DraftDetailed() {}
 
-    public DraftDetailed(@NotNull String id, @NotNull String name, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull HashMap<String, Object> configuration) {
+    public DraftDetailed(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitName, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull HashMap<String, Object> configuration) {
 
         this.id = id;
         this.name = name;
+        this.toolkitId = toolkitId;
+        this.toolkitName = toolkitName;
         this.toolkitVersion = toolkitVersion;
         this.runtimeVersion = runtimeVersion;
         this.configuration = configuration;
         this.compatibility = new DraftVersionCompatibility(toolkitVersion, runtimeVersion, AutomateConstants.DraftToolkitVersionCompatibility.COMPATIBLE);
     }
 
-    private DraftDetailed(@NotNull String id, @NotNull String name, @NotNull DraftVersionCompatibility compatibility) {
+    private DraftDetailed(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitName, @NotNull DraftVersionCompatibility compatibility) {
 
         this.id = id;
         this.name = name;
-        this.toolkitVersion = compatibility.getToolkitVersion().getCreated();
-        this.runtimeVersion = compatibility.getRuntimeVersion().getCreated();
+        this.toolkitId = toolkitId;
+        this.toolkitName = toolkitName;
+        this.toolkitVersion = compatibility.getToolkitVersion().getPublished();
+        this.runtimeVersion = compatibility.getRuntimeVersion().getPublished();
         this.configuration = Map.of();
         this.compatibility = compatibility;
     }
 
-    public static DraftDetailed createIncompatible(@NotNull String id, @NotNull String name, @NotNull DraftVersionCompatibility compatibility) {
+    public static DraftDetailed createIncompatible(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitName, @NotNull DraftVersionCompatibility compatibility) {
 
-        return new DraftDetailed(id, name, compatibility);
+        return new DraftDetailed(id, name, toolkitId, toolkitName, compatibility);
     }
 
     @NotNull
@@ -72,7 +80,7 @@ public class DraftDetailed {
             return false;
         }
 
-        return compatibility.isDraftIncompatible() || compatibility.isToolkitIncompatible();
+        return compatibility.isDraftIncompatible() || compatibility.isRuntimeIncompatible();
     }
 
     @Nullable
@@ -81,9 +89,17 @@ public class DraftDetailed {
         return this.compatibility;
     }
 
+    @NotNull
     public String getToolkitVersion() {return this.toolkitVersion;}
 
+    @NotNull
     public String getRuntimeVersion() {return this.runtimeVersion;}
+
+    @NotNull
+    public String getToolkitId() {return this.toolkitId;}
+
+    @NotNull
+    public String getToolkitName() {return this.toolkitName;}
 
     @Override
     public String toString() {

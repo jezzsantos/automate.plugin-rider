@@ -15,7 +15,7 @@ public class AutomateConstants {
     public static final List<String> OutputStructuredAliases = List.of(OutputStructuredShorthand, "--output-structured");
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "1.0.4";
+    public static String MinimumSupportedVersion = "1.0.5";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
     public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
 

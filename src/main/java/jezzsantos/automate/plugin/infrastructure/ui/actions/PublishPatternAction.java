@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
+import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
+import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
@@ -19,11 +21,13 @@ import javax.swing.tree.TreePath;
 public class PublishPatternAction extends AnAction {
 
     private final Action<PatternTreeModel> onSuccess;
+    private final INotifier notifier;
 
     public PublishPatternAction(Action<PatternTreeModel> onSuccess) {
 
         super();
         this.onSuccess = onSuccess;
+        this.notifier = INotifier.getInstance();
     }
 
     @Override
@@ -62,9 +66,13 @@ public class PublishPatternAction extends AnAction {
                                                           new PublishPatternDialog.PublishPatternDialogContext(pattern));
                     if (dialog.showAndGet()) {
                         var context = dialog.getContext();
-                        Try.andHandle(project,
-                                      () -> application.publishPattern(context.getInstallLocally(), context.getCustomVersion()),
-                                      AutomateBundle.message("action.PublishPattern.Publish.Failure.Message"));
+                        var warning = Try.andHandle(project,
+                                                    () -> application.publishCurrentPattern(context.getInstallLocally(), context.getCustomVersion()),
+                                                    AutomateBundle.message("action.PublishPattern.Publish.Failure.Message"));
+                        if (warning != null) {
+                            this.notifier.alert(NotificationType.WARNING, AutomateBundle.message("action.PublishPattern.Publish.SuccessWithWarning.Title"), AutomateBundle.message(
+                              "action.PublishPattern.Publish.SuccessWithWarning.Message", warning), null);
+                        }
                         this.onSuccess.run(model -> {});
                     }
                 }

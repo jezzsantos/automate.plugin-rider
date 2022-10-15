@@ -52,6 +52,9 @@ public interface IAutomateApplication {
     @NotNull
     List<DraftLite> listDrafts();
 
+    @Nullable
+    ToolkitLite findToolkitById(@NotNull String id);
+
     @SuppressWarnings("UnusedReturnValue")
     @NotNull
     PatternLite createPattern(@NotNull String name) throws Exception;
@@ -100,7 +103,8 @@ public interface IAutomateApplication {
 
     void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception;
 
-    void publishPattern(boolean installLocally, @Nullable String version) throws Exception;
+    @Nullable
+    String publishCurrentPattern(boolean installLocally, @Nullable String version) throws Exception;
 
     @NotNull
     DraftElement addDraftElement(@NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception;

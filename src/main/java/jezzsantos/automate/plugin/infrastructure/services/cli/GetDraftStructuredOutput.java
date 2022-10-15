@@ -18,10 +18,10 @@ public class GetDraftStructuredOutput extends StructuredOutput<DraftDetailed> {
     }
 
     @TestOnly
-    public GetDraftStructuredOutput(@NotNull String id, @NotNull String name, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull HashMap<String, Object> configuration) {
+    public GetDraftStructuredOutput(@NotNull String id, @NotNull String name, @NotNull String toolkitId, @NotNull String toolkitName, @NotNull String toolkitVersion, @NotNull String runtimeVersion, @NotNull HashMap<String, Object> configuration) {
 
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            this.Values = new DraftDetailed(id, name, toolkitVersion, runtimeVersion, configuration);
+            this.Values = new DraftDetailed(id, name, toolkitId, toolkitName, toolkitVersion, runtimeVersion, configuration);
         }})));
     }
 

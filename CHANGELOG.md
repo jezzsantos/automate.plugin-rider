@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patterns: Closed #8. Can now publish patterns
 - Drafts: Closed #18. Can now delete drafts (including out of date drafts)
+- Drafts: Closed #17. Can now upgrade drafts and toolkits (if possible)
 
 ### Changed
 

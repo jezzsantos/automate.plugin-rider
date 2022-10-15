@@ -80,7 +80,7 @@ public class DeleteDraftAction extends AnAction {
                     }
                 }
                 if (leaf instanceof DraftIncompatiblePlaceholderNode placeholder) {
-                    return new DraftElement(placeholder.getName(), Map.of(), true);
+                    return new DraftElement(placeholder.getDraftName(), Map.of(), true);
                 }
             }
         }

@@ -116,6 +116,13 @@ public class AutomateApplication implements IAutomateApplication {
         return this.automateService.listDrafts(this.currentDirectory);
     }
 
+    @Nullable
+    @Override
+    public ToolkitLite findToolkitById(@NotNull String id) {
+
+        return this.automateService.findToolkitById(this.currentDirectory, id);
+    }
+
     @NotNull
     @Override
     public PatternLite createPattern(@NotNull String name) throws Exception {
@@ -244,10 +251,11 @@ public class AutomateApplication implements IAutomateApplication {
         this.automateService.deletePatternAttribute(this.currentDirectory, editPath, name);
     }
 
+    @Nullable
     @Override
-    public void publishPattern(boolean installLocally, @Nullable String version) throws Exception {
+    public String publishCurrentPattern(boolean installLocally, @Nullable String version) throws Exception {
 
-        this.automateService.publishCurrentPattern(this.currentDirectory, installLocally, version);
+        return this.automateService.publishCurrentPattern(this.currentDirectory, installLocally, version);
     }
 
     @NotNull
