@@ -13,15 +13,28 @@ import java.util.concurrent.Callable;
 public class IntelliJTaskRunner implements ITaskRunner {
 
     @Override
-    public <TResult> TResult runToCompletion(@NotNull String title, @NotNull Callable<TResult> task) throws Exception {
+    public <TResult> TResult runModal(@NotNull String title, @NotNull Callable<TResult> task) throws Exception {
 
         return runToCompletionInternal(null, title, task);
     }
 
     @Override
-    public <TResult> TResult runToCompletion(@NotNull Project project, @NotNull String title, @NotNull Callable<TResult> task) throws Exception {
+    public <TResult> TResult runModal(@NotNull Project project, @NotNull String title, @NotNull Callable<TResult> task) throws Exception {
 
         return runToCompletionInternal(project, title, task);
+    }
+
+    @Override
+    public void runModeless(@Nullable Project project, @NotNull String title, @NotNull Runnable task) {
+
+        new Task.Backgroundable(project, title) {
+
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+
+                task.run();
+            }
+        }.queue();
     }
 
     private <TResult> TResult runToCompletionInternal(@Nullable Project project, @NotNull String title, @NotNull Callable<TResult> task) throws Exception {

@@ -260,7 +260,7 @@ public class UpgradeDraftDialog extends DialogWrapper {
 
         public void upgrade() {
 
-            var report = Try.safely(() -> this.runner.runToCompletion(AutomateBundle.message("dialog.UpgradeDraft.Title"), () -> this.upgrader.apply(this)));
+            var report = Try.safely(() -> this.runner.runModal(AutomateBundle.message("dialog.UpgradeDraft.Title"), () -> this.upgrader.apply(this)));
             this.upgradeSucceeded = report != null;
             if (this.upgradeSucceeded) {
                 this.changes = report.getChanges();

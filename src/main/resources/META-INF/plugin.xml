@@ -43,6 +43,7 @@
                 id="automate notifications"
                 isLogByDefault="true"
                 key="notification.group.name"/>
+        <errorHandler implementation="jezzsantos.automate.plugin.infrastructure.AutomateCrashReporter"/>
     </extensions>
 
     <actions>

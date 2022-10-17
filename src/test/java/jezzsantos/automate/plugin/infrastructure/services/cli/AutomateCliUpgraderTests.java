@@ -34,7 +34,7 @@ public class AutomateCliUpgraderTests {
         this.cliRunner = Mockito.mock(IAutomateCliRunner.class);
         this.notifier = Mockito.mock(INotifier.class);
         this.taskRunner = Mockito.mock(ITaskRunner.class);
-        Try.safely(() -> Mockito.when(this.taskRunner.runToCompletion(anyString(), any()))
+        Try.safely(() -> Mockito.when(this.taskRunner.runModal(anyString(), any()))
           .thenAnswer(x -> ((Callable<ModuleDescriptor.Version>) x.getArgument(1)).call()));
         this.upgrader = new AutomateCliUpgrader(this.cliRunner, this.notifier, this.taskRunner);
     }

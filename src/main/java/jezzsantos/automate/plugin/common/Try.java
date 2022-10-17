@@ -1,7 +1,7 @@
 package jezzsantos.automate.plugin.common;
 
 import com.intellij.openapi.project.Project;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
+import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,7 @@ public class Try {
         try {
             return action.call();
         } catch (Exception ex) {
-            ExceptionHandler.handleError(project, errorMessage, ex, null);
+            INotifier.getInstance().alert(jezzsantos.automate.plugin.application.services.interfaces.NotificationType.ERROR, project, errorMessage, ex.getMessage(), null);
         }
 
         return null;
@@ -26,7 +26,7 @@ public class Try {
         try {
             action.call();
         } catch (Exception ex) {
-            ExceptionHandler.handleError(project, errorMessage, ex, null);
+            INotifier.getInstance().alert(jezzsantos.automate.plugin.application.services.interfaces.NotificationType.ERROR, project, errorMessage, ex.getMessage(), null);
         }
     }
 
@@ -35,7 +35,7 @@ public class Try {
         try {
             action.call();
         } catch (Exception ex) {
-            ExceptionHandler.handleError(project, errorMessage, ex, null);
+            INotifier.getInstance().alert(jezzsantos.automate.plugin.application.services.interfaces.NotificationType.ERROR, project, errorMessage, ex.getMessage(), null);
             return;
         }
 

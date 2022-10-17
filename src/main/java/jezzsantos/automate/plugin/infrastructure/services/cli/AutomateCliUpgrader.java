@@ -8,7 +8,6 @@ import jezzsantos.automate.plugin.application.services.interfaces.NotificationTy
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
-import jezzsantos.automate.plugin.infrastructure.ui.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -103,9 +102,9 @@ public class AutomateCliUpgrader implements ICliUpgrader {
     private ModuleDescriptor.Version tryInstallLatestCli(@NotNull String currentDirectory, boolean uninstall) {
 
         try {
-            return this.taskRunner.runToCompletion(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.Task.Title",
-                                                                          AutomateConstants.ExecutableName),
-                                                   () -> AutomateCliUpgrader.this.cliRunner.installLatest(currentDirectory, uninstall));
+            return this.taskRunner.runModal(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.Task.Title",
+                                                                   AutomateConstants.ExecutableName),
+                                            () -> AutomateCliUpgrader.this.cliRunner.installLatest(currentDirectory, uninstall));
         } catch (Exception ex) {
             alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.Failed.Message", AutomateConstants.ExecutableName, ex.getMessage()), false);
             return null;
@@ -126,8 +125,8 @@ public class AutomateCliUpgrader implements ICliUpgrader {
 
         this.notifier.alert(type, AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.Alert.Title", AutomateConstants.ExecutableName), message,
                             includeHelpLink
-                              ? new ExceptionHandler.LinkDescriptor(AutomateConstants.InstallationInstructionsUrl,
-                                                                    AutomateBundle.message("general.AutomateCliUpgrader.MoreInfoLink.Title"))
+                              ? new INotifier.LinkDescriptor(AutomateConstants.InstallationInstructionsUrl,
+                                                             AutomateBundle.message("general.AutomateCliUpgrader.MoreInfoLink.Title"))
                               : null);
     }
 }

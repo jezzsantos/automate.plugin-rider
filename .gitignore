@@ -42,3 +42,5 @@ out/
 .idea/modules
 *.iml
 *.ipr
+
+*.local.properties

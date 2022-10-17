@@ -89,7 +89,7 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
     public void initResults() {
 
         try {
-            this.executionResult = this.taskRunner.runToCompletion(this.project, AutomateBundle.message("general.RunLaunchPoint.Title"), () -> this.context.getExecutor().get());
+            this.executionResult = this.taskRunner.runModal(this.project, AutomateBundle.message("general.RunLaunchPoint.Title"), () -> this.context.getExecutor().get());
         } catch (Exception ex) {
             this.executionResult = LaunchPointExecutionResult.failure(ex.getMessage());
         }
