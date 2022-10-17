@@ -76,15 +76,15 @@ public class GitHubCrashReportSender implements ICrashReportSender {
     @NotNull
     private String buildBodyMarkdown(@NotNull ErrorReport report) {
 
-        var version = toMarkdownParagraph(String.format("Version: %s", Objects.requireNonNullElse(report.getVersion(), AutomateBundle.message(
-          "general.GitHubCrashReportSender.UnknownDevice.Message"))));
-        var deviceId = toMarkdownParagraph(String.format("Device: %s",
+        var version = toMarkdownParagraph(String.format("Plugin Version: %s", Objects.requireNonNullElse(report.getVersion(), AutomateBundle.message(
+          "general.GitHubCrashReportSender.UnknownEntry.Message"))));
+        var deviceId = toMarkdownParagraph(String.format("Device ID: %s",
                                                          Objects.requireNonNullElse(report.getDeviceId(), AutomateBundle.message(
-                                                           "general.GitHubCrashReportSender.UnknownDevice.Message"))));
-        var lastAction = toMarkdownParagraph(String.format("LastActionId: %s",
+                                                           "general.GitHubCrashReportSender.UnknownEntry.Message"))));
+        var lastAction = toMarkdownParagraph(String.format("Last ActionId: %s",
                                                            Objects.requireNonNullElse(report.getLastActionId(),
                                                                                       AutomateBundle.message("general.GitHubCrashReportSender.EmptyEntry.Message"))));
-        var repro = toMarkdownParagraph(String.format("Steps: %s",
+        var repro = toMarkdownParagraph(String.format("User Comments: %s",
                                                       Objects.requireNonNullElse(report.getReproSteps(),
                                                                                  AutomateBundle.message("general.GitHubCrashReportSender.EmptyEntry.Message"))));
         var exception = toMarkdownParagraph("Exceptions:");

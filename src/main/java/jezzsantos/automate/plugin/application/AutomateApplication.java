@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.application;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 public class AutomateApplication implements IAutomateApplication {
 
+    private static final Logger logger = Logger.getInstance(AutomateApplication.class);
     @NotNull
     private final IAutomateCliService automateService;
     @NotNull
@@ -44,6 +46,8 @@ public class AutomateApplication implements IAutomateApplication {
         this.configuration = configuration;
         this.automateService = automateService;
         this.currentDirectory = currentDirectory;
+
+        logger.info("AutomateApplication created");
     }
 
     @NotNull

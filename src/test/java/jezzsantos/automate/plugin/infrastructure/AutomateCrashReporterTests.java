@@ -49,7 +49,7 @@ public class AutomateCrashReporterTests {
         Mockito.verify(this.notifier)
           .alert(argThat(x -> x == NotificationType.INFO), argThat(x -> x == project),
                  argThat(s -> s.equals(AutomateBundle.message("general.AutomateCrashReporter.Complete.Title"))),
-                 argThat(s -> s.equals(AutomateBundle.message("general.AutomateCrashReporter.Complete.Message"))), isNull(), any());
+                 argThat(s -> s.equals(AutomateBundle.message("general.AutomateCrashReporter.Complete.WithoutLink.Message"))), isNull(), any());
     }
 
     @Test

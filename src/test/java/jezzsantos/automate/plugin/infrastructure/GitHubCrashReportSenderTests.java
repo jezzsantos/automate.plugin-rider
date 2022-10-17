@@ -87,7 +87,8 @@ public class GitHubCrashReportSenderTests {
                                                         && req.method().equals("POST")
                                                         && req.url().toString().endsWith(String.format("/repos/%s/issues", GitHubCrashReportSender.GitHubRepoSlug))
                                                         && issue.title.equals(AutomateBundle.message("general.GitHubCrashReportSender.Title.Title"))
-                                                        && issue.body.equals("Version: unknown\r\nDevice: unknown\r\nLastActionId: none\r\nSteps: none\r\nExceptions:\r\n\r\n")
+                                                        && issue.body.equals(
+                                                        "Plugin Version: unknown\r\nDevice ID: unknown\r\nLast ActionId: none\r\nUser Comments: none\r\nExceptions:\r\n\r\n")
                                                         && issue.labels.contains(GitHubCrashReportSender.GitHubIssueLabel);
                                                   }
 
@@ -122,7 +123,7 @@ public class GitHubCrashReportSenderTests {
 
                                                       var issue = deserializeRequestBody(req);
                                                       var stackTrace = Arrays.stream(exception.getStackTrace()).map(element -> String.format("%s\r\n", element.toString())).collect(Collectors.joining());
-                                                      var body = "Version: aversion\r\nDevice: adeviceid\r\nLastActionId: alastactionid\r\nSteps: areprostep\r\nExceptions:\r\nCause: `amessage`\r\n\r\n```\n" +
+                                                      var body = "Plugin Version: aversion\r\nDevice ID: adeviceid\r\nLast ActionId: alastactionid\r\nUser Comments: areprostep\r\nExceptions:\r\nCause: `amessage`\r\n\r\n```\n" +
                                                         stackTrace + "\r\n```\r\n";
                                                       return req.hasBody()
                                                         && req.method().equals("POST")

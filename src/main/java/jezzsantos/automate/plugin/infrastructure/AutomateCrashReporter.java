@@ -77,7 +77,9 @@ public class AutomateCrashReporter extends ErrorReportSubmitter {
 
         var link = AutomateCrashReporter.this.sender.getLink();
         this.notifier.alert(NotificationType.INFO, project, AutomateBundle.message(
-          "general.AutomateCrashReporter.Complete.Title"), AutomateBundle.message("general.AutomateCrashReporter.Complete.Message"), link, () -> {
+          "general.AutomateCrashReporter.Complete.Title"), link != null
+                              ? AutomateBundle.message("general.AutomateCrashReporter.Complete.WithLink.Message")
+                              : AutomateBundle.message("general.AutomateCrashReporter.Complete.WithoutLink.Message"), link, () -> {
             var info = new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE);
             consumer.consume(info);
         });

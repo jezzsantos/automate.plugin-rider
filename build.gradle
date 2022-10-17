@@ -26,6 +26,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
     //noinspection VulnerableLibrariesLocal
     implementation 'org.kohsuke:github-api:1.313'
+    //noinspection GradlePackageUpdate
+    implementation 'com.microsoft.azure:applicationinsights-core:2.6.4'
 }
 
 test {

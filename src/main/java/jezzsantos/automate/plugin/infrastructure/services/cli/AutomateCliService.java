@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
@@ -33,6 +34,7 @@ import java.util.Map;
 
 public class AutomateCliService implements IAutomateCliService {
 
+    private static final Logger logger = Logger.getInstance(AutomateCliService.class);
     @NotNull
     private final ICliResponseCache cache;
     @NotNull
@@ -80,6 +82,8 @@ public class AutomateCliService implements IAutomateCliService {
         });
 
         init();
+
+        logger.info("AutomateCliService created");
     }
 
     @NotNull
