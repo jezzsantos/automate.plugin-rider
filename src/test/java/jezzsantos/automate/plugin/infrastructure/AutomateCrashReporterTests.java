@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.openapi.application.PermanentInstallationID;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
@@ -41,7 +42,7 @@ public class AutomateCrashReporterTests {
         this.reporter.sendReport(project, plugin, new IdeaLoggingEvent[0], "additionalinfo", "alastactionid", info -> {});
 
         Mockito.verify(this.sender).send(argThat(report ->
-                                                   report.getDeviceId().equals("18ab2a40-f2e9-4272-9acb-736a077e7291")
+                                                   report.getDeviceId().equals(PermanentInstallationID.get())
                                                      && report.getReproSteps().equals("additionalinfo")
                                                      && report.getVersion().equals("aversion")
                                                      && report.getLastActionId().equals("alastactionid")
