@@ -2,6 +2,9 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.common.StringWithDefault;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliTextResult;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

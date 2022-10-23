@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
 
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;

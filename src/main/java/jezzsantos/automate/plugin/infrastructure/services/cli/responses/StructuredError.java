@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
 
 import com.jetbrains.rd.util.UsedImplicitly;
 import org.jetbrains.annotations.NotNull;

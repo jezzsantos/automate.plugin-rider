@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
 
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import org.jetbrains.annotations.TestOnly;

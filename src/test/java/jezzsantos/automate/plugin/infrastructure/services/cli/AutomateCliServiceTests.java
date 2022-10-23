@@ -11,6 +11,10 @@ import jezzsantos.automate.plugin.application.services.interfaces.IApplicationCo
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.GetInfoStructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.ListAllDefinitionsStructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

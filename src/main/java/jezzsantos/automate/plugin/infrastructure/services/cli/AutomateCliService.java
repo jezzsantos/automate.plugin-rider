@@ -21,6 +21,7 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.OsPlatform;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.*;
 import jezzsantos.automate.plugin.infrastructure.ui.IntelliJNotifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
