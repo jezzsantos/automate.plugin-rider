@@ -37,6 +37,8 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
     public final Property<CliInstallPolicy> cliInstallPolicy = new Property<>(CliInstallPolicy.AUTO_UPGRADE);
     @OptionTag(converter = StringWithDefaultPropertyConverter.class)
     public final Property<StringWithDefault> executablePath = new Property<>(createExecutablePathWithDefaultValue());
+    @OptionTag(converter = BooleanPropertyConverter.class)
+    public final Property<Boolean> allowUsageCollection = new Property<>(true);
     private final SimpleModificationTracker tracker = new SimpleModificationTracker();
 
     @UsedImplicitly
@@ -90,6 +92,7 @@ public class ApplicationSettingsState implements PersistentStateComponentWithMod
         incrementTrackerWhenPropertyChanges(state.executablePath);
         incrementTrackerWhenPropertyChanges(state.viewCliLog);
         incrementTrackerWhenPropertyChanges(state.cliInstallPolicy);
+        incrementTrackerWhenPropertyChanges(state.allowUsageCollection);
     }
 
     private <T> void incrementTrackerWhenPropertyChanges(Property<T> property) {

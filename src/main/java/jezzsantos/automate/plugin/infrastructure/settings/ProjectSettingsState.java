@@ -26,7 +26,7 @@ public class ProjectSettingsState implements PersistentStateComponentWithModific
         registerAllPropertyToIncrementTrackerOnChanges(this);
     }
 
-    public static ProjectSettingsState getInstance(Project project) {
+    public static ProjectSettingsState getInstance(@NotNull Project project) {
 
         return project.getService(ProjectSettingsState.class);
     }

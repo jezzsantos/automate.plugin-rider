@@ -8,12 +8,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeListener;
 
+@SuppressWarnings("unused")
 public interface IApplicationConfiguration {
 
     static IApplicationConfiguration getInstance() {
 
         return ApplicationManager.getApplication().getService(IApplicationConfiguration.class);
     }
+
+    void addListener(@NotNull PropertyChangeListener listener);
+
+    void removeListener(@NotNull PropertyChangeListener listener);
 
     @NotNull
     StringWithDefault getExecutablePath();
@@ -38,7 +43,7 @@ public interface IApplicationConfiguration {
 
     void setCliInstallPolicy(CliInstallPolicy policy);
 
-    void addListener(@NotNull PropertyChangeListener listener);
+    boolean allowUsageCollection();
 
-    void removeListener(@NotNull PropertyChangeListener listener);
+    void setAllowUsageCollection(boolean on);
 }

@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+- Minimum compatibility with `automate` CLI version 1.0.6
+
 ### Added
+
+- DevOps: Added usage collection to Application Insights
+-
 
 ### Changed
 

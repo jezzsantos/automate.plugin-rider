@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -192,6 +193,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     private final List<CliLogEntry> logs = new ArrayList<>();
     @NotNull
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private final String sessionId;
 
     public AutomateCliRunner() {
 
@@ -202,20 +204,21 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     public AutomateCliRunner(@NotNull IProcessRunner processRunner) {
 
         this.processRunner = processRunner;
+        this.sessionId = String.format("rpi_%s", UUID.randomUUID().toString().replace("-", "").toLowerCase());
     }
 
     @NotNull
     @Override
-    public CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args) {
+    public CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args) {
 
-        return executeInternal(currentDirectory, executablePath, args, false);
+        return executeInternal(currentDirectory, executablePath, args, false, allowUsage);
     }
 
     @NotNull
     @Override
-    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args) {
+    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args) {
 
-        var result = executeInternal(currentDirectory, executablePath, args, true);
+        var result = executeInternal(currentDirectory, executablePath, args, true, allowUsage);
         if (result.isError()) {
             return new CliStructuredResult<>(getStructuredError(result.getError()), null);
         }
@@ -392,21 +395,29 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args, boolean isStructured) {
+    private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args, boolean isStructured, boolean allowUsage) {
 
         var command = new ArrayList<String>();
         command.add(executablePath.getValueOrDefault());
         command.addAll(args);
         if (isStructured) {
             var found = new AtomicBoolean(false);
-            AutomateConstants.OutputStructuredAliases.forEach(alias -> {
+            AutomateConstants.OutputStructuredOptionAliases.forEach(alias -> {
                 if (command.contains(alias)) {
                     found.set(true);
                 }
             });
             if (!found.get()) {
-                command.add(AutomateConstants.OutputStructuredShorthand);
+                command.add(AutomateConstants.OutputStructuredOptionShorthand);
             }
+        }
+        if (allowUsage) {
+            command.add(AutomateConstants.UsageSessionIdOption);
+            command.add(this.sessionId);
+        }
+        else {
+            command.add(AutomateConstants.UsageAllowedOption);
+            command.add("false");
         }
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", args)), CliLogEntryType.NORMAL);

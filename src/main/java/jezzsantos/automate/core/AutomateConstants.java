@@ -11,8 +11,10 @@ public class AutomateConstants {
     public static final String AttributeNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
     public static final List<AutomateConstants.AttributeDataType> AttributeDataTypes =
       List.of(AttributeDataType.STRING, AttributeDataType.BOOLEAN, AttributeDataType.INTEGER, AttributeDataType.FLOAT, AttributeDataType.DATETIME);
-    public static final String OutputStructuredShorthand = "--os";
-    public static final List<String> OutputStructuredAliases = List.of(OutputStructuredShorthand, "--output-structured");
+    public static final String OutputStructuredOptionShorthand = "--os";
+    public static final List<String> OutputStructuredOptionAliases = List.of(OutputStructuredOptionShorthand, "--output-structured");
+    public static final String UsageSessionIdOption = "--usage-session";
+    public static final String UsageAllowedOption = "--allow-usage";
     public static String ExecutableName = "automate";
     public static String ToolkitFileExtension = "toolkit";
     public static String MinimumSupportedVersion = "1.0.5";

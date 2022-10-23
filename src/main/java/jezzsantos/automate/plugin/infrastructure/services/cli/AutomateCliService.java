@@ -130,12 +130,13 @@ public class AutomateCliService implements IAutomateCliService {
             return new CliExecutableStatus(executableName);
         }
 
-        var result = this.cliRunner.execute(currentDirectory, executablePath, new ArrayList<>(List.of("--version")));
+        var allowUsage = this.configuration.allowUsageCollection();
+        var result = this.cliRunner.executeStructured(GetInfoStructuredOutput.class, currentDirectory, executablePath, allowUsage, new ArrayList<>(List.of("info")));
         if (result.isError()) {
             return new CliExecutableStatus(executableName);
         }
 
-        return new CliExecutableStatus(executableName, result.getOutput());
+        return new CliExecutableStatus(executableName, result.getOutput().getVersion());
     }
 
     @Override
@@ -618,8 +619,9 @@ public class AutomateCliService implements IAutomateCliService {
             throw new RuntimeException(AutomateBundle.message("exception.AutomateCliService.CliNotInstalled.Message"));
         }
 
+        var allowUsage = this.configuration.allowUsageCollection();
         var executablePath = this.configuration.getExecutablePath();
-        return this.cliRunner.executeStructured(outputClass, currentDirectory, executablePath, args);
+        return this.cliRunner.executeStructured(outputClass, currentDirectory, executablePath, allowUsage, args);
     }
 
     @NotNull

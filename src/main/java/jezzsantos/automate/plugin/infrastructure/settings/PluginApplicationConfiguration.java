@@ -23,6 +23,18 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
         this.settings = ApplicationSettingsState.getInstance();
     }
 
+    @Override
+    public void addListener(@NotNull PropertyChangeListener listener) {
+
+        this.support.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removeListener(@NotNull PropertyChangeListener listener) {
+
+        this.support.removePropertyChangeListener(listener);
+    }
+
     @NotNull
     @Override
     public StringWithDefault getExecutablePath() {
@@ -106,14 +118,18 @@ public class PluginApplicationConfiguration implements IApplicationConfiguration
     }
 
     @Override
-    public void addListener(@NotNull PropertyChangeListener listener) {
+    public boolean allowUsageCollection() {
 
-        this.support.addPropertyChangeListener(listener);
+        return this.settings.allowUsageCollection.getValue();
     }
 
     @Override
-    public void removeListener(@NotNull PropertyChangeListener listener) {
+    public void setAllowUsageCollection(boolean newValue) {
 
-        this.support.removePropertyChangeListener(listener);
+        var oldValue = (boolean) this.settings.allowUsageCollection.getValue();
+        if (!Intrinsics.areEqual(oldValue, newValue)) {
+            this.settings.allowUsageCollection.setValue(newValue);
+            this.support.firePropertyChange("AllowUsageCollection", oldValue, newValue);
+        }
     }
 }

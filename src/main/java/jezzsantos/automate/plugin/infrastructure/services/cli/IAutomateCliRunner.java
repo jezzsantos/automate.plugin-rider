@@ -12,9 +12,9 @@ import java.util.List;
 public interface IAutomateCliRunner {
 
     @NotNull
-    CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args);
+    CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args);
 
-    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args);
+    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args);
 
     @Nullable
     ModuleDescriptor.Version installLatest(@NotNull String currentDirectory, boolean uninstall);

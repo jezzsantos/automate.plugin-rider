@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.google.gson.Gson;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
@@ -16,7 +17,8 @@ import java.lang.module.ModuleDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jezzsantos.automate.core.AutomateConstants.OutputStructuredShorthand;
+import static jezzsantos.automate.core.AutomateConstants.OutputStructuredOptionShorthand;
+import static jezzsantos.automate.core.AutomateConstants.UsageSessionIdOption;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -73,18 +75,43 @@ public class AutomateCliRunnerTests {
     }
 
     @Test
-    public void whenExecuteAndSucceeds_ThenReturnsTextualResultAndLogs() {
+    public void whenExecuteAndAllowUsage_ThenReturnsTextualResultAndLogs() {
 
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess("anoutput"));
 
-        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), true, List.of());
 
         assertFalse(result.isError());
         assertEquals("anoutput", result.getOutput());
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 3
+          && args.get(0).equals("anexecutablepath")
+          && args.get(1).equals(UsageSessionIdOption)
+          && !args.get(2).isEmpty()
+        ), argThat(x -> x.equals("acurrentdirectory")));
+    }
+
+    @Test
+    public void whenExecuteAndSucceeds_ThenReturnsTextualResultAndLogs() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createSuccess("anoutput"));
+
+        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
+
+        assertFalse(result.isError());
+        assertEquals("anoutput", result.getOutput());
+        assertEquals(2, this.logs.size());
+        assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 3
+          && args.get(0).equals("anexecutablepath")
+          && args.get(1).equals(AutomateConstants.UsageAllowedOption)
+          && args.get(2).equals("false")
+        ), argThat(x -> x.equals("acurrentdirectory")));
     }
 
     @Test
@@ -93,7 +120,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedToStart());
 
-        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", "anexecutablepath"), result.getError());
@@ -108,7 +135,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithException(new Exception("amessage")));
 
-        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError());
@@ -123,7 +150,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithError("anerror"));
 
-        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.execute("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         assertTrue(result.isError());
         assertEquals("anerror", result.getError());
@@ -139,7 +166,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithError(errorJson));
 
-        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         assertTrue(result.isError());
         assertEquals("anerror", result.getError().getErrorMessage());
@@ -154,7 +181,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithException(new Exception("amessage")));
 
-        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         assertTrue(result.isError());
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", "amessage"), result.getError().getErrorMessage());
@@ -170,15 +197,25 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess(outputJson));
 
-        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of(OutputStructuredShorthand));
+        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of(OutputStructuredOptionShorthand));
 
         Mockito.verify(this.processRunner)
-          .start(argThat(x -> x.size() == 2 && x.get(0).equals("anexecutablepath") && x.get(1).equals(OutputStructuredShorthand)), anyString());
+          .start(argThat(x -> x.size() == 4
+            && x.get(0).equals("anexecutablepath")
+            && x.get(1).equals(OutputStructuredOptionShorthand)
+            && x.get(2).equals(AutomateConstants.UsageAllowedOption)
+            && x.get(3).equals("false")
+          ), anyString());
 
-        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of("--output-structured"));
+        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of("--output-structured"));
 
         Mockito.verify(this.processRunner)
-          .start(argThat(x -> x.size() == 2 && x.get(0).equals("anexecutablepath") && x.get(1).equals("--output-structured")), anyString());
+          .start(argThat(x -> x.size() == 4
+            && x.get(0).equals("anexecutablepath")
+            && x.get(1).equals("--output-structured")
+            && x.get(2).equals(AutomateConstants.UsageAllowedOption)
+            && x.get(3).equals("false")
+          ), anyString());
     }
 
     @Test
@@ -188,10 +225,37 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess(outputJson));
 
-        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         Mockito.verify(this.processRunner)
-          .start(argThat(x -> x.size() == 2 && x.get(0).equals("anexecutablepath") && x.get(1).equals(OutputStructuredShorthand)), anyString());
+          .start(argThat(x -> x.size() == 4
+            && x.get(0).equals("anexecutablepath")
+            && x.get(1).equals(OutputStructuredOptionShorthand)
+            && x.get(2).equals(AutomateConstants.UsageAllowedOption)
+            && x.get(3).equals("false")
+          ), anyString());
+    }
+
+    @Test
+    public void whenExecuteStructuredAndAllowUsage_ThenReturnsTextualResultAndLogs() {
+
+        var outputJson = new Gson().toJson(new TestStructure("avalue"));
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createSuccess(outputJson));
+
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), true, List.of());
+
+        assertFalse(result.isError());
+        assertEquals("avalue", result.getOutput().Output.get(0).Values.AValue);
+        assertEquals(2, this.logs.size());
+        assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 4
+          && args.get(0).equals("anexecutablepath")
+          && args.get(1).equals(AutomateConstants.OutputStructuredOptionShorthand)
+          && args.get(2).equals(UsageSessionIdOption)
+          && !args.get(3).isEmpty()
+        ), argThat(x -> x.equals("acurrentdirectory")));
     }
 
     @Test
@@ -201,13 +265,19 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess(outputJson));
 
-        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), List.of());
+        var result = this.runner.executeStructured(TestStructure.class, "acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), false, List.of());
 
         assertFalse(result.isError());
         assertEquals("avalue", result.getOutput().Output.get(0).Values.AValue);
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 4
+          && args.get(0).equals("anexecutablepath")
+          && args.get(1).equals(AutomateConstants.OutputStructuredOptionShorthand)
+          && args.get(2).equals(AutomateConstants.UsageAllowedOption)
+          && args.get(3).equals("false")
+        ), argThat(x -> x.equals("acurrentdirectory")));
     }
 
     @Test
