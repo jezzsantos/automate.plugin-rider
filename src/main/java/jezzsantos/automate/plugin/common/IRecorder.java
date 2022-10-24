@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 enum LogLevel {
     TRACE,
@@ -34,6 +35,8 @@ public interface IRecorder extends Disposable {
     void endSession(boolean success, @NotNull String messageTemplate, @Nullable Object... args);
 
     void measureEvent(@NotNull String eventName, @Nullable Map<String, String> context);
+
+    <TResult> TResult measureCliCall(@NotNull Supplier<TResult> action, @NotNull String actionName);
 
     void crash(@NotNull CrashLevel level, @NotNull Throwable exception, @NotNull String messageTemplate, @Nullable Object... args);
 

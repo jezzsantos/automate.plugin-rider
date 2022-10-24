@@ -16,6 +16,7 @@ public class AutomateConstants {
     public static final String UsageSessionIdOption = "--usage-session";
     public static final String UsageAllowedOption = "--allow-usage";
     public static String ExecutableName = "automate";
+    public static String ApplicationInsightsCliRoleName = "automate CLI";
     public static String ToolkitFileExtension = "toolkit";
     public static String MinimumSupportedVersion = "1.0.5";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");

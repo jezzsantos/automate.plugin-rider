@@ -5,6 +5,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IRecorder;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
@@ -19,6 +20,7 @@ import java.beans.PropertyChangeEvent;
 import java.lang.module.ModuleDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static jezzsantos.automate.core.AutomateConstants.OutputStructuredOptionShorthand;
 import static jezzsantos.automate.core.AutomateConstants.UsageSessionIdOption;
@@ -36,8 +38,11 @@ public class AutomateCliRunnerTests {
 
         this.processRunner = Mockito.mock(IProcessRunner.class);
         this.logs = new ArrayList<>();
+        var recorder = Mockito.mock(IRecorder.class);
+        Mockito.when(recorder.measureCliCall(any(), any()))
+          .thenAnswer(invocation -> ((Supplier<?>) invocation.getArguments()[0]).get());
 
-        this.runner = new AutomateCliRunner(this.processRunner);
+        this.runner = new AutomateCliRunner(recorder, this.processRunner);
         this.runner.addLogListener(this::propertyChange);
     }
 

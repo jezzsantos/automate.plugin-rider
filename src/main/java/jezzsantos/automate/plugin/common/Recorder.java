@@ -11,6 +11,7 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class Recorder implements IRecorder, Disposable {
@@ -97,6 +98,17 @@ public class Recorder implements IRecorder, Disposable {
         trace(LogLevel.INFORMATION, AutomateBundle.message("trace.Recorder.Measure", formatted));
         if (this.reportingContext.getAllowUsage()) {
             this.measurer.measureEvent(formatted, context);
+        }
+    }
+
+    @Override
+    public <TResult> TResult measureCliCall(@NotNull Supplier<TResult> action, @NotNull String actionName) {
+
+        if (this.reportingContext.getAllowUsage()) {
+            return this.measurer.measureCliCall(action, actionName);
+        }
+        else {
+            return action.get();
         }
     }
 

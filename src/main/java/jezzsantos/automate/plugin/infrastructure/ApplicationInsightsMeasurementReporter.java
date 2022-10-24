@@ -3,15 +3,20 @@ package jezzsantos.automate.plugin.infrastructure;
 import com.intellij.openapi.Disposable;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
+import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.IMeasurementReporter;
 import jezzsantos.automate.plugin.infrastructure.ui.ApplicationInsightsClient;
 import org.apache.commons.lang.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ApplicationInsightsMeasurementReporter implements IMeasurementReporter, Disposable {
 
@@ -53,7 +58,7 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
         this.stopwatch.start();
         this.request = new RequestTelemetry();
         this.request.setName(RequestName);
-        this.request.setId(createRequestId());
+        this.request.setId(createRandomId());
     }
 
     @Override
@@ -79,8 +84,34 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
         }
     }
 
+    @Override
+    public <TResult> TResult measureCliCall(@NotNull Supplier<TResult> action, @NotNull String actionName) {
+
+        if (this.reportingEnabled) {
+            boolean success = false;
+            var stopWatch = new StopWatch();
+            stopWatch.start();
+            try {
+                var result = action.get();
+                success = true;
+
+                return result;
+            } finally {
+                stopWatch.stop();
+                var duration = new Duration(stopWatch.getTime());
+                var call = new RemoteDependencyTelemetry(AutomateConstants.ApplicationInsightsCliRoleName, actionName, duration, success);
+                call.setTimestamp(Date.from(Instant.ofEpochMilli(stopWatch.getStartTime())));
+                call.setType("CLI call");
+                this.client.trackDependency(call);
+            }
+        }
+        else {
+            return action.get();
+        }
+    }
+
     @NotNull
-    private String createRequestId() {
+    private String createRandomId() {
 
         return UUID.randomUUID().toString().replace("-", "");
     }

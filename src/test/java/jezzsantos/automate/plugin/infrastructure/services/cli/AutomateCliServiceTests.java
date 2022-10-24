@@ -22,7 +22,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -212,7 +211,7 @@ public class AutomateCliServiceTests {
         assertEquals(CliVersionCompatibility.INCOMPATIBLE, result.getCompatibility());
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void whenIsCliInstalledAndUnknownVersion_ThenReturnsFalse() {
 
@@ -220,7 +219,7 @@ public class AutomateCliServiceTests {
         Mockito.when(this.configuration.getExecutablePath())
           .thenReturn(StringWithDefault.fromValue(filename));
         Mockito.when(this.cache.isCliInstalled(any()))
-          .thenAnswer((Answer) invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
+          .thenAnswer(invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
 
         var result = this.service.isCliInstalled("acurrentdirectory");
 
@@ -237,7 +236,7 @@ public class AutomateCliServiceTests {
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult(null, new GetInfoStructuredOutput("0.0.1")));
         Mockito.when(this.cache.isCliInstalled(any()))
-          .thenAnswer((Answer) invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
+          .thenAnswer(invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
 
         var result = this.service.isCliInstalled("acurrentdirectory");
 
@@ -254,21 +253,21 @@ public class AutomateCliServiceTests {
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult(null, new GetInfoStructuredOutput("100.0.0")));
         Mockito.when(this.cache.isCliInstalled(any()))
-          .thenAnswer((Answer) invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
+          .thenAnswer(invocation -> ((Supplier<Boolean>) invocation.getArguments()[0]).get());
 
         var result = this.service.isCliInstalled("acurrentdirectory");
 
         assertTrue(result);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void whenListAllAutomationAndNotCachedAndFails_ThenReturnsEmptyLists() {
 
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(new StructuredError(), null));
         Mockito.when(this.cache.listAll(any(), anyBoolean()))
-          .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
+          .thenAnswer(invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
         var result = this.service.listAllAutomation("acurrentdirectory", false);
 
@@ -288,7 +287,7 @@ public class AutomateCliServiceTests {
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult(null, new ListAllDefinitionsStructuredOutput()));
         Mockito.when(this.cache.listAll(any(), anyBoolean()))
-          .thenAnswer((Answer) invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
+          .thenAnswer(invocation -> ((Supplier<AllStateLite>) invocation.getArguments()[0]).get());
 
         var result = this.service.listAllAutomation("acurrentdirectory", false);
 
@@ -317,12 +316,12 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner, never()).executeStructured(any(), any(), anyList());
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Test
     public void whenGetCurrentDraftDetailedAndIsOutOfDate_ThenReturnsOutOfDateDraft() throws Exception {
 
         Mockito.when(this.cache.getDraftDetailed(any()))
-          .thenAnswer((Answer) invocation -> ((Callable<DraftDetailed>) invocation.getArguments()[0]).call());
+          .thenAnswer(invocation -> ((Callable<DraftDetailed>) invocation.getArguments()[0]).call());
         Mockito.when(this.cache.getDraftInfo(any()))
           .thenReturn(
             new DraftLite("anid", "aname", "atoolkitid", "atoolkitname", "1.0.0", "2.0.0", AutomateConstants.DraftToolkitVersionCompatibility.DRAFT_AHEADOF_TOOLKIT, true));

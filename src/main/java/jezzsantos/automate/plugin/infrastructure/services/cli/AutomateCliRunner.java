@@ -7,6 +7,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliTextResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
@@ -195,15 +196,17 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     private final List<CliLogEntry> logs = new ArrayList<>();
     @NotNull
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private final IRecorder recorder;
 
     public AutomateCliRunner() {
 
-        this(new ProcessRunner());
+        this(IRecorder.getInstance(), new ProcessRunner());
     }
 
     @TestOnly
-    public AutomateCliRunner(@NotNull IProcessRunner processRunner) {
+    public AutomateCliRunner(@NotNull IRecorder recorder, @NotNull IProcessRunner processRunner) {
 
+        this.recorder = recorder;
         this.processRunner = processRunner;
     }
 
@@ -322,34 +325,35 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         }};
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Started.Message"), CliLogEntryType.NORMAL);
-
-        var result = this.processRunner.start(command, currentDirectory);
-        if (result.getSuccess()) {
-            var output = Objects.requireNonNull(result.getOutput());
-            return new CliTextResult("", output);
-        }
-        else {
-            var cause = Objects.requireNonNull(result.getFailureCause());
-            switch (cause) {
-                case FailedToStart -> {
-                    var error = AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedToStart.Message");
-                    logEntry(error, CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                case ThrewException -> {
-                    var exception = Objects.requireNonNull(result.getException());
-                    var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
-                    logEntry(error, CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                case FailedWithError -> {
-                    var error = Objects.requireNonNull(result.getError());
-                    logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", error), CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+        return this.recorder.measureCliCall(() -> {
+            var result = this.processRunner.start(command, currentDirectory);
+            if (result.getSuccess()) {
+                var output = Objects.requireNonNull(result.getOutput());
+                return new CliTextResult("", output);
             }
-        }
+            else {
+                var cause = Objects.requireNonNull(result.getFailureCause());
+                switch (cause) {
+                    case FailedToStart -> {
+                        var error = AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedToStart.Message");
+                        logEntry(error, CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    case ThrewException -> {
+                        var exception = Objects.requireNonNull(result.getException());
+                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
+                        logEntry(error, CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    case FailedWithError -> {
+                        var error = Objects.requireNonNull(result.getError());
+                        logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", error), CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+                }
+            }
+        }, "uninstall-cli");
     }
 
     @NotNull
@@ -365,33 +369,35 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Started.Message"), CliLogEntryType.NORMAL);
 
-        var result = this.processRunner.start(command, currentDirectory);
-        if (result.getSuccess()) {
-            var output = Objects.requireNonNull(result.getOutput());
-            return new CliTextResult("", output);
-        }
-        else {
-            var cause = Objects.requireNonNull(result.getFailureCause());
-            switch (cause) {
-                case FailedToStart -> {
-                    var error = AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedToStart.Message");
-                    logEntry(error, CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                case ThrewException -> {
-                    var exception = Objects.requireNonNull(result.getException());
-                    var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
-                    logEntry(error, CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                case FailedWithError -> {
-                    var error = Objects.requireNonNull(result.getError());
-                    logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", error), CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+        return this.recorder.measureCliCall(() -> {
+            var result = this.processRunner.start(command, currentDirectory);
+            if (result.getSuccess()) {
+                var output = Objects.requireNonNull(result.getOutput());
+                return new CliTextResult("", output);
             }
-        }
+            else {
+                var cause = Objects.requireNonNull(result.getFailureCause());
+                switch (cause) {
+                    case FailedToStart -> {
+                        var error = AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedToStart.Message");
+                        logEntry(error, CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    case ThrewException -> {
+                        var exception = Objects.requireNonNull(result.getException());
+                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
+                        logEntry(error, CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    case FailedWithError -> {
+                        var error = Objects.requireNonNull(result.getError());
+                        logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", error), CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+                }
+            }
+        }, "install-cli");
     }
 
     @NotNull
@@ -422,37 +428,39 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", args)), CliLogEntryType.NORMAL);
 
-        var result = this.processRunner.start(command, context.getCurrentDirectory());
-        if (result.getSuccess()) {
-            logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
-            var output = Objects.requireNonNull(result.getOutput());
-            return new CliTextResult("", output);
-        }
-        else {
-            var cause = Objects.requireNonNull(result.getFailureCause());
-            switch (cause) {
-                case FailedToStart -> {
-                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", context.getExecutablePath().getValueOrDefault());
-                    logEntry(error, CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                case ThrewException -> {
-                    var exception = Objects.requireNonNull(result.getException());
-                    var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
-                    logEntry(error, CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                case FailedWithError -> {
-                    var error = Objects.requireNonNull(result.getError());
-                    var message = isStructured
-                      ? getStructuredError(error).getErrorMessage()
-                      : error;
-                    logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", message), CliLogEntryType.ERROR);
-                    return new CliTextResult(error, "");
-                }
-                default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+        return this.recorder.measureCliCall(() -> {
+            var result = this.processRunner.start(command, context.getCurrentDirectory());
+            if (result.getSuccess()) {
+                logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
+                var output = Objects.requireNonNull(result.getOutput());
+                return new CliTextResult("", output);
             }
-        }
+            else {
+                var cause = Objects.requireNonNull(result.getFailureCause());
+                switch (cause) {
+                    case FailedToStart -> {
+                        var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", context.getExecutablePath().getValueOrDefault());
+                        logEntry(error, CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    case ThrewException -> {
+                        var exception = Objects.requireNonNull(result.getException());
+                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
+                        logEntry(error, CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    case FailedWithError -> {
+                        var error = Objects.requireNonNull(result.getError());
+                        var message = isStructured
+                          ? getStructuredError(error).getErrorMessage()
+                          : error;
+                        logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", message), CliLogEntryType.ERROR);
+                        return new CliTextResult(error, "");
+                    }
+                    default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
+                }
+            }
+        }, "instruct-cli");
     }
 
     private void logEntry(String text, CliLogEntryType type) {
