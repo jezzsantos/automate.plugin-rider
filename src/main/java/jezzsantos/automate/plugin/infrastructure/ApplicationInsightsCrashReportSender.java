@@ -14,11 +14,18 @@ import java.util.Objects;
 @UsedImplicitly
 public class ApplicationInsightsCrashReportSender implements ICrashReportSender {
 
+    private final IRecorder recorder;
+
+    public ApplicationInsightsCrashReportSender(IRecorder recorder) {
+
+        this.recorder = recorder;
+    }
+
     @Override
     public void send(@NotNull ErrorReport report) {
 
         var cause = getCause(report);
-        IRecorder.getInstance().crash(CrashLevel.FATAL, cause, Map.of(
+        this.recorder.crash(CrashLevel.FATAL, cause, Map.of(
           "Plugin Version", Objects.requireNonNullElse(report.getVersion(), AutomateBundle.message("general.AICrashReportSender.UnknownEntry.Message")),
           "Last ActionId", Objects.requireNonNullElse(report.getLastActionId(), AutomateBundle.message("general.AICrashReportSender.EmptyEntry.Message")),
           "User Comments", Objects.requireNonNullElse(report.getReproSteps(), AutomateBundle.message("general.AICrashReportSender.EmptyEntry.Message"))
@@ -37,12 +44,12 @@ public class ApplicationInsightsCrashReportSender implements ICrashReportSender 
 
         var exceptions = report.getExceptions();
         if (exceptions.isEmpty()) {
-            return new Exception("Unexpected exception");
+            return new Exception(AutomateBundle.message("general.ApplicationInsightsCrashReportSender.UnknownException.Message"));
         }
 
         var firstException = exceptions.get(0);
         if (firstException == null) {
-            return new Exception("Unexpected exception");
+            return new Exception(AutomateBundle.message("general.ApplicationInsightsCrashReportSender.UnknownException.Message"));
         }
 
         var cause = firstException.getCause();

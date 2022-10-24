@@ -19,6 +19,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.NotificationTy
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.IPluginMetadata;
+import jezzsantos.automate.plugin.common.IRecorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -36,7 +37,7 @@ public class AutomateReportSubmitter extends ErrorReportSubmitter {
     @UsedImplicitly
     public AutomateReportSubmitter() {
 
-        this(new GitHubCrashReportSender(), IContainer.getTaskRunner(), IContainer.getNotifier(), IContainer.getPluginMetadata());
+        this(new ApplicationInsightsCrashReportSender(IRecorder.getInstance()), IContainer.getTaskRunner(), IContainer.getNotifier(), IContainer.getPluginMetadata());
     }
 
     @TestOnly
