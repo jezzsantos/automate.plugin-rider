@@ -6,6 +6,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableS
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
 
     public AutomateCliUpgrader(@NotNull IAutomateCliRunner cliRunner, @NotNull INotifier notifier) {
 
-        this(cliRunner, notifier, ITaskRunner.getInstance());
+        this(cliRunner, notifier, IContainer.getTaskRunner());
     }
 
     @TestOnly

@@ -1,6 +1,5 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
@@ -18,11 +17,11 @@ import jezzsantos.automate.plugin.application.services.interfaces.CliVersionComp
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
+import jezzsantos.automate.plugin.common.IRecorder;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
-import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.*;
-import jezzsantos.automate.plugin.infrastructure.ui.IntelliJNotifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,9 +34,10 @@ import java.util.Map;
 
 public class AutomateCliService implements IAutomateCliService {
 
-    private static final Logger logger = Logger.getInstance(AutomateCliService.class);
     @NotNull
     private final ICliResponseCache cache;
+    @NotNull
+    private final IRecorder recorder;
     @NotNull
     private final IApplicationConfiguration configuration;
     @NotNull
@@ -50,24 +50,25 @@ public class AutomateCliService implements IAutomateCliService {
     @UsedImplicitly
     public AutomateCliService() {
 
-        this(IApplicationConfiguration.getInstance(), new InMemCliResponseCache(), new OsPlatform());
+        this(IRecorder.getInstance(), IApplicationConfiguration.getInstance(), new InMemCliResponseCache(), IContainer.getOsPlatform());
     }
 
     @NonInjectable
-    private AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform) {
+    private AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform) {
 
-        this(configuration, cache, platform, new AutomateCliRunner());
+        this(recorder, configuration, cache, platform, new AutomateCliRunner());
     }
 
     @NonInjectable
-    private AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
+    private AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
 
-        this(configuration, cache, platform, runner, new AutomateCliUpgrader(runner, new IntelliJNotifier()));
+        this(recorder, configuration, cache, platform, runner, new AutomateCliUpgrader(runner, IContainer.getNotifier()));
     }
 
     @NonInjectable
-    public AutomateCliService(@NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner, @NotNull ICliUpgrader upgrader) {
+    public AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner, @NotNull ICliUpgrader upgrader) {
 
+        this.recorder = recorder;
         this.configuration = configuration;
         this.cache = cache;
         this.platform = platform;
@@ -83,8 +84,6 @@ public class AutomateCliService implements IAutomateCliService {
         });
 
         init();
-
-        logger.info("AutomateCliService created");
     }
 
     @NotNull
@@ -131,8 +130,9 @@ public class AutomateCliService implements IAutomateCliService {
             return new CliExecutableStatus(executableName);
         }
 
-        var allowUsage = this.configuration.allowUsageCollection();
-        var result = this.cliRunner.executeStructured(GetInfoStructuredOutput.class, currentDirectory, executablePath, allowUsage, new ArrayList<>(List.of("info")));
+        var reportingContext = this.recorder.getReportingContext();
+        var context = new ExecutionContext(currentDirectory, executablePath, reportingContext.getAllowUsage(), reportingContext.getSessionId());
+        var result = this.cliRunner.executeStructured(GetInfoStructuredOutput.class, context, new ArrayList<>(List.of("info")));
         if (result.isError()) {
             return new CliExecutableStatus(executableName);
         }
@@ -620,9 +620,10 @@ public class AutomateCliService implements IAutomateCliService {
             throw new RuntimeException(AutomateBundle.message("exception.AutomateCliService.CliNotInstalled.Message"));
         }
 
-        var allowUsage = this.configuration.allowUsageCollection();
+        var reportingContext = this.recorder.getReportingContext();
         var executablePath = this.configuration.getExecutablePath();
-        return this.cliRunner.executeStructured(outputClass, currentDirectory, executablePath, allowUsage, args);
+        var context = new ExecutionContext(currentDirectory, executablePath, reportingContext.getAllowUsage(), reportingContext.getSessionId());
+        return this.cliRunner.executeStructured(outputClass, context, args);
     }
 
     @NotNull

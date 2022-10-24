@@ -1,12 +1,12 @@
 package jezzsantos.automate.plugin.infrastructure;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.openapi.application.PermanentInstallationID;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.project.Project;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IPluginMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,9 +14,9 @@ import org.mockito.Mockito;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 
-public class AutomateCrashReporterTests {
+public class AutomateReportSubmitterTests {
 
-    private AutomateCrashReporter reporter;
+    private AutomateReportSubmitter submitter;
     private ICrashReportSender sender;
     private INotifier notifier;
 
@@ -26,8 +26,11 @@ public class AutomateCrashReporterTests {
         this.sender = Mockito.mock(ICrashReportSender.class);
         var runner = Mockito.mock(ITaskRunner.class);
         this.notifier = Mockito.mock(INotifier.class);
+        var metadata = Mockito.mock(IPluginMetadata.class);
+        Mockito.when(metadata.getInstallationId())
+          .thenReturn("aninstallationid");
 
-        this.reporter = new AutomateCrashReporter(this.sender, runner, this.notifier);
+        this.submitter = new AutomateReportSubmitter(this.sender, runner, this.notifier, metadata);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -39,10 +42,10 @@ public class AutomateCrashReporterTests {
         Mockito.when(plugin.getVersion())
           .thenReturn("aversion");
 
-        this.reporter.sendReport(project, plugin, new IdeaLoggingEvent[0], "additionalinfo", "alastactionid", info -> {});
+        this.submitter.sendReport(project, plugin, new IdeaLoggingEvent[0], "additionalinfo", "alastactionid", info -> {});
 
         Mockito.verify(this.sender).send(argThat(report ->
-                                                   report.getDeviceId().equals(PermanentInstallationID.get())
+                                                   report.getDeviceId().equals("aninstallationid")
                                                      && report.getReproSteps().equals("additionalinfo")
                                                      && report.getVersion().equals("aversion")
                                                      && report.getLastActionId().equals("alastactionid")
@@ -64,7 +67,7 @@ public class AutomateCrashReporterTests {
           .when(this.sender)
           .send(any());
 
-        this.reporter.sendReport(project, plugin, new IdeaLoggingEvent[0], "additionalinfo", "alastactionid", info -> {});
+        this.submitter.sendReport(project, plugin, new IdeaLoggingEvent[0], "additionalinfo", "alastactionid", info -> {});
 
         Mockito.verify(this.sender).send(any());
         Mockito.verify(this.notifier)

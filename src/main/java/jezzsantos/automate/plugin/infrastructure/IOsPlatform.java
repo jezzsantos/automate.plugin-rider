@@ -8,4 +8,10 @@ public interface IOsPlatform {
 
     @NotNull
     String getDotNetInstallationDirectory();
+
+    @NotNull
+    String getOperatingSystemName();
+
+    @NotNull
+    String getOperatingSystemVersion();
 }

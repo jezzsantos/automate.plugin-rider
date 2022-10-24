@@ -96,7 +96,7 @@ public class GitHubCrashReportSender implements ICrashReportSender {
         return version + deviceId + lastAction + repro + exception + exceptions;
     }
 
-    private String toMarkdown(Throwable exception) {
+    private String toMarkdown(@NotNull Throwable exception) {
 
         var cause = exception.getCause();
         var message = toMarkdownParagraph(String.format("Cause: `%s`", cause != null

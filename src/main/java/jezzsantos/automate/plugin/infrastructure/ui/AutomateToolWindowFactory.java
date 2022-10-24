@@ -1,16 +1,23 @@
 package jezzsantos.automate.plugin.infrastructure.ui;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.ContentFactory;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.AutomateToolWindow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
-public class AutomateToolWindowFactory implements ToolWindowFactory {
+@UsedImplicitly
+public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable {
 
     /**
      * Resets initial state of the tools given the current state of existing configuration
@@ -48,6 +55,13 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
     }
 
     @Override
+    public void dispose() {
+
+        var recorder = IRecorder.getInstance();
+        recorder.endSession(true, AutomateBundle.message("trace.AutomateToolWindowFactory.Shutdown.Message"));
+    }
+
+    @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 
         var window = new AutomateToolWindow(project, toolWindow);
@@ -61,8 +75,17 @@ public class AutomateToolWindowFactory implements ToolWindowFactory {
     public void init(@NotNull ToolWindow toolWindow) {
 
         ToolWindowFactory.super.init(toolWindow);
+        ensureRecorderIsNotDisposedBeforeThisFactory();
+
+        var allowUsage = IApplicationConfiguration.getInstance().allowUsageCollection();
+        IRecorder.getInstance().startSession(allowUsage, AutomateBundle.message("trace.AutomateToolWindowFactory.Started.Message"));
         var project = toolWindow.getProject();
         initStartupState(project);
+    }
+
+    private void ensureRecorderIsNotDisposedBeforeThisFactory() {
+
+        Disposer.register(IRecorder.getInstance(), this);
     }
 
     private void initStartupState(@NotNull Project project) {

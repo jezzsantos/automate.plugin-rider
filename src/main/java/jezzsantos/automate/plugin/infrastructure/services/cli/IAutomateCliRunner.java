@@ -15,9 +15,9 @@ import java.util.List;
 public interface IAutomateCliRunner {
 
     @NotNull
-    CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args);
+    CliTextResult execute(@NotNull ExecutionContext context, @NotNull List<String> args);
 
-    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args);
+    @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull ExecutionContext context, @NotNull List<String> args);
 
     @Nullable
     ModuleDescriptor.Version installLatest(@NotNull String currentDirectory, boolean uninstall);
@@ -30,4 +30,28 @@ public interface IAutomateCliRunner {
     void removeLogListener(@NotNull PropertyChangeListener listener);
 
     void log(@NotNull CliLogEntry entry);
+}
+
+class ExecutionContext {
+
+    private final String currentDirectory;
+    private final StringWithDefault executablePath;
+    private final boolean allowUsage;
+    private final String sessionId;
+
+    public ExecutionContext(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull String sessionId) {
+
+        this.currentDirectory = currentDirectory;
+        this.executablePath = executablePath;
+        this.allowUsage = allowUsage;
+        this.sessionId = sessionId;
+    }
+
+    public StringWithDefault getExecutablePath() {return this.executablePath;}
+
+    public boolean allowsUsage() {return this.allowUsage;}
+
+    public String getSessionId() {return this.sessionId;}
+
+    public String getCurrentDirectory() {return this.currentDirectory;}
 }

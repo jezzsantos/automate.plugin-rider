@@ -5,48 +5,55 @@ import com.intellij.ide.DataManager;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.idea.IdeaLogger;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.application.PermanentInstallationID;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsActions;
 import com.intellij.openapi.util.NlsContexts;
+import com.intellij.serviceContainer.NonInjectable;
 import com.intellij.util.Consumer;
+import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
+import jezzsantos.automate.plugin.common.IPluginMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.awt.*;
 
-public class AutomateCrashReporter extends ErrorReportSubmitter {
+public class AutomateReportSubmitter extends ErrorReportSubmitter {
 
     private final ICrashReportSender sender;
     private final ITaskRunner runner;
 
     private final INotifier notifier;
+    private final IPluginMetadata metadata;
 
-    public AutomateCrashReporter() {
+    @UsedImplicitly
+    public AutomateReportSubmitter() {
 
-        this(ICrashReportSender.getInstance(), ITaskRunner.getInstance(), INotifier.getInstance());
+        this(new GitHubCrashReportSender(), IContainer.getTaskRunner(), IContainer.getNotifier(), IContainer.getPluginMetadata());
     }
 
     @TestOnly
-    public AutomateCrashReporter(@NotNull ICrashReportSender sender, @NotNull ITaskRunner runner, @NotNull INotifier notifier) {
+    @NonInjectable
+    public AutomateReportSubmitter(@NotNull ICrashReportSender sender, @NotNull ITaskRunner runner, @NotNull INotifier notifier, @NotNull IPluginMetadata metadata) {
 
         this.sender = sender;
         this.runner = runner;
         this.notifier = notifier;
+        this.metadata = metadata;
     }
 
     @TestOnly
     public void sendReport(@Nullable Project project, @Nullable IdeaPluginDescriptor plugin, IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo, @Nullable String lastActionId, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
 
         var report = new ICrashReportSender.ErrorReport();
-        report.setDeviceId(PermanentInstallationID.get());
+        report.setDeviceId(this.metadata.getInstallationId());
         report.setReproSteps(additionalInfo);
         report.setVersion(plugin != null
                             ? plugin.getVersion()
@@ -65,7 +72,7 @@ public class AutomateCrashReporter extends ErrorReportSubmitter {
         report.setLastActionId(lastActionId);
 
         try {
-            AutomateCrashReporter.this.sender.send(report);
+            AutomateReportSubmitter.this.sender.send(report);
         } catch (Exception ex) {
             this.notifier.alert(NotificationType.WARNING, project, AutomateBundle.message(
               "general.AutomateCrashReporter.Failed.Title"), AutomateBundle.message("general.AutomateCrashReporter.Failed.Message"), null, () -> {
@@ -75,7 +82,7 @@ public class AutomateCrashReporter extends ErrorReportSubmitter {
             return;
         }
 
-        var link = AutomateCrashReporter.this.sender.getLink();
+        var link = AutomateReportSubmitter.this.sender.getLink();
         this.notifier.alert(NotificationType.INFO, project, AutomateBundle.message(
           "general.AutomateCrashReporter.Complete.Title"), link != null
                               ? AutomateBundle.message("general.AutomateCrashReporter.Complete.WithLink.Message")

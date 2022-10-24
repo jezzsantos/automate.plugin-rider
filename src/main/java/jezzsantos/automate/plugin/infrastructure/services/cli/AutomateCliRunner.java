@@ -7,7 +7,6 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliTextResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
@@ -27,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -197,7 +195,6 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     private final List<CliLogEntry> logs = new ArrayList<>();
     @NotNull
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    private final String sessionId;
 
     public AutomateCliRunner() {
 
@@ -208,21 +205,20 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     public AutomateCliRunner(@NotNull IProcessRunner processRunner) {
 
         this.processRunner = processRunner;
-        this.sessionId = String.format("rpi_%s", UUID.randomUUID().toString().replace("-", "").toLowerCase());
     }
 
     @NotNull
     @Override
-    public CliTextResult execute(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args) {
+    public CliTextResult execute(@NotNull ExecutionContext context, @NotNull List<String> args) {
 
-        return executeInternal(currentDirectory, executablePath, args, false, allowUsage);
+        return executeInternal(context, args, false);
     }
 
     @NotNull
     @Override
-    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull String currentDirectory, @NotNull StringWithDefault executablePath, boolean allowUsage, @NotNull List<String> args) {
+    public <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull ExecutionContext context, @NotNull List<String> args) {
 
-        var result = executeInternal(currentDirectory, executablePath, args, true, allowUsage);
+        var result = executeInternal(context, args, true);
         if (result.isError()) {
             return new CliStructuredResult<>(getStructuredError(result.getError()), null);
         }
@@ -399,10 +395,10 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult executeInternal(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull List<String> args, boolean isStructured, boolean allowUsage) {
+    private CliTextResult executeInternal(@NotNull ExecutionContext context, @NotNull List<String> args, boolean isStructured) {
 
         var command = new ArrayList<String>();
-        command.add(executablePath.getValueOrDefault());
+        command.add(context.getExecutablePath().getValueOrDefault());
         command.addAll(args);
         if (isStructured) {
             var found = new AtomicBoolean(false);
@@ -415,9 +411,9 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                 command.add(AutomateConstants.OutputStructuredOptionShorthand);
             }
         }
-        if (allowUsage) {
+        if (context.allowsUsage()) {
             command.add(AutomateConstants.UsageSessionIdOption);
-            command.add(this.sessionId);
+            command.add(context.getSessionId());
         }
         else {
             command.add(AutomateConstants.UsageAllowedOption);
@@ -426,7 +422,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", args)), CliLogEntryType.NORMAL);
 
-        var result = this.processRunner.start(command, currentDirectory);
+        var result = this.processRunner.start(command, context.getCurrentDirectory());
         if (result.getSuccess()) {
             logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
             var output = Objects.requireNonNull(result.getOutput());
@@ -436,7 +432,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             var cause = Objects.requireNonNull(result.getFailureCause());
             switch (cause) {
                 case FailedToStart -> {
-                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", executablePath.getValueOrDefault());
+                    var error = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedToStart.Message", context.getExecutablePath().getValueOrDefault());
                     logEntry(error, CliLogEntryType.ERROR);
                     return new CliTextResult(error, "");
                 }

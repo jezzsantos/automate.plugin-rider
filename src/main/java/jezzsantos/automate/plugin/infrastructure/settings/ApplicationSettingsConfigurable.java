@@ -5,8 +5,8 @@ import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
-import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
@@ -22,7 +22,7 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
     @UsedImplicitly
     public ApplicationSettingsConfigurable() {
 
-        this(IApplicationConfiguration.getInstance(), new OsPlatform());
+        this(IApplicationConfiguration.getInstance(), IContainer.getOsPlatform());
     }
 
     @NonInjectable

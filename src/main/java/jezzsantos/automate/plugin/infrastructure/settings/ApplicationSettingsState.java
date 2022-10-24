@@ -12,8 +12,8 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition;
 import com.jetbrains.rd.util.reactive.Property;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.StringWithDefault;
-import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliService;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.BooleanPropertyConverter;
 import jezzsantos.automate.plugin.infrastructure.settings.converters.CliInstallPolicyPropertyConverter;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 @State(name = "jezzsantos.automate.infrastructure.settings.ApplicationSettingsState", storages = @Storage("automate.xml"))
 public class ApplicationSettingsState implements PersistentStateComponentWithModificationTracker<ApplicationSettingsState> {
 
-    public static final String defaultExecutablePath = AutomateCliService.getDefaultExecutableLocation(new OsPlatform());
+    public static final String defaultExecutablePath = AutomateCliService.getDefaultExecutableLocation(IContainer.getOsPlatform());
     @OptionTag(converter = BooleanPropertyConverter.class)
     public final Property<Boolean> authoringMode = new Property<>(false);
     @OptionTag(converter = EditingModePropertyConverter.class)

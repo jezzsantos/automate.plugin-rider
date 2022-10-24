@@ -9,11 +9,6 @@ import java.util.List;
 
 public interface ICrashReportSender {
 
-    static ICrashReportSender getInstance() {
-
-        return new GitHubCrashReportSender();
-    }
-
     void send(@NotNull ErrorReport report) throws Exception;
 
     @Nullable

@@ -12,6 +12,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.AutomateIcons;
 import jezzsantos.automate.plugin.application.interfaces.drafts.LaunchPointExecutionResult;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
 
     public ExecuteDraftLaunchPointDialog(@NotNull Project project, @NotNull ExecuteDraftLaunchPointDialogContext context) {
 
-        this(project, new TemporaryFileViewer(project), ITaskRunner.getInstance(), context);
+        this(project, new TemporaryFileViewer(project), IContainer.getTaskRunner(), context);
     }
 
     @TestOnly

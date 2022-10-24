@@ -12,6 +12,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftUpgradeRepo
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftUpgradeReportItem;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftVersionCompatibility;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AlertLabel;
@@ -222,7 +223,7 @@ public class UpgradeDraftDialog extends DialogWrapper {
         public UpgradeDraftDialogContext(@NotNull String toolkitName, @NotNull DraftVersionCompatibility compatibility,
                                          Function<UpgradeDraftDialogContext, DraftUpgradeReport> upgrader) {
 
-            this(ITaskRunner.getInstance(), toolkitName, compatibility,
+            this(IContainer.getTaskRunner(), toolkitName, compatibility,
                  compatibility.isDraftIncompatible(), upgrader);
         }
 

@@ -10,6 +10,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.PublishPatternDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
@@ -27,7 +28,7 @@ public class PublishPatternAction extends AnAction {
 
         super();
         this.onSuccess = onSuccess;
-        this.notifier = INotifier.getInstance();
+        this.notifier = IContainer.getNotifier();
     }
 
     @Override
