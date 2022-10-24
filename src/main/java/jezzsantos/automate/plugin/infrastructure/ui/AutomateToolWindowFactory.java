@@ -11,7 +11,7 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.IRecorder;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.AutomateToolWindow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;

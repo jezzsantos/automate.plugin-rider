@@ -10,8 +10,8 @@ public class CliCollectUsage {
     private boolean isEnabled;
     @SerializedName(value = "MachineId")
     private String machineId;
-    @SerializedName(value = "SessionId")
-    private String sessionId;
+    @SerializedName(value = "RequestId")
+    private String requestId;
 
     @UsedImplicitly
     public CliCollectUsage() {

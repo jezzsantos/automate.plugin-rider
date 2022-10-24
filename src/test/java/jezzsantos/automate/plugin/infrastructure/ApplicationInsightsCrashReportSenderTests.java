@@ -1,8 +1,10 @@
 package jezzsantos.automate.plugin.infrastructure;
 
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.CrashLevel;
-import jezzsantos.automate.plugin.common.IRecorder;
+import jezzsantos.automate.plugin.common.recording.CrashLevel;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsCrashReportSender;
+import jezzsantos.automate.plugin.infrastructure.reporting.ICrashReportSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

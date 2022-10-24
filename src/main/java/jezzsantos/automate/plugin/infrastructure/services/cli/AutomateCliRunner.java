@@ -7,7 +7,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.IRecorder;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliTextResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
@@ -25,11 +25,13 @@ import java.io.StringWriter;
 import java.lang.module.ModuleDescriptor;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 enum FailureCause {
     FailedToStart,
@@ -210,6 +212,27 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         this.processRunner = processRunner;
     }
 
+    @Nullable
+    public String getCommandDescriptorFromArgs(List<String> commandLine) {
+
+        if (commandLine == null
+          || commandLine.isEmpty()) {
+            return null;
+        }
+
+        var result = Arrays.stream(Arrays.copyOfRange(commandLine.toArray((new String[0])), 1, 4))
+          .filter(Objects::nonNull)
+          .filter(arg -> arg.charAt(0) == '@')
+          .map(arg -> arg.substring(1))
+          .collect(Collectors.joining("."));
+
+        if (result.isEmpty()) {
+            return null;
+        }
+
+        return result;
+    }
+
     @NotNull
     @Override
     public CliTextResult execute(@NotNull ExecutionContext context, @NotNull List<String> args) {
@@ -300,6 +323,17 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         return gson.fromJson(output, outputClass);
     }
 
+    @NotNull
+    private List<String> getCommandLine(@NotNull List<String> commandLine) {
+
+        return commandLine
+          .stream()
+          .map(chars -> chars.charAt(0) == '@'
+            ? chars.substring(1)
+            : chars)
+          .collect(Collectors.toList());
+    }
+
     @Nullable
     private String getVersionFromOutput(@NotNull String output) {
 
@@ -316,17 +350,17 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     @NotNull
     private CliTextResult uninstallCli(@NotNull String currentDirectory) {
 
-        var command = new ArrayList<String>() {{
+        var commandLine = new ArrayList<String>() {{
             add("dotnet");
-            add("tool");
-            add("uninstall");
-            add(AutomateConstants.ExecutableName);
+            add("@tool");
+            add("@uninstall");
+            add("@" + AutomateConstants.ExecutableName);
             add("--global");
         }};
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Started.Message"), CliLogEntryType.NORMAL);
-        return this.recorder.measureCliCall(() -> {
-            var result = this.processRunner.start(command, currentDirectory);
+        return this.recorder.measureCliCall((ignore) -> {
+            var result = this.processRunner.start(getCommandLine(commandLine), currentDirectory);
             if (result.getSuccess()) {
                 var output = Objects.requireNonNull(result.getOutput());
                 return new CliTextResult("", output);
@@ -353,24 +387,24 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                     default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
                 }
             }
-        }, "uninstall-cli");
+        }, "uninstall-cli", getCommandDescriptorFromArgs(commandLine));
     }
 
     @NotNull
     private CliTextResult installCli(@NotNull String currentDirectory) {
 
-        var command = new ArrayList<String>() {{
+        var commandLine = new ArrayList<String>() {{
             add("dotnet");
-            add("tool");
-            add("install");
-            add(AutomateConstants.ExecutableName);
+            add("@tool");
+            add("@install");
+            add("@" + AutomateConstants.ExecutableName);
             add("--global");
         }};
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Started.Message"), CliLogEntryType.NORMAL);
 
-        return this.recorder.measureCliCall(() -> {
-            var result = this.processRunner.start(command, currentDirectory);
+        return this.recorder.measureCliCall((ignore) -> {
+            var result = this.processRunner.start(getCommandLine(commandLine), currentDirectory);
             if (result.getSuccess()) {
                 var output = Objects.requireNonNull(result.getOutput());
                 return new CliTextResult("", output);
@@ -397,39 +431,44 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                     default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
                 }
             }
-        }, "install-cli");
+        }, "install-cli", getCommandDescriptorFromArgs(commandLine));
     }
 
     @NotNull
     private CliTextResult executeInternal(@NotNull ExecutionContext context, @NotNull List<String> args, boolean isStructured) {
 
-        var command = new ArrayList<String>();
-        command.add(context.getExecutablePath().getValueOrDefault());
-        command.addAll(args);
+        var commandLine = new ArrayList<String>();
+        commandLine.add(context.getExecutablePath().getValueOrDefault());
+        commandLine.addAll(args);
         if (isStructured) {
             var found = new AtomicBoolean(false);
             AutomateConstants.OutputStructuredOptionAliases.forEach(alias -> {
-                if (command.contains(alias)) {
+                if (commandLine.contains(alias)) {
                     found.set(true);
                 }
             });
             if (!found.get()) {
-                command.add(AutomateConstants.OutputStructuredOptionShorthand);
+                commandLine.add(AutomateConstants.OutputStructuredOptionShorthand);
             }
         }
-        if (context.allowsUsage()) {
-            command.add(AutomateConstants.UsageSessionIdOption);
-            command.add(context.getSessionId());
-        }
-        else {
-            command.add(AutomateConstants.UsageAllowedOption);
-            command.add("false");
-        }
 
-        logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", args)), CliLogEntryType.NORMAL);
+        return this.recorder.measureCliCall((builder) -> {
 
-        return this.recorder.measureCliCall(() -> {
-            var result = this.processRunner.start(command, context.getCurrentDirectory());
+            var sessionId = context.getSessionId();
+            var correlationId = builder.build(sessionId);
+
+            if (context.allowsUsage()) {
+                commandLine.add(AutomateConstants.UsageCorrelationOption);
+                commandLine.add(correlationId);
+            }
+            else {
+                commandLine.add(AutomateConstants.UsageAllowedOption);
+                commandLine.add("false");
+            }
+
+            logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", args)), CliLogEntryType.NORMAL);
+
+            var result = this.processRunner.start(getCommandLine(commandLine), context.getCurrentDirectory());
             if (result.getSuccess()) {
                 logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
                 var output = Objects.requireNonNull(result.getOutput());
@@ -460,7 +499,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                     default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
                 }
             }
-        }, "instruct-cli");
+        }, "instruct-cli", getCommandDescriptorFromArgs(commandLine));
     }
 
     private void logEntry(String text, CliLogEntryType type) {

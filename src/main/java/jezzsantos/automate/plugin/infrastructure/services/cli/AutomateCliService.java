@@ -18,8 +18,8 @@ import jezzsantos.automate.plugin.application.services.interfaces.IApplicationCo
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
-import jezzsantos.automate.plugin.common.IRecorder;
 import jezzsantos.automate.plugin.common.StringWithDefault;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.*;
 import org.jetbrains.annotations.NotNull;
@@ -132,7 +132,7 @@ public class AutomateCliService implements IAutomateCliService {
 
         var reportingContext = this.recorder.getReportingContext();
         var context = new ExecutionContext(currentDirectory, executablePath, reportingContext.getAllowUsage(), reportingContext.getSessionId());
-        var result = this.cliRunner.executeStructured(GetInfoStructuredOutput.class, context, new ArrayList<>(List.of("info")));
+        var result = this.cliRunner.executeStructured(GetInfoStructuredOutput.class, context, new ArrayList<>(List.of("@info")));
         if (result.isError()) {
             return new CliExecutableStatus(executableName);
         }
@@ -179,7 +179,7 @@ public class AutomateCliService implements IAutomateCliService {
     public AllStateLite listAllAutomation(@NotNull String currentDirectory, boolean forceRefresh) {
 
         return this.cache.listAll(() -> {
-            var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "all")));
+            var result = runAutomateForStructuredOutput(ListAllDefinitionsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@list", "@all")));
             if (result.isError()) {
                 return new AllStateLite();
             }
@@ -194,7 +194,7 @@ public class AutomateCliService implements IAutomateCliService {
     public List<PatternLite> listPatterns(@NotNull String currentDirectory) {
 
         return this.cache.listPatterns(() -> {
-            var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "patterns")));
+            var result = runAutomateForStructuredOutput(ListPatternsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@list", "@patterns")));
             if (result.isError()) {
                 return new ArrayList<>();
             }
@@ -212,7 +212,7 @@ public class AutomateCliService implements IAutomateCliService {
     public List<ToolkitLite> listToolkits(@NotNull String currentDirectory) {
 
         return this.cache.listToolkits(() -> {
-            var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "toolkits")));
+            var result = runAutomateForStructuredOutput(ListToolkitsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@list", "@toolkits")));
             if (result.isError()) {
                 return new ArrayList<>();
             }
@@ -230,7 +230,7 @@ public class AutomateCliService implements IAutomateCliService {
     public List<DraftLite> listDrafts(@NotNull String currentDirectory) {
 
         return this.cache.listDrafts(() -> {
-            var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("list", "drafts")));
+            var result = runAutomateForStructuredOutput(ListDraftsStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@list", "@drafts")));
             if (result.isError()) {
                 return new ArrayList<>();
             }
@@ -258,7 +258,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public PatternLite createPattern(@NotNull String currentDirectory, @NotNull String name) throws Exception {
 
-        var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("create", "pattern", name)));
+        var result = runAutomateForStructuredOutput(CreatePatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@create", "@pattern", name)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -287,7 +287,7 @@ public class AutomateCliService implements IAutomateCliService {
     public PatternDetailed getCurrentPatternDetailed(@NotNull String currentDirectory) throws Exception {
 
         return this.cache.getPatternDetailed(() -> {
-            var result = runAutomateForStructuredOutput(GetPatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "pattern", "--all")));
+            var result = runAutomateForStructuredOutput(GetPatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@view", "@pattern", "--all")));
             if (result.isError()) {
                 throw new Exception(result.getError().getErrorMessage());
             }
@@ -300,7 +300,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public void setCurrentPattern(@NotNull String currentDirectory, @NotNull String id) throws Exception {
 
-        var result = runAutomateForStructuredOutput(SwitchPatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("edit", "switch", id)));
+        var result = runAutomateForStructuredOutput(SwitchPatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@edit", "@switch", id)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -314,7 +314,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public String publishCurrentPattern(@NotNull String currentDirectory, boolean installLocally, @Nullable String version) throws Exception {
 
-        var args = new ArrayList<>(List.of("publish", "toolkit"));
+        var args = new ArrayList<>(List.of("@publish", "@toolkit"));
         if (installLocally) {
             args.add("--install");
         }
@@ -338,7 +338,7 @@ public class AutomateCliService implements IAutomateCliService {
     public Attribute addPatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
         var args = new ArrayList<>(
-          List.of("edit", "add-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
+          List.of("@edit", "@add-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
         if (defaultValue != null && !defaultValue.isEmpty()) {
             args.addAll(List.of("--defaultvalueis", defaultValue));
         }
@@ -360,7 +360,7 @@ public class AutomateCliService implements IAutomateCliService {
     public Attribute updatePatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
         var args = new ArrayList<>(
-          List.of("edit", "update-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
+          List.of("@edit", "@update-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
         if (name != null) {
             args.addAll(List.of("--name", name));
         }
@@ -384,7 +384,7 @@ public class AutomateCliService implements IAutomateCliService {
     public void deletePatternAttribute(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String name) throws Exception {
 
         var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, currentDirectory,
-                                                    new ArrayList<>(List.of("edit", "delete-attribute", name, "--aschildof", editPath)));
+                                                    new ArrayList<>(List.of("@edit", "@delete-attribute", name, "--aschildof", editPath)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -396,7 +396,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public void installToolkit(@NotNull String currentDirectory, @NotNull String location) throws Exception {
 
-        var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("install", "toolkit", location)));
+        var result = runAutomateForStructuredOutput(InstallToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@install", "@toolkit", location)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -408,7 +408,7 @@ public class AutomateCliService implements IAutomateCliService {
     public ToolkitDetailed getCurrentToolkitDetailed(@NotNull String currentDirectory) throws Exception {
 
         return this.cache.getToolkitDetailed(() -> {
-            var result = runAutomateForStructuredOutput(GetToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "toolkit")));
+            var result = runAutomateForStructuredOutput(GetToolkitStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@view", "@toolkit")));
             if (result.isError()) {
                 throw new Exception(result.getError().getErrorMessage());
             }
@@ -422,7 +422,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public DraftLite createDraft(@NotNull String currentDirectory, @NotNull String toolkitName, @NotNull String name) throws Exception {
 
-        var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("run", "toolkit", toolkitName, "--name", name)));
+        var result = runAutomateForStructuredOutput(CreateDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@run", "@toolkit", toolkitName, "--name", name)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -456,7 +456,7 @@ public class AutomateCliService implements IAutomateCliService {
                 return incompatibleDraft;
             }
 
-            var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("view", "draft")));
+            var result = runAutomateForStructuredOutput(GetDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@view", "@draft")));
             if (result.isError()) {
                 throw new Exception(result.getError().getErrorMessage());
             }
@@ -469,7 +469,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public void setCurrentDraft(@NotNull String currentDirectory, @NotNull String id) throws Exception {
 
-        var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("run", "switch", id)));
+        var result = runAutomateForStructuredOutput(SwitchDraftStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@run", "@switch", id)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -485,9 +485,9 @@ public class AutomateCliService implements IAutomateCliService {
     public DraftElement addDraftElement(@NotNull String currentDirectory, @NotNull String parentConfigurePath, boolean isCollection, @NotNull String elementName, @NotNull Map<String, String> nameValuePairs) throws Exception {
 
         var configurePath = extendConfigurePath(parentConfigurePath, elementName);
-        var args = new ArrayList<>(List.of("configure", isCollection
-          ? "add-one-to"
-          : "add", configurePath));
+        var args = new ArrayList<>(List.of("@configure", isCollection
+          ? "@add-one-to"
+          : "@add", configurePath));
         if (!nameValuePairs.isEmpty()) {
             nameValuePairs
               .forEach((key, value) -> {
@@ -509,7 +509,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public DraftElement updateDraftElement(@NotNull String currentDirectory, @NotNull String configurationPath, @NotNull Map<String, String> nameValuePairs) throws Exception {
 
-        var args = new ArrayList<>(List.of("configure", "on", configurationPath));
+        var args = new ArrayList<>(List.of("@configure", "@on", configurationPath));
         if (!nameValuePairs.isEmpty()) {
             nameValuePairs
               .forEach((key, value) -> {
@@ -530,7 +530,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public void deleteDraftElement(@NotNull String currentDirectory, @NotNull String expression) throws Exception {
 
-        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("configure", "delete", expression)));
+        var result = runAutomateForStructuredOutput(AddRemoveDraftElementStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@configure", "@delete", expression)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -543,7 +543,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public DraftUpgradeReport upgradeCurrentDraft(@NotNull String currentDirectory, boolean force) throws Exception {
 
-        var args = new ArrayList<>(List.of("upgrade", "draft"));
+        var args = new ArrayList<>(List.of("@upgrade", "@draft"));
         if (force) {
             args.add("--force");
         }
@@ -560,7 +560,7 @@ public class AutomateCliService implements IAutomateCliService {
     @Override
     public void deleteCurrentDraft(String currentDirectory) throws Exception {
 
-        var result = runAutomateForStructuredOutput(DeleteDraftStructuredOutput.class, currentDirectory, List.of("delete", "draft"));
+        var result = runAutomateForStructuredOutput(DeleteDraftStructuredOutput.class, currentDirectory, List.of("@delete", "@draft"));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }
@@ -575,7 +575,7 @@ public class AutomateCliService implements IAutomateCliService {
     public LaunchPointExecutionResult executeLaunchPoint(@NotNull String currentDirectory, @NotNull String configurationPath, @NotNull String launchPointName) throws Exception {
 
         var result = runAutomateForStructuredOutput(ExecuteLaunchPointStructuredOutput.class, currentDirectory,
-                                                    new ArrayList<>(List.of("execute", "command", launchPointName, "--on", configurationPath)));
+                                                    new ArrayList<>(List.of("@execute", "@command", launchPointName, "--on", configurationPath)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }

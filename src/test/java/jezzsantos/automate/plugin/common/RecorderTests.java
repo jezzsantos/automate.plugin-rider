@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.common;
 
+import jezzsantos.automate.plugin.common.recording.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 public class RecorderTests {
 
     private ILogger logger;
+    private ISessionReporter sessioner;
     private ICrashReporter crasher;
     private IMeasurementReporter measurer;
     private Recorder recorder;
@@ -20,13 +22,14 @@ public class RecorderTests {
     public void setUp() {
 
         this.logger = Mockito.mock(ILogger.class);
+        this.sessioner = Mockito.mock(ISessionReporter.class);
         this.crasher = Mockito.mock(ICrashReporter.class);
         this.measurer = Mockito.mock(IMeasurementReporter.class);
         var metadata = Mockito.mock(IPluginMetadata.class);
         Mockito.when(metadata.getInstallationId())
           .thenReturn("amachineid");
 
-        this.recorder = new Recorder(this.logger, this.crasher, this.measurer, metadata);
+        this.recorder = new Recorder(this.logger, this.sessioner, this.crasher, this.measurer, metadata);
     }
 
     @Test
@@ -49,6 +52,7 @@ public class RecorderTests {
         assertTrue(result.getAllowUsage());
         assertEquals("amachineid", result.getMachineId());
         assertNotNull(result.getSessionId());
+        Mockito.verify(this.sessioner).enableReporting("amachineid", result.getSessionId());
         Mockito.verify(this.measurer).enableReporting("amachineid", result.getSessionId());
         Mockito.verify(this.crasher).enableReporting("amachineid", result.getSessionId());
     }

@@ -5,8 +5,9 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.IRecorder;
 import jezzsantos.automate.plugin.common.StringWithDefault;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.reporting.ICorrelationIdBuilder;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
@@ -20,10 +21,10 @@ import java.beans.PropertyChangeEvent;
 import java.lang.module.ModuleDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import static jezzsantos.automate.core.AutomateConstants.OutputStructuredOptionShorthand;
-import static jezzsantos.automate.core.AutomateConstants.UsageSessionIdOption;
+import static jezzsantos.automate.core.AutomateConstants.UsageCorrelationOption;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -32,17 +33,22 @@ public class AutomateCliRunnerTests {
     private AutomateCliRunner runner;
     private List<CliLogEntry> logs;
     private IProcessRunner processRunner;
+    private IRecorder recorder;
 
+    @SuppressWarnings("unchecked")
     @BeforeEach
     public void setUp() {
 
         this.processRunner = Mockito.mock(IProcessRunner.class);
         this.logs = new ArrayList<>();
-        var recorder = Mockito.mock(IRecorder.class);
-        Mockito.when(recorder.measureCliCall(any(), any()))
-          .thenAnswer(invocation -> ((Supplier<?>) invocation.getArguments()[0]).get());
+        this.recorder = Mockito.mock(IRecorder.class);
+        var correlationIdBuilder = Mockito.mock(ICorrelationIdBuilder.class);
+        Mockito.when(correlationIdBuilder.build(anyString()))
+          .thenReturn("acorrelationid");
+        Mockito.when(this.recorder.measureCliCall(any(), any(), any()))
+          .thenAnswer(invocation -> ((Function<ICorrelationIdBuilder, ?>) invocation.getArguments()[0]).apply(correlationIdBuilder));
 
-        this.runner = new AutomateCliRunner(recorder, this.processRunner);
+        this.runner = new AutomateCliRunner(this.recorder, this.processRunner);
         this.runner.addLogListener(this::propertyChange);
     }
 
@@ -97,7 +103,7 @@ public class AutomateCliRunnerTests {
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
         Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 3
           && args.get(0).equals("anexecutablepath")
-          && args.get(1).equals(UsageSessionIdOption)
+          && args.get(1).equals(UsageCorrelationOption)
           && !args.get(2).isEmpty()
         ), argThat(x -> x.equals("acurrentdirectory")));
     }
@@ -108,18 +114,21 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess("anoutput"));
 
-        var result = this.runner.execute(createContextForbidsUsage(), List.of());
+        var result = this.runner.execute(createContextForbidsUsage(), List.of("@anarg1", "@anarg2"));
 
         assertFalse(result.isError());
         assertEquals("anoutput", result.getOutput());
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
-        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 3
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 5
           && args.get(0).equals("anexecutablepath")
-          && args.get(1).equals(AutomateConstants.UsageAllowedOption)
-          && args.get(2).equals("false")
+          && args.get(1).equals("anarg1")
+          && args.get(2).equals("anarg2")
+          && args.get(3).equals(AutomateConstants.UsageAllowedOption)
+          && args.get(4).equals("false")
         ), argThat(x -> x.equals("acurrentdirectory")));
+        Mockito.verify(this.recorder).measureCliCall(any(), argThat(x -> x.equals("instruct-cli")), argThat(x -> x.equals("anarg1.anarg2")));
     }
 
     @Test
@@ -261,7 +270,7 @@ public class AutomateCliRunnerTests {
         Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 4
           && args.get(0).equals("anexecutablepath")
           && args.get(1).equals(AutomateConstants.OutputStructuredOptionShorthand)
-          && args.get(2).equals(UsageSessionIdOption)
+          && args.get(2).equals(UsageCorrelationOption)
           && !args.get(3).isEmpty()
         ), argThat(x -> x.equals("acurrentdirectory")));
     }
@@ -335,6 +344,94 @@ public class AutomateCliRunnerTests {
 
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.Success.Message", "100.0.0"), this.logs.get(1).Text);
         assertEquals(ModuleDescriptor.Version.parse("100.0.0"), result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndNull_ThenReturnsNull() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(null);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndEmpty_ThenReturnsNull() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of());
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndOnlyCommandName_ThenReturnsNull() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname"));
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndOnlyOneParams_ThenReturnsOne() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1"));
+
+        assertEquals("param1", result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndOnlyTwoParams_ThenReturnsTwo() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1", "@param2"));
+
+        assertEquals("param1.param2", result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndOnlyThreeParams_ThenReturnsThree() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1", "@param2", "@param3"));
+
+        assertEquals("param1.param2.param3", result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndMoreThanThreeParams_ThenReturnsThree() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1", "@param2", "@param3", "@param4", "@param5"));
+
+        assertEquals("param1.param2.param3", result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndDataInFirstPlace_ThenReturnsNull() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "data1", "data2", "data3", "data4", "data5"));
+
+        assertNull(result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndDataInSecondPlace_ThenReturnsOne() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1", "data1", "data2", "data3", "data4"));
+
+        assertEquals("param1", result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndDataInThirdPlace_ThenReturnsTwo() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1", "@param2", "data1", "data2", "data3"));
+
+        assertEquals("param1.param2", result);
+    }
+
+    @Test
+    public void whenGetCommandFromArgsAndDataInFourthPlace_ThenReturnsThree() {
+
+        var result = this.runner.getCommandDescriptorFromArgs(List.of("acommandname", "@param1", "@param2", "@param3", "data1", "data2"));
+
+        assertEquals("param1.param2.param3", result);
     }
 
     @SuppressWarnings("unchecked")

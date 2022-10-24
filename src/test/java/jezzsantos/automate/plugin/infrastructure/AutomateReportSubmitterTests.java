@@ -7,6 +7,8 @@ import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IPluginMetadata;
+import jezzsantos.automate.plugin.infrastructure.reporting.AutomateReportSubmitter;
+import jezzsantos.automate.plugin.infrastructure.reporting.ICrashReportSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -13,7 +13,7 @@ public class AutomateConstants {
       List.of(AttributeDataType.STRING, AttributeDataType.BOOLEAN, AttributeDataType.INTEGER, AttributeDataType.FLOAT, AttributeDataType.DATETIME);
     public static final String OutputStructuredOptionShorthand = "--os";
     public static final List<String> OutputStructuredOptionAliases = List.of(OutputStructuredOptionShorthand, "--output-structured");
-    public static final String UsageSessionIdOption = "--usage-session";
+    public static final String UsageCorrelationOption = "--usage-correlation";
     public static final String UsageAllowedOption = "--allow-usage";
     public static String ExecutableName = "automate";
     public static String ApplicationInsightsCliRoleName = "automate CLI";

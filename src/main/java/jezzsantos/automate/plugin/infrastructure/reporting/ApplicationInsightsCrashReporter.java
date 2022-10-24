@@ -1,11 +1,10 @@
-package jezzsantos.automate.plugin.infrastructure;
+package jezzsantos.automate.plugin.infrastructure.reporting;
 
-import com.intellij.openapi.Disposable;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.ExceptionTelemetry;
 import com.microsoft.applicationinsights.telemetry.SeverityLevel;
-import jezzsantos.automate.plugin.common.CrashLevel;
-import jezzsantos.automate.plugin.common.ICrashReporter;
+import jezzsantos.automate.plugin.common.recording.CrashLevel;
+import jezzsantos.automate.plugin.common.recording.ICrashReporter;
 import jezzsantos.automate.plugin.infrastructure.ui.ApplicationInsightsClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ApplicationInsightsCrashReporter implements ICrashReporter, Disposable {
+public class ApplicationInsightsCrashReporter implements ICrashReporter {
 
     private final TelemetryClient client;
     private boolean reportingEnabled;
@@ -27,22 +26,9 @@ public class ApplicationInsightsCrashReporter implements ICrashReporter, Disposa
     }
 
     @Override
-    public void dispose() {
-
-        if (this.client != null) {
-            this.client.flush();
-        }
-    }
-
-    @Override
     public void enableReporting(@NotNull String machineId, @NotNull String sessionId) {
 
         this.reportingEnabled = true;
-        var context = this.client.getContext();
-        context.getCloud().setRoleInstance(machineId);
-        context.getDevice().setId(machineId);
-        context.getUser().setId(machineId);
-        context.getSession().setId(sessionId);
     }
 
     @Override

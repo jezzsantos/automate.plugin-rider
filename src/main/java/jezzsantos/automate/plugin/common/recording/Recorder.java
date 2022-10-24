@@ -1,38 +1,52 @@
-package jezzsantos.automate.plugin.common;
+package jezzsantos.automate.plugin.common.recording;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
-import jezzsantos.automate.plugin.infrastructure.ApplicationInsightsCrashReporter;
-import jezzsantos.automate.plugin.infrastructure.ApplicationInsightsMeasurementReporter;
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
+import jezzsantos.automate.plugin.common.IPluginMetadata;
+import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsCrashReporter;
+import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsMeasurementReporter;
+import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsSessionReporter;
+import jezzsantos.automate.plugin.infrastructure.reporting.ICorrelationIdBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class Recorder implements IRecorder, Disposable {
 
-    private static final String sessionIdFormat = "rpi_%s";
+    private static final String sessionIdFormat = "jbrd_ses_%s";
     private final ICrashReporter crasher;
     private final IMeasurementReporter measurer;
+    private final ISessionReporter sessioner;
     private final ILogger logger;
     private final ReportingContext reportingContext;
 
     @UsedImplicitly
     public Recorder() {
 
-        this(new IntelliJLogger(), new ApplicationInsightsCrashReporter(), new ApplicationInsightsMeasurementReporter(), IContainer.getPluginMetadata());
+        this(new IntelliJLogger());
+    }
+
+    @NonInjectable
+    private Recorder(@NotNull ILogger logger) {
+
+        this(logger, new ApplicationInsightsSessionReporter(logger), new ApplicationInsightsCrashReporter(), new ApplicationInsightsMeasurementReporter(),
+             IContainer.getPluginMetadata());
     }
 
     @TestOnly
     @NonInjectable
-    public Recorder(@NotNull ILogger logger, @NotNull ICrashReporter crasher, @NotNull IMeasurementReporter measurer, @NotNull IPluginMetadata pluginMetadata) {
+    public Recorder(@NotNull ILogger logger, @NotNull ISessionReporter sessioner, @NotNull ICrashReporter crasher, @NotNull IMeasurementReporter measurer, @NotNull IPluginMetadata pluginMetadata) {
 
         this.logger = logger;
+        this.sessioner = sessioner;
         this.crasher = crasher;
         this.measurer = measurer;
         this.reportingContext = new ReportingContext(false, pluginMetadata.getInstallationId(), createSessionId());
@@ -48,6 +62,11 @@ public class Recorder implements IRecorder, Disposable {
         }
         if (this.measurer != null) {
             if (this.measurer instanceof Disposable disposable) {
+                disposable.dispose();
+            }
+        }
+        if (this.sessioner != null) {
+            if (this.sessioner instanceof Disposable disposable) {
                 disposable.dispose();
             }
         }
@@ -71,21 +90,22 @@ public class Recorder implements IRecorder, Disposable {
         this.reportingContext.setAllowUsage(allowUsage);
 
         if (allowUsage) {
-            var sessionId = this.reportingContext.getSessionId();
+            var session = this.reportingContext.getSessionId();
             var machineId = this.reportingContext.getMachineId();
-            this.measurer.enableReporting(machineId, sessionId);
-            this.crasher.enableReporting(machineId, sessionId);
+            this.sessioner.enableReporting(machineId, session);
+            this.measurer.enableReporting(machineId, session);
+            this.crasher.enableReporting(machineId, session);
         }
 
         trace(LogLevel.INFORMATION, messageTemplate, args);
-        this.measurer.measureStartSession(messageTemplate, args);
+        this.sessioner.measureStartSession();
     }
 
     @Override
     public void endSession(boolean success, @NotNull String messageTemplate, @Nullable Object... args) {
 
         trace(LogLevel.INFORMATION, messageTemplate, args);
-        this.measurer.measureEndSession(success, messageTemplate, args);
+        this.sessioner.measureEndSession(success);
     }
 
     @Override
@@ -102,13 +122,13 @@ public class Recorder implements IRecorder, Disposable {
     }
 
     @Override
-    public <TResult> TResult measureCliCall(@NotNull Supplier<TResult> action, @NotNull String actionName) {
+    public <TResult> TResult measureCliCall(@NotNull Function<ICorrelationIdBuilder, TResult> action, @NotNull String actionName, @Nullable String command) {
 
         if (this.reportingContext.getAllowUsage()) {
-            return this.measurer.measureCliCall(action, actionName);
+            return this.measurer.measureCliCall(action, actionName, command);
         }
         else {
-            return action.get();
+            return action.apply(null);
         }
     }
 
@@ -139,17 +159,17 @@ public class Recorder implements IRecorder, Disposable {
 
     static class ReportingIds {
 
-        public String sessionId;
+        public String requestId;
         public String machineId;
 
-        public ReportingIds(@NotNull String machineId, @NotNull String sessionId) {
+        public ReportingIds(@NotNull String machineId, @NotNull String requestId) {
 
             this.machineId = machineId;
-            this.sessionId = sessionId;
+            this.requestId = requestId;
         }
 
         public String getMachineId() {return this.machineId;}
 
-        public String getSessionId() {return this.sessionId;}
+        public String getRequestId() {return this.requestId;}
     }
 }

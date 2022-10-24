@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.common;
+package jezzsantos.automate.plugin.common.recording;
 
 import org.jetbrains.annotations.NotNull;
 

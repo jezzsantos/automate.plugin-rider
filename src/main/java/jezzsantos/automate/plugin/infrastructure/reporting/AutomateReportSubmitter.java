@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure;
+package jezzsantos.automate.plugin.infrastructure.reporting;
 
 import com.intellij.diagnostic.IdeaReportingEvent;
 import com.intellij.ide.DataManager;
@@ -19,7 +19,8 @@ import jezzsantos.automate.plugin.application.services.interfaces.NotificationTy
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.IPluginMetadata;
-import jezzsantos.automate.plugin.common.IRecorder;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;

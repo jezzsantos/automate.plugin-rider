@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure;
+package jezzsantos.automate.plugin.infrastructure.reporting;
 
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import org.jetbrains.annotations.NotNull;

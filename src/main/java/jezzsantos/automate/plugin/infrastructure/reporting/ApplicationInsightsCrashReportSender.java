@@ -1,10 +1,10 @@
-package jezzsantos.automate.plugin.infrastructure;
+package jezzsantos.automate.plugin.infrastructure.reporting;
 
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.CrashLevel;
-import jezzsantos.automate.plugin.common.IRecorder;
+import jezzsantos.automate.plugin.common.recording.CrashLevel;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

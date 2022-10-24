@@ -15,8 +15,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
-                serviceInterface="jezzsantos.automate.plugin.common.IRecorder"
-                serviceImplementation="jezzsantos.automate.plugin.common.Recorder"/>
+                serviceInterface="jezzsantos.automate.plugin.common.recording.IRecorder"
+                serviceImplementation="jezzsantos.automate.plugin.common.recording.Recorder"/>
         <applicationService
                 serviceInterface="jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService"
                 serviceImplementation="jezzsantos.automate.plugin.infrastructure.services.cli.AutomateCliService"/>
@@ -46,7 +46,7 @@
                 id="automate notifications"
                 isLogByDefault="true"
                 key="notification.group.name"/>
-        <errorHandler implementation="jezzsantos.automate.plugin.infrastructure.AutomateReportSubmitter"/>
+        <errorHandler implementation="jezzsantos.automate.plugin.infrastructure.reporting.AutomateReportSubmitter"/>
     </extensions>
 
     <actions>

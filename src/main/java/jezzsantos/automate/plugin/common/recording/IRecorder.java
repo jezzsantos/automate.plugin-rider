@@ -1,22 +1,13 @@
-package jezzsantos.automate.plugin.common;
+package jezzsantos.automate.plugin.common.recording;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
+import jezzsantos.automate.plugin.infrastructure.reporting.ICorrelationIdBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.function.Supplier;
-
-enum LogLevel {
-    TRACE,
-    DEBUG,
-    INFORMATION,
-    WARNING,
-    ERROR,
-    CRITICAL,
-    NONE
-}
+import java.util.function.Function;
 
 public interface IRecorder extends Disposable {
 
@@ -36,7 +27,7 @@ public interface IRecorder extends Disposable {
 
     void measureEvent(@NotNull String eventName, @Nullable Map<String, String> context);
 
-    <TResult> TResult measureCliCall(@NotNull Supplier<TResult> action, @NotNull String actionName);
+    <TResult> TResult measureCliCall(@NotNull Function<ICorrelationIdBuilder, TResult> action, @NotNull String actionName, @Nullable String command);
 
     void crash(@NotNull CrashLevel level, @NotNull Throwable exception, @NotNull String messageTemplate, @Nullable Object... args);
 

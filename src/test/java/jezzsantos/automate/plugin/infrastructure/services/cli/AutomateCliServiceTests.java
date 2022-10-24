@@ -8,10 +8,10 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
-import jezzsantos.automate.plugin.common.IRecorder;
-import jezzsantos.automate.plugin.common.ReportingContext;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.common.recording.ReportingContext;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.GetInfoStructuredOutput;
@@ -89,7 +89,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner)
           .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("aninstallationdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
                              argThat(x -> x.size() == 1
-                               && x.get(0).equals("info")
+                               && x.get(0).equals("@info")
                              ));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
@@ -117,7 +117,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner)
           .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("aninstallationdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
                              argThat(x -> x.size() == 1
-                               && x.get(0).equals("info")
+                               && x.get(0).equals("@info")
                              ));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
@@ -144,7 +144,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner)
           .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("aninstallationdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
                              argThat(x -> x.size() == 1
-                               && x.get(0).equals("info")
+                               && x.get(0).equals("@info")
                              ));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
@@ -277,7 +277,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner)
           .executeStructured(any(),
                              argThat(x -> x.getCurrentDirectory().equals("acurrentdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue("anexecutablepath"))),
-                             argThat(list -> list.equals(Arrays.asList("list", "all"))));
+                             argThat(list -> list.equals(Arrays.asList("@list", "@all"))));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -297,7 +297,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cliRunner)
           .executeStructured(any(),
                              argThat(x -> x.getCurrentDirectory().equals("acurrentdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue("anexecutablepath"))),
-                             argThat(list -> list.equals(Arrays.asList("list", "all"))));
+                             argThat(list -> list.equals(Arrays.asList("@list", "@all"))));
     }
 
     @Test
