@@ -41,7 +41,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenNoPatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite());
                     Mockito.when(GivenNoPatterns.this.application.isAuthoringMode())
                       .thenReturn(false);
@@ -59,7 +59,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenNoPatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
@@ -84,7 +84,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenNoPatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite());
                     Mockito.when(GivenNoPatterns.this.application.isAuthoringMode())
                       .thenReturn(true);
@@ -102,7 +102,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    Mockito.when(GivenNoPatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenNoPatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
@@ -141,7 +141,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToPatternMode() {
 
-                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenSomePatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(),
@@ -162,7 +162,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupStateAndEditingDrafts_ThenDoesNothing() {
 
-                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenSomePatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
@@ -181,7 +181,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupStateAndEditingPatterns_ThenDoesNothing() {
 
-                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenSomePatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
@@ -208,7 +208,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupState_ThenResetsToDraftMode() {
 
-                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenSomePatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(),
@@ -229,7 +229,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupStateAndEditingDrafts_ThenDoesNothing() {
 
-                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenSomePatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),
@@ -248,7 +248,7 @@ public class AutomateToolWindowFactoryTests {
                 @Test
                 public void whenInitStartupStateAndEditingPatterns_ThenDoesNothing() {
 
-                    Mockito.when(GivenSomePatterns.this.application.listAllAutomation(anyBoolean()))
+                    Mockito.when(GivenSomePatterns.this.application.warmupAllAutomation())
                       .thenReturn(new AllStateLite(
                         List.of(new PatternLite("anid", "aname", new PatternVersion("aversion"), false)),
                         List.of(new ToolkitLite("anid", "aname", "aversion")),

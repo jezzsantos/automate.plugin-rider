@@ -4,7 +4,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class ToggleAuthoringModeMenuAction extends AnAction {
 
@@ -31,6 +34,10 @@ public class ToggleAuthoringModeMenuAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        IRecorder.getInstance().measureEvent("action.display.authoring-mode.change", Map.of(
+          "Value", Boolean.toString(true)
+        ));
 
         var project = e.getProject();
         if (project != null) {

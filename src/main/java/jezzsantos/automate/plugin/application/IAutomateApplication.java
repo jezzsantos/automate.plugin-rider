@@ -93,6 +93,9 @@ public interface IAutomateApplication {
     void installToolkit(@NotNull String location) throws Exception;
 
     @NotNull
+    AllStateLite warmupAllAutomation();
+
+    @NotNull
     AllStateLite listAllAutomation(boolean forceRefresh);
 
     @NotNull

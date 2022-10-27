@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- DevOps: Added usage collection to Application Insights
--
+- DevOps: Added recorder interface for tracing and exception handling
+- DevOps: Closed #20. Added usage collection to Application Insights
 
 ### Changed
 

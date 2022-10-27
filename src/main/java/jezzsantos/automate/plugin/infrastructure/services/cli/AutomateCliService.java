@@ -4,6 +4,7 @@ import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
+import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
@@ -62,7 +63,7 @@ public class AutomateCliService implements IAutomateCliService {
     @NonInjectable
     private AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
 
-        this(recorder, configuration, cache, platform, runner, new AutomateCliUpgrader(runner, IContainer.getNotifier()));
+        this(recorder, configuration, cache, platform, runner, new AutomateCliUpgrader(recorder, runner, IContainer.getNotifier()));
     }
 
     @NonInjectable
@@ -77,6 +78,9 @@ public class AutomateCliService implements IAutomateCliService {
 
         this.configuration.addListener(e -> {
 
+            recorder.measureEvent("config.app.changed", Map.of(
+              "Property Name", e.getPropertyName()
+            ));
             if (e.getPropertyName().equalsIgnoreCase("ExecutablePath")) {
                 var path = (StringWithDefault) e.getNewValue();
                 logChangeInExecutablePath(path);
@@ -600,17 +604,28 @@ public class AutomateCliService implements IAutomateCliService {
     private void init() {
 
         var executablePath = this.configuration.getExecutablePath();
-        var executableStatus = refreshExecutableStatus(executablePath);
         var installPolicy = this.configuration.getCliInstallPolicy();
         var executableName = this.getExecutableName();
 
-        if (executableStatus.getCompatibility() != CliVersionCompatibility.COMPATIBLE) {
-            var currentDirectory = this.platform.getDotNetInstallationDirectory();
-            executableStatus = this.upgrader.upgrade(currentDirectory, executablePath, executableName, executableStatus, installPolicy);
-            saveStatusIfSupported(executableStatus);
-        }
-
+        var executableStatus = upgradeRuntime(executablePath, installPolicy, executableName);
         logChangeInExecutablePath(executableStatus, executablePath);
+    }
+
+    @NotNull
+    private CliExecutableStatus upgradeRuntime(StringWithDefault executablePath, CliInstallPolicy installPolicy, String executableName) {
+
+        return this.recorder.withOperation("auto-upgrade", () -> {
+                                               var status = refreshExecutableStatus(executablePath);
+                                               if (status.getCompatibility() != CliVersionCompatibility.COMPATIBLE) {
+                                                   var currentDirectory = this.platform.getDotNetInstallationDirectory();
+                                                   status = this.upgrader.upgrade(currentDirectory, executablePath, executableName, status, installPolicy);
+                                                   saveStatusIfSupported(status);
+                                               }
+
+                                               return status;
+                                           },
+                                           AutomateBundle.message("trace.Operation.UpgradeCli.Start.Message"),
+                                           AutomateBundle.message("trace.Operation.UpgradeCli.End.Message"));
     }
 
     @NotNull

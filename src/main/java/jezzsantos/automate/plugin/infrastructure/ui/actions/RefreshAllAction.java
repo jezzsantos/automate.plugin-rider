@@ -6,13 +6,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
 
-public class RefreshPatternsAction extends AnAction {
+public class RefreshAllAction extends AnAction {
 
     private final Runnable onPerformed;
 
-    public RefreshPatternsAction(Runnable onPerformed) {
+    public RefreshAllAction(Runnable onPerformed) {
 
         super();
         this.onPerformed = onPerformed;
@@ -33,6 +34,8 @@ public class RefreshPatternsAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        IRecorder.getInstance().measureEvent("action.refresh", null);
 
         var project = e.getProject();
         if (project != null) {

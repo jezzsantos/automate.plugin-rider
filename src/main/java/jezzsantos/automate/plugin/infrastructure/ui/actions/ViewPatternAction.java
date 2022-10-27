@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +56,8 @@ public class ViewPatternAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        IRecorder.getInstance().measureEvent("action.pattern.view", null);
 
         if (this.id != null) {
             var project = e.getProject();

@@ -6,10 +6,7 @@ import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.IPluginMetadata;
-import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsCrashReporter;
-import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsMeasurementReporter;
-import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsSessionReporter;
-import jezzsantos.automate.plugin.infrastructure.reporting.ICorrelationIdBuilder;
+import jezzsantos.automate.plugin.infrastructure.reporting.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -17,6 +14,7 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class Recorder implements IRecorder, Disposable {
@@ -37,8 +35,15 @@ public class Recorder implements IRecorder, Disposable {
     @NonInjectable
     private Recorder(@NotNull ILogger logger) {
 
-        this(logger, new ApplicationInsightsSessionReporter(logger), new ApplicationInsightsCrashReporter(), new ApplicationInsightsMeasurementReporter(),
-             IContainer.getPluginMetadata());
+        this(logger, ITelemetryClient.getInstance(), IContainer.getPluginMetadata());
+    }
+
+    @NonInjectable
+    private Recorder(@NotNull ILogger logger, @NotNull ITelemetryClient telemetryClient, @NotNull IPluginMetadata pluginMetadata) {
+
+        this(logger, new ApplicationInsightsSessionReporter(logger, telemetryClient), new ApplicationInsightsCrashReporter(telemetryClient),
+             new ApplicationInsightsMeasurementReporter(telemetryClient),
+             pluginMetadata);
     }
 
     @TestOnly
@@ -106,6 +111,35 @@ public class Recorder implements IRecorder, Disposable {
 
         trace(LogLevel.INFORMATION, messageTemplate, args);
         this.sessioner.measureEndSession(success);
+    }
+
+    @Override
+    public <TResult> TResult withOperation(@NotNull String operationName, Supplier<TResult> action, @NotNull String startingMessage, @NotNull String endingMessage) {
+
+        boolean success = true;
+        try {
+            startOperation(operationName, startingMessage);
+            return action.get();
+        } catch (Exception ex) {
+            success = false;
+            throw ex;
+        } finally {
+            endOperation(success, operationName, endingMessage);
+        }
+    }
+
+    @Override
+    public void startOperation(@NotNull String operationName, @NotNull String messageTemplate, @Nullable Object... args) {
+
+        trace(LogLevel.INFORMATION, messageTemplate, args);
+        this.sessioner.measureStartOperation(operationName);
+    }
+
+    @Override
+    public void endOperation(boolean success, @NotNull String operationName, @NotNull String messageTemplate, @Nullable Object... args) {
+
+        trace(LogLevel.INFORMATION, messageTemplate, args);
+        this.sessioner.measureEndOperation(operationName, success);
     }
 
     @Override

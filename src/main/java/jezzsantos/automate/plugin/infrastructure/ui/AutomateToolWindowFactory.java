@@ -32,7 +32,7 @@ public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable 
     public static void initStartupState(@NotNull IAutomateApplication application) {
 
         if (application.isCliInstalled()) {
-            var localState = application.listAllAutomation(false);
+            var localState = application.warmupAllAutomation();
             if (localState.getPatterns().isEmpty()) {
                 if (application.getEditingMode() != EditingMode.DRAFTS) {
                     application.setEditingMode(EditingMode.DRAFTS);
@@ -57,8 +57,8 @@ public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable 
     @Override
     public void dispose() {
 
-        var recorder = IRecorder.getInstance();
-        recorder.endSession(true, AutomateBundle.message("trace.AutomateToolWindowFactory.Shutdown.Message"));
+        IRecorder.getInstance().endOperation(true, "user", AutomateBundle.message("trace.Operation.UserInteraction.End.Message"));
+        IRecorder.getInstance().endSession(true, AutomateBundle.message("trace.Operation.Session.End.Message"));
     }
 
     @Override
@@ -71,6 +71,9 @@ public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable 
         content.setDisposer(window);
     }
 
+    /**
+     * This is essentially the runtime entry point into the plugin
+     */
     @Override
     public void init(@NotNull ToolWindow toolWindow) {
 
@@ -78,7 +81,7 @@ public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable 
         ensureRecorderIsNotDisposedBeforeThisFactory();
 
         var allowUsage = IApplicationConfiguration.getInstance().allowUsageCollection();
-        IRecorder.getInstance().startSession(allowUsage, AutomateBundle.message("trace.AutomateToolWindowFactory.Started.Message"));
+        IRecorder.getInstance().startSession(allowUsage, AutomateBundle.message("trace.Operation.Session.Start.Message"));
         var project = toolWindow.getProject();
         initStartupState(project);
     }
@@ -92,5 +95,6 @@ public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable 
 
         var application = IAutomateApplication.getInstance(project);
         initStartupState(application);
+        IRecorder.getInstance().startOperation("user", AutomateBundle.message("trace.Operation.UserInteraction.Start.Message"));
     }
 }

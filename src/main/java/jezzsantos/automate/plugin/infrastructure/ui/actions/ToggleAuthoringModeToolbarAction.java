@@ -5,7 +5,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class ToggleAuthoringModeToolbarAction extends ToggleAction {
 
@@ -30,6 +33,10 @@ public class ToggleAuthoringModeToolbarAction extends ToggleAction {
         this.selected = !this.selected;
 
         SetPresentation(e);
+
+        IRecorder.getInstance().measureEvent("action.display.authoring-mode.show", Map.of(
+          "Value", Boolean.toString(this.selected)
+        ));
 
         var project = e.getProject();
         if (project != null) {

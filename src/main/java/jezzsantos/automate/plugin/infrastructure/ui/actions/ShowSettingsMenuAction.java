@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +30,8 @@ public class ShowSettingsMenuAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        IRecorder.getInstance().measureEvent("action.display.settings.show", null);
 
         var project = e.getProject();
         if (project != null) {

@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.InstallToolkitDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,6 +46,8 @@ public class InstallToolkitToolbarAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        IRecorder.getInstance().measureEvent("action.toolkit.install", null);
 
         var project = e.getProject();
         if (project != null) {

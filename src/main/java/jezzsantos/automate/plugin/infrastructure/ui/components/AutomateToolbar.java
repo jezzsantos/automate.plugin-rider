@@ -51,7 +51,7 @@ public class AutomateToolbar extends ActionToolbarImpl {
         actions.add(new InstallToolkitToolbarAction(update));
         actions.add(new DraftsListToolbarAction(update));
         actions.add(new AddDraftAction(update));
-        actions.add(new RefreshPatternsAction(update));
+        actions.add(new RefreshAllAction(update));
         actions.addSeparator();
         actions.add(new ShowSettingsToolbarAction());
         actions.add(new AdvancedOptionsToolbarActionGroup(update));
@@ -70,6 +70,6 @@ public class AutomateToolbar extends ActionToolbarImpl {
     private void setupActionNotifications() {
 
         var connection = this.messageBus.connect();
-        connection.subscribe(StateChangedListener.TOPIC, this.notifier::update);
+        connection.subscribe(StateChangedListener.TOPIC, (StateChangedListener) AutomateToolbar.this.notifier::update);
     }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface IRecorder extends Disposable {
 
@@ -24,6 +25,12 @@ public interface IRecorder extends Disposable {
     void startSession(boolean enableReporting, @NotNull String messageTemplate, @Nullable Object... args);
 
     void endSession(boolean success, @NotNull String messageTemplate, @Nullable Object... args);
+
+    <TResult> TResult withOperation(@NotNull String operationName, Supplier<TResult> action, @NotNull String startingMessage, @NotNull String endingMessage);
+
+    void startOperation(@NotNull String operationName, @NotNull String messageTemplate, @Nullable Object... args);
+
+    void endOperation(boolean success, @NotNull String operationName, @NotNull String messageTemplate, @Nullable Object... args);
 
     void measureEvent(@NotNull String eventName, @Nullable Map<String, String> context);
 

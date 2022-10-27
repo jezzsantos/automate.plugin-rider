@@ -8,6 +8,7 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.EditDraftElementDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftElementPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftTreeModel;
@@ -47,6 +48,8 @@ public class EditDraftElementAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        IRecorder.getInstance().measureEvent("action.draft.element.configure", null);
 
         var project = e.getProject();
         if (project != null) {

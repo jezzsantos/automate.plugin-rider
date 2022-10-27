@@ -8,6 +8,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.NotificationTy
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,9 @@ public class AutomateCliUpgraderTests {
         this.notifier = Mockito.mock(INotifier.class);
         this.taskRunner = Mockito.mock(ITaskRunner.class);
         Try.safely(() -> Mockito.when(this.taskRunner.runModal(anyString(), any()))
-          .thenAnswer(x -> ((Callable<ModuleDescriptor.Version>) x.getArgument(1)).call()));
-        this.upgrader = new AutomateCliUpgrader(this.cliRunner, this.notifier, this.taskRunner);
+          .thenAnswer(invocation -> ((Callable<ModuleDescriptor.Version>) invocation.getArgument(1)).call()));
+        var recorder = Mockito.mock(IRecorder.class);
+        this.upgrader = new AutomateCliUpgrader(recorder, this.cliRunner, this.notifier, this.taskRunner);
     }
 
     @Test

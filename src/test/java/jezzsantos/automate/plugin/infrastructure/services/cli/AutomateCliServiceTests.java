@@ -52,6 +52,8 @@ public class AutomateCliServiceTests {
         this.recorder = Mockito.mock(IRecorder.class);
         Mockito.when(this.recorder.getReportingContext())
           .thenReturn(new ReportingContext(true, "amachineid", "asessionid"));
+        Mockito.when(this.recorder.withOperation(anyString(), any(), anyString(), anyString()))
+          .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(1)).get());
         this.configuration = Mockito.mock(IApplicationConfiguration.class);
         Mockito.when(this.configuration.getExecutablePath())
           .thenReturn(StringWithDefault.fromValue("anexecutablepath"));
@@ -66,7 +68,7 @@ public class AutomateCliServiceTests {
         this.cliRunner = Mockito.mock(IAutomateCliRunner.class);
         this.upgrader = Mockito.mock(ICliUpgrader.class);
         Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
-          .thenAnswer(x -> x.getArgument(3));
+          .thenAnswer(invocation -> invocation.getArgument(3));
         this.service = new AutomateCliService(this.recorder, this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
     }
 
@@ -136,7 +138,7 @@ public class AutomateCliServiceTests {
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(null, new GetInfoStructuredOutput("100.0.0")));
         Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
-          .thenAnswer(x -> x.getArgument(3));
+          .thenAnswer(invocation -> invocation.getArgument(3));
 
         new AutomateCliService(this.recorder, this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
 

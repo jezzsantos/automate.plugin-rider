@@ -6,7 +6,10 @@ import com.intellij.openapi.actionSystem.ToggleAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class TogglePatternEditingModeAction extends ToggleAction {
 
@@ -31,6 +34,12 @@ public class TogglePatternEditingModeAction extends ToggleAction {
         this.selected = !this.selected;
 
         SetPresentation(e);
+
+        IRecorder.getInstance().measureEvent("action.display.editing-mode.change", Map.of(
+          "Value", this.selected
+            ? EditingMode.PATTERNS.toString()
+            : EditingMode.DRAFTS.toString()
+        ));
 
         var project = e.getProject();
         if (project != null) {

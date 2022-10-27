@@ -14,6 +14,8 @@ import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetaile
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -31,19 +33,24 @@ public class AutomateApplication implements IAutomateApplication {
     private final IApplicationConfiguration configuration;
     @NotNull
     private final String currentDirectory;
+    private final IRecorder recorder;
+
+    private boolean isWarmedUp;
 
     @UsedImplicitly
     public AutomateApplication(@NotNull Project project) {
 
-        this(IApplicationConfiguration.getInstance(), IAutomateCliService.getInstance(), Objects.requireNonNull(project.getBasePath()));
+        this(IRecorder.getInstance(), IApplicationConfiguration.getInstance(), IAutomateCliService.getInstance(), Objects.requireNonNull(project.getBasePath()));
     }
 
     @TestOnly
-    public AutomateApplication(@NotNull IApplicationConfiguration configuration, @NotNull IAutomateCliService automateService, @NotNull String currentDirectory) {
+    public AutomateApplication(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull IAutomateCliService automateService, @NotNull String currentDirectory) {
 
+        this.recorder = recorder;
         this.configuration = configuration;
         this.automateService = automateService;
         this.currentDirectory = currentDirectory;
+        this.isWarmedUp = false;
     }
 
     @NotNull
@@ -215,6 +222,20 @@ public class AutomateApplication implements IAutomateApplication {
     public void installToolkit(@NotNull String location) throws Exception {
 
         this.automateService.installToolkit(this.currentDirectory, location);
+    }
+
+    @NotNull
+    @Override
+    public AllStateLite warmupAllAutomation() {
+
+        if (this.isWarmedUp) {
+            throw new RuntimeException(AutomateBundle.message("general.AutomateApplication.WarmUp.AlreadyWarmed.Message"));
+        }
+
+        this.isWarmedUp = true;
+        return this.recorder.withOperation("populate",
+                                           () -> listAllAutomation(false),
+                                           AutomateBundle.message("trace.Operation.Populate.Start.Message"), AutomateBundle.message("trace.Operation.Populate.End.Message"));
     }
 
     @NotNull

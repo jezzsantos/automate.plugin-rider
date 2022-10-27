@@ -1,11 +1,9 @@
 package jezzsantos.automate.plugin.infrastructure.reporting;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.ExceptionTelemetry;
 import com.microsoft.applicationinsights.telemetry.SeverityLevel;
 import jezzsantos.automate.plugin.common.recording.CrashLevel;
 import jezzsantos.automate.plugin.common.recording.ICrashReporter;
-import jezzsantos.automate.plugin.infrastructure.ui.ApplicationInsightsClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,12 +14,12 @@ import java.util.stream.Collectors;
 
 public class ApplicationInsightsCrashReporter implements ICrashReporter {
 
-    private final TelemetryClient client;
+    private final ITelemetryClient client;
     private boolean reportingEnabled;
 
-    public ApplicationInsightsCrashReporter() {
+    public ApplicationInsightsCrashReporter(@NotNull ITelemetryClient telemetryClient) {
 
-        this.client = ApplicationInsightsClient.getClient();
+        this.client = telemetryClient;
         this.reportingEnabled = false;
     }
 
@@ -57,6 +55,7 @@ public class ApplicationInsightsCrashReporter implements ICrashReporter {
             }
             telemetry.getProperties().put("Message_Template", messageTemplate);
             telemetry.getProperties().put("Message_Arguments", argsString);
+            telemetry.getContext().getOperation().setParentId(this.client.getOperationId());
 
             this.client.trackException(telemetry);
         }

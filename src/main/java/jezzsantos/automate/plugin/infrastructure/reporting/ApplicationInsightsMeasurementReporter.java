@@ -1,12 +1,10 @@
 package jezzsantos.automate.plugin.infrastructure.reporting;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import com.microsoft.applicationinsights.telemetry.EventTelemetry;
 import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.recording.IMeasurementReporter;
-import jezzsantos.automate.plugin.infrastructure.ui.ApplicationInsightsClient;
 import org.apache.commons.lang.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,12 +18,12 @@ import java.util.function.Function;
 
 public class ApplicationInsightsMeasurementReporter implements IMeasurementReporter {
 
-    private final TelemetryClient client;
+    private final ITelemetryClient client;
     private boolean reportingEnabled;
 
-    public ApplicationInsightsMeasurementReporter() {
+    public ApplicationInsightsMeasurementReporter(@NotNull ITelemetryClient telemetryClient) {
 
-        this.client = ApplicationInsightsClient.getClient();
+        this.client = telemetryClient;
         this.reportingEnabled = false;
     }
 
@@ -44,6 +42,7 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
             if (context != null) {
                 telemetry.getProperties().putAll(context);
             }
+            telemetry.getContext().getOperation().setParentId(this.client.getOperationId());
 
             this.client.trackEvent(telemetry);
         }
@@ -54,24 +53,24 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
 
         if (this.reportingEnabled) {
 
-            var dependencyTelemetry = new RemoteDependencyTelemetry(actionName);
-            dependencyTelemetry.setCommandName(command != null
-                                                 ? command
-                                                 : "<empty>");
+            var telemetry = new RemoteDependencyTelemetry(actionName);
+            telemetry.setCommandName(command != null
+                                       ? command
+                                       : "<empty>");
             var dependencyId = createDependencyId();
-            dependencyTelemetry.setId(dependencyId);
-            dependencyTelemetry.setType("CLI command");
-            dependencyTelemetry.setTimestamp(Date.from(Instant.now()));
-            dependencyTelemetry.setTarget(AutomateConstants.ApplicationInsightsCliRoleName);
-            dependencyTelemetry.setType("commandline");
+            telemetry.setId(dependencyId);
+            telemetry.setTimestamp(Date.from(Instant.now()));
+            telemetry.setTarget(AutomateConstants.ApplicationInsightsCliRoleName);
+            telemetry.setType("commandline");
+            telemetry.getContext().getOperation().setParentId(this.client.getOperationId());
 
             boolean success = false;
             var stopWatch = new StopWatch();
             stopWatch.start();
             try {
 
-                var operationId = Objects.requireNonNullElse(this.client.getContext().getOperation().getId(), createOperationId());
-                var builder = new CorrelationIdBuilder(dependencyId, operationId);
+                var operationId = Objects.requireNonNullElse(this.client.getOperationId(), createOperationId());
+                var builder = new CorrelationIdBuilder(operationId, dependencyId);
                 var result = action.apply(builder);
                 success = true;
 
@@ -79,10 +78,10 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
             } finally {
                 stopWatch.stop();
                 var duration = new Duration(stopWatch.getTime());
-                dependencyTelemetry.setSuccess(success);
-                dependencyTelemetry.setDuration(duration);
+                telemetry.setSuccess(success);
+                telemetry.setDuration(duration);
 
-                this.client.trackDependency(dependencyTelemetry);
+                this.client.trackDependency(telemetry);
             }
         }
         else {
@@ -102,25 +101,25 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
         return String.format("jbrd_opr_%s", UUID.randomUUID().toString().replace("-", ""));
     }
 
-    private static class CorrelationIdBuilder implements ICorrelationIdBuilder {
+    public static class CorrelationIdBuilder implements ICorrelationIdBuilder {
 
         private final String dependencyId;
         private final String operationId;
 
-        public CorrelationIdBuilder(@NotNull String dependencyId, @NotNull String operationId) {
+        public CorrelationIdBuilder(@NotNull String operationId, @NotNull String dependencyId) {
 
-            this.dependencyId = dependencyId;
             this.operationId = operationId;
+            this.dependencyId = dependencyId;
         }
 
         @NotNull
         public String build(@NotNull String sessionId) {
 
-            return createCorrelationId(this.dependencyId, this.operationId, sessionId);
+            return createCorrelationId(sessionId, this.operationId, this.dependencyId);
         }
 
         @NotNull
-        private static String createCorrelationId(@NotNull String dependencyId, @NotNull String operationId, @NotNull String sessionId) {
+        private static String createCorrelationId(@NotNull String sessionId, @NotNull String operationId, @NotNull String dependencyId) {
 
             return String.format("%s|%s|%s", sessionId, operationId, dependencyId);
         }

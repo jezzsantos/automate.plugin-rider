@@ -3,6 +3,7 @@ package jezzsantos.automate.plugin.application;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,7 +24,8 @@ public class AutomateApplicationTests {
 
         var configuration = Mockito.mock(IApplicationConfiguration.class);
         this.automateService = Mockito.mock(IAutomateCliService.class);
-        this.application = new AutomateApplication(configuration, this.automateService, "acurrentdirectory");
+        var recorder = Mockito.mock(IRecorder.class);
+        this.application = new AutomateApplication(recorder, configuration, this.automateService, "acurrentdirectory");
     }
 
     @Test
