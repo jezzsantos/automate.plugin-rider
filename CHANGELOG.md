@@ -9,7 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- Minimum compatibility with `automate` CLI version 1.0.6
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.0.7] - 2022-10-29
+
+### Notes
+
+- Minimum compatibility with `automate` CLI version 1.0.7
 
 ### Added
 
@@ -37,16 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Patterns: Closed #8. Can now publish patterns
 - Drafts: Closed #17. Can now upgrade drafts and toolkits (if possible)
 - Drafts: Closed #18. Can now delete drafts (including out of date drafts)
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [1.0.5] - 2022-10-03
 
