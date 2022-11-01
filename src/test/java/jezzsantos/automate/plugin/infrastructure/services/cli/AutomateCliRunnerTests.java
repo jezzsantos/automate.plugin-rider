@@ -162,10 +162,26 @@ public class AutomateCliRunnerTests {
     }
 
     @Test
+    public void whenExecuteAndReturnsEmptyError_ThenReturnsTextualResultAndLogs() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createFailedWithError("", 1));
+
+        var result = this.runner.execute(createContextForbidsUsage(), List.of());
+
+        assertTrue(result.isError());
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithEmptyError.Message"), result.getError());
+        assertEquals(2, this.logs.size());
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", 1,
+                                            AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithEmptyError.Message")), this.logs.get(1).Text);
+    }
+
+    @Test
     public void whenExecuteAndReturnsError_ThenReturnsTextualResultAndLogs() {
 
         Mockito.when(this.processRunner.start(anyList(), any()))
-          .thenReturn(ProcessResult.createFailedWithError("anerror"));
+          .thenReturn(ProcessResult.createFailedWithError("anerror", 1));
 
         var result = this.runner.execute(createContextForbidsUsage(), List.of());
 
@@ -173,7 +189,23 @@ public class AutomateCliRunnerTests {
         assertEquals("anerror", result.getError());
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", 1, "anerror"), this.logs.get(1).Text);
+    }
+
+    @Test
+    public void whenExecuteStructuredAndReturnsEmptyError_ThenReturnsTextualResultAndLogs() {
+
+        Mockito.when(this.processRunner.start(anyList(), any()))
+          .thenReturn(ProcessResult.createFailedWithError("", 1));
+
+        var result = this.runner.executeStructured(TestStructure.class, createContextForbidsUsage(), List.of());
+
+        assertTrue(result.isError());
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithEmptyError.Message"), result.getError().getErrorMessage());
+        assertEquals(2, this.logs.size());
+        assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", 1,
+                                            AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithEmptyError.Message")), this.logs.get(1).Text);
     }
 
     @Test
@@ -181,7 +213,7 @@ public class AutomateCliRunnerTests {
 
         var errorJson = new Gson().toJson(new StructuredError("anerror"));
         Mockito.when(this.processRunner.start(anyList(), any()))
-          .thenReturn(ProcessResult.createFailedWithError(errorJson));
+          .thenReturn(ProcessResult.createFailedWithError(errorJson, 1));
 
         var result = this.runner.executeStructured(TestStructure.class, createContextForbidsUsage(), List.of());
 
@@ -189,7 +221,7 @@ public class AutomateCliRunnerTests {
         assertEquals("anerror", result.getError().getErrorMessage());
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.ERROR, this.logs.get(1).Type);
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", 1, "anerror"), this.logs.get(1).Text);
     }
 
     @Test
@@ -301,11 +333,11 @@ public class AutomateCliRunnerTests {
     public void whenInstallLatestWithUninstallAndFails_ThenReturnsNull() {
 
         Mockito.when(this.processRunner.start(anyList(), any()))
-          .thenReturn(ProcessResult.createFailedWithError("anerror"));
+          .thenReturn(ProcessResult.createFailedWithError("anerror", 1));
 
         var result = this.runner.installLatest("acurrentdirectory", true);
 
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", 1, "anerror"), this.logs.get(1).Text);
         assertNull(result);
     }
 
@@ -313,11 +345,11 @@ public class AutomateCliRunnerTests {
     public void whenInstallLatestWithInstallAndFails_ThenReturnsNull() {
 
         Mockito.when(this.processRunner.start(anyList(), any()))
-          .thenReturn(ProcessResult.createFailedWithError("anerror"));
+          .thenReturn(ProcessResult.createFailedWithError("anerror", 1));
 
         var result = this.runner.installLatest("acurrentdirectory", false);
 
-        assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", "anerror"), this.logs.get(1).Text);
+        assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", 1, "anerror"), this.logs.get(1).Text);
         assertNull(result);
     }
 

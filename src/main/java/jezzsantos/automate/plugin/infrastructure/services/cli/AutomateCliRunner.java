@@ -2,7 +2,6 @@ package jezzsantos.automate.plugin.infrastructure.services.cli;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.intellij.openapi.Disposable;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
@@ -12,23 +11,17 @@ import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStruc
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliTextResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.module.ModuleDescriptor;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,156 +30,6 @@ enum FailureCause {
     FailedToStart,
     ThrewException,
     FailedWithError
-}
-
-interface IProcessRunner extends Disposable {
-
-    ProcessResult start(@NotNull List<String> commandLineAndArguments, @NotNull String currentDirectory);
-}
-
-class ProcessResult {
-
-    private boolean success;
-    private String output;
-    private String error;
-    private Exception exception;
-    private FailureCause cause;
-
-    public static ProcessResult createSuccess(@NotNull String output) {
-
-        var result = new ProcessResult();
-        result.success = true;
-        result.output = output;
-        result.cause = null;
-
-        return result;
-    }
-
-    public static ProcessResult createFailedToStart() {
-
-        var result = new ProcessResult();
-        result.success = false;
-        result.cause = FailureCause.FailedToStart;
-
-        return result;
-    }
-
-    public static ProcessResult createFailedWithError(@NotNull String error) {
-
-        var result = new ProcessResult();
-        result.success = false;
-        result.error = error;
-        result.cause = FailureCause.FailedWithError;
-
-        return result;
-    }
-
-    public static ProcessResult createFailedWithException(@NotNull Exception e) {
-
-        var result = new ProcessResult();
-        result.success = false;
-        result.exception = e;
-        result.cause = FailureCause.ThrewException;
-
-        return result;
-    }
-
-    public boolean getSuccess() {
-
-        return this.success;
-    }
-
-    @Nullable
-    public String getOutput() {
-
-        if (!this.success) {
-            return null;
-        }
-
-        return this.output;
-    }
-
-    @Nullable
-    public String getError() {
-
-        if (this.success) {
-            return null;
-        }
-
-        return this.error;
-    }
-
-    @Nullable
-    public Exception getException() {
-
-        if (this.success) {
-            return null;
-        }
-
-        return this.exception;
-    }
-
-    @Nullable
-    public FailureCause getFailureCause() {
-
-        if (this.success) {
-            return null;
-        }
-
-        return this.cause;
-    }
-}
-
-class ProcessRunner implements IProcessRunner {
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public ProcessResult start(@NotNull List<String> commandLineAndArguments, @NotNull String currentDirectory) {
-
-        var builder = new ProcessBuilder(commandLineAndArguments);
-        builder.redirectErrorStream(false);
-
-        builder.directory(new File(currentDirectory));
-
-        Process process = null;
-        try {
-            process = builder.start();
-            final var stdOutWriter = new StringWriter();
-            final var stdErrWriter = new StringWriter();
-            Process finalProcess = process;
-            new Thread(() -> {
-                try {
-                    IOUtils.copy(finalProcess.getInputStream(), stdOutWriter, StandardCharsets.UTF_8);
-                    IOUtils.copy(finalProcess.getErrorStream(), stdErrWriter, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-
-            var success = process.waitFor(5, TimeUnit.SECONDS);
-            if (!success) {
-                return ProcessResult.createFailedToStart();
-            }
-            var stdErr = stdErrWriter.toString().trim();
-            var stdOut = stdOutWriter.toString().trim();
-            if (process.exitValue() != 0) {
-                return ProcessResult.createFailedWithError(stdErr);
-            }
-            else {
-                return ProcessResult.createSuccess(stdOut);
-            }
-        } catch (InterruptedException | IOException e) {
-            return ProcessResult.createFailedWithException(e);
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
-        }
-    }
 }
 
 public class AutomateCliRunner implements IAutomateCliRunner {
@@ -306,25 +149,29 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private static StructuredError getStructuredError(String error) {
+    private static StructuredError getStructuredError(String json) {
 
         var gson = new Gson();
         try {
-            return gson.fromJson(error, StructuredError.class);
+            var error = gson.fromJson(json, StructuredError.class);
+            if (error != null) {
+                return error;
+            }
+            return new StructuredError(AutomateBundle.message("exception.AutomateCliRunner.StructuredError.Deserialization.Message", json));
         } catch (JsonSyntaxException ex) {
-            return new StructuredError(error);
+            return new StructuredError(json);
         }
     }
 
     @NotNull
-    private static <TResult> TResult getStructuredOutput(Class<TResult> outputClass, String output) {
+    private static <TResult> TResult getStructuredOutput(Class<TResult> outputClass, String json) {
 
         var gson = new Gson();
-        return gson.fromJson(output, outputClass);
+        return gson.fromJson(json, outputClass);
     }
 
     @NotNull
-    private List<String> getCommandLine(@NotNull List<String> commandLine) {
+    private List<String> tidyCommandLineArgs(@NotNull List<String> commandLine) {
 
         return commandLine
           .stream()
@@ -360,7 +207,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Started.Message"), CliLogEntryType.NORMAL);
         return this.recorder.measureCliCall((ignore) -> {
-            var result = this.processRunner.start(getCommandLine(commandLine), currentDirectory);
+            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), currentDirectory);
             if (result.getSuccess()) {
                 var output = Objects.requireNonNull(result.getOutput());
                 return new CliTextResult("", output);
@@ -381,7 +228,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                     }
                     case FailedWithError -> {
                         var error = Objects.requireNonNull(result.getError());
-                        logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", error), CliLogEntryType.ERROR);
+                        var exitCode = result.getExitCode();
+                        logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", exitCode, error), CliLogEntryType.ERROR);
                         return new CliTextResult(error, "");
                     }
                     default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
@@ -404,7 +252,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Started.Message"), CliLogEntryType.NORMAL);
 
         return this.recorder.measureCliCall((ignore) -> {
-            var result = this.processRunner.start(getCommandLine(commandLine), currentDirectory);
+            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), currentDirectory);
             if (result.getSuccess()) {
                 var output = Objects.requireNonNull(result.getOutput());
                 return new CliTextResult("", output);
@@ -425,7 +273,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                     }
                     case FailedWithError -> {
                         var error = Objects.requireNonNull(result.getError());
-                        logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", error), CliLogEntryType.ERROR);
+                        var exitCode = result.getExitCode();
+                        logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", exitCode, error), CliLogEntryType.ERROR);
                         return new CliTextResult(error, "");
                     }
                     default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
@@ -466,9 +315,9 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                 commandLine.add("false");
             }
 
-            logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", args)), CliLogEntryType.NORMAL);
+            logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", tidyCommandLineArgs(args))), CliLogEntryType.NORMAL);
 
-            var result = this.processRunner.start(getCommandLine(commandLine), context.getCurrentDirectory());
+            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), context.getCurrentDirectory());
             if (result.getSuccess()) {
                 logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
                 var output = Objects.requireNonNull(result.getOutput());
@@ -489,12 +338,28 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                         return new CliTextResult(error, "");
                     }
                     case FailedWithError -> {
-                        var error = Objects.requireNonNull(result.getError());
-                        var message = isStructured
-                          ? getStructuredError(error).getErrorMessage()
-                          : error;
-                        logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", message), CliLogEntryType.ERROR);
-                        return new CliTextResult(error, "");
+                        var error = Objects.requireNonNullElse(result.getError(), "");
+                        var exitCode = result.getExitCode();
+                        if (error.isEmpty()) {
+                            var emptyErrorMessage = AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithEmptyError.Message");
+                            logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", exitCode, emptyErrorMessage),
+                                     CliLogEntryType.ERROR);
+                            if (isStructured) {
+                                var structuredError = new StructuredError(emptyErrorMessage);
+                                error = new Gson().toJson(structuredError);
+                                return new CliTextResult(error, "");
+                            }
+                            else {
+                                return new CliTextResult(emptyErrorMessage, "");
+                            }
+                        }
+                        else {
+                            var message = isStructured
+                              ? getStructuredError(error).getErrorMessage()
+                              : error;
+                            logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.FailedWithError.Message", exitCode, message), CliLogEntryType.ERROR);
+                            return new CliTextResult(error, "");
+                        }
                     }
                     default -> throw new RuntimeException(AutomateBundle.message("general.AutomateCliRunner.Outcome.Unknown.Message"));
                 }
