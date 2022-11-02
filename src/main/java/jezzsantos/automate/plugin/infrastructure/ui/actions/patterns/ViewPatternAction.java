@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
@@ -12,31 +13,30 @@ import org.jetbrains.annotations.Nullable;
 
 public class ViewPatternAction extends AnAction {
 
-    @NotNull
-    private final String name;
     @Nullable
-    private final String id;
+    private final PatternLite pattern;
 
     private final Runnable onPerformed;
 
     public ViewPatternAction(@NotNull Runnable onPerformed) {
 
-        this(onPerformed, "", null);
+        this(onPerformed, null);
     }
 
-    public ViewPatternAction(@NotNull Runnable onPerformed, @NotNull String name, @Nullable String id) {
+    public ViewPatternAction(@NotNull Runnable onPerformed, @Nullable PatternLite pattern) {
 
         super();
         this.onPerformed = onPerformed;
-        this.name = name;
-        this.id = id;
+        this.pattern = pattern;
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
 
         super.update(e);
-        var message = this.name;
+        var message = this.pattern == null
+          ? ""
+          : this.pattern.getName();
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
@@ -45,9 +45,11 @@ public class ViewPatternAction extends AnAction {
             var application = IAutomateApplication.getInstance(project);
             var currentPattern = Try.andHandle(project,
                                                application::getCurrentPatternInfo,
-                                               AutomateBundle.message("action.PatternListItem.GetCurrentPattern.Failure.Message"));
-            var isCurrentPattern = currentPattern != null && currentPattern.getId().equals(this.id);
-            presentation.setIcon(isCurrentPattern
+                                               AutomateBundle.message("action.ViewPattern.GetCurrentPattern.Failure.Message"));
+            var isThisPatternCurrentPattern = currentPattern != null && currentPattern.getId().equals(this.pattern == null
+                                                                                                        ? null
+                                                                                                        : this.pattern.getId());
+            presentation.setIcon(isThisPatternCurrentPattern
                                    ? AllIcons.Actions.Checked
                                    : null);
         }
@@ -59,14 +61,14 @@ public class ViewPatternAction extends AnAction {
 
         IRecorder.getInstance().measureEvent("action.pattern.view", null);
 
-        if (this.id != null) {
+        if (this.pattern != null) {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
                 Try.andHandle(project,
-                              () -> application.setCurrentPattern(this.id),
+                              () -> application.setCurrentPattern(this.pattern.getId()),
                               this.onPerformed,
-                              AutomateBundle.message("action.PatternListItem.SetCurrentPattern.Message"));
+                              AutomateBundle.message("action.ViewPattern.SetCurrentPattern.Message"));
             }
         }
     }

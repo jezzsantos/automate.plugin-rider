@@ -77,7 +77,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
                         actions.add(new ViewPatternAction(this.onPerformed));
                     }
                     for (var pattern : patterns) {
-                        actions.add(new ViewPatternAction(this.onPerformed, pattern.getName(), pattern.getId()));
+                        actions.add(new ViewPatternAction(this.onPerformed, pattern));
                     }
                 }
             }

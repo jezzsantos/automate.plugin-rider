@@ -249,7 +249,12 @@ public class PatternElement {
           : this.isCollection
             ? String.format("(collection, %s)", cardinality)
             : String.format("(%s)", cardinality);
-        return String.format("%s %s", this.name, type);
+        if (this.displayName != null && !this.displayName.isEmpty()) {
+            return String.format("%s [%s] %s", this.displayName, this.name, type);
+        }
+        else {
+            return String.format("%s %s", this.name, type);
+        }
     }
 
     private static String toCardinalityString(@Nullable AutomateConstants.ElementCardinality cardinality) {

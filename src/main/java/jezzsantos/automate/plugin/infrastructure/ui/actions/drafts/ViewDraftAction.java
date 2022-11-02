@@ -41,25 +41,21 @@ public class ViewDraftAction extends AnAction {
         presentation.setDescription(message);
         presentation.setText(message);
         var project = e.getProject();
-        DraftLite currentDraft = null;
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            currentDraft = application.getCurrentDraftInfo();
-        }
-        if (currentDraft == null) {
-            presentation.setIcon(null);
-        }
-        else {
-            var isCurrentDraft = currentDraft.getId().equals(this.draft == null
-                                                               ? null
-                                                               : this.draft.getId());
-            var isDraftIncompatible = this.draft != null && this.draft.getVersion().isDraftIncompatible();
-            var isDraftToolkitIncompatible = this.draft != null && this.draft.getVersion().isRuntimeIncompatible();
-            presentation.setIcon(isCurrentDraft
+            var currentDraft = Try.andHandle(project,
+                                             application::getCurrentDraftInfo,
+                                             AutomateBundle.message("action.ViewDraft.GetCurrentDraft.Failure.Message"));
+            var isThisDraftCurrentDraft = currentDraft != null && currentDraft.getId().equals(this.draft == null
+                                                                                                ? null
+                                                                                                : this.draft.getId());
+            var isThisDraftIncompatible = this.draft != null && this.draft.getVersion().isDraftIncompatible();
+            var isThisDraftToolkitIncompatible = this.draft != null && this.draft.getVersion().isRuntimeIncompatible();
+            presentation.setIcon(isThisDraftCurrentDraft
                                    ? AllIcons.Actions.Checked
-                                   : isDraftToolkitIncompatible
+                                   : isThisDraftToolkitIncompatible
                                      ? AutomateIcons.StatusError
-                                     : isDraftIncompatible
+                                     : isThisDraftIncompatible
                                        ? AutomateIcons.StatusWarning
                                        : null);
         }
@@ -78,7 +74,7 @@ public class ViewDraftAction extends AnAction {
                 Try.andHandle(project,
                               () -> application.setCurrentDraft(this.draft.getId()),
                               this.onPerformed,
-                              AutomateBundle.message("action.DraftListItem.SetCurrentDraft.Failure.Message"));
+                              AutomateBundle.message("action.ViewDraft.SetCurrentDraft.Failure.Message"));
             }
         }
     }

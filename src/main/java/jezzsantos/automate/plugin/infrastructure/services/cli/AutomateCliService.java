@@ -293,7 +293,7 @@ public class AutomateCliService implements IAutomateCliService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
-            this.cache.invalidateCurrentPattern();
+            this.cache.invalidateAllPatterns();
             return result.getOutput().getPattern().getPattern();
         }
     }
