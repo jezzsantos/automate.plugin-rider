@@ -19,7 +19,9 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
-import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.*;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.patterns.*;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.toolkits.UpgradeToolkitAction;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -149,9 +151,9 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
                 var editingMode = AutomateTree.this.application.getEditingMode();
                 if (editingMode == EditingMode.PATTERNS) {
-                    if (value instanceof PatternFolderPlaceholderNode) {
+                    if (value instanceof PatternFolderPlaceholderNode placeholder) {
                         setIcon(AllIcons.Nodes.Folder);
-                        append(value.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
+                        append(placeholder.toString(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES);
                     }
                     else {
                         if (value instanceof PatternElement element) {
@@ -160,16 +162,22 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                                       : element.isCollection()
                                         ? AllIcons.Debugger.Frame
                                         : AllIcons.Windows.Maximize);
-                            setToolTipText(element.isCollection()
-                                             ? AutomateBundle.message("toolWindow.Tree.Pattern.Collection.Tooltip")
-                                             : AutomateBundle.message("toolWindow.Tree.Pattern.Element.Tooltip"));
-                            append(value.toString());
+                            append(element.toString());
+                            var description = element.getDescription();
+                            if (description.isEmpty()) {
+                                setToolTipText(element.isCollection()
+                                                 ? AutomateBundle.message("toolWindow.Tree.Pattern.Collection.Tooltip")
+                                                 : AutomateBundle.message("toolWindow.Tree.Pattern.Element.Tooltip"));
+                            }
+                            else {
+                                setToolTipText(description);
+                            }
                         }
                         else {
-                            if (value instanceof Attribute) {
+                            if (value instanceof Attribute attribute) {
                                 setIcon(AllIcons.Gutter.ExtAnnotation);
                                 setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.Attribute.Tooltip"));
-                                append(value.toString());
+                                append(attribute.toString());
                             }
                             else {
                                 if (value instanceof Automation automation) {
@@ -187,13 +195,13 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CommandLaunchPoint.Tooltip"));
                                         }
                                     }
-                                    append(value.toString());
+                                    append(automation.toString());
                                 }
                                 else {
-                                    if (value instanceof CodeTemplate) {
+                                    if (value instanceof CodeTemplate codeTemplate) {
                                         setIcon(AllIcons.Nodes.Template);
                                         setToolTipText(AutomateBundle.message("toolWindow.Tree.Pattern.CodeTemplate.Tooltip"));
-                                        append(value.toString());
+                                        append(codeTemplate.toString());
                                     }
                                 }
                             }
@@ -206,12 +214,12 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                         if (placeholder.isDraftIncompatible()) {
                             setIcon(AutomateIcons.StatusWarning);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeDraft.Tooltip"));
-                            append(value.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.ORANGE));
+                            append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.ORANGE));
                         }
                         if (placeholder.isRuntimeIncompatible()) {
                             setIcon(AutomateIcons.StatusError);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeToolkit.Tooltip"));
-                            append(value.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.RED));
+                            append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.RED));
                         }
                     }
                     else {
@@ -222,13 +230,13 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                             setToolTipText(placeholder.isCollectionItem()
                                              ? AutomateBundle.message("toolWindow.Tree.Draft.CollectionItem.Tooltip")
                                              : AutomateBundle.message("toolWindow.Tree.Draft.Element.Tooltip"));
-                            append(value.toString());
+                            append(placeholder.toString());
                         }
                         else {
-                            if (value instanceof DraftPropertyPlaceholderNode) {
+                            if (value instanceof DraftPropertyPlaceholderNode placeholder) {
                                 setIcon(AllIcons.Gutter.ExtAnnotation);
                                 setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Property.Tooltip"));
-                                append(value.toString());
+                                append(placeholder.toString());
                             }
                         }
                     }
@@ -274,12 +282,18 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var addPatternAttribute = new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         addPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addPatternAttribute);
+        var addPatternElement = new AddPatternElementAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        addPatternElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
+        actions.add(addPatternElement);
         var addDraftElement = new ListDraftElementsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         addDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addDraftElement);
         var editPatternAttribute = new EditPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         editPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
         actions.add(editPatternAttribute);
+        var editPatternElement = new EditPatternElementAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        editPatternElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
+        actions.add(editPatternElement);
         var editDraftElement = new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         editDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
         actions.add(editDraftElement);
@@ -289,6 +303,9 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var deletePatternAttribute = new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         deletePatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deletePatternAttribute);
+        var deletePatternElement = new DeletePatternElementAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        deletePatternElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
+        actions.add(deletePatternElement);
         var deleteDraftElement = new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         deleteDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deleteDraftElement);

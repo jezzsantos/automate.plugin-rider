@@ -8,6 +8,7 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
@@ -55,10 +56,6 @@ public interface IAutomateApplication {
     @Nullable
     ToolkitLite findToolkitById(@NotNull String id);
 
-    @SuppressWarnings("UnusedReturnValue")
-    @NotNull
-    PatternLite createPattern(@NotNull String name) throws Exception;
-
     boolean isAuthoringMode();
 
     void setAuthoringMode(boolean on);
@@ -98,13 +95,28 @@ public interface IAutomateApplication {
     @NotNull
     AllStateLite listAllAutomation(boolean forceRefresh);
 
+    @SuppressWarnings("UnusedReturnValue")
+    @NotNull
+    PatternLite createPattern(@NotNull String name) throws Exception;
+
+    @NotNull
+    PatternElement updatePattern(@Nullable String name, @Nullable String displayName, @Nullable String description) throws Exception;
+
     @NotNull
     Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
     @NotNull
-    Attribute updatePatternAttribute(@NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
+    Attribute updatePatternAttribute(@NotNull String editPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
     void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception;
+
+    @NotNull
+    PatternElement addPatternElement(@NotNull String parentEditPath, @NotNull String id, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception;
+
+    @NotNull
+    PatternElement updatePatternElement(@NotNull String editPath, @NotNull String id, @Nullable String name, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception;
+
+    void deletePatternElement(@NotNull String editPath, @NotNull String name, boolean isCollection) throws Exception;
 
     @Nullable
     String publishCurrentPattern(boolean installLocally, @Nullable String version) throws Exception;

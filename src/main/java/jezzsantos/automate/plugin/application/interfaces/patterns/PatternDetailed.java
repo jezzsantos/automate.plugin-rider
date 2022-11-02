@@ -46,6 +46,11 @@ public class PatternDetailed {
         return this.pattern;
     }
 
+    public void setPattern(PatternElement pattern) {
+
+        this.pattern = pattern;
+    }
+
     public PatternVersion getVersion() {return this.version;}
 
     @Override

@@ -8,20 +8,20 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-class AddRemoveElement {
+class AddRemoveDraftElement {
 
     public String Name;
     public String DraftItemId;
     public Map<String, Object> Configuration;
 }
 
-public class AddRemoveDraftElementStructuredOutput extends StructuredOutput<AddRemoveElement> {
+public class AddRemoveDraftElementStructuredOutput extends StructuredOutput<AddRemoveDraftElement> {
 
     @TestOnly
     public AddRemoveDraftElementStructuredOutput() {
 
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            this.Values = new AddRemoveElement();
+            this.Values = new AddRemoveDraftElement();
         }})));
     }
 

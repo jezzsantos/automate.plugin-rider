@@ -117,6 +117,98 @@ public class PatternTreeModel extends AbstractTreeModel {
         }
     }
 
+    public void insertElement(@NotNull PatternElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement selectedElementTreeNode) {
+            var indexOfElement = addElement(selectedElementTreeNode, element);
+            var parentFolderTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, ElementsIndex);
+            var parentFolderTreeNodePath = this.selectedPath.pathByAddingChild(parentFolderTreeNode);
+            if (indexOfElement > NO_INDEX) {
+                treeNodesInserted(parentFolderTreeNodePath, new int[]{indexOfElement}, new Object[]{element});
+                selectTreeNode(this.selectedPath, getChild(parentFolderTreeNode, indexOfElement));
+            }
+        }
+        else {
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode selectedFolderTreeNode) {
+                if (isElementsPlaceholder(selectedFolderTreeNode)) {
+                    var parentTreeNodePath = this.selectedPath;
+                    var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
+                    var indexOfElement = addElement(parentElement, element);
+                    if (indexOfElement > NO_INDEX) {
+                        treeNodesInserted(parentTreeNodePath, new int[]{indexOfElement}, new Object[]{element});
+                        selectTreeNode(this.selectedPath, getChild(selectedFolderTreeNode, indexOfElement));
+                    }
+                }
+            }
+        }
+    }
+
+    public void updatePattern(@NotNull PatternElement pattern) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof PatternElement patternElement) {
+            if (patternElement.isRoot()) {
+                updateRootElement(pattern);
+                treeNodesChanged(this.selectedPath, null, null);
+            }
+        }
+    }
+
+    public void updateElement(PatternElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof PatternElement) {
+            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
+            if (parentFolderTreeNodePath != null) {
+                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
+                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
+                var indexOfElement = updateElement(patternElementTreeNode, element);
+                var elements = patternElementTreeNode.getElements();
+                var indexesOfAllElements = createArrayOfIndexes(elements.size());
+                treeNodesChanged(parentFolderTreeNodePath, indexesOfAllElements, elements.toArray());
+                if (indexOfElement > NO_INDEX) {
+                    selectTreeNode(parentFolderTreeNodePath, getChild(parentFolderTreeNode, indexOfElement));
+                }
+            }
+        }
+    }
+
+    public void deleteElement(PatternElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof PatternElement) {
+            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
+            if (parentFolderTreeNodePath != null) {
+                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
+                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
+                var indexOfElement = getIndexOfElement(patternElementTreeNode, element);
+                if (indexOfElement > NO_INDEX) {
+                    patternElementTreeNode.removeElement(element);
+                    treeNodesRemoved(parentFolderTreeNodePath, new int[]{indexOfElement}, new Object[]{element});
+                    selectNextSiblingOrParent(parentFolderTreeNodePath, parentFolderTreeNode, indexOfElement);
+                }
+            }
+        }
+    }
+
     @Override
     public Object getRoot() {
 
@@ -269,16 +361,33 @@ public class PatternTreeModel extends AbstractTreeModel {
         }
     }
 
-    private int addAttribute(PatternElement element, Attribute attribute) {
+    private int addAttribute(PatternElement parent, Attribute attribute) {
 
-        element.addAttribute(attribute);
-        return getIndexOfAttribute(element, attribute);
+        parent.addAttribute(attribute);
+        return getIndexOfAttribute(parent, attribute);
     }
 
-    private int updateAttribute(PatternElement element, Attribute attribute) {
+    private int updateAttribute(PatternElement parent, Attribute attribute) {
 
-        element.updateAttribute(attribute);
-        return element.getAttributes().indexOf(attribute);
+        parent.updateAttribute(attribute);
+        return parent.getAttributes().indexOf(attribute);
+    }
+
+    private int addElement(PatternElement parent, PatternElement element) {
+
+        parent.addElement(element);
+        return getIndexOfElement(parent, element);
+    }
+
+    private int updateElement(PatternElement parent, PatternElement element) {
+
+        parent.updateElement(element);
+        return parent.getElements().indexOf(element);
+    }
+
+    private void updateRootElement(PatternElement pattern) {
+
+        this.pattern.setPattern(pattern);
     }
 
     private Object getItemAtIndex(List<?> list, int index) {
@@ -321,9 +430,14 @@ public class PatternTreeModel extends AbstractTreeModel {
         return placeholder.getChild() == placeholder.getParent().getElements();
     }
 
-    private int getIndexOfAttribute(PatternElement element, Attribute attribute) {
+    private int getIndexOfAttribute(PatternElement parent, Attribute attribute) {
 
-        return element.getAttributes().indexOf(attribute);
+        return parent.getAttributes().indexOf(attribute);
+    }
+
+    private int getIndexOfElement(PatternElement parent, PatternElement element) {
+
+        return parent.getElements().indexOf(element);
     }
 
     private int[] createArrayOfIndexes(int size) {

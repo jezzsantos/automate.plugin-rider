@@ -9,6 +9,7 @@ import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
@@ -130,13 +131,6 @@ public class AutomateApplication implements IAutomateApplication {
         return this.automateService.findToolkitById(this.currentDirectory, id);
     }
 
-    @NotNull
-    @Override
-    public PatternLite createPattern(@NotNull String name) throws Exception {
-
-        return this.automateService.createPattern(this.currentDirectory, name);
-    }
-
     @Override
     public boolean isAuthoringMode() {
 
@@ -254,6 +248,20 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
+    public PatternLite createPattern(@NotNull String name) throws Exception {
+
+        return this.automateService.createPattern(this.currentDirectory, name);
+    }
+
+    @NotNull
+    @Override
+    public PatternElement updatePattern(@Nullable String name, @Nullable String displayName, @Nullable String description) throws Exception {
+
+        return this.automateService.updatePattern(this.currentDirectory, name, displayName, description);
+    }
+
+    @NotNull
+    @Override
     public Attribute addPatternAttribute(@NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
         return this.automateService.addPatternAttribute(this.currentDirectory, parentEditPath, id, isRequired, type, defaultValue, choices);
@@ -261,15 +269,35 @@ public class AutomateApplication implements IAutomateApplication {
 
     @NotNull
     @Override
-    public Attribute updatePatternAttribute(@NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute updatePatternAttribute(@NotNull String editPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
-        return this.automateService.updatePatternAttribute(this.currentDirectory, parentEditPath, id, name, isRequired, type, defaultValue, choices);
+        return this.automateService.updatePatternAttribute(this.currentDirectory, editPath, id, name, isRequired, type, defaultValue, choices);
     }
 
     @Override
     public void deletePatternAttribute(@NotNull String editPath, @NotNull String name) throws Exception {
 
         this.automateService.deletePatternAttribute(this.currentDirectory, editPath, name);
+    }
+
+    @NotNull
+    @Override
+    public PatternElement addPatternElement(@NotNull String parentEditPath, @NotNull String id, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception {
+
+        return this.automateService.addPatternElement(this.currentDirectory, parentEditPath, id, isCollection, isRequired, displayName, description, isAutoCreate);
+    }
+
+    @NotNull
+    @Override
+    public PatternElement updatePatternElement(@NotNull String editPath, @NotNull String id, @Nullable String name, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception {
+
+        return this.automateService.updatePatternElement(this.currentDirectory, editPath, id, name, isCollection, isRequired, displayName, description, isAutoCreate);
+    }
+
+    @Override
+    public void deletePatternElement(@NotNull String editPath, @NotNull String name, boolean isCollection) throws Exception {
+
+        this.automateService.deletePatternElement(this.currentDirectory, editPath, name, isCollection);
     }
 
     @Nullable

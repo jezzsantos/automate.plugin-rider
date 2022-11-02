@@ -44,4 +44,4 @@ out/
 *.ipr
 
 *.local.properties
-automate
+./automate/automate.log

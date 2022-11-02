@@ -10,6 +10,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
@@ -272,6 +273,31 @@ public class AutomateCliService implements IAutomateCliService {
         }
     }
 
+    @NotNull
+    @Override
+    public PatternElement updatePattern(@NotNull String currentDirectory, @Nullable String name, @Nullable String displayName, @Nullable String description) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@update-pattern"));
+        if (name != null) {
+            args.addAll(List.of("--name", name));
+        }
+        if (displayName != null && !displayName.isEmpty()) {
+            args.addAll(List.of("--displayedas", displayName));
+        }
+        if (description != null && !description.isEmpty()) {
+            args.addAll(List.of("--describedas", description));
+        }
+        var result = runAutomateForStructuredOutput(GetUpdatePatternStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getPattern().getPattern();
+        }
+    }
+
     @Nullable
     @Override
     public PatternLite getCurrentPatternInfo(@NotNull String currentDirectory) {
@@ -291,7 +317,7 @@ public class AutomateCliService implements IAutomateCliService {
     public PatternDetailed getCurrentPatternDetailed(@NotNull String currentDirectory) throws Exception {
 
         return this.cache.getPatternDetailed(() -> {
-            var result = runAutomateForStructuredOutput(GetPatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@view", "@pattern", "--all")));
+            var result = runAutomateForStructuredOutput(GetUpdatePatternStructuredOutput.class, currentDirectory, new ArrayList<>(List.of("@view", "@pattern", "--all")));
             if (result.isError()) {
                 throw new Exception(result.getError().getErrorMessage());
             }
@@ -361,10 +387,10 @@ public class AutomateCliService implements IAutomateCliService {
 
     @NotNull
     @Override
-    public Attribute updatePatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
+    public Attribute updatePatternAttribute(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception {
 
         var args = new ArrayList<>(
-          List.of("@edit", "@update-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", parentEditPath));
+          List.of("@edit", "@update-attribute", id, "--isrequired", Boolean.toString(isRequired), "--isoftype", type.getValue(), "--aschildof", editPath));
         if (name != null) {
             args.addAll(List.of("--name", name));
         }
@@ -389,6 +415,72 @@ public class AutomateCliService implements IAutomateCliService {
 
         var result = runAutomateForStructuredOutput(AddRemovePatternAttributeStructuredOutput.class, currentDirectory,
                                                     new ArrayList<>(List.of("@edit", "@delete-attribute", name, "--aschildof", editPath)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+        }
+    }
+
+    @NotNull
+    @Override
+    public PatternElement addPatternElement(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", isCollection
+            ? "@add-collection"
+            : "@add-element", id, "--isrequired", Boolean.toString(isRequired), "--autocreate", Boolean.toString(isAutoCreate), "--aschildof", parentEditPath));
+        if (displayName != null && !displayName.isEmpty()) {
+            args.addAll(List.of("--displayedas", displayName));
+        }
+        if (description != null && !description.isEmpty()) {
+            args.addAll(List.of("--describedas", description));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternElementStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getElement();
+        }
+    }
+
+    @NotNull
+    @Override
+    public PatternElement updatePatternElement(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @Nullable String name, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", isCollection
+            ? "@update-collection"
+            : "@update-element", id, "--isrequired", Boolean.toString(isRequired), "--autocreate", Boolean.toString(isAutoCreate), "--aschildof", editPath));
+        if (name != null) {
+            args.addAll(List.of("--name", name));
+        }
+        if (displayName != null && !displayName.isEmpty()) {
+            args.addAll(List.of("--displayedas", displayName));
+        }
+        if (description != null && !description.isEmpty()) {
+            args.addAll(List.of("--describedas", description));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternElementStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getElement();
+        }
+    }
+
+    @Override
+    public void deletePatternElement(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String name, boolean isCollection) throws Exception {
+
+        var result = runAutomateForStructuredOutput(AddRemovePatternElementStructuredOutput.class, currentDirectory,
+                                                    new ArrayList<>(List.of("@edit", isCollection
+                                                      ? "@delete-collection"
+                                                      : "@delete-element", name, "--aschildof", editPath)));
         if (result.isError()) {
             throw new Exception(result.getError().getErrorMessage());
         }

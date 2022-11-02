@@ -27,7 +27,9 @@ public class TestModelTreeListener implements TreeModelListener {
 
     public boolean hasChanged(int index, Object node) {
 
-        return (this.indexChanged == index && this.childChanged.equals(node));
+        return (this.indexChanged == index && (node != null
+          ? this.childChanged.equals(node)
+          : this.childChanged == null));
     }
 
     public boolean hasRemoveEventBeenRaised() {

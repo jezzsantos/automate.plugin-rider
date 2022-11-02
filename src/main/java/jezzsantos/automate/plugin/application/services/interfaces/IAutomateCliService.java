@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
+import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
@@ -63,6 +64,9 @@ public interface IAutomateCliService {
     @NotNull
     PatternLite createPattern(@NotNull String currentDirectory, @NotNull String name) throws Exception;
 
+    @NotNull
+    PatternElement updatePattern(@NotNull String currentDirectory, @Nullable String name, @Nullable String displayName, @Nullable String description) throws Exception;
+
     @Nullable
     PatternLite getCurrentPatternInfo(@NotNull String currentDirectory);
 
@@ -78,9 +82,17 @@ public interface IAutomateCliService {
     Attribute addPatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
     @NotNull
-    Attribute updatePatternAttribute(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
+    Attribute updatePatternAttribute(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @Nullable String name, boolean isRequired, @NotNull AutomateConstants.AttributeDataType type, @Nullable String defaultValue, @Nullable List<String> choices) throws Exception;
 
     void deletePatternAttribute(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String name) throws Exception;
+
+    @NotNull
+    PatternElement addPatternElement(@NotNull String currentDirectory, @NotNull String parentEditPath, @NotNull String id, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception;
+
+    @NotNull
+    PatternElement updatePatternElement(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @Nullable String name, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception;
+
+    void deletePatternElement(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String name, boolean isCollection) throws Exception;
 
     void installToolkit(@NotNull String currentDirectory, @NotNull String location) throws Exception;
 

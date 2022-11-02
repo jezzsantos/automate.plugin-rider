@@ -28,7 +28,7 @@ public class PatternElement {
     private String editPath;
     private boolean isRoot = false;
     @SerializedName(value = "AutoCreate")
-    private boolean autoCreate;
+    private boolean isAutoCreate;
     @SerializedName(value = "IsCollection")
     private boolean isCollection;
     @SerializedName(value = "Cardinality")
@@ -53,12 +53,22 @@ public class PatternElement {
     @TestOnly
     public PatternElement(@NotNull String id, @NotNull String name, AutomateConstants.ElementCardinality cardinality) {
 
+        this(id, name, null, null, null, cardinality, true);
+    }
+
+    public PatternElement(@NotNull String id, @NotNull String name, @Nullable String editPath, @Nullable String displayName, @Nullable String description, @NotNull AutomateConstants.ElementCardinality cardinality, boolean autoCreate) {
+
         this.id = id;
         this.name = name;
+        this.editPath = editPath;
+        this.displayName = displayName;
+        this.description = description;
         this.cardinality = cardinality;
         this.isCollection =
           cardinality == AutomateConstants.ElementCardinality.ZERO_OR_MANY
             || cardinality == AutomateConstants.ElementCardinality.ONE_OR_MANY;
+        this.isAutoCreate = autoCreate;
+        this.isRoot = false;
     }
 
     public void setRoot() {
@@ -95,6 +105,20 @@ public class PatternElement {
     public void setDisplayName(@NotNull String text) {
 
         this.displayName = text;
+    }
+
+    @NotNull
+    public String getDescription() {
+
+        return (this.description != null && !this.description.isEmpty())
+          ? this.description
+          : this.name;
+    }
+
+    @TestOnly
+    public void setDescription(@NotNull String text) {
+
+        this.description = text;
     }
 
     @NotNull
@@ -176,9 +200,33 @@ public class PatternElement {
         this.elements.add(element);
     }
 
+    public void updateElement(@NotNull PatternElement element) {
+
+        var id = element.getId();
+        var oldElement = this.elements.stream()
+          .filter(ele -> ele.getId().equals(id))
+          .findFirst();
+        if (oldElement.isEmpty()) {
+            return;
+        }
+
+        var indexOfElement = this.elements.indexOf(oldElement.get());
+        this.elements.set(indexOfElement, element);
+    }
+
+    public void removeElement(@NotNull PatternElement element) {
+
+        this.elements.remove(element);
+    }
+
     public boolean isCollection() {
 
         return this.isCollection;
+    }
+
+    public boolean isAutoCreate() {
+
+        return this.isAutoCreate;
     }
 
     @NotNull

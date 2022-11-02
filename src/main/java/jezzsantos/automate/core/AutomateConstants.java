@@ -9,6 +9,9 @@ public class AutomateConstants {
     public static final String PatternNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
     public static final String DraftNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
     public static final String AttributeNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
+    public static final String ElementNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
+    public static final String ElementDisplayNameRegex = "^.+$";
+    public static final String ElementDescriptionNameRegex = "^.+$";
     public static final List<AutomateConstants.AttributeDataType> AttributeDataTypes =
       List.of(AttributeDataType.STRING, AttributeDataType.BOOLEAN, AttributeDataType.INTEGER, AttributeDataType.FLOAT, AttributeDataType.DATETIME);
     public static final String OutputStructuredOptionShorthand = "--os";

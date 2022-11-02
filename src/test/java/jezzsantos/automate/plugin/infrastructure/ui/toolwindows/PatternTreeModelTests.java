@@ -766,4 +766,215 @@ public class PatternTreeModelTests {
         assertEquals(1, parentNode.getAttributes().size());
         Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(attributeNode1)));
     }
+
+    @Test
+    public void whenInsertElementAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.insertElement(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasInsertEventBeenRaised());
+    }
+
+    @Test
+    public void whenInsertElementAndSelectedPathIsNotAPlaceholder_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.insertElement(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasInsertEventBeenRaised());
+    }
+
+    @Test
+    public void whenInsertElementOnPatternElement_ThenRaisesEventAndSelectsNode() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var elementNode = new PatternElement("anid", "aname");
+        parentNode.addElement(elementNode);
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode}));
+
+        this.model.insertElement(elementNode);
+
+        assertTrue(this.treeModelListener.hasInserted(0, elementNode));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(elementNode)));
+    }
+
+    @Test
+    public void whenInsertElementOnElementsPlaceholder_ThenRaisesEventAndSelectsNode() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var elementNode = new PatternElement("anid", "aname");
+        parentNode.addElement(elementNode);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getElements(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode}));
+
+        this.model.insertElement(elementNode);
+
+        assertTrue(this.treeModelListener.hasInserted(0, elementNode));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(elementNode)));
+    }
+
+    @Test
+    public void whenUpdatePatternAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.updatePattern(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdatePatternAndSelectedPathIsNotThePattern_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.updatePattern(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdatePattern_ThenRaisesEvent() {
+
+        var patternNode = new PatternElement("aparentid", "aname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{patternNode}));
+
+        this.model.updatePattern(new PatternElement("anid", "aname"));
+
+        assertTrue(this.treeModelListener.hasChanged(-1, null));
+    }
+
+    @Test
+    public void whenUpdateElementAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.updateElement(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdateElementAndSelectedPathIsNotAnElement_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.updateElement(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasChangeEventBeenRaised());
+    }
+
+    @Test
+    public void whenUpdateElement_ThenRaisesEvent() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var elementNode = new PatternElement("anelementid", "anelementname");
+        parentNode.addElement(elementNode);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getElements(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, elementNode}));
+
+        this.model.updateElement(elementNode);
+
+        assertTrue(this.treeModelListener.hasChanged(0, elementNode));
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(elementNode)));
+    }
+
+    @Test
+    public void whenDeleteElementAndSelectedPathIsNull_ThenDoesNothing() {
+
+        this.model.resetSelectedPath();
+
+        this.model.deleteElement(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
+    }
+
+    @Test
+    public void whenDeleteElementAndSelectedPathIsNotAPlaceholder_ThenDoesNothing() {
+
+        this.model.setSelectedPath(new TreePath(new Object()));
+
+        this.model.deleteElement(new PatternElement("anid", "aname"));
+
+        assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
+    }
+
+    @Test
+    public void whenDeleteElementAndNoParentPath_ThenDoesNothing() {
+
+        var elementNode = new PatternElement("anid", "aname");
+        this.model.setSelectedPath(new TreePath(elementNode));
+
+        this.model.deleteElement(elementNode);
+
+        assertFalse(this.treeModelListener.hasRemoveEventBeenRaised());
+    }
+
+    @Test
+    public void whenDeleteElementWithOnlyElement_ThenRaisesEventAndSelectsPlaceholderFolder() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var elementNode = new PatternElement("anelementid", "anelementname");
+        parentNode.addElement(elementNode);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getElements(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, elementNode}));
+
+        assertEquals(1, parentNode.getElements().size());
+
+        this.model.deleteElement(elementNode);
+
+        assertTrue(this.treeModelListener.hasRemoved(0, elementNode));
+        assertEquals(0, parentNode.getElements().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(folderNode)));
+    }
+
+    @Test
+    public void whenDeleteElementWithOtherElementAfter_ThenRaisesEventAndSelectsOtherElement() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var elementNode1 = new PatternElement("anelementid1", "anelementname1");
+        var elementNode2 = new PatternElement("anelementid2", "anelementname2");
+        parentNode.addElement(elementNode1);
+        parentNode.addElement(elementNode2);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getElements(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, elementNode1}));
+
+        assertEquals(2, parentNode.getElements().size());
+
+        this.model.deleteElement(elementNode1);
+
+        assertTrue(this.treeModelListener.hasRemoved(0, elementNode1));
+        assertEquals(1, parentNode.getElements().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(elementNode2)));
+    }
+
+    @Test
+    public void whenDeleteElementWithOtherElementBefore_ThenRaisesEventAndSelectsOtherElement() {
+
+        var parentNode = new PatternElement("aparentid", "aname");
+        var elementNode1 = new PatternElement("anelementid1", "anelementname1");
+        var elementNode2 = new PatternElement("anelementid2", "anelementname2");
+        parentNode.addElement(elementNode1);
+        parentNode.addElement(elementNode2);
+        var folderNode = new PatternFolderPlaceholderNode(parentNode, parentNode.getElements(), "adisplayname");
+
+        this.model.setSelectedPath(new TreePath(new Object[]{parentNode, folderNode, elementNode2}));
+
+        assertEquals(2, parentNode.getElements().size());
+
+        this.model.deleteElement(elementNode2);
+
+        assertTrue(this.treeModelListener.hasRemoved(1, elementNode2));
+        assertEquals(1, parentNode.getElements().size());
+        Mockito.verify(this.treeSelector).selectPath(argThat(treePath -> treePath.getLastPathComponent().equals(elementNode1)));
+    }
 }

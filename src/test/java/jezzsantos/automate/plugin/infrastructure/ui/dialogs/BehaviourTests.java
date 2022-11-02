@@ -5,6 +5,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.drafts.EditDraftElementDialog;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;

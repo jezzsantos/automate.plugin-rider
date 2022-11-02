@@ -6,6 +6,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.Topic;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.AddDraftAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.DraftsListToolbarAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.patterns.AddPatternAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.patterns.PatternsListToolbarAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.toolkits.InstallToolkitToolbarAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -43,19 +48,26 @@ public class AutomateToolbar extends ActionToolbarImpl {
         final Runnable update = notifyUpdated(messageBus);
 
         final var actions = new DefaultActionGroup();
+
         actions.add(new TogglePatternEditingModeAction(update));
         actions.add(new ToggleDraftEditingModeAction(update));
+
         actions.addSeparator();
+
         actions.add(new PatternsListToolbarAction(update));
         actions.add(new AddPatternAction(update));
         actions.add(new InstallToolkitToolbarAction(update));
         actions.add(new DraftsListToolbarAction(update));
         actions.add(new AddDraftAction(update));
         actions.add(new RefreshAllAction(update));
+
         actions.addSeparator();
+
         actions.add(new ShowSettingsToolbarAction());
         actions.add(new AdvancedOptionsToolbarActionGroup(update));
+
         actions.addSeparator();
+
         actions.add(new ToggleAuthoringModeToolbarAction(update));
 
         return actions;
