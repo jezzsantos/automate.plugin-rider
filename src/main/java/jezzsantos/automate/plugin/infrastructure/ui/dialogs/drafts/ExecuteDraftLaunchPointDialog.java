@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.ui.ColoredListCellRenderer;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBList;
 import jezzsantos.automate.core.AutomateConstants;
@@ -15,6 +14,7 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -64,19 +64,19 @@ public class ExecuteDraftLaunchPointDialog extends DialogWrapper {
 
                     case SUCCEEDED -> {
                         setIcon(AutomateIcons.StatusSuccess);
-                        append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GREEN));
+                        append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, AutomateColors.getNormalText()));
                     }
                     case WARNING -> {
                         setIcon(value.isValidationError()
                                   ? AutomateIcons.StatusWarning
                                   : AutomateIcons.StatusInformation);
                         append(value.getMessage(), value.isValidationError()
-                          ? new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.ORANGE)
-                          : new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.GRAY));
+                          ? new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, AutomateColors.getWarningText())
+                          : new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, AutomateColors.getDisabledText()));
                     }
                     case FAILED -> {
                         setIcon(AutomateIcons.StatusFailed);
-                        append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED));
+                        append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, AutomateColors.getErrorText()));
                     }
                 }
             }

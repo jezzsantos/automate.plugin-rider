@@ -3,7 +3,6 @@ package jezzsantos.automate.plugin.infrastructure.ui.dialogs.drafts;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ColoredListCellRenderer;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBList;
 import jezzsantos.automate.core.AutomateConstants;
@@ -15,6 +14,7 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AlertLabel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -174,8 +174,8 @@ public class UpgradeDraftDialog extends DialogWrapper {
                                           ? AutomateIcons.StatusWarning
                                           : AutomateIcons.StatusSuccess);
                                 append(value.getMessage(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, value.getType() == AutomateConstants.UpgradeLogType.ABORT
-                                  ? JBColor.RED
-                                  : JBColor.GREEN));
+                                  ? AutomateColors.getErrorText()
+                                  : AutomateColors.getNormalText()));
                             }
                         });
                         this.setOKButtonText(AutomateBundle.message("dialog.UpgradeDraft.OKButton.Done.Title"));

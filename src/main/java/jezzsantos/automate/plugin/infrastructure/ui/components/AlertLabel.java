@@ -4,12 +4,12 @@ import com.intellij.ui.ColoredSideBorder;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import jezzsantos.automate.plugin.AutomateIcons;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,7 @@ public class AlertLabel extends JBLabel {
     public void setType(@NotNull AlertLabelType type) {
 
         this.setVerticalTextPosition(SwingConstants.CENTER);
+        this.setForeground(AutomateColors.getNormalText());
         switch (type) {
 
             case NONE -> {
@@ -35,21 +36,21 @@ public class AlertLabel extends JBLabel {
                 this.setIconTextGap(10);
                 this.setIconWithAlignment(AutomateIcons.StatusSuccess, SwingConstants.LEFT, SwingConstants.TOP);
                 this.setOpaque(true);
-                this.setBackground(createColor(55, 88, 50));
+                this.setBackground(AutomateColors.getSuccessBackground());
                 this.setBorder(createBorder(JBColor.GREEN)); //98, 150, 85
             }
             case WARNING -> {
                 this.setIconTextGap(10);
                 this.setIconWithAlignment(AutomateIcons.StatusWarning, SwingConstants.LEFT, SwingConstants.TOP);
                 this.setOpaque(true);
-                this.setBackground(createColor(80, 80, 38));
+                this.setBackground(AutomateColors.getWarningBackground());
                 this.setBorder(createBorder(JBColor.ORANGE)); //159, 107, 0
             }
             case ERROR -> {
                 this.setIconTextGap(10);
                 this.setIconWithAlignment(AutomateIcons.StatusAborted, SwingConstants.LEFT, SwingConstants.TOP);
                 this.setOpaque(true);
-                this.setBackground(createColor(128, 0, 0));
+                this.setBackground(AutomateColors.getErrorBackground());
                 this.setBorder(createBorder(JBColor.RED)); //255, 100, 100
             }
         }
@@ -75,14 +76,6 @@ public class AlertLabel extends JBLabel {
           .collect(Collectors.joining());
 
         super.setText(String.format("<html>%s<br></html>", paragraphs));
-    }
-
-    @SuppressWarnings("UseJBColor")
-    @NotNull
-    private JBColor createColor(int red, int green, int blue) {
-
-        var color = new Color(red, green, blue);
-        return new JBColor(color, color);
     }
 
     @NotNull

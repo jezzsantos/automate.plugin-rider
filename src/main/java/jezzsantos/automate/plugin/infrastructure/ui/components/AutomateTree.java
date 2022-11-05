@@ -6,7 +6,6 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.Tree;
@@ -19,6 +18,7 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.*;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.patterns.*;
 import jezzsantos.automate.plugin.infrastructure.ui.actions.toolkits.UpgradeToolkitAction;
@@ -214,12 +214,12 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                         if (placeholder.isDraftIncompatible()) {
                             setIcon(AutomateIcons.StatusWarning);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeDraft.Tooltip"));
-                            append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.ORANGE));
+                            append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, AutomateColors.getWarningText()));
                         }
                         if (placeholder.isRuntimeIncompatible()) {
                             setIcon(AutomateIcons.StatusError);
                             setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.UpgradeToolkit.Tooltip"));
-                            append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, JBColor.RED));
+                            append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, AutomateColors.getErrorText()));
                         }
                     }
                     else {

@@ -2,11 +2,9 @@ package jezzsantos.automate.plugin.infrastructure.settings;
 
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.ui.DarculaColors;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.UIUtil;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
@@ -15,6 +13,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliSe
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;
 
@@ -159,19 +158,19 @@ public class ApplicationSettingsComponent {
         switch (compatibility) {
             case COMPATIBLE -> {
                 this.helpLink.setVisible(false);
-                this.executablePathTestResult.setFontColor(UIUtil.FontColor.NORMAL);
+                this.executablePathTestResult.setForeground(AutomateColors.getSuccessText());
                 this.executablePathTestResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Supported.Message", executableName, executableStatus.getVersion()));
             }
             case INCOMPATIBLE -> {
                 this.helpLink.setVisible(true);
-                this.executablePathTestResult.setForeground(DarculaColors.RED);
+                this.executablePathTestResult.setForeground(AutomateColors.getErrorText());
                 this.executablePathTestResult.setText(
                   AutomateBundle.message("settings.PathToAutomateExecutable.Unsupported.Message", executableName, executableStatus.getMinCompatibleVersion()));
             }
             default -> {
                 this.helpLink.setVisible(true);
-                this.executablePathTestResult.setForeground(DarculaColors.RED);
+                this.executablePathTestResult.setForeground(AutomateColors.getErrorText());
                 this.executablePathTestResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Unknown.Message", executableName));
             }
         }

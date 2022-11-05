@@ -1,7 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.components;
 
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.util.ui.UIUtil;
+import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -36,7 +36,7 @@ public class TextFieldWithBrowseButtonAndHint extends TextFieldWithBrowseButton 
                 ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 var insets = textField.getInsets();
                 var fontMetrics = g.getFontMetrics();
-                g.setColor(UIUtil.getLabelDisabledForeground());
+                g.setColor(AutomateColors.getDisabledText());
                 g.drawString(this.hint, insets.left + 5, height / 2 + fontMetrics.getAscent() / 2 - 2);
             }
         }
