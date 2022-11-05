@@ -21,7 +21,7 @@ public class AutomateConstants {
     public static String ExecutableName = "automate";
     public static String ApplicationInsightsCliRoleName = "automate CLI";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "1.0.7";
+    public static String MinimumSupportedVersion = "1.1.0";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
     public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
 

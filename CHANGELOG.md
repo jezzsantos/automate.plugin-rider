@@ -9,11 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- Minimum compatibility with `automate` CLI version 1.0.8
-
 ### Added
-
-- Patterns: Closed #6. Add, Edit and Delete of elements and update of pattern
 
 ### Changed
 
@@ -24,6 +20,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [1.1.0] - 2022-11-06
+
+### Notes
+
+- Minimum compatibility with `automate` CLI version 1.1.0
+
+### Added
+
+- Patterns: Closed #6. Add, Edit and Delete of elements and update of pattern
+
+### Fixed
+
+- General: Closed #31. Fixed accessible colors throughout UI
+- General: Closed #30. CLI versions pre-1.1.0 were not working for MacOS and Linux, due to local file limitations.
+  see: https://github.com/jezzsantos/automate/issues/88
 
 ## [1.0.7] - 2022-10-29
 
@@ -35,16 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DevOps: Added recorder interface for tracing and exception handling
 - DevOps: Closed #20. Added usage collection to Application Insights
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [1.0.6] - 2022-10-15
 
