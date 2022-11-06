@@ -2,20 +2,13 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.drafts;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.ConfirmDeleteDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftElementPlaceholderNode;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftIncompatiblePlaceholderNode;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.tree.TreePath;
-import java.util.Map;
 
 public class DeleteDraftAction extends AnAction {
 
@@ -44,7 +37,7 @@ public class DeleteDraftAction extends AnAction {
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
-        var isRootSite = getSelection(e) != null;
+        var isRootSite = Selection.isRootElementOrIncompatibleDraft(e) != null;
         presentation.setEnabledAndVisible(isDraftEditingMode && isRootSite);
     }
 
@@ -55,7 +48,7 @@ public class DeleteDraftAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            var root = getSelection(e);
+            var root = Selection.isRootElementOrIncompatibleDraft(e);
             if (root != null) {
                 if (ConfirmDeleteDialog.confirms(project,
                                                  AutomateBundle.message("dialog.ConfirmDelete.Draft.Title"),
@@ -68,26 +61,5 @@ public class DeleteDraftAction extends AnAction {
                 }
             }
         }
-    }
-
-    private DraftElement getSelection(AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof DraftElementPlaceholderNode placeholder) {
-                    var element = placeholder.getElement();
-                    if (!element.isNotRoot()) {
-                        return element;
-                    }
-                }
-                if (leaf instanceof DraftIncompatiblePlaceholderNode placeholder) {
-                    return new DraftElement(placeholder.getDraftName(), Map.of(), true);
-                }
-            }
-        }
-
-        return null;
     }
 }

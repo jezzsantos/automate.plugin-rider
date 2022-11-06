@@ -2,10 +2,8 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.patterns;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
@@ -13,8 +11,6 @@ import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.ConfirmDeleteDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.tree.TreePath;
 
 public class DeletePatternElementAction extends AnAction {
 
@@ -43,7 +39,7 @@ public class DeletePatternElementAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isElementSite = getSelection(e) != null;
+        var isElementSite = Selection.isChildElementAndNotRoot(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isElementSite);
     }
 
@@ -54,7 +50,7 @@ public class DeletePatternElementAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            var selected = getSelection(e);
+            var selected = Selection.isChildElementAndNotRoot(e);
             if (selected != null) {
                 if (ConfirmDeleteDialog.confirms(project,
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternElement.Title"),
@@ -67,28 +63,5 @@ public class DeletePatternElementAction extends AnAction {
                 }
             }
         }
-    }
-
-    private EditPatternElementAction.SelectedElement getSelection(AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof PatternElement patternElement) {
-                    if (patternElement.isRoot()) {
-                        return null;
-                    }
-                    else {
-                        var parent = path.getParentPath().getParentPath().getLastPathComponent();
-                        if (parent instanceof PatternElement parentElement) {
-                            return new EditPatternElementAction.SelectedElement(parentElement, (PatternElement) leaf);
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 }

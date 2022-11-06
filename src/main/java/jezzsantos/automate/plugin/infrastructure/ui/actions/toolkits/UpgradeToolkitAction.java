@@ -3,7 +3,6 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.toolkits;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
@@ -12,11 +11,9 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.Selection;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.toolkits.UpgradeToolkitDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftIncompatiblePlaceholderNode;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.tree.TreePath;
 
 public class UpgradeToolkitAction extends AnAction {
 
@@ -43,7 +40,7 @@ public class UpgradeToolkitAction extends AnAction {
         presentation.setIcon(AllIcons.Ide.Notification.PluginUpdate);
 
         boolean isDraftEditingMode = false;
-        var isIncompatible = getSelection(e);
+        var isIncompatible = Selection.isIncompatibleDraft(e);
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
@@ -62,7 +59,7 @@ public class UpgradeToolkitAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var selectedNode = getSelection(e);
+            var selectedNode = Selection.isIncompatibleDraft(e);
             if (selectedNode != null) {
                 var patternId = selectedNode.getToolkitId();
                 var toolkitIsUpgradeable = application.findToolkitById(patternId) != null;
@@ -84,20 +81,5 @@ public class UpgradeToolkitAction extends AnAction {
                 }
             }
         }
-    }
-
-    private DraftIncompatiblePlaceholderNode getSelection(AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof DraftIncompatiblePlaceholderNode) {
-                    return (DraftIncompatiblePlaceholderNode) leaf;
-                }
-            }
-        }
-
-        return null;
     }
 }

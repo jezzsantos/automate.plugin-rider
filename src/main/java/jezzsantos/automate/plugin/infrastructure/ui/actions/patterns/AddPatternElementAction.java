@@ -2,20 +2,15 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.patterns;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.patterns.EditPatternElementDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternFolderPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.tree.TreePath;
 
 public class AddPatternElementAction extends AnAction {
 
@@ -45,7 +40,7 @@ public class AddPatternElementAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isPatternSite = getSelection(e) != null;
+        var isPatternSite = Selection.isChildElementOrRootOrPlaceholder(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isPatternSite);
     }
 
@@ -54,7 +49,7 @@ public class AddPatternElementAction extends AnAction {
 
         IRecorder.getInstance().measureEvent("action.pattern.element.add", null);
 
-        var parent = getSelection(e);
+        var parent = Selection.isChildElementOrRootOrPlaceholder(e);
         if (parent != null) {
             var project = e.getProject();
             if (project != null) {
@@ -75,27 +70,5 @@ public class AddPatternElementAction extends AnAction {
                 }
             }
         }
-    }
-
-    private PatternElement getSelection(AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof PatternElement) {
-                    return (PatternElement) leaf;
-                }
-                else {
-                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
-                        return (placeholder.getChild() == placeholder.getParent().getElements())
-                          ? placeholder.getParent()
-                          : null;
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 }

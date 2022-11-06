@@ -2,10 +2,8 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.patterns;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
 import jezzsantos.automate.plugin.application.services.interfaces.NotificationType;
 import jezzsantos.automate.plugin.common.Action;
@@ -16,9 +14,6 @@ import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.patterns.PublishPatternDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.tree.TreePath;
 
 public class PublishPatternAction extends AnAction {
 
@@ -49,7 +44,7 @@ public class PublishPatternAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isRootSite = getSelection(e) != null;
+        var isRootSite = Selection.isPattern(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isRootSite);
     }
 
@@ -58,7 +53,7 @@ public class PublishPatternAction extends AnAction {
 
         IRecorder.getInstance().measureEvent("action.pattern.publish", null);
 
-        var root = getSelection(e);
+        var root = Selection.isPattern(e);
         if (root != null) {
             var project = e.getProject();
             if (project != null) {
@@ -82,23 +77,5 @@ public class PublishPatternAction extends AnAction {
                 }
             }
         }
-    }
-
-    @Nullable
-    private PatternElement getSelection(@NotNull AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof PatternElement pattern) {
-                    if (pattern.isRoot()) {
-                        return (PatternElement) leaf;
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 }

@@ -2,7 +2,6 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.drafts;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.Action;
@@ -10,11 +9,9 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.drafts.EditDraftElementDialog;
-import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftElementPlaceholderNode;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.DraftTreeModel;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.tree.TreePath;
 import java.util.Objects;
 
 public class EditDraftElementAction extends AnAction {
@@ -42,7 +39,7 @@ public class EditDraftElementAction extends AnAction {
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
 
-        var isElementSite = getSelection(e) != null;
+        var isElementSite = Selection.isChildElementOrRoot(e) != null;
         presentation.setEnabledAndVisible(isDraftEditingMode && isElementSite);
     }
 
@@ -54,7 +51,7 @@ public class EditDraftElementAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var selectedNode = getSelection(e);
+            var selectedNode = Selection.isChildElementOrRoot(e);
             if (selectedNode != null) {
                 var element = selectedNode.getElement();
                 var schema = Objects.requireNonNull(selectedNode.getSchema()).getSchema();
@@ -70,20 +67,5 @@ public class EditDraftElementAction extends AnAction {
                 }
             }
         }
-    }
-
-    private DraftElementPlaceholderNode getSelection(AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof DraftElementPlaceholderNode) {
-                    return ((DraftElementPlaceholderNode) leaf);
-                }
-            }
-        }
-
-        return null;
     }
 }

@@ -2,10 +2,8 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.patterns;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
@@ -13,8 +11,6 @@ import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.dialogs.patterns.EditPatternElementDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.tree.TreePath;
 
 public class EditPatternElementAction extends AnAction {
 
@@ -43,7 +39,7 @@ public class EditPatternElementAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isElementSite = getSelection(e) != null;
+        var isElementSite = Selection.isChildElementOrRoot(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isElementSite);
     }
 
@@ -54,7 +50,7 @@ public class EditPatternElementAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            var selected = getSelection(e);
+            var selected = Selection.isChildElementOrRoot(e);
             if (selected != null) {
                 var application = IAutomateApplication.getInstance(project);
                 var attributes = selected.getParent().getAttributes();
@@ -62,7 +58,7 @@ public class EditPatternElementAction extends AnAction {
                 var dialog = new EditPatternElementDialog(project, new EditPatternElementDialog.EditPatternElementDialogContext(selected.getElement(), attributes, elements));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    if (selected.element.isRoot()) {
+                    if (selected.getElement().isRoot()) {
                         var pattern = Try.andHandle(project,
                                                     () -> application.updatePattern(context.getName(), context.getDisplayName(), context.getDescription()),
                                                     AutomateBundle.message("action.EditPatternElement.UpdateRoot.Failure.Message"));
@@ -84,44 +80,5 @@ public class EditPatternElementAction extends AnAction {
                 }
             }
         }
-    }
-
-    private SelectedElement getSelection(AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof PatternElement patternElement) {
-                    if (patternElement.isRoot()) {
-                        return new SelectedElement(patternElement, patternElement);
-                    }
-                    else {
-                        var parent = path.getParentPath().getParentPath().getLastPathComponent();
-                        if (parent instanceof PatternElement parentElement) {
-                            return new SelectedElement(parentElement, (PatternElement) leaf);
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    static class SelectedElement {
-
-        private final PatternElement element;
-        private final PatternElement parent;
-
-        public SelectedElement(@NotNull PatternElement parent, @NotNull PatternElement element) {
-
-            this.parent = parent;
-            this.element = element;
-        }
-
-        public PatternElement getParent() {return this.parent;}
-
-        public PatternElement getElement() {return this.element;}
     }
 }
