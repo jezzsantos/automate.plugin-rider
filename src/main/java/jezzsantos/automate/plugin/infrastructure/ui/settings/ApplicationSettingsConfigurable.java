@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.settings;
+package jezzsantos.automate.plugin.infrastructure.ui.settings;
 
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.serviceContainer.NonInjectable;

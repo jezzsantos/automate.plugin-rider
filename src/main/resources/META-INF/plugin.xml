@@ -27,8 +27,8 @@
                 serviceImplementation="jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsState"/>
         <applicationConfigurable
                 parentId="tools"
-                instance="jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable"
-                id="jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable"
+                instance="jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable"
+                id="jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable"
                 displayName="automate"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.IAutomateApplication"

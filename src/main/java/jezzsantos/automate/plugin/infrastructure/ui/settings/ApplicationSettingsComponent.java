@@ -1,4 +1,4 @@
-package jezzsantos.automate.plugin.infrastructure.settings;
+package jezzsantos.automate.plugin.infrastructure.ui.settings;
 
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -13,6 +13,7 @@ import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliSe
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
+import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsState;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;

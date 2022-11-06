@@ -7,7 +7,7 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
-import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsConfigurable;
+import jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowSettingsToolbarAction extends AnAction {
