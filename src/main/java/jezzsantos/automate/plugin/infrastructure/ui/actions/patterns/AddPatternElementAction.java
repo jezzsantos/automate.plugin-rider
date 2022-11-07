@@ -40,7 +40,7 @@ public class AddPatternElementAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isPatternSite = Selection.isChildElementOrRootOrPlaceholder(e) != null;
+        var isPatternSite = Selection.isChildElementOrRootOrElementPlaceholder(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isPatternSite);
     }
 
@@ -49,7 +49,7 @@ public class AddPatternElementAction extends AnAction {
 
         IRecorder.getInstance().measureEvent("action.pattern.element.add", null);
 
-        var parent = Selection.isChildElementOrRootOrPlaceholder(e);
+        var parent = Selection.isChildElementOrRootOrElementPlaceholder(e);
         if (parent != null) {
             var project = e.getProject();
             if (project != null) {

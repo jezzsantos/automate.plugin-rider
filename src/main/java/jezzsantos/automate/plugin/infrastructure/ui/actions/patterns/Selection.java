@@ -31,29 +31,6 @@ public class Selection {
     }
 
     @Nullable
-    public static PatternElement isChildElementOrRootOrPlaceholder(@NotNull AnActionEvent e) {
-
-        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
-        if (selection != null) {
-            if (selection instanceof TreePath path) {
-                var leaf = path.getLastPathComponent();
-                if (leaf instanceof PatternElement patternElement) {
-                    return patternElement;
-                }
-                else {
-                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
-                        return (placeholder.getChild() == placeholder.getParent().getElements())
-                          ? placeholder.getParent()
-                          : null;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    @Nullable
     public static SelectedElement isChildElementOrRoot(@NotNull AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
@@ -93,6 +70,75 @@ public class Selection {
                         if (parent instanceof PatternElement parentElement) {
                             return new SelectedElement(parentElement, patternElement);
                         }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static PatternElement isChildElementOrRootOrElementPlaceholder(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof PatternElement patternElement) {
+                    return patternElement;
+                }
+                else {
+                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
+                        return (placeholder.getChild() == placeholder.getParent().getElements())
+                          ? placeholder.getParent()
+                          : null;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static PatternElement isChildElementOrRootOrAttributePlaceholder(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof PatternElement patternElement) {
+                    return patternElement;
+                }
+                else {
+                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
+                        return (placeholder.getChild() == placeholder.getParent().getAttributes())
+                          ? placeholder.getParent()
+                          : null;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static PatternElement isChildElementOrRootOrCodeTemplatePlaceholder(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof PatternElement patternElement) {
+                    return patternElement;
+                }
+                else {
+                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
+                        return (placeholder.getChild() == placeholder.getParent().getCodeTemplates())
+                          ? placeholder.getParent()
+                          : null;
                     }
                 }
             }
