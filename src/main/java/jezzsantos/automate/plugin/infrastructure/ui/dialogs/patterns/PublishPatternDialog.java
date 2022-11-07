@@ -95,15 +95,21 @@ public class PublishPatternDialog extends DialogWrapper {
 
     private void initAutoVersion(boolean isAutoVersion) {
 
+        var nextVersion = this.context.getNextVersion().toString();
         if (isAutoVersion) {
             this.autoVersion.setText(AutomateBundle.message("dialog.PublishPattern.Version.AutoVersion.Title"));
-            this.version.setText(this.context.getNextVersion().toString());
+            this.version.setText(nextVersion);
             this.version.setEnabled(false);
         }
         else {
             this.autoVersion.setText(AutomateBundle.message("dialog.PublishPattern.Version.CustomVersion.Title"));
-            this.version.setText(this.context.getCustomVersion());
+            var customVersion = this.context.getCustomVersion();
+            this.version.setText(customVersion == null || customVersion.isEmpty()
+                                   ? nextVersion
+                                   : customVersion);
             this.version.setEnabled(true);
+            this.version.selectAll();
+            this.version.grabFocus();
         }
     }
 

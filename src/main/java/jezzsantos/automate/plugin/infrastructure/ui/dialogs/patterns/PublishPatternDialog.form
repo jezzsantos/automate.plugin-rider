@@ -42,4 +42,7 @@
       </vspacer>
     </children>
   </grid>
+  <inspectionSuppressions>
+    <suppress inspection="NoLabelFor" id="e7f8c"/>
+  </inspectionSuppressions>
 </form>
