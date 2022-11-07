@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 
 public class InstallToolkitDialog extends DialogWrapper {
@@ -31,7 +30,6 @@ public class InstallToolkitDialog extends DialogWrapper {
         this.setTitle(AutomateBundle.message("dialog.InstallToolkit.Title"));
         this.locationTitle.setText(AutomateBundle.message("dialog.InstallToolkit.Location.Title"));
         this.locationTitle.setLabelFor(this.location);
-        this.location.setPreferredSize(new Dimension(380, this.location.getHeight()));
         this.location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title"), null, project,
                                               FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
     }
@@ -85,7 +83,7 @@ public class InstallToolkitDialog extends DialogWrapper {
     private void createUIComponents() {
 
         this.location = new TextFieldWithBrowseButtonAndHint();
-        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
+        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Hint.Message", AutomateConstants.ToolkitFileExtension));
     }
 
     public static class InstallToolkitDialogContext {
