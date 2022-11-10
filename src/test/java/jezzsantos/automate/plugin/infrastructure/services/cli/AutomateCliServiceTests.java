@@ -63,6 +63,8 @@ public class AutomateCliServiceTests {
         this.platform = Mockito.mock(IOsPlatform.class);
         Mockito.when(this.platform.getIsWindowsOs())
           .thenReturn(true);
+        Mockito.when(this.platform.getDotNetToolsDirectory())
+          .thenReturn("atoolsdirectory");
         Mockito.when(this.platform.getDotNetInstallationDirectory())
           .thenReturn("aninstallationdirectory");
         this.cliRunner = Mockito.mock(IAutomateCliRunner.class);
@@ -89,7 +91,7 @@ public class AutomateCliServiceTests {
 
         Mockito.verify(this.configuration).getExecutablePath();
         Mockito.verify(this.cliRunner)
-          .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("aninstallationdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
+          .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("atoolsdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
                              argThat(x -> x.size() == 1
                                && x.get(0).equals("@info")
                              ));
@@ -117,7 +119,7 @@ public class AutomateCliServiceTests {
 
         Mockito.verify(this.configuration).getExecutablePath();
         Mockito.verify(this.cliRunner)
-          .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("aninstallationdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
+          .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("atoolsdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
                              argThat(x -> x.size() == 1
                                && x.get(0).equals("@info")
                              ));
@@ -144,7 +146,7 @@ public class AutomateCliServiceTests {
 
         Mockito.verify(this.configuration).getExecutablePath();
         Mockito.verify(this.cliRunner)
-          .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("aninstallationdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
+          .executeStructured(any(), argThat(x -> x.getCurrentDirectory().equals("atoolsdirectory") && x.getExecutablePath().equals(StringWithDefault.fromValue(filename))),
                              argThat(x -> x.size() == 1
                                && x.get(0).equals("@info")
                              ));
@@ -166,7 +168,7 @@ public class AutomateCliServiceTests {
 
         var result = this.service.getDefaultExecutableLocation();
 
-        var path = Paths.get("aninstallationdirectory").resolve("automate.exe").toString();
+        var path = Paths.get("atoolsdirectory").resolve("automate.exe").toString();
         assertEquals(path, result);
     }
 

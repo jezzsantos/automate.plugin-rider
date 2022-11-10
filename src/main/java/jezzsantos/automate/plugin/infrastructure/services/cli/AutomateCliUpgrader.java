@@ -40,7 +40,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
     }
 
     @Override
-    public @NotNull CliExecutableStatus upgrade(@NotNull String currentDirectory, @NotNull StringWithDefault executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy) {
+    public @NotNull CliExecutableStatus upgrade(@NotNull String installationDirectory, @NotNull StringWithDefault executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy) {
 
         switch (executableStatus.getCompatibility()) {
             case UNKNOWN -> {
@@ -54,7 +54,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                 else {
                     if (installPolicy == CliInstallPolicy.AUTO_UPGRADE) {
                         if (!executablePath.isCustomized()) {
-                            var installResult = tryInstallLatestCli(currentDirectory, false);
+                            var installResult = tryInstallLatestCli(installationDirectory, false);
                             var latestVersion = installResult.getV2();
                             if (latestVersion == null) {
                                 var exception = Objects.requireNonNullElse(installResult.getV1(), "").toString();
@@ -96,7 +96,7 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                 else {
                     if (installPolicy == CliInstallPolicy.AUTO_UPGRADE) {
                         if (!executablePath.isCustomized()) {
-                            var installResult = tryInstallLatestCli(currentDirectory, true);
+                            var installResult = tryInstallLatestCli(installationDirectory, true);
                             var latestVersion = installResult.getV2();
                             if (latestVersion == null) {
                                 var exception = Objects.requireNonNullElse(installResult.getV1(), "").toString();
@@ -133,12 +133,12 @@ public class AutomateCliUpgrader implements ICliUpgrader {
         return executableStatus;
     }
 
-    private Tuple2<Throwable, ModuleDescriptor.Version> tryInstallLatestCli(@NotNull String currentDirectory, boolean uninstall) {
+    private Tuple2<Throwable, ModuleDescriptor.Version> tryInstallLatestCli(@NotNull String installationDirectory, boolean uninstall) {
 
         try {
             return new Tuple2<>(null, this.taskRunner.runModal(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.Task.Title",
                                                                                       AutomateConstants.ExecutableName),
-                                                               () -> AutomateCliUpgrader.this.cliRunner.installLatest(currentDirectory, uninstall)));
+                                                               () -> AutomateCliUpgrader.this.cliRunner.installLatest(installationDirectory, uninstall)));
         } catch (Exception ex) {
             alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.Failed.Message", AutomateConstants.ExecutableName, ex.getMessage()), false);
             return new Tuple2<>(ex, null);

@@ -102,7 +102,7 @@ public class AutomateCliService implements IAutomateCliService {
     @NotNull
     public static String getDefaultExecutableLocation(@NotNull IOsPlatform platform) {
 
-        return Paths.get(platform.getDotNetInstallationDirectory()).resolve(getExecutableName(platform)).toString();
+        return Paths.get(platform.getDotNetToolsDirectory()).resolve(getExecutableName(platform)).toString();
     }
 
     @NotNull
@@ -709,8 +709,8 @@ public class AutomateCliService implements IAutomateCliService {
         return this.recorder.withOperation("auto-upgrade", () -> {
                                                var status = refreshExecutableStatus(executablePath);
                                                if (status.getCompatibility() != CliVersionCompatibility.COMPATIBLE) {
-                                                   var currentDirectory = this.platform.getDotNetInstallationDirectory();
-                                                   status = this.upgrader.upgrade(currentDirectory, executablePath, executableName, status, installPolicy);
+                                                   var installationDirectory = this.platform.getDotNetInstallationDirectory();
+                                                   status = this.upgrader.upgrade(installationDirectory, executablePath, executableName, status, installPolicy);
                                                    saveStatusIfSupported(status);
                                                }
 
@@ -779,7 +779,7 @@ public class AutomateCliService implements IAutomateCliService {
     @NotNull
     private CliExecutableStatus refreshExecutableStatus(@NotNull StringWithDefault executablePath) {
 
-        var currentDirectory = this.platform.getDotNetInstallationDirectory();
+        var currentDirectory = this.platform.getDotNetToolsDirectory();
         var executableStatus = tryGetExecutableStatus(currentDirectory, executablePath);
         saveStatusIfSupported(executableStatus);
 

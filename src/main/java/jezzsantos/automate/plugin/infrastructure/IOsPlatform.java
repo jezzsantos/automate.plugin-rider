@@ -7,6 +7,9 @@ public interface IOsPlatform {
     boolean getIsWindowsOs();
 
     @NotNull
+    String getDotNetToolsDirectory();
+
+    @NotNull
     String getDotNetInstallationDirectory();
 
     @NotNull

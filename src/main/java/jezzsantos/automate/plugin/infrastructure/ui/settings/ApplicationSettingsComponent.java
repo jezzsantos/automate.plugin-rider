@@ -75,7 +75,7 @@ public class ApplicationSettingsComponent {
           .addComponentFillVertically(new JPanel(), 0)
           .getPanel();
 
-        this.currentDirectory = platform.getDotNetInstallationDirectory();
+        this.currentDirectory = platform.getDotNetToolsDirectory();
         if (!automateService.isCliInstalled(this.currentDirectory)) {
             var configuration = IApplicationConfiguration.getInstance();
             var status = automateService.tryGetExecutableStatus(this.currentDirectory, configuration.getExecutablePath());

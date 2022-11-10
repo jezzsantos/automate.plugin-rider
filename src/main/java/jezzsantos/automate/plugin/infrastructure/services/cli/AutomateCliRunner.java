@@ -97,10 +97,10 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     @Nullable
     @Override
-    public ModuleDescriptor.Version installLatest(@NotNull String currentDirectory, boolean uninstall) {
+    public ModuleDescriptor.Version installLatest(@NotNull String installationDirectory, boolean uninstall) {
 
         if (uninstall) {
-            var uninstallResult = uninstallCli(currentDirectory);
+            var uninstallResult = uninstallCli(installationDirectory);
             if (uninstallResult.isError()) {
                 return null;
             }
@@ -108,7 +108,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
         }
 
-        var result = installCli(currentDirectory);
+        var result = installCli(installationDirectory);
         if (result.isError()) {
             return null;
         }
@@ -195,7 +195,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult uninstallCli(@NotNull String currentDirectory) {
+    private CliTextResult uninstallCli(@NotNull String installationDirectory) {
 
         var commandLine = new ArrayList<String>() {{
             add("dotnet");
@@ -207,7 +207,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Started.Message"), CliLogEntryType.NORMAL);
         return this.recorder.measureCliCall((ignore) -> {
-            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), currentDirectory);
+            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), installationDirectory);
             if (result.getSuccess()) {
                 var output = Objects.requireNonNull(result.getOutput());
                 return new CliTextResult("", output);
@@ -239,7 +239,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult installCli(@NotNull String currentDirectory) {
+    private CliTextResult installCli(@NotNull String installationDirectory) {
 
         var commandLine = new ArrayList<String>() {{
             add("dotnet");
@@ -252,7 +252,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
         logEntry(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Started.Message"), CliLogEntryType.NORMAL);
 
         return this.recorder.measureCliCall((ignore) -> {
-            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), currentDirectory);
+            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), installationDirectory);
             if (result.getSuccess()) {
                 var output = Objects.requireNonNull(result.getOutput());
                 return new CliTextResult("", output);
