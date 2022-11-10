@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+- Minimum compatibility with `automate` CLI version 1.1.0
+
 ### Added
 
 ### Changed
@@ -18,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+- General: Closed #32. Automatic installation on macOS and Linux no longer relies on the path being set when run from
+  Dock (in macOS)
 
 ### Security
 

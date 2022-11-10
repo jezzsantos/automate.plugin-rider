@@ -61,10 +61,10 @@ public class OsPlatformTests {
               .thenReturn("afilepath");
 
             var result = OsPlatformTests.this.platform.getDotNetInstallationDirectory(true,
-                                                                                      Map.of("PATH", "apathcomponent"),
+                                                                                      Map.of("Path", "apathcomponent"),
                                                                                       callback);
 
-            assertEquals("afilepath", result);
+            assertEquals("apathcomponent", result);
             Mockito.verify(callback).apply("apathcomponent", "dotnet.exe");
             Mockito.verifyNoMoreInteractions(callback);
         }
@@ -106,7 +106,7 @@ public class OsPlatformTests {
                                                                                         ? "afallbackpath"
                                                                                         : null);
 
-            assertEquals("afallbackpath", result);
+            assertEquals(OsPlatform.DotNetExecutableLocationFallbacksNix.get(0), result);
         }
 
         @SuppressWarnings("unchecked")
@@ -121,7 +121,7 @@ public class OsPlatformTests {
                                                                                       Map.of("PATH", "apathcomponent"),
                                                                                       callback);
 
-            assertEquals("afilepath", result);
+            assertEquals("apathcomponent", result);
             Mockito.verify(callback).apply("apathcomponent", "dotnet");
             Mockito.verifyNoMoreInteractions(callback);
         }
