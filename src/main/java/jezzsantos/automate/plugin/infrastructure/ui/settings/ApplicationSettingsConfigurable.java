@@ -1,5 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.settings;
 
+import com.intellij.ide.ui.search.SearchableOptionContributor;
+import com.intellij.ide.ui.search.SearchableOptionProcessor;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
@@ -7,13 +9,18 @@ import jezzsantos.automate.plugin.application.services.interfaces.IApplicationCo
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 import java.util.Objects;
 
 public class ApplicationSettingsConfigurable implements SearchableConfigurable {
 
+    public static final String ConfigurableId = "jezzsantos.automate.infrastructure.settings.ApplicationSettingsConfigurable";
+    public static final String ConfigurableDisplayName = AutomateBundle.message("settings.Title");
     @NotNull
     private final IApplicationConfiguration configuration;
     private final IOsPlatform platform;
@@ -33,12 +40,11 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         this.platform = platform;
     }
 
-    @SuppressWarnings("DialogTitleCapitalization")
-    @Nls(capitalization = Nls.Capitalization.Title)
+    @Nls
     @Override
     public String getDisplayName() {
 
-        return AutomateBundle.message("settings.Title");
+        return ConfigurableDisplayName;
     }
 
     @Nullable
@@ -49,8 +55,9 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         return this.settingsComponent.getPanel();
     }
 
+    @Nullable
     @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
+    public JComponent getPreferredFocusedComponent() {
 
         return this.settingsComponent.getPreferredFocusedComponent();
     }
@@ -89,10 +96,33 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         this.settingsComponent = null;
     }
 
+    @NotNull
     @Override
-    public @NotNull
-    @NonNls String getId() {
+    public String getId() {
 
-        return "jezzsantos.automate.infrastructure.settings.ApplicationSettingsConfigurable";
+        return ConfigurableId;
+    }
+
+    public static class OptionContributor extends SearchableOptionContributor {
+
+        @Override
+        public void processOptions(@NotNull SearchableOptionProcessor processor) {
+
+            addOptions(processor, "cli", AutomateBundle.message("settings.ViewCliLog.Label.Title"));
+            addOptions(processor, "authoring", AutomateBundle.message("settings.AuthoringMode.Label.Message"));
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private static void addOptions(@NotNull SearchableOptionProcessor processor, @NotNull String text, @Nullable String path, @Nullable String hit, @NotNull String configurableId, @Nullable String configurableDisplayName, boolean applyStemming) {
+
+            processor.addOptions(text, path, hit, configurableId, configurableDisplayName, applyStemming);
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private void addOptions(@NotNull SearchableOptionProcessor processor, @NotNull String text, @NotNull String hit) {
+
+            addOptions(processor, text, null, hit, ApplicationSettingsConfigurable.ConfigurableId,
+                       ApplicationSettingsConfigurable.ConfigurableDisplayName, true);
+        }
     }
 }

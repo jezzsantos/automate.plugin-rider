@@ -30,6 +30,8 @@
                 instance="jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable"
                 id="jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable"
                 displayName="automate"/>
+        <search.optionContributor
+                implementation="jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable$OptionContributor"/>
         <projectService
                 serviceInterface="jezzsantos.automate.plugin.application.IAutomateApplication"
                 serviceImplementation="jezzsantos.automate.plugin.application.AutomateApplication"/>
