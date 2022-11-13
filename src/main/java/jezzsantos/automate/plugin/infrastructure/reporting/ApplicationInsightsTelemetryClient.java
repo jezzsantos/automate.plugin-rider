@@ -9,6 +9,7 @@ import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import jezzsantos.automate.ApplicationSettings;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.IPluginMetadata;
+import jezzsantos.automate.plugin.infrastructure.OsPlatform;
 import org.jetbrains.annotations.NotNull;
 
 public class ApplicationInsightsTelemetryClient implements ITelemetryClient, Disposable {
@@ -96,14 +97,15 @@ public class ApplicationInsightsTelemetryClient implements ITelemetryClient, Dis
         this.client.flush();
     }
 
-    private static String createCloudRoleName(IPluginMetadata pluginMetadata) {
+    @NotNull
+    private static String createCloudRoleName(@NotNull IPluginMetadata pluginMetadata) {
 
         return String.format(ApplicationInsightsMapNameFormat, pluginMetadata.getProductName());
     }
 
+    @NotNull
     private TelemetryClient createClient() {
 
-        var platform = IContainer.getOsPlatform();
         var pluginMetadata = IContainer.getPluginMetadata();
 
         this.client = new TelemetryClient();
@@ -111,8 +113,8 @@ public class ApplicationInsightsTelemetryClient implements ITelemetryClient, Dis
         context.setInstrumentationKey(ApplicationSettings.setting("applicationInsightsInstrumentationKey"));
         context.getComponent().setVersion(pluginMetadata.getRuntimeVersion());
         context.getCloud().setRole(createCloudRoleName(pluginMetadata));
-        context.getDevice().setOperatingSystem(platform.getOperatingSystemName());
-        context.getDevice().setOperatingSystemVersion(platform.getOperatingSystemVersion());
+        context.getDevice().setOperatingSystem(OsPlatform.InternalAccess.getOperatingSystemName());
+        context.getDevice().setOperatingSystemVersion(OsPlatform.InternalAccess.getOperatingSystemVersion());
 
         return this.client;
     }

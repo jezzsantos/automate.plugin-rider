@@ -4,7 +4,8 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.common.recording.LogLevel;
-import jezzsantos.automate.plugin.common.recording.LoggingOnlyRecorder;
+import jezzsantos.automate.plugin.common.recording.Recorder;
+import jezzsantos.automate.plugin.infrastructure.reporting.ApplicationInsightsTelemetryClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -29,9 +30,9 @@ public class OsPlatform implements IOsPlatform {
     private static Boolean cachedIsWindows;
     private final IRecorder recorder;
 
-    public OsPlatform() {
+    public OsPlatform(@NotNull IRecorder recorder) {
 
-        this.recorder = new LoggingOnlyRecorder();
+        this.recorder = recorder;
     }
 
     @Override
@@ -47,13 +48,24 @@ public class OsPlatform implements IOsPlatform {
 
     @NotNull
     @Override
+    public String getOperatingSystemName() {
+
+        return InternalAccess.getOperatingSystemName();
+    }
+
+    @NotNull
+    @Override
+    public String getOperatingSystemVersion() {
+
+        return InternalAccess.getOperatingSystemVersion();
+    }
+
+    @NotNull
+    @Override
     public String getDotNetToolsDirectory() {
 
         if (cachedToolsPath == null) {
             cachedToolsPath = getDotNetToolsDirectory(getIsWindowsOs(), System.getenv(), System.getProperties());
-
-            this.recorder.trace(LogLevel.INFORMATION,
-                                AutomateBundle.message("trace.OsPlatform.DotNetToolsPath.Message", cachedToolsPath));
         }
 
         return cachedToolsPath;
@@ -74,32 +86,16 @@ public class OsPlatform implements IOsPlatform {
                     return null;
                 }
             });
-
-            this.recorder.trace(LogLevel.INFORMATION,
-                                AutomateBundle.message("trace.OsPlatform.DotNetInstallationPath.Message", cachedInstalledPath));
         }
 
         return cachedInstalledPath;
-    }
-
-    @NotNull
-    @Override
-    public String getOperatingSystemName() {
-
-        return Objects.requireNonNullElse(System.getProperty("os.name"), "unknown OS");
-    }
-
-    @NotNull
-    @Override
-    public String getOperatingSystemVersion() {
-
-        return Objects.requireNonNullElse(System.getProperty("os.version"), "0.0");
     }
 
     @TestOnly
     @NotNull
     public String getDotNetInstallationDirectory(boolean isWindows, @NotNull Map<String, String> variables, @NotNull BiFunction<String, String, @Nullable String> getFileIfExists) {
 
+        var osName = getOperatingSystemName();
         var dotNetExecutableFilename = isWindows
           ? "dotnet.exe"
           : "dotnet";
@@ -111,26 +107,42 @@ public class OsPlatform implements IOsPlatform {
         for (var pathComponent : paths) {
             var file = getFileIfExists.apply(pathComponent, dotNetExecutableFilename);
             if (file != null) {
-                this.recorder.trace(LogLevel.INFORMATION, "dotnet executable was found in PATH environment variable, installed at '%s'", pathComponent);
+                this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.OsPlatform.InstallationDirectory.PathVariable.Found.Message", pathComponent));
+                this.recorder.measureEvent("osplatform.installationdirectory.pathvariable", Map.of(
+                  "source", pathVariableName,
+                  "location", pathComponent,
+                  "os", osName
+                ));
                 return pathComponent;
             }
         }
 
         if (paths.length == 0) {
-            this.recorder.trace(LogLevel.INFORMATION, "dotnet executable could not be found in an empty PATH environment variable, searching in fallback paths");
+            this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.OsPlatform.InstallationDirectory.PathVariable.None.Message"));
         }
         else {
-            this.recorder.trace(LogLevel.INFORMATION, "dotnet executable could not be found in any of the paths of the PATH environment variable, searching in fallback paths");
+            this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.OsPlatform.InstallationDirectory.PathVariable.Missing.Message"));
         }
 
+        String location;
         if (isWindows) {
-            var location = getWindowsFallbackPath(variables);
-            this.recorder.trace(LogLevel.INFORMATION, "dotnet executable was found installed at fallback path '%s'", location);
-            return location;
+            location = getWindowsFallbackPath(variables);
+        }
+        else {
+            location = findNixFallbackPath(getFileIfExists, dotNetExecutableFilename);
         }
 
-        var location = findNixFallbackPath(getFileIfExists, dotNetExecutableFilename);
-        this.recorder.trace(LogLevel.INFORMATION, "dotnet executable was found installed at fallback path '%s'", location);
+        if (location == null) {
+            throw new RuntimeException(AutomateBundle.message("exception.OSPlatform.DotNetInstallationDirectory.NotFound"));
+        }
+
+        this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.OsPlatform.InstallationDirectory.FallBack.Message", location));
+        this.recorder.measureEvent("osplatform.installationdirectory.fallback", Map.of(
+          "source", "fallbacks",
+          "location", location,
+          "os", osName
+        ));
+
         return location;
     }
 
@@ -138,15 +150,22 @@ public class OsPlatform implements IOsPlatform {
     @NotNull
     public String getDotNetToolsDirectory(boolean isWindows, @NotNull Map<String, String> variables, @NotNull Properties properties) {
 
-        var location = isWindows
-          ? Paths.get(variables.get("USERPROFILE"), ".dotnet", "tools") + File.separator
-          : Paths.get(properties.getProperty("user.home"), ".dotnet", "tools") + File.separator;
+        var osName = getOperatingSystemName();
+        var homePath = isWindows
+          ? variables.get("USERPROFILE")
+          : properties.getProperty("user.home");
+        var location = Paths.get(homePath, ".dotnet", "tools") + File.separator;
 
-        this.recorder.trace(LogLevel.INFORMATION, "dotnet tools directory is '%s'", location);
+        this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.OsPlatform.ToolsDirectory.Found.Message", location));
+        this.recorder.measureEvent("osplatform.toolsdirectory", Map.of(
+          "location", location,
+          "os", osName
+        ));
+
         return location;
     }
 
-    @NotNull
+    @Nullable
     private static String findNixFallbackPath(@NotNull BiFunction<String, String, @Nullable String> getFileIfExists, @NotNull String dotNetExecutableFilename) {
 
         for (var fallbackPath : DotNetExecutableLocationFallbacksNix) {
@@ -156,12 +175,36 @@ public class OsPlatform implements IOsPlatform {
             }
         }
 
-        throw new RuntimeException(AutomateBundle.message("exception.OSPlatform.DotNetInstallationDirectory.NotFound"));
+        return null;
     }
 
-    @NotNull
+    @Nullable
     private static String getWindowsFallbackPath(@NotNull Map<String, String> environmentVariables) {
 
-        return Paths.get(environmentVariables.get("ProgramFiles"), "dotnet") + File.separator;
+        var path = environmentVariables.get("ProgramFiles");
+        if (path == null || path.isEmpty()) {
+            return null;
+        }
+
+        return Paths.get(path, "dotnet") + File.separator;
+    }
+
+    /**
+     * This class exists to provide an internal version of these methods to be called from dependencies of a {@link IRecorder}.
+     * It works around the cyclic dependency between {@link OsPlatform} to {@link ApplicationInsightsTelemetryClient} through {@link Recorder}
+     */
+    public static class InternalAccess {
+
+        @NotNull
+        public static String getOperatingSystemName() {
+
+            return Objects.requireNonNullElse(System.getProperty("os.name"), "unknown OS");
+        }
+
+        @NotNull
+        public static String getOperatingSystemVersion() {
+
+            return Objects.requireNonNullElse(System.getProperty("os.version"), "0.0");
+        }
     }
 }

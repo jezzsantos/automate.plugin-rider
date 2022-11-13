@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.common;
 
 import jezzsantos.automate.plugin.application.services.interfaces.INotifier;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.AutomatePluginMetadata;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
@@ -62,7 +63,7 @@ class SingletonContainer {
     public static IOsPlatform getOsPlatform() {
 
         if (osPlatform == null) {
-            osPlatform = new OsPlatform();
+            osPlatform = new OsPlatform(IRecorder.getInstance());
         }
 
         return osPlatform;

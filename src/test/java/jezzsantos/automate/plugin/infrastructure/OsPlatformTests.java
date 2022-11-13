@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure;
 
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,8 @@ public class OsPlatformTests {
     @BeforeEach
     public void setUp() {
 
-        this.platform = new OsPlatform();
+        var recorder = Mockito.mock(IRecorder.class);
+        this.platform = new OsPlatform(recorder);
     }
 
     @Nested

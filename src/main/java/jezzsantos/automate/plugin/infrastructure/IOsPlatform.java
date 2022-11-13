@@ -7,14 +7,15 @@ public interface IOsPlatform {
     boolean getIsWindowsOs();
 
     @NotNull
+    String getOperatingSystemName();
+
+    @SuppressWarnings("unused")
+    @NotNull
+    String getOperatingSystemVersion();
+
+    @NotNull
     String getDotNetToolsDirectory();
 
     @NotNull
     String getDotNetInstallationDirectory();
-
-    @NotNull
-    String getOperatingSystemName();
-
-    @NotNull
-    String getOperatingSystemVersion();
 }
