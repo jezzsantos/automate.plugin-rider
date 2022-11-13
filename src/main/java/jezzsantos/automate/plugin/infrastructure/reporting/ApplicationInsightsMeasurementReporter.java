@@ -85,7 +85,7 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
             }
         }
         else {
-            return action.apply(null);
+            return action.apply(new SessionOnlyCorrelationBuilder());
         }
     }
 
@@ -99,6 +99,15 @@ public class ApplicationInsightsMeasurementReporter implements IMeasurementRepor
     private String createOperationId() {
 
         return String.format("jbrd_opr_%s", UUID.randomUUID().toString().replace("-", ""));
+    }
+
+    public static class SessionOnlyCorrelationBuilder implements ICorrelationIdBuilder {
+
+        @Override
+        public @NotNull String build(@NotNull String sessionId) {
+
+            return sessionId;
+        }
     }
 
     public static class CorrelationIdBuilder implements ICorrelationIdBuilder {

@@ -162,7 +162,7 @@ public class Recorder implements IRecorder, Disposable {
             return this.measurer.measureCliCall(action, actionName, command);
         }
         else {
-            return action.apply(null);
+            return action.apply(new ApplicationInsightsMeasurementReporter.SessionOnlyCorrelationBuilder());
         }
     }
 
