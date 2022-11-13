@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.1.1] - 2022-11-13
+
+### Notes
+
 - Minimum compatibility with `automate` CLI version 1.1.0
 
 ### Added
