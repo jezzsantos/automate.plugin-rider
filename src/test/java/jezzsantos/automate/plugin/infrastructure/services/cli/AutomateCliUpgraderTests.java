@@ -52,7 +52,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", false);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.INFO), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.AutoInstallSucceeds.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Success.Message",
                                                                                          "anexecutablename", "99.0.0"))), any());
         assertEquals("99.0.0", result.getVersion());
     }
@@ -68,7 +68,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", false);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallFailed.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Failed",
                                                                                          "anexecutablename"))), any());
         assertEquals(status, result);
     }
@@ -84,7 +84,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallForbidden.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.UnSupported.Message",
                                                                                          "anexecutablename", "acustomexecutablepath"))), any());
         assertEquals(status, result);
     }
@@ -98,7 +98,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.NotInstalled.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.Disabled.Message",
                                                                                          "anexecutablename"))), any());
         assertEquals(status, result);
     }
@@ -114,7 +114,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", true);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.INFO), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.AutoUpgradedSucceeds.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Success.Message",
                                                                                          "anexecutablename", "0.0.0", "99.0.0"))), any());
         assertEquals("99.0.0", result.getVersion());
     }
@@ -130,7 +130,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", true);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeFailed.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Failed.Message",
                                                                                          "anexecutablename", "0.0.0", AutomateConstants.MinimumSupportedVersion))), any());
         assertEquals(status, result);
     }
@@ -146,7 +146,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeForbidden.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.UnSupported.Message",
                                                                                          "anexecutablename", "acustomexecutablepath"))), any());
         assertEquals(status, result);
     }
@@ -160,7 +160,7 @@ public class AutomateCliUpgraderTests {
 
         Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
-                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.IncompatibleVersion.Message",
+                                            argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Disabled.Message",
                                                                                          "anexecutablename", "0.0.0", AutomateConstants.MinimumSupportedVersion))), any());
         assertEquals(status, result);
     }

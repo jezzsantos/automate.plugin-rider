@@ -10,6 +10,7 @@ import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.common.recording.LogLevel;
 import jezzsantos.automate.plugin.infrastructure.ITaskRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -42,14 +43,18 @@ public class AutomateCliUpgrader implements ICliUpgrader {
     @Override
     public @NotNull CliExecutableStatus upgrade(@NotNull String installationDirectory, @NotNull StringWithDefault executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy) {
 
-        switch (executableStatus.getCompatibility()) {
+        var compatibility = executableStatus.getCompatibility();
+        switch (compatibility) {
             case UNKNOWN -> {
+                var neededVersion = executableStatus.getMinCompatibleVersion();
                 if (installPolicy == CliInstallPolicy.NONE) {
+                    this.recorder.trace(LogLevel.INFORMATION,
+                                        AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.Disabled", executableName, neededVersion));
                     this.recorder.measureEvent("autoupgrader.cli-missing.upgrade-disabled", Map.of(
                       "Current Version", ""
                     ));
                     alertInstallerError(
-                      AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.NotInstalled.Message", executableName), true);
+                      AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.Disabled.Message", executableName), true);
                 }
                 else {
                     if (installPolicy == CliInstallPolicy.AUTO_UPGRADE) {
@@ -58,26 +63,36 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                             var latestVersion = installResult.getV2();
                             if (latestVersion == null) {
                                 var exception = Objects.requireNonNullElse(installResult.getV1(), "").toString();
+                                this.recorder.trace(LogLevel.ERROR,
+                                                    AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Failed", executableName, exception,
+                                                                           neededVersion));
                                 this.recorder.measureEvent("autoupgrader.cli-missing.upgrade-failed", Map.of(
                                   "Current Version", "",
                                   "Exception", exception
                                 ));
-                                alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallFailed.Message", executableName), true);
+                                alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Failed", executableName),
+                                                    true);
                             }
                             else {
                                 executableStatus = new CliExecutableStatus(executableName, latestVersion.toString());
+                                this.recorder.trace(LogLevel.INFORMATION,
+                                                    AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Success", executableName,
+                                                                           neededVersion));
                                 this.recorder.measureEvent("autoupgrader.cli-missing.upgrade-success", Map.of(
                                   "Current Version", "",
                                   "Required Version", latestVersion.toString()));
                                 alertInstallerSuccess(
-                                  AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.AutoInstallSucceeds.Message", executableName, latestVersion.toString()));
+                                  AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Success.Message", executableName,
+                                                         latestVersion.toString()));
                             }
                         }
                         else {
+                            this.recorder.trace(LogLevel.WARNING,
+                                                AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.UnSupported", executableName));
                             this.recorder.measureEvent("autoupgrader.cli-missing.upgrade-forbidden", Map.of(
                               "Current Version", ""
                             ));
-                            alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.InstallForbidden.Message", executableName,
+                            alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.UnSupported.Message", executableName,
                                                                        executablePath.getValueOrDefault()), true);
                         }
                     }
@@ -87,10 +102,13 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                 var currentVersion = executableStatus.getVersion();
                 var neededVersion = executableStatus.getMinCompatibleVersion();
                 if (installPolicy == CliInstallPolicy.NONE) {
+                    this.recorder.trace(LogLevel.INFORMATION,
+                                        AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Disabled", executableName, currentVersion,
+                                                               neededVersion));
                     this.recorder.measureEvent("autoupgrader.cli-expired.upgrade-disabled", Map.of(
                       "Current Version", currentVersion,
                       "Required Version", neededVersion));
-                    alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.IncompatibleVersion.Message", executableName, currentVersion,
+                    alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Disabled.Message", executableName, currentVersion,
                                                                neededVersion), true);
                 }
                 else {
@@ -100,34 +118,45 @@ public class AutomateCliUpgrader implements ICliUpgrader {
                             var latestVersion = installResult.getV2();
                             if (latestVersion == null) {
                                 var exception = Objects.requireNonNullElse(installResult.getV1(), "").toString();
+                                this.recorder.trace(LogLevel.ERROR,
+                                                    AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Failed.Message", executableName, exception,
+                                                                           currentVersion, neededVersion));
                                 this.recorder.measureEvent("autoupgrader.cli-expired.upgrade-failed", Map.of(
                                   "Current Version", currentVersion,
                                   "Required Version", neededVersion,
                                   "Exception", exception
                                 ));
                                 alertInstallerError(
-                                  AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeFailed.Message", executableName, currentVersion, neededVersion), true);
+                                  AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Failed.Message", executableName, currentVersion,
+                                                         neededVersion), true);
                             }
                             else {
                                 executableStatus = new CliExecutableStatus(executableName, latestVersion.toString());
+                                this.recorder.trace(LogLevel.INFORMATION,
+                                                    AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Success", executableName, currentVersion,
+                                                                           neededVersion));
                                 this.recorder.measureEvent("autoupgrader.cli-expired.upgrade-succeed", Map.of(
                                   "Current Version", currentVersion,
                                   "Required Version", latestVersion.toString()));
                                 alertInstallerSuccess(
-                                  AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.AutoUpgradedSucceeds.Message", executableName, currentVersion, latestVersion)
+                                  AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Success.Message", executableName, currentVersion,
+                                                         latestVersion)
                                 );
                             }
                         }
                         else {
                             this.recorder.measureEvent("autoupgrader.cli-expired.upgrade-forbidden", null);
-                            alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.CliInstall.UpgradeForbidden.Message", executableName,
+                            this.recorder.trace(LogLevel.WARNING,
+                                                AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.UnSupported", executableName, currentVersion,
+                                                                       neededVersion));
+                            alertInstallerError(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.UnSupported.Message", executableName,
                                                                        executablePath.getValueOrDefault()), true);
                         }
                     }
                 }
             }
-            case COMPATIBLE -> {
-            }
+            case COMPATIBLE ->
+              this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.AutomateCliUpgrader.Upgrade.Compatible", executableName, executableStatus.getVersion()));
         }
 
         return executableStatus;

@@ -45,7 +45,12 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     public AutomateCliRunner() {
 
-        this(IRecorder.getInstance(), new ProcessRunner());
+        this(IRecorder.getInstance());
+    }
+
+    public AutomateCliRunner(IRecorder recorder) {
+
+        this(recorder, new ProcessRunner(recorder));
     }
 
     @TestOnly
@@ -53,27 +58,6 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         this.recorder = recorder;
         this.processRunner = processRunner;
-    }
-
-    @Nullable
-    public String getCommandDescriptorFromArgs(List<String> commandLine) {
-
-        if (commandLine == null
-          || commandLine.isEmpty()) {
-            return null;
-        }
-
-        var result = Arrays.stream(Arrays.copyOfRange(commandLine.toArray((new String[0])), 1, 4))
-          .filter(Objects::nonNull)
-          .filter(arg -> arg.charAt(0) == '@')
-          .map(arg -> arg.substring(1))
-          .collect(Collectors.joining("."));
-
-        if (result.isEmpty()) {
-            return null;
-        }
-
-        return result;
     }
 
     @NotNull
@@ -146,6 +130,27 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     public void log(@NotNull CliLogEntry entry) {
 
         logEntry(entry.Text, entry.Type);
+    }
+
+    @Nullable
+    public String getCommandDescriptorFromArgs(List<String> commandLine) {
+
+        if (commandLine == null
+          || commandLine.isEmpty()) {
+            return null;
+        }
+
+        var result = Arrays.stream(Arrays.copyOfRange(commandLine.toArray((new String[0])), 1, 4))
+          .filter(Objects::nonNull)
+          .filter(arg -> arg.charAt(0) == '@')
+          .map(arg -> arg.substring(1))
+          .collect(Collectors.joining("."));
+
+        if (result.isEmpty()) {
+            return null;
+        }
+
+        return result;
     }
 
     @NotNull

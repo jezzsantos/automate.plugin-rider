@@ -1,5 +1,8 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.common.recording.LogLevel;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +18,12 @@ public class ProcessRunner implements IProcessRunner {
 
     private static final int SuccessExitCode = 0;
     private static final int MaxWaitForCliToComplete = 30;
+    private final IRecorder recorder;
+
+    public ProcessRunner(IRecorder recorder) {
+
+        this.recorder = recorder;
+    }
 
     @Override
     public void dispose() {
@@ -28,6 +37,7 @@ public class ProcessRunner implements IProcessRunner {
         builder.redirectErrorStream(false);
 
         builder.directory(new File(currentDirectory));
+        this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.ProcessRunner.Start.Before", currentDirectory, commandLineAndArguments));
 
         Process process = null;
         try {
@@ -46,19 +56,26 @@ public class ProcessRunner implements IProcessRunner {
 
             var success = process.waitFor(MaxWaitForCliToComplete, TimeUnit.SECONDS);
             if (!success) {
+                this.recorder.trace(LogLevel.ERROR, AutomateBundle.message("trace.ProcessRunner.After.FailedToStart", MaxWaitForCliToComplete));
                 return ProcessResult.createFailedToStart();
             }
             var stdErr = Objects.requireNonNullElse(stdErrWriter.toString(), "").trim();
             var stdOut = Objects.requireNonNullElse(stdOutWriter.toString(), "").trim();
             var exitCode = process.exitValue();
             if (exitCode != SuccessExitCode) {
+                this.recorder.trace(LogLevel.ERROR,
+                                    AutomateBundle.message("trace.ProcessRunner.After.FailedWithError", exitCode, stdOut, stdErr));
                 return ProcessResult.createFailedWithError(stdErr, exitCode);
             }
             else {
+                this.recorder.trace(LogLevel.INFORMATION,
+                                    AutomateBundle.message("trace.ProcessRunner.After.Success", exitCode, stdOut, stdErr));
                 return ProcessResult.createSuccess(stdOut);
             }
-        } catch (InterruptedException | IOException e) {
-            return ProcessResult.createFailedWithException(e);
+        } catch (InterruptedException | IOException exception) {
+            this.recorder.trace(LogLevel.ERROR,
+                                AutomateBundle.message("trace.ProcessRunner.After.FailedWithException", exception.toString()));
+            return ProcessResult.createFailedWithException(exception);
         } finally {
             if (process != null) {
                 process.destroy();
