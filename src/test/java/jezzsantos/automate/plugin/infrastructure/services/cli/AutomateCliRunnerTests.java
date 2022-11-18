@@ -123,12 +123,11 @@ public class AutomateCliRunnerTests {
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
-        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 5
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 4
           && args.get(0).equals("anexecutablepath")
           && args.get(1).equals("anarg1")
           && args.get(2).equals("anarg2")
-          && args.get(3).equals(AutomateConstants.UsageAllowedOption)
-          && args.get(4).equals("false")
+          && args.get(3).equals(String.format("%s:false", AutomateConstants.UsageAllowedOption))
         ), argThat(x -> x.equals("acurrentdirectory")));
         Mockito.verify(this.recorder).measureCliCall(any(), argThat(x -> x.equals("instruct-cli")), argThat(x -> x.equals("anarg1.anarg2")));
     }
@@ -251,21 +250,19 @@ public class AutomateCliRunnerTests {
         this.runner.executeStructured(TestStructure.class, createContextForbidsUsage(), List.of(OutputStructuredOptionShorthand));
 
         Mockito.verify(this.processRunner)
-          .start(argThat(x -> x.size() == 4
-            && x.get(0).equals("anexecutablepath")
-            && x.get(1).equals(OutputStructuredOptionShorthand)
-            && x.get(2).equals(AutomateConstants.UsageAllowedOption)
-            && x.get(3).equals("false")
+          .start(argThat(args -> args.size() == 3
+            && args.get(0).equals("anexecutablepath")
+            && args.get(1).equals(OutputStructuredOptionShorthand)
+            && args.get(2).equals(String.format("%s:false", AutomateConstants.UsageAllowedOption))
           ), anyString());
 
         this.runner.executeStructured(TestStructure.class, createContextForbidsUsage(), List.of("--output-structured"));
 
         Mockito.verify(this.processRunner)
-          .start(argThat(x -> x.size() == 4
-            && x.get(0).equals("anexecutablepath")
-            && x.get(1).equals("--output-structured")
-            && x.get(2).equals(AutomateConstants.UsageAllowedOption)
-            && x.get(3).equals("false")
+          .start(argThat(args -> args.size() == 3
+            && args.get(0).equals("anexecutablepath")
+            && args.get(1).equals("--output-structured")
+            && args.get(2).equals(String.format("%s:false", AutomateConstants.UsageAllowedOption))
           ), anyString());
     }
 
@@ -279,11 +276,10 @@ public class AutomateCliRunnerTests {
         this.runner.executeStructured(TestStructure.class, createContextForbidsUsage(), List.of());
 
         Mockito.verify(this.processRunner)
-          .start(argThat(x -> x.size() == 4
-            && x.get(0).equals("anexecutablepath")
-            && x.get(1).equals(OutputStructuredOptionShorthand)
-            && x.get(2).equals(AutomateConstants.UsageAllowedOption)
-            && x.get(3).equals("false")
+          .start(argThat(args -> args.size() == 3
+            && args.get(0).equals("anexecutablepath")
+            && args.get(1).equals(OutputStructuredOptionShorthand)
+            && args.get(2).equals(String.format("%s:false", AutomateConstants.UsageAllowedOption))
           ), anyString());
     }
 
@@ -323,11 +319,10 @@ public class AutomateCliRunnerTests {
         assertEquals(2, this.logs.size());
         assertEquals(CliLogEntryType.SUCCESS, this.logs.get(1).Type);
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), this.logs.get(1).Text);
-        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 4
+        Mockito.verify(this.processRunner).start(argThat(args -> args.size() == 3
           && args.get(0).equals("anexecutablepath")
           && args.get(1).equals(AutomateConstants.OutputStructuredOptionShorthand)
-          && args.get(2).equals(AutomateConstants.UsageAllowedOption)
-          && args.get(3).equals("false")
+          && args.get(2).equals(String.format("%s:false", AutomateConstants.UsageAllowedOption))
         ), argThat(x -> x.equals("acurrentdirectory")));
     }
 

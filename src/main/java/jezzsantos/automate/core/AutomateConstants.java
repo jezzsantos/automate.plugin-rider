@@ -17,7 +17,7 @@ public class AutomateConstants {
     public static final String OutputStructuredOptionShorthand = "--os";
     public static final List<String> OutputStructuredOptionAliases = List.of(OutputStructuredOptionShorthand, "--output-structured");
     public static final String UsageCorrelationOption = "--usage-correlation";
-    public static final String UsageAllowedOption = "--allow-usage";
+    public static final String UsageAllowedOption = "--collect-usage";
     public static String ExecutableName = "automate";
     public static String ApplicationInsightsCliRoleName = "automate CLI";
     public static String ToolkitFileExtension = "toolkit";
@@ -47,16 +47,16 @@ public class AutomateConstants {
             this.displayName = displayName;
         }
 
-        @SuppressWarnings("unused")
-        public String getDisplayName() {return this.displayName;}
-
-        public String getValue() {return this.value;}
-
         @Override
         public String toString() {
 
             return this.displayName;
         }
+
+        @SuppressWarnings("unused")
+        public String getDisplayName() {return this.displayName;}
+
+        public String getValue() {return this.value;}
     }
 
     public enum ElementCardinality {
@@ -90,15 +90,15 @@ public class AutomateConstants {
             this.displayName = displayName;
         }
 
-        public String getValue() {return this.value;}
-
-        public String getDisplayName() {return this.displayName;}
-
         @Override
         public String toString() {
 
             return this.displayName;
         }
+
+        public String getValue() {return this.value;}
+
+        public String getDisplayName() {return this.displayName;}
     }
 
     public enum AutomationType {
@@ -115,13 +115,13 @@ public class AutomateConstants {
             this.displayName = displayName;
         }
 
-        public String getDisplayName() {return this.displayName;}
-
         @Override
         public String toString() {
 
             return this.displayName;
         }
+
+        public String getDisplayName() {return this.displayName;}
     }
 
     public enum CommandExecutionLogItemType {

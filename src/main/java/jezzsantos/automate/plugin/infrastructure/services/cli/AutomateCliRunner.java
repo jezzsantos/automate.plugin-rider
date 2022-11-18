@@ -328,8 +328,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                 commandLine.add(correlationId);
             }
             else {
-                commandLine.add(AutomateConstants.UsageAllowedOption);
-                commandLine.add("false");
+                commandLine.add(String.format("%s:false", AutomateConstants.UsageAllowedOption));
             }
 
             logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", tidyCommandLineArgs(args))), CliLogEntryType.NORMAL);
