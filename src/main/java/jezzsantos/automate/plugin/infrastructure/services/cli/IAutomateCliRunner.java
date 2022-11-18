@@ -20,7 +20,7 @@ public interface IAutomateCliRunner {
     @NotNull <TResult extends StructuredOutput<?>> CliStructuredResult<TResult> executeStructured(@NotNull Class<TResult> outputClass, @NotNull ExecutionContext context, @NotNull List<String> args);
 
     @Nullable
-    ModuleDescriptor.Version installLatest(@NotNull String installationDirectory, boolean uninstall);
+    ModuleDescriptor.Version installLatest(boolean uninstall);
 
     @NotNull
     List<CliLogEntry> getLogs();

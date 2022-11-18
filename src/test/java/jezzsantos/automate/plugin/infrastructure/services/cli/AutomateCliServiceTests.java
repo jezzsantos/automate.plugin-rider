@@ -65,12 +65,10 @@ public class AutomateCliServiceTests {
           .thenReturn(true);
         Mockito.when(this.platform.getDotNetToolsDirectory())
           .thenReturn("atoolsdirectory");
-        Mockito.when(this.platform.getDotNetInstallationDirectory())
-          .thenReturn("aninstallationdirectory");
         this.cliRunner = Mockito.mock(IAutomateCliRunner.class);
         this.upgrader = Mockito.mock(ICliUpgrader.class);
-        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
-          .thenAnswer(invocation -> invocation.getArgument(3));
+        Mockito.when(this.upgrader.upgrade(any(), anyString(), any(), any()))
+          .thenAnswer(invocation -> invocation.getArgument(2));
         this.service = new AutomateCliService(this.recorder, this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
     }
 
@@ -84,7 +82,7 @@ public class AutomateCliServiceTests {
           .thenReturn(StringWithDefault.fromValue(filename));
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(new StructuredError("anerror"), null));
-        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
+        Mockito.when(this.upgrader.upgrade(any(), anyString(), any(), any()))
           .thenReturn(new CliExecutableStatus(executableName, "100.0.0"));
 
         new AutomateCliService(this.recorder, this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
@@ -98,7 +96,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
         Mockito.verify(this.upgrader)
-          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithDefault.fromValue(filename))), argThat(x -> x.equals(executableName)),
+          .upgrade(argThat(x -> x.equals(StringWithDefault.fromValue(filename))), argThat(x -> x.equals(executableName)),
                    any(), any());
     }
 
@@ -112,7 +110,7 @@ public class AutomateCliServiceTests {
           .thenReturn(StringWithDefault.fromValue(filename));
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(null, new GetInfoStructuredOutput("0.0.0")));
-        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
+        Mockito.when(this.upgrader.upgrade(any(), anyString(), any(), any()))
           .thenReturn(new CliExecutableStatus(executableName, "100.0.0"));
 
         new AutomateCliService(this.recorder, this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
@@ -126,7 +124,7 @@ public class AutomateCliServiceTests {
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
         Mockito.verify(this.upgrader)
-          .upgrade(argThat(x -> x.equals("aninstallationdirectory")), argThat(x -> x.equals(StringWithDefault.fromValue(filename))), argThat(x -> x.equals(executableName)),
+          .upgrade(argThat(x -> x.equals(StringWithDefault.fromValue(filename))), argThat(x -> x.equals(executableName)),
                    any(), any());
     }
 
@@ -139,8 +137,8 @@ public class AutomateCliServiceTests {
           .thenReturn(StringWithDefault.fromValue(filename));
         Mockito.when(this.cliRunner.executeStructured(any(), any(), anyList()))
           .thenReturn(new CliStructuredResult<>(null, new GetInfoStructuredOutput("100.0.0")));
-        Mockito.when(this.upgrader.upgrade(anyString(), any(), anyString(), any(), any()))
-          .thenAnswer(invocation -> invocation.getArgument(3));
+        Mockito.when(this.upgrader.upgrade(any(), anyString(), any(), any()))
+          .thenAnswer(invocation -> invocation.getArgument(2));
 
         new AutomateCliService(this.recorder, this.configuration, this.cache, this.platform, this.cliRunner, this.upgrader);
 
@@ -152,7 +150,7 @@ public class AutomateCliServiceTests {
                              ));
         Mockito.verify(this.cache).setIsCliInstalled(true);
         Mockito.verify(this.cliRunner).log(argThat(x -> x.Type == CliLogEntryType.NORMAL));
-        Mockito.verify(this.upgrader, never()).upgrade(anyString(), any(), anyString(), any(), any());
+        Mockito.verify(this.upgrader, never()).upgrade(any(), anyString(), any(), any());
     }
 
     @Test

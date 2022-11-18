@@ -25,6 +25,8 @@ public class OsPlatform implements IOsPlatform {
       "/usr/local/share/dotnet/x64/",
       "/usr/bin",
       "/usr/share/dotnet");
+    public static final String PathVariableOnWindows = "Path";
+    public static final String PathVariableOnNix = "PATH";
     private static String cachedInstalledPath;
     private static String cachedToolsPath;
     private static Boolean cachedIsWindows;
@@ -100,8 +102,8 @@ public class OsPlatform implements IOsPlatform {
           ? "dotnet.exe"
           : "dotnet";
         var pathVariableName = isWindows
-          ? "Path"
-          : "PATH";
+          ? PathVariableOnWindows
+          : PathVariableOnNix;
         var path = Objects.requireNonNullElse(variables.get(pathVariableName), "");
         var paths = path.split(String.valueOf(File.pathSeparatorChar));
         for (var pathComponent : paths) {

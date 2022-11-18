@@ -44,13 +44,13 @@ public class AutomateCliUpgraderTests {
     @Test
     public void whenUpgradeAndNotInstalledAndAutoInstalls_ThenLogsAndNotifySuccess() {
 
-        Mockito.when(this.cliRunner.installLatest(anyString(), anyBoolean()))
+        Mockito.when(this.cliRunner.installLatest(anyBoolean()))
           .thenReturn(ModuleDescriptor.Version.parse("99.0.0"));
         var status = new CliExecutableStatus("anexecutablename");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", false);
+        Mockito.verify(this.cliRunner).installLatest(false);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.INFO), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Success.Message",
                                                                                          "anexecutablename", "99.0.0"))), any());
@@ -60,13 +60,13 @@ public class AutomateCliUpgraderTests {
     @Test
     public void whenUpgradeAndNotInstalledAndInstallFails_ThenLogsAndNotifyError() {
 
-        Mockito.when(this.cliRunner.installLatest(anyString(), anyBoolean()))
+        Mockito.when(this.cliRunner.installLatest(anyBoolean()))
           .thenReturn(null);
         var status = new CliExecutableStatus("anexecutablename");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", false);
+        Mockito.verify(this.cliRunner).installLatest(false);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.Failed",
                                                                                          "anexecutablename"))), any());
@@ -80,9 +80,9 @@ public class AutomateCliUpgraderTests {
         var executablePath = StringWithDefault.fromValue("anexecutablepath");
         executablePath.setValue("acustomexecutablepath");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", executablePath, "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(executablePath, "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
+        Mockito.verify(this.cliRunner, never()).installLatest(anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.AutoUpgrade.UnSupported.Message",
                                                                                          "anexecutablename", "acustomexecutablepath"))), any());
@@ -94,9 +94,9 @@ public class AutomateCliUpgraderTests {
 
         var status = new CliExecutableStatus("anexecutablename");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.NONE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.NONE);
 
-        Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
+        Mockito.verify(this.cliRunner, never()).installLatest(anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.CompatibilityUnknown.Disabled.Message",
                                                                                          "anexecutablename"))), any());
@@ -106,13 +106,13 @@ public class AutomateCliUpgraderTests {
     @Test
     public void whenUpgradeAndIncompatibleVersionInstalledAndAutoUpgrades_ThenLogsAndNotifySuccess() {
 
-        Mockito.when(this.cliRunner.installLatest(anyString(), anyBoolean()))
+        Mockito.when(this.cliRunner.installLatest(anyBoolean()))
           .thenReturn(ModuleDescriptor.Version.parse("99.0.0"));
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", true);
+        Mockito.verify(this.cliRunner).installLatest(true);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.INFO), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Success.Message",
                                                                                          "anexecutablename", "0.0.0", "99.0.0"))), any());
@@ -122,13 +122,13 @@ public class AutomateCliUpgraderTests {
     @Test
     public void whenUpgradeAndIncompatibleVersionInstalledAndFailsUpgrade_ThenLogsAndNotifyError() {
 
-        Mockito.when(this.cliRunner.installLatest(anyString(), anyBoolean()))
+        Mockito.when(this.cliRunner.installLatest(anyBoolean()))
           .thenReturn(null);
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner).installLatest("acurrentdirectory", true);
+        Mockito.verify(this.cliRunner).installLatest(true);
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Failed.Message",
                                                                                          "anexecutablename", "0.0.0", AutomateConstants.MinimumSupportedVersion))), any());
@@ -142,9 +142,9 @@ public class AutomateCliUpgraderTests {
         var executablePath = StringWithDefault.fromValue("anexecutablepath");
         executablePath.setValue("acustomexecutablepath");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", executablePath, "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(executablePath, "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
+        Mockito.verify(this.cliRunner, never()).installLatest(anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.UnSupported.Message",
                                                                                          "anexecutablename", "acustomexecutablepath"))), any());
@@ -156,9 +156,9 @@ public class AutomateCliUpgraderTests {
 
         var status = new CliExecutableStatus("anexecutablename", "0.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.NONE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.NONE);
 
-        Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
+        Mockito.verify(this.cliRunner, never()).installLatest(anyBoolean());
         Mockito.verify(this.notifier).alert(argThat(x -> x == NotificationType.ERROR), anyString(),
                                             argThat(x -> x.equals(AutomateBundle.message("general.AutomateCliUpgrader.Upgrade.InCompatible.AutoUpgrade.Disabled.Message",
                                                                                          "anexecutablename", "0.0.0", AutomateConstants.MinimumSupportedVersion))), any());
@@ -170,9 +170,9 @@ public class AutomateCliUpgraderTests {
 
         var status = new CliExecutableStatus("anexecutablename", "100.0.0");
 
-        var result = this.upgrader.upgrade("acurrentdirectory", StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
+        var result = this.upgrader.upgrade(StringWithDefault.fromValue("anexecutablepath"), "anexecutablename", status, CliInstallPolicy.AUTO_UPGRADE);
 
-        Mockito.verify(this.cliRunner, never()).installLatest(anyString(), anyBoolean());
+        Mockito.verify(this.cliRunner, never()).installLatest(anyBoolean());
         Mockito.verify(this.notifier, never()).alert(any(), anyString(), anyString(), any());
         assertEquals(status, result);
     }

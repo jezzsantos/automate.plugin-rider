@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
 public interface ICliUpgrader {
 
     @NotNull
-    CliExecutableStatus upgrade(@NotNull String installationDirectory, @NotNull StringWithDefault executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy);
+    CliExecutableStatus upgrade(@NotNull StringWithDefault executablePath, @NotNull String executableName, @NotNull CliExecutableStatus executableStatus, @NotNull CliInstallPolicy installPolicy);
 }

@@ -6,7 +6,9 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliTextResult;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
@@ -38,6 +40,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     @NotNull
     private final IProcessRunner processRunner;
     @NotNull
+    private final IOsPlatform platform;
+    @NotNull
     private final List<CliLogEntry> logs = new ArrayList<>();
     @NotNull
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
@@ -45,19 +49,20 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     public AutomateCliRunner() {
 
-        this(IRecorder.getInstance());
+        this(IRecorder.getInstance(), IContainer.getOsPlatform());
     }
 
-    public AutomateCliRunner(IRecorder recorder) {
+    public AutomateCliRunner(IRecorder recorder, IOsPlatform platform) {
 
-        this(recorder, new ProcessRunner(recorder));
+        this(recorder, new ProcessRunner(recorder), platform);
     }
 
     @TestOnly
-    public AutomateCliRunner(@NotNull IRecorder recorder, @NotNull IProcessRunner processRunner) {
+    public AutomateCliRunner(@NotNull IRecorder recorder, @NotNull IProcessRunner processRunner, @NotNull IOsPlatform platform) {
 
         this.recorder = recorder;
         this.processRunner = processRunner;
+        this.platform = platform;
     }
 
     @NotNull
@@ -81,10 +86,10 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
     @Nullable
     @Override
-    public ModuleDescriptor.Version installLatest(@NotNull String installationDirectory, boolean uninstall) {
+    public ModuleDescriptor.Version installLatest(boolean uninstall) {
 
         if (uninstall) {
-            var uninstallResult = uninstallCli(installationDirectory);
+            var uninstallResult = uninstallCli();
             if (uninstallResult.isError()) {
                 return null;
             }
@@ -92,7 +97,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
             logEntry(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
         }
 
-        var result = installCli(installationDirectory);
+        var result = installCli();
         if (result.isError()) {
             return null;
         }
@@ -200,10 +205,13 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult uninstallCli(@NotNull String installationDirectory) {
+    private CliTextResult uninstallCli() {
 
+        var installationDirectory = this.platform.getDotNetInstallationDirectory();
         var commandLine = new ArrayList<String>() {{
-            add("dotnet");
+            add(AutomateCliRunner.this.platform.getIsWindowsOs()
+                  ? "dotnet"
+                  : "./dotnet");
             add("@tool");
             add("@uninstall");
             add("@" + AutomateConstants.ExecutableName);
@@ -226,8 +234,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                         return new CliTextResult(error, "");
                     }
                     case ThrewException -> {
-                        var exception = Objects.requireNonNull(result.getException());
-                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
+                        var exceptionMessage = Objects.requireNonNull(result.getExceptionMessage());
+                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exceptionMessage);
                         logEntry(error, CliLogEntryType.ERROR);
                         return new CliTextResult(error, "");
                     }
@@ -244,10 +252,13 @@ public class AutomateCliRunner implements IAutomateCliRunner {
     }
 
     @NotNull
-    private CliTextResult installCli(@NotNull String installationDirectory) {
+    private CliTextResult installCli() {
 
+        var installationDirectory = this.platform.getDotNetInstallationDirectory();
         var commandLine = new ArrayList<String>() {{
-            add("dotnet");
+            add(AutomateCliRunner.this.platform.getIsWindowsOs()
+                  ? "dotnet"
+                  : "./dotnet");
             add("@tool");
             add("@install");
             add("@" + AutomateConstants.ExecutableName);
@@ -271,8 +282,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                         return new CliTextResult(error, "");
                     }
                     case ThrewException -> {
-                        var exception = Objects.requireNonNull(result.getException());
-                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
+                        var exceptionMessage = Objects.requireNonNull(result.getExceptionMessage());
+                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exceptionMessage);
                         logEntry(error, CliLogEntryType.ERROR);
                         return new CliTextResult(error, "");
                     }
@@ -308,6 +319,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
         return this.recorder.measureCliCall((builder) -> {
 
+            var currentDirectory = context.getCurrentDirectory();
             var sessionId = context.getSessionId();
             var correlationId = builder.build(sessionId);
 
@@ -322,7 +334,7 @@ public class AutomateCliRunner implements IAutomateCliRunner {
 
             logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Started.Message", String.join(" ", tidyCommandLineArgs(args))), CliLogEntryType.NORMAL);
 
-            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), context.getCurrentDirectory());
+            var result = this.processRunner.start(tidyCommandLineArgs(commandLine), currentDirectory);
             if (result.getSuccess()) {
                 logEntry(AutomateBundle.message("general.AutomateCliRunner.CliCommand.Outcome.Success.Message"), CliLogEntryType.SUCCESS);
                 var output = Objects.requireNonNull(result.getOutput());
@@ -337,8 +349,8 @@ public class AutomateCliRunner implements IAutomateCliRunner {
                         return new CliTextResult(error, "");
                     }
                     case ThrewException -> {
-                        var exception = Objects.requireNonNull(result.getException());
-                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exception.getMessage());
+                        var exceptionMessage = Objects.requireNonNull(result.getExceptionMessage());
+                        var error = AutomateBundle.message("general.AutomateCliRunner.Outcome.ThrewException.Message", exceptionMessage);
                         logEntry(error, CliLogEntryType.ERROR);
                         return new CliTextResult(error, "");
                     }

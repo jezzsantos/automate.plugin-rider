@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface IProcessRunner extends Disposable {
 
@@ -104,13 +105,14 @@ class ProcessResult {
     }
 
     @Nullable
-    public Exception getException() {
+    public String getExceptionMessage() {
 
         if (this.success) {
             return null;
         }
 
-        return this.exception;
+        return Objects.requireNonNullElse(this.exception.getCause(), this.exception)
+          .getMessage();
     }
 
     @Nullable

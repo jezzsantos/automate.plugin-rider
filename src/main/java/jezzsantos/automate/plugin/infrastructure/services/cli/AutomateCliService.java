@@ -709,8 +709,7 @@ public class AutomateCliService implements IAutomateCliService {
         return this.recorder.withOperation("auto-upgrade", () -> {
                                                var status = refreshExecutableStatus(executablePath);
                                                if (status.getCompatibility() != CliVersionCompatibility.COMPATIBLE) {
-                                                   var installationDirectory = this.platform.getDotNetInstallationDirectory();
-                                                   status = this.upgrader.upgrade(installationDirectory, executablePath, executableName, status, installPolicy);
+                                                   status = this.upgrader.upgrade(executablePath, executableName, status, installPolicy);
                                                    saveStatusIfSupported(status);
                                                }
 

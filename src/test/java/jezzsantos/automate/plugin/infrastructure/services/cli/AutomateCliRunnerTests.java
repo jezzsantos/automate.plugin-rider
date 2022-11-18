@@ -7,6 +7,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.reporting.ICorrelationIdBuilder;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
@@ -47,8 +48,9 @@ public class AutomateCliRunnerTests {
           .thenReturn("acorrelationid");
         Mockito.when(this.recorder.measureCliCall(any(), any(), any()))
           .thenAnswer(invocation -> ((Function<ICorrelationIdBuilder, ?>) invocation.getArguments()[0]).apply(correlationIdBuilder));
+        var platform = Mockito.mock(IOsPlatform.class);
 
-        this.runner = new AutomateCliRunner(this.recorder, this.processRunner);
+        this.runner = new AutomateCliRunner(this.recorder, this.processRunner, platform);
         this.runner.addLogListener(this::propertyChange);
     }
 
@@ -335,7 +337,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithError("anerror", 1));
 
-        var result = this.runner.installLatest("acurrentdirectory", true);
+        var result = this.runner.installLatest(true);
 
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.UninstallCommand.Outcome.FailedWithError.Message", 1, "anerror"), this.logs.get(1).Text);
         assertNull(result);
@@ -347,7 +349,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createFailedWithError("anerror", 1));
 
-        var result = this.runner.installLatest("acurrentdirectory", false);
+        var result = this.runner.installLatest(false);
 
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.FailedWithError.Message", 1, "anerror"), this.logs.get(1).Text);
         assertNull(result);
@@ -360,7 +362,7 @@ public class AutomateCliRunnerTests {
           .thenReturn(ProcessResult.createSuccess("outputcontainsnoversionnumber"));
 
         assertThrows(RuntimeException.class, () ->
-                       this.runner.installLatest("acurrentdirectory", false),
+                       this.runner.installLatest(false),
                      AutomateBundle.message("general.AutomateCliRunner.InstallCommand.ParseVersion.Message"));
 
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.ParseVersion.Message"), this.logs.get(1).Text);
@@ -372,7 +374,7 @@ public class AutomateCliRunnerTests {
         Mockito.when(this.processRunner.start(anyList(), any()))
           .thenReturn(ProcessResult.createSuccess("(version '100.0.0')"));
 
-        var result = this.runner.installLatest("acurrentdirectory", false);
+        var result = this.runner.installLatest(false);
 
         assertEquals(AutomateBundle.message("general.AutomateCliRunner.InstallCommand.Outcome.Success.Message", "100.0.0"), this.logs.get(1).Text);
         assertEquals(ModuleDescriptor.Version.parse("100.0.0"), result);

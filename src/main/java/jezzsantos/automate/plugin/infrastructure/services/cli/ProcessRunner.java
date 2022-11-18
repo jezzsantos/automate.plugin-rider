@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class ProcessRunner implements IProcessRunner {
 
     private static final int SuccessExitCode = 0;
-    private static final int MaxWaitForCliToComplete = 30;
+    private static final int MaxWaitForCliToCompleteInSecs = 30;
     private final IRecorder recorder;
 
     public ProcessRunner(IRecorder recorder) {
@@ -37,7 +37,7 @@ public class ProcessRunner implements IProcessRunner {
         builder.redirectErrorStream(false);
 
         builder.directory(new File(currentDirectory));
-        this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.ProcessRunner.Start.Before", currentDirectory, commandLineAndArguments));
+        this.recorder.trace(LogLevel.INFORMATION, AutomateBundle.message("trace.ProcessRunner.Start.Before", currentDirectory, String.join(" ", commandLineAndArguments)));
 
         Process process = null;
         try {
@@ -54,9 +54,9 @@ public class ProcessRunner implements IProcessRunner {
                 }
             }).start();
 
-            var success = process.waitFor(MaxWaitForCliToComplete, TimeUnit.SECONDS);
+            var success = process.waitFor(MaxWaitForCliToCompleteInSecs, TimeUnit.SECONDS);
             if (!success) {
-                this.recorder.trace(LogLevel.ERROR, AutomateBundle.message("trace.ProcessRunner.After.FailedToStart", MaxWaitForCliToComplete));
+                this.recorder.trace(LogLevel.ERROR, AutomateBundle.message("trace.ProcessRunner.After.FailedToStart", MaxWaitForCliToCompleteInSecs));
                 return ProcessResult.createFailedToStart();
             }
             var stdErr = Objects.requireNonNullElse(stdErrWriter.toString(), "").trim();
@@ -74,7 +74,7 @@ public class ProcessRunner implements IProcessRunner {
             }
         } catch (InterruptedException | IOException exception) {
             this.recorder.trace(LogLevel.ERROR,
-                                AutomateBundle.message("trace.ProcessRunner.After.FailedWithException", exception.toString()));
+                                AutomateBundle.message("trace.ProcessRunner.After.FailedWithException", Objects.requireNonNullElse(exception.getCause(), exception).toString()));
             return ProcessResult.createFailedWithException(exception);
         } finally {
             if (process != null) {
