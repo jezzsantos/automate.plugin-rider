@@ -1,12 +1,13 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.changelog.Changelog
 
 import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version "1.9.0"
-    id 'org.jetbrains.changelog' version '1.3.1'
-    id 'me.filippov.gradle.jvm.wrapper' version '0.11.0'
+    id 'org.jetbrains.intellij' version '1.10.0'
+    id 'org.jetbrains.changelog' version '2.0.0'
+    id 'me.filippov.gradle.jvm.wrapper' version '0.14.0'
 }
 
 repositories {
@@ -23,9 +24,8 @@ java {
 }
 
 dependencies {
-    implementation 'com.google.code.gson:gson:2.9.0'
-    //noinspection VulnerableLibrariesLocal
-    implementation 'org.kohsuke:github-api:1.313'
+    implementation 'com.google.code.gson:gson:2.10'
+    // HACK: we need to stay on this older version of AI for as long as possible
     //noinspection GradlePackageUpdate
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.4'
 }
@@ -66,10 +66,17 @@ changelog {
     path = "${project.projectDir}/CHANGELOG.md"
     header = "[${-> version.get()}] - ${new SimpleDateFormat("yyyy-MM-dd").format(new Date())}"
     headerParserRegex = ~/(\d+\.\d+\.\d+[\-\w]*)/
+    introduction = """
+        All notable changes to this project are documented in this file.
+
+> The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+    """.stripIndent()
     itemPrefix = "-"
     keepUnreleasedSection = true
     unreleasedTerm = "[Unreleased]"
     groups = ["Notes", "Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
+    lineSeparator = "\n"
+    combinePreReleases = true
 }
 
 wrapper {
@@ -77,14 +84,26 @@ wrapper {
 }
 
 patchPluginXml {
-    changeNotes.set(changelog.getUnreleased().toHTML())
+    changeNotes.set(changelog.renderItem(
+            changelog
+                    .getUnreleased()
+                    .withHeader(false)
+                    .withEmptySections(false),
+            Changelog.OutputType.HTML
+    ))
 }
 
 publishPlugin {
     token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
     channels.set(List.of(("${pluginVersion}".split("-").length > 1) ? "${pluginVersion}".split("-")[1] : "default"))
-    var version = changelog.getOrNull("${pluginVersion}")
-    if (version != null) {
-        patchPluginXml.changeNotes.set(version.toHTML())
+    var versionExists = changelog.has("${pluginVersion}")
+    if (versionExists) {
+        patchPluginXml.changeNotes.set(changelog.renderItem(
+                changelog
+                        .get("${pluginVersion}")
+                        .withHeader(false)
+                        .withEmptySections(false),
+                Changelog.OutputType.HTML
+        ))
     }
 }
