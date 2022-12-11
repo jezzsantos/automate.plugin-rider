@@ -9,8 +9,6 @@ All notable changes to this project are documented in this file.
 
 ### Notes
 
-- Minimum compatibility with `automate` CLI version 1.1.0
-
 ### Added
 
 ### Changed
@@ -21,11 +19,19 @@ All notable changes to this project are documented in this file.
 
 ### Fixed
 
-- DevOps: Closed #34. Fixed incompatibility issues with RD 223.7571.232
-
 ### Security
 
-## [1.1.2] - 2022-11-19
+## [1.1.3] - 2022-12-11
+
+### Notes
+
+- Minimum compatibility with `automate` CLI version 1.1.0
+
+### Fixed
+
+- DevOps: Closed #34. Fixed incompatibility issues with RD 223.7571.232
+
+## 1.1.2 - 2022-11-19
 
 ### Notes
 
