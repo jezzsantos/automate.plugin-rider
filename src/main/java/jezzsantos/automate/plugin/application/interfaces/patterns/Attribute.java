@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.AutomateBundle;
+import org.apache.commons.lang.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -13,9 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.github.hypfvieh.util.TypeUtil.isDouble;
-import static com.github.hypfvieh.util.TypeUtil.isInteger;
 
 @SuppressWarnings("unused")
 public class Attribute {
@@ -79,13 +77,13 @@ public class Attribute {
                 if (value == null) {
                     return false;
                 }
-                return isInteger(value);
+                return NumberUtils.isDigits(value);
 
             case FLOAT:
                 if (value == null) {
                     return false;
                 }
-                return isDouble(value);
+                return NumberUtils.isNumber(value);
 
             case DATETIME:
                 if (value == null) {
@@ -113,6 +111,22 @@ public class Attribute {
         }
 
         return choices.contains(value);
+    }
+
+    @Override
+    public String toString() {
+
+        var choices = this.choices.isEmpty()
+          ? ""
+          : String.format(", %s: %s",
+                          AutomateBundle.message("general.Attribute.Choices.Title"),
+                          String.join(";", this.choices));
+        var defaultValue = this.defaultValue == null || this.defaultValue.isEmpty()
+          ? ""
+          : String.format(", %s: %s", AutomateBundle.message("general.Attribute.DefaultValue.Title"), this.defaultValue);
+        return String.format("%s  (%s, %s%s%s)", this.name, this.dataType, this.isRequired
+          ? AutomateBundle.message("general.Attribute.IsRequired.True.Title")
+          : AutomateBundle.message("general.Attribute.IsRequired.False.Title"), choices, defaultValue);
     }
 
     public boolean isValidDataType(String value) {
@@ -147,22 +161,6 @@ public class Attribute {
     public List<String> getChoices() {return this.choices;}
 
     public boolean isRequired() {return this.isRequired;}
-
-    @Override
-    public String toString() {
-
-        var choices = this.choices.isEmpty()
-          ? ""
-          : String.format(", %s: %s",
-                          AutomateBundle.message("general.Attribute.Choices.Title"),
-                          String.join(";", this.choices));
-        var defaultValue = this.defaultValue == null || this.defaultValue.isEmpty()
-          ? ""
-          : String.format(", %s: %s", AutomateBundle.message("general.Attribute.DefaultValue.Title"), this.defaultValue);
-        return String.format("%s  (%s, %s%s%s)", this.name, this.dataType, this.isRequired
-          ? AutomateBundle.message("general.Attribute.IsRequired.True.Title")
-          : AutomateBundle.message("general.Attribute.IsRequired.False.Title"), choices, defaultValue);
-    }
 
     private static boolean isIsoDate(@NotNull String value) {
 

@@ -21,6 +21,7 @@ public class InstallToolkitDialog extends DialogWrapper {
     private JLabel locationTitle;
     private TextFieldWithBrowseButtonAndHint location;
 
+    @SuppressWarnings("DialogTitleCapitalization")
     public InstallToolkitDialog(@Nullable Project project, @NotNull InstallToolkitDialogContext context) {
 
         super(project);
@@ -30,7 +31,8 @@ public class InstallToolkitDialog extends DialogWrapper {
         this.setTitle(AutomateBundle.message("dialog.InstallToolkit.Title"));
         this.locationTitle.setText(AutomateBundle.message("dialog.InstallToolkit.Location.Title"));
         this.locationTitle.setLabelFor(this.location);
-        this.location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title"), null, project,
+        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationHint.Message", AutomateConstants.ToolkitFileExtension));
+        this.location.addBrowseFolderListener(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Title", AutomateConstants.ToolkitFileExtension), null, project,
                                               FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor());
     }
 
@@ -47,11 +49,6 @@ public class InstallToolkitDialog extends DialogWrapper {
         }
 
         return null;
-    }
-
-    public InstallToolkitDialogContext getContext() {
-
-        return this.context;
     }
 
     @Override
@@ -80,10 +77,9 @@ public class InstallToolkitDialog extends DialogWrapper {
         return this.location;
     }
 
-    private void createUIComponents() {
+    public InstallToolkitDialogContext getContext() {
 
-        this.location = new TextFieldWithBrowseButtonAndHint();
-        this.location.setHint(AutomateBundle.message("dialog.InstallToolkit.LocationPicker.Hint.Message", AutomateConstants.ToolkitFileExtension));
+        return this.context;
     }
 
     public static class InstallToolkitDialogContext {

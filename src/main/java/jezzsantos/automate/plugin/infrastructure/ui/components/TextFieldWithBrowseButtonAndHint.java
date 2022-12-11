@@ -15,11 +15,6 @@ public class TextFieldWithBrowseButtonAndHint extends TextFieldWithBrowseButton 
         this.hint = "";
     }
 
-    public void setHint(@NotNull String hint) {
-
-        this.hint = hint;
-    }
-
     @Override
     public void paint(Graphics g) {
 
@@ -40,5 +35,10 @@ public class TextFieldWithBrowseButtonAndHint extends TextFieldWithBrowseButton 
                 g.drawString(this.hint, insets.left + 5, height / 2 + fontMetrics.getAscent() / 2 - 2);
             }
         }
+    }
+
+    public void setHint(@NotNull String hint) {
+
+        this.hint = hint;
     }
 }

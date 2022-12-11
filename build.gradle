@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '1.10.0'
+    id 'org.jetbrains.intellij' version '1.10.1'
     id 'org.jetbrains.changelog' version '2.0.0'
     id 'me.filippov.gradle.jvm.wrapper' version '0.14.0'
 }
@@ -16,7 +16,7 @@ repositories {
 
 apply plugin: 'org.jetbrains.changelog'
 
-group "${pluginGroup}"
+group "jezzsantos"
 version "${pluginVersion}"
 
 java {
@@ -91,6 +91,8 @@ patchPluginXml {
                     .withEmptySections(false),
             Changelog.OutputType.HTML
     ))
+    sinceBuild = "${pluginSinceBuild}"
+    untilBuild = "${pluginUntilBuild}"
 }
 
 publishPlugin {
