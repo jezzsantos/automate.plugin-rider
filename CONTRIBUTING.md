@@ -212,7 +212,7 @@ When you push your changes (or push your pull requests), they will be built and 
 >
 > If this is a 'pre-release' version (using `-preview`) we only ever increase the Minor number for breaking changes.
 
-1. In `gradle.properties`, update the `pluginVersion` property
+1. In `gradle.properties`, update the `thisPluginVersion` property
 2. In `CHANGELOG.md`, insert change notes into the `[Unreleased]` sections of the document (e.g. under headings such
    as: `### Notes`, `### Added`, `### Fixed` etc). Only leave sections with items in them ( delete the unused sections)
 3. Run: `./gradlew patchChangelog`

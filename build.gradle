@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '1.10.1'
+    id 'org.jetbrains.intellij' version "${intellijPluginVersion}"
     id 'org.jetbrains.changelog' version '2.0.0'
     id 'me.filippov.gradle.jvm.wrapper' version '0.14.0'
 }
@@ -17,7 +17,7 @@ repositories {
 apply plugin: 'org.jetbrains.changelog'
 
 group "jezzsantos"
-version "${pluginVersion}"
+version "${thisPluginVersion}"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -62,7 +62,7 @@ runIde {
 }
 
 changelog {
-    version = "${pluginVersion}"
+    version = "${thisPluginVersion}"
     path = "${project.projectDir}/CHANGELOG.md"
     header = "[${-> version.get()}] - ${new SimpleDateFormat("yyyy-MM-dd").format(new Date())}"
     headerParserRegex = ~/(\d+\.\d+\.\d+[\-\w]*)/
@@ -97,15 +97,19 @@ patchPluginXml {
 
 publishPlugin {
     token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
-    channels.set(List.of(("${pluginVersion}".split("-").length > 1) ? "${pluginVersion}".split("-")[1] : "default"))
-    var versionExists = changelog.has("${pluginVersion}")
+    channels.set(List.of(("${thisPluginVersion}".split("-").length > 1) ? "${thisPluginVersion}".split("-")[1] : "default"))
+    var versionExists = changelog.has("${thisPluginVersion}")
     if (versionExists) {
         patchPluginXml.changeNotes.set(changelog.renderItem(
                 changelog
-                        .get("${pluginVersion}")
+                        .get("${thisPluginVersion}")
                         .withHeader(false)
                         .withEmptySections(false),
                 Changelog.OutputType.HTML
         ))
     }
+}
+
+runPluginVerifier {
+    ideVersions.set(List.of("${platformVersionsToVerify}".split(",")))
 }
