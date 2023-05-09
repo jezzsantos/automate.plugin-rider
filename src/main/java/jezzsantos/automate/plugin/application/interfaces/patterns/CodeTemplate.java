@@ -5,7 +5,6 @@ import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
 
 @SuppressWarnings("unused")
 public class CodeTemplate {
@@ -18,27 +17,24 @@ public class CodeTemplate {
     private String originalFilePath;
     @SerializedName(value = "OriginalFileExtension")
     private String originalFileExtension;
+    @SerializedName(value = "EditorPath")
+    private String editorPath;
 
     @UsedImplicitly
     public CodeTemplate() {}
 
     public CodeTemplate(@NotNull String id, @NotNull String name) {
 
-        this(id, name, null, null);
+        this(id, name, null, null, null);
     }
 
-    @TestOnly
-    public CodeTemplate(@NotNull String id, @NotNull String name, @Nullable String originalFilePath, @Nullable String originalFileExtension) {
+    public CodeTemplate(@NotNull String id, @NotNull String name, @Nullable String originalFilePath, @Nullable String originalFileExtension, @Nullable String editorPath) {
 
         this.id = id;
         this.name = name;
         this.originalFilePath = originalFilePath;
         this.originalFileExtension = originalFileExtension;
-    }
-
-    public String getName() {
-
-        return this.name;
+        this.editorPath = editorPath;
     }
 
     @Override
@@ -48,5 +44,17 @@ public class CodeTemplate {
                                      AutomateBundle.message("general.Automation.CodeTemplate.FilePath.Title"),
                                      this.originalFilePath);
         return String.format("%s (%s)", this.name, filePath);
+    }
+
+    @NotNull
+    public String getName() {
+
+        return this.name;
+    }
+
+    @Nullable
+    public String getEditorPath() {
+
+        return this.editorPath;
     }
 }

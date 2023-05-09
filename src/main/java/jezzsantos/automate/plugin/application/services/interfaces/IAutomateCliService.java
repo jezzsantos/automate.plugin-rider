@@ -5,10 +5,7 @@ import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
-import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.*;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.common.StringWithDefault;
@@ -93,6 +90,17 @@ public interface IAutomateCliService {
     PatternElement updatePatternElement(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @Nullable String name, boolean isCollection, boolean isRequired, @Nullable String displayName, @Nullable String description, boolean isAutoCreate) throws Exception;
 
     void deletePatternElement(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String name, boolean isCollection) throws Exception;
+
+    @NotNull
+    CodeTemplate addPatternCodeTemplate(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String filePath) throws Exception;
+
+    @NotNull
+    CodeTemplateWithCommand addPatternCodeTemplateWithCommand(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String filePath, @Nullable String commandName, @NotNull String targetPath, boolean isOneOff) throws Exception;
+
+    @Nullable
+    String getPatternCodeTemplateContent(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String templateName) throws Exception;
+
+    void deletePatternCodeTemplate(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String templateName) throws Exception;
 
     void installToolkit(@NotNull String currentDirectory, @NotNull String location) throws Exception;
 

@@ -30,185 +30,6 @@ public class PatternTreeModel extends AbstractTreeModel {
         this.pattern = pattern;
     }
 
-    public void setSelectedPath(@Nullable TreePath path) {
-
-        this.selectedPath = path;
-    }
-
-    public void resetSelectedPath() {
-
-        this.selectedPath = null;
-    }
-
-    public void insertAttribute(@NotNull Attribute attribute) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-
-        if (selectedTreeNode instanceof PatternElement selectedElementTreeNode) {
-            var indexOfAttribute = addAttribute(selectedElementTreeNode, attribute);
-            var parentFolderTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, AttributesIndex);
-            var parentFolderTreeNodePath = this.selectedPath.pathByAddingChild(parentFolderTreeNode);
-            if (indexOfAttribute > NO_INDEX) {
-                treeNodesInserted(parentFolderTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
-                selectTreeNode(this.selectedPath, getChild(parentFolderTreeNode, indexOfAttribute));
-            }
-        }
-        else {
-            if (selectedTreeNode instanceof PatternFolderPlaceholderNode selectedFolderTreeNode) {
-                if (isAttributesPlaceholder(selectedFolderTreeNode)) {
-                    var parentTreeNodePath = this.selectedPath;
-                    var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
-                    var indexOfAttribute = addAttribute(parentElement, attribute);
-                    if (indexOfAttribute > NO_INDEX) {
-                        treeNodesInserted(parentTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
-                        selectTreeNode(this.selectedPath, getChild(selectedFolderTreeNode, indexOfAttribute));
-                    }
-                }
-            }
-        }
-    }
-
-    public void updateAttribute(Attribute attribute) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof Attribute) {
-            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
-            if (parentFolderTreeNodePath != null) {
-                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
-                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
-                var indexOfAttribute = updateAttribute(patternElementTreeNode, attribute);
-                var attributes = patternElementTreeNode.getAttributes();
-                var indexesOfAllAttributes = createArrayOfIndexes(attributes.size());
-                treeNodesChanged(parentFolderTreeNodePath, indexesOfAllAttributes, attributes.toArray());
-                if (indexOfAttribute > NO_INDEX) {
-                    selectTreeNode(parentFolderTreeNodePath, getChild(parentFolderTreeNode, indexOfAttribute));
-                }
-            }
-        }
-    }
-
-    public void deleteAttribute(@NotNull Attribute attribute) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof Attribute) {
-            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
-            if (parentFolderTreeNodePath != null) {
-                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
-                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
-                var indexOfAttribute = getIndexOfAttribute(patternElementTreeNode, attribute);
-                if (indexOfAttribute > NO_INDEX) {
-                    patternElementTreeNode.removeAttribute(attribute);
-                    treeNodesRemoved(parentFolderTreeNodePath, new int[]{indexOfAttribute}, new Object[]{attribute});
-                    selectNextSiblingOrParent(parentFolderTreeNodePath, parentFolderTreeNode, indexOfAttribute);
-                }
-            }
-        }
-    }
-
-    public void insertElement(@NotNull PatternElement element) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-
-        if (selectedTreeNode instanceof PatternElement selectedElementTreeNode) {
-            var indexOfElement = addElement(selectedElementTreeNode, element);
-            var parentFolderTreeNode = (PatternFolderPlaceholderNode) getChild(selectedElementTreeNode, ElementsIndex);
-            var parentFolderTreeNodePath = this.selectedPath.pathByAddingChild(parentFolderTreeNode);
-            if (indexOfElement > NO_INDEX) {
-                treeNodesInserted(parentFolderTreeNodePath, new int[]{indexOfElement}, new Object[]{element});
-                selectTreeNode(this.selectedPath, getChild(parentFolderTreeNode, indexOfElement));
-            }
-        }
-        else {
-            if (selectedTreeNode instanceof PatternFolderPlaceholderNode selectedFolderTreeNode) {
-                if (isElementsPlaceholder(selectedFolderTreeNode)) {
-                    var parentTreeNodePath = this.selectedPath;
-                    var parentElement = (PatternElement) parentTreeNodePath.getParentPath().getLastPathComponent();
-                    var indexOfElement = addElement(parentElement, element);
-                    if (indexOfElement > NO_INDEX) {
-                        treeNodesInserted(parentTreeNodePath, new int[]{indexOfElement}, new Object[]{element});
-                        selectTreeNode(this.selectedPath, getChild(selectedFolderTreeNode, indexOfElement));
-                    }
-                }
-            }
-        }
-    }
-
-    public void updatePattern(@NotNull PatternElement pattern) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof PatternElement patternElement) {
-            if (patternElement.isRoot()) {
-                updateRootElement(pattern);
-                treeNodesChanged(this.selectedPath, null, null);
-            }
-        }
-    }
-
-    public void updateElement(PatternElement element) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof PatternElement) {
-            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
-            if (parentFolderTreeNodePath != null) {
-                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
-                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
-                var indexOfElement = updateElement(patternElementTreeNode, element);
-                var elements = patternElementTreeNode.getElements();
-                var indexesOfAllElements = createArrayOfIndexes(elements.size());
-                treeNodesChanged(parentFolderTreeNodePath, indexesOfAllElements, elements.toArray());
-                if (indexOfElement > NO_INDEX) {
-                    selectTreeNode(parentFolderTreeNodePath, getChild(parentFolderTreeNode, indexOfElement));
-                }
-            }
-        }
-    }
-
-    public void deleteElement(PatternElement element) {
-
-        if (this.selectedPath == null) {
-            return;
-        }
-
-        var selectedTreeNode = this.selectedPath.getLastPathComponent();
-        if (selectedTreeNode instanceof PatternElement) {
-            var parentFolderTreeNodePath = this.selectedPath.getParentPath();
-            if (parentFolderTreeNodePath != null) {
-                var parentFolderTreeNode = (PatternFolderPlaceholderNode) parentFolderTreeNodePath.getLastPathComponent();
-                var patternElementTreeNode = (PatternElement) parentFolderTreeNodePath.getParentPath().getLastPathComponent();
-                var indexOfElement = getIndexOfElement(patternElementTreeNode, element);
-                if (indexOfElement > NO_INDEX) {
-                    patternElementTreeNode.removeElement(element);
-                    treeNodesRemoved(parentFolderTreeNodePath, new int[]{indexOfElement}, new Object[]{element});
-                    selectNextSiblingOrParent(parentFolderTreeNodePath, parentFolderTreeNode, indexOfElement);
-                }
-            }
-        }
-    }
-
     @Override
     public Object getRoot() {
 
@@ -334,6 +155,344 @@ public class PatternTreeModel extends AbstractTreeModel {
 
     }
 
+    public void setSelectedPath(@Nullable TreePath path) {
+
+        this.selectedPath = path;
+    }
+
+    public void resetSelectedPath() {
+
+        this.selectedPath = null;
+    }
+
+    public void insertCodeTemplate(@NotNull CodeTemplate codeTemplate, @Nullable Automation automation) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement patternElementNode) {
+            var patternElementTreePath = this.selectedPath;
+            var indexOfCodeTemplate = addCodeTemplate(patternElementNode, codeTemplate);
+            insertTreeNode(patternElementNode, patternElementTreePath, CodeTemplatesIndex, codeTemplate, indexOfCodeTemplate, true);
+
+            if (automation != null) {
+                var indexOfAutomation = addAutomation(patternElementNode, automation);
+                insertTreeNode(patternElementNode, patternElementTreePath, AutomationIndex, automation, indexOfAutomation, false);
+            }
+        }
+        else {
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode placeholderNode) {
+                if (isCodeTemplatesPlaceholder(placeholderNode)) {
+                    var codeTemplatesFolderTreePath = this.selectedPath;
+                    var patternElementTreePath = codeTemplatesFolderTreePath.getParentPath();
+                    var patternElementNode = (PatternElement) patternElementTreePath.getLastPathComponent();
+                    var indexOfCodeTemplate = addCodeTemplate(patternElementNode, codeTemplate);
+                    insertTreeNode(placeholderNode, codeTemplatesFolderTreePath, codeTemplate, indexOfCodeTemplate, true);
+
+                    if (automation != null) {
+                        var indexOfAutomation = addAutomation(patternElementNode, automation);
+                        insertTreeNode(patternElementNode, patternElementTreePath, AutomationIndex, automation, indexOfAutomation, false);
+                    }
+                }
+            }
+        }
+    }
+
+    public void deleteCodeTemplate(@NotNull CodeTemplate codeTemplate) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof CodeTemplate) {
+            var codeTemplateFolderTreePath = this.selectedPath.getParentPath();
+            if (codeTemplateFolderTreePath != null) {
+                var codeTemplatesFolderNode = (PatternFolderPlaceholderNode) codeTemplateFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) codeTemplateFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfCodeTemplate = getIndexOfCodeTemplate(patternElementNode, codeTemplate);
+                if (indexOfCodeTemplate > NO_INDEX) {
+                    patternElementNode.removeCodeTemplate(codeTemplate);
+                    treeNodesRemoved(codeTemplateFolderTreePath, new int[]{indexOfCodeTemplate}, new Object[]{codeTemplate});
+                    selectNextSiblingOrParent(codeTemplateFolderTreePath, codeTemplatesFolderNode, indexOfCodeTemplate);
+                }
+
+                //TODO: need to refresh the automation collection (since deleting the codetemplate could have deleted some automations)
+                //problem is that in memory we dont know that the data behind the patternElementNode has been changed by the automate CLI (in unknown ways)!
+
+                var patternElementTreePath = codeTemplateFolderTreePath.getParentPath();
+                var automationFolderTreePath = patternElementTreePath.pathByAddingChild(getChild(patternElementNode, AutomationIndex));
+                var automations = patternElementNode.getAutomation();
+                var indexesOfAllAutomations = createArrayOfIndexes(automations.size());
+                treeStructureChanged(automationFolderTreePath, indexesOfAllAutomations, automations.toArray());
+            }
+        }
+    }
+
+    public void insertAutomation(@NotNull Automation automation) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement patternElementNode) {
+            var patternElementTreePath = this.selectedPath;
+            var indexOfAutomation = addAutomation(patternElementNode, automation);
+            insertTreeNode(patternElementNode, patternElementTreePath, AutomationIndex, automation, indexOfAutomation, true);
+        }
+        else {
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode placeholderNode) {
+                if (isAutomationPlaceholder(placeholderNode)) {
+                    var automationsFolderTreePath = this.selectedPath;
+                    var patternElementNode = (PatternElement) automationsFolderTreePath.getParentPath().getLastPathComponent();
+                    var indexOfAutomation = addAutomation(patternElementNode, automation);
+                    insertTreeNode(placeholderNode, automationsFolderTreePath, automation, indexOfAutomation, true);
+                }
+            }
+        }
+    }
+
+    public void deleteAutomation(@NotNull Automation automation) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof Automation) {
+            var automationFolderTreePath = this.selectedPath.getParentPath();
+            if (automationFolderTreePath != null) {
+                var automationsFolderNode = (PatternFolderPlaceholderNode) automationFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) automationFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfAutomation = getIndexOfAutomation(patternElementNode, automation);
+                if (indexOfAutomation > NO_INDEX) {
+                    patternElementNode.removeAutomation(automation);
+                    treeNodesRemoved(automationFolderTreePath, new int[]{indexOfAutomation}, new Object[]{automation});
+                    selectNextSiblingOrParent(automationFolderTreePath, automationsFolderNode, indexOfAutomation);
+                }
+
+                //TODO: need to refresh the automation collection (since deleting an automation could have changed some other automations)
+                //TODO: similar to deleteCodeTemplate()
+            }
+        }
+    }
+
+    public void updateAutomation(@NotNull Automation automation) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof Automation) {
+            var automationFolderTreePath = this.selectedPath.getParentPath();
+            if (automationFolderTreePath != null) {
+                var automationFolderNode = (PatternFolderPlaceholderNode) automationFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) automationFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfAutomation = updateAutomation(patternElementNode, automation);
+                var automations = patternElementNode.getAutomation();
+                var indexesOfAllAutomations = createArrayOfIndexes(automations.size());
+                treeNodesChanged(automationFolderTreePath, indexesOfAllAutomations, automations.toArray());
+                if (indexOfAutomation > NO_INDEX) {
+                    selectTreeNode(automationFolderTreePath, getChild(automationFolderNode, indexOfAutomation));
+                }
+            }
+        }
+    }
+
+    public void insertAttribute(@NotNull Attribute attribute) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement patternElementNode) {
+            var patternElementTreePath = this.selectedPath;
+            var indexOfAttribute = addAttribute(patternElementNode, attribute);
+            insertTreeNode(patternElementNode, patternElementTreePath, AttributesIndex, attribute, indexOfAttribute, true);
+        }
+        else {
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode placeholderNode) {
+                if (isAttributesPlaceholder(placeholderNode)) {
+                    var attributesFolderTreePath = this.selectedPath;
+                    var patternElementNode = (PatternElement) attributesFolderTreePath.getParentPath().getLastPathComponent();
+                    var indexOfAttribute = addAttribute(patternElementNode, attribute);
+                    insertTreeNode(placeholderNode, attributesFolderTreePath, attribute, indexOfAttribute, true);
+                }
+            }
+        }
+    }
+
+    public void updateAttribute(@NotNull Attribute attribute) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof Attribute) {
+            var attributesFolderTreePath = this.selectedPath.getParentPath();
+            if (attributesFolderTreePath != null) {
+                var attributesFolderNode = (PatternFolderPlaceholderNode) attributesFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) attributesFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfAttribute = updateAttribute(patternElementNode, attribute);
+                var attributes = patternElementNode.getAttributes();
+                var indexesOfAllAttributes = createArrayOfIndexes(attributes.size());
+                treeNodesChanged(attributesFolderTreePath, indexesOfAllAttributes, attributes.toArray());
+                if (indexOfAttribute > NO_INDEX) {
+                    selectTreeNode(attributesFolderTreePath, getChild(attributesFolderNode, indexOfAttribute));
+                }
+            }
+        }
+    }
+
+    public void deleteAttribute(@NotNull Attribute attribute) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof Attribute) {
+            var attributesFolderTreePath = this.selectedPath.getParentPath();
+            if (attributesFolderTreePath != null) {
+                var attributesFolderNode = (PatternFolderPlaceholderNode) attributesFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) attributesFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfAttribute = getIndexOfAttribute(patternElementNode, attribute);
+                if (indexOfAttribute > NO_INDEX) {
+                    patternElementNode.removeAttribute(attribute);
+                    treeNodesRemoved(attributesFolderTreePath, new int[]{indexOfAttribute}, new Object[]{attribute});
+                    selectNextSiblingOrParent(attributesFolderTreePath, attributesFolderNode, indexOfAttribute);
+                }
+            }
+        }
+    }
+
+    public void insertElement(@NotNull PatternElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement patternElementNode) {
+            var patternElementTreePath = this.selectedPath;
+            var indexOfElement = addElement(patternElementNode, element);
+            insertTreeNode(patternElementNode, patternElementTreePath, ElementsIndex, element, indexOfElement, true);
+        }
+        else {
+            if (selectedTreeNode instanceof PatternFolderPlaceholderNode placeholderNode) {
+                if (isElementsPlaceholder(placeholderNode)) {
+                    var elementsFolderTreePath = this.selectedPath;
+                    var patternElementNode = (PatternElement) elementsFolderTreePath.getParentPath().getLastPathComponent();
+                    var indexOfElement = addElement(patternElementNode, element);
+                    insertTreeNode(placeholderNode, elementsFolderTreePath, element, indexOfElement, true);
+                }
+            }
+        }
+    }
+
+    public void updatePattern(@NotNull PatternElement pattern) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+        if (selectedTreeNode instanceof PatternElement patternElement) {
+            if (patternElement.isRoot()) {
+                updateRootElement(pattern);
+                treeNodesChanged(this.selectedPath, null, null);
+            }
+        }
+    }
+
+    public void updateElement(@NotNull PatternElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement) {
+            var elementsFolderTreePath = this.selectedPath.getParentPath();
+            if (elementsFolderTreePath != null) {
+                var elementsFolderNode = (PatternFolderPlaceholderNode) elementsFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) elementsFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfElement = updateElement(patternElementNode, element);
+                var elements = patternElementNode.getElements();
+                var indexesOfAllElements = createArrayOfIndexes(elements.size());
+                treeNodesChanged(elementsFolderTreePath, indexesOfAllElements, elements.toArray());
+                if (indexOfElement > NO_INDEX) {
+                    selectTreeNode(elementsFolderTreePath, getChild(elementsFolderNode, indexOfElement));
+                }
+            }
+        }
+    }
+
+    public void deleteElement(@NotNull PatternElement element) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var selectedTreeNode = this.selectedPath.getLastPathComponent();
+
+        if (selectedTreeNode instanceof PatternElement) {
+            var elementsFolderTreePath = this.selectedPath.getParentPath();
+            if (elementsFolderTreePath != null) {
+                var elementsFolderNode = (PatternFolderPlaceholderNode) elementsFolderTreePath.getLastPathComponent();
+                var patternElementNode = (PatternElement) elementsFolderTreePath.getParentPath().getLastPathComponent();
+                var indexOfElement = getIndexOfElement(patternElementNode, element);
+                if (indexOfElement > NO_INDEX) {
+                    patternElementNode.removeElement(element);
+                    treeNodesRemoved(elementsFolderTreePath, new int[]{indexOfElement}, new Object[]{element});
+                    selectNextSiblingOrParent(elementsFolderTreePath, elementsFolderNode, indexOfElement);
+                }
+            }
+        }
+    }
+
+    private void insertTreeNode(@NotNull PatternElement patternElementNode, @NotNull TreePath patternElementTreePath, int childIndex, @NotNull Object underlyingObject, int indexOfNewObjectInCollection, boolean shouldSelectNode) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        var placeholderNode = (PatternFolderPlaceholderNode) getChild(patternElementNode, childIndex);
+        var placeholderTreePath = patternElementTreePath.pathByAddingChild(placeholderNode);
+        insertTreeNode(placeholderNode, placeholderTreePath, underlyingObject, indexOfNewObjectInCollection, shouldSelectNode);
+    }
+
+    private void insertTreeNode(@NotNull PatternFolderPlaceholderNode placeHolderNode, @NotNull TreePath placeholderTreePath, @NotNull Object newObject, int indexOfNewObjectInCollection, boolean shouldSelectNode) {
+
+        if (this.selectedPath == null) {
+            return;
+        }
+
+        if (indexOfNewObjectInCollection > NO_INDEX) {
+            treeNodesInserted(placeholderTreePath, new int[]{indexOfNewObjectInCollection}, new Object[]{newObject});
+            if (shouldSelectNode) {
+                var treeNode = getChild(placeHolderNode, indexOfNewObjectInCollection);
+                selectTreeNode(placeholderTreePath, treeNode);
+            }
+        }
+    }
+
     private void selectNextSiblingOrParent(TreePath parentTreeNodePath, PatternFolderPlaceholderNode parentFolderTreeNode, int indexOfDeletedAttribute) {
 
         var siblingCount = getChildCount(parentFolderTreeNode);
@@ -353,44 +512,62 @@ public class PatternTreeModel extends AbstractTreeModel {
         }
     }
 
-    private void selectTreeNode(TreePath selectedPath, Object treeNode) {
+    private void selectTreeNode(@NotNull TreePath parentTreePath, @NotNull Object treeNode) {
 
-        var newTreeNodePath = Objects.requireNonNull(selectedPath).pathByAddingChild(treeNode);
-        if (newTreeNodePath != null) {
-            this.treeSelector.selectPath(newTreeNodePath);
+        var treeNodePath = Objects.requireNonNull(parentTreePath).pathByAddingChild(treeNode);
+        if (treeNodePath != null) {
+            this.treeSelector.selectPath(treeNodePath);
         }
     }
 
-    private int addAttribute(PatternElement parent, Attribute attribute) {
+    private int addAutomation(@NotNull PatternElement parent, @NotNull Automation automation) {
+
+        parent.addAutomation(automation);
+        return getIndexOfAutomation(parent, automation);
+    }
+
+    private int updateAutomation(@NotNull PatternElement parent, @NotNull Automation automation) {
+
+        parent.updateAutomation(automation);
+        return parent.getAutomation().indexOf(automation);
+    }
+
+    private int addCodeTemplate(@NotNull PatternElement parent, @NotNull CodeTemplate codeTemplate) {
+
+        parent.addCodeTemplate(codeTemplate);
+        return getIndexOfCodeTemplate(parent, codeTemplate);
+    }
+
+    private int addAttribute(@NotNull PatternElement parent, @NotNull Attribute attribute) {
 
         parent.addAttribute(attribute);
         return getIndexOfAttribute(parent, attribute);
     }
 
-    private int updateAttribute(PatternElement parent, Attribute attribute) {
+    private int updateAttribute(@NotNull PatternElement parent, @NotNull Attribute attribute) {
 
         parent.updateAttribute(attribute);
         return parent.getAttributes().indexOf(attribute);
     }
 
-    private int addElement(PatternElement parent, PatternElement element) {
+    private int addElement(@NotNull PatternElement parent, @NotNull PatternElement element) {
 
         parent.addElement(element);
         return getIndexOfElement(parent, element);
     }
 
-    private int updateElement(PatternElement parent, PatternElement element) {
+    private int updateElement(@NotNull PatternElement parent, @NotNull PatternElement element) {
 
         parent.updateElement(element);
         return parent.getElements().indexOf(element);
     }
 
-    private void updateRootElement(PatternElement pattern) {
+    private void updateRootElement(@NotNull PatternElement pattern) {
 
         this.pattern.setPattern(pattern);
     }
 
-    private Object getItemAtIndex(List<?> list, int index) {
+    private @Nullable Object getItemAtIndex(@NotNull List<?> list, int index) {
 
         if (list.size() > index) {
             return list.get(index);
@@ -400,7 +577,7 @@ public class PatternTreeModel extends AbstractTreeModel {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> int getIndexOfChild(PatternFolderPlaceholderNode placeholder, Object child, Class<T> kind) {
+    private <T> int getIndexOfChild(@NotNull PatternFolderPlaceholderNode placeholder, @NotNull Object child, @NotNull Class<T> kind) {
 
         if (kind.isInstance(child)) {
             var instance = (T) child;
@@ -410,32 +587,42 @@ public class PatternTreeModel extends AbstractTreeModel {
         return NO_INDEX;
     }
 
-    private boolean isCodeTemplatesPlaceholder(PatternFolderPlaceholderNode placeholder) {
+    private boolean isCodeTemplatesPlaceholder(@NotNull PatternFolderPlaceholderNode placeholder) {
 
         return placeholder.getChild() == placeholder.getParent().getCodeTemplates();
     }
 
-    private boolean isAutomationPlaceholder(PatternFolderPlaceholderNode placeholder) {
+    private boolean isAutomationPlaceholder(@NotNull PatternFolderPlaceholderNode placeholder) {
 
         return placeholder.getChild() == placeholder.getParent().getAutomation();
     }
 
-    private boolean isAttributesPlaceholder(PatternFolderPlaceholderNode placeholder) {
+    private boolean isAttributesPlaceholder(@NotNull PatternFolderPlaceholderNode placeholder) {
 
         return placeholder.getChild() == placeholder.getParent().getAttributes();
     }
 
-    private boolean isElementsPlaceholder(PatternFolderPlaceholderNode placeholder) {
+    private boolean isElementsPlaceholder(@NotNull PatternFolderPlaceholderNode placeholder) {
 
         return placeholder.getChild() == placeholder.getParent().getElements();
     }
 
-    private int getIndexOfAttribute(PatternElement parent, Attribute attribute) {
+    private int getIndexOfAttribute(@NotNull PatternElement parent, @NotNull Attribute attribute) {
 
         return parent.getAttributes().indexOf(attribute);
     }
 
-    private int getIndexOfElement(PatternElement parent, PatternElement element) {
+    private int getIndexOfCodeTemplate(@NotNull PatternElement parent, @NotNull CodeTemplate codeTemplate) {
+
+        return parent.getCodeTemplates().indexOf(codeTemplate);
+    }
+
+    private int getIndexOfAutomation(@NotNull PatternElement parent, @NotNull Automation automation) {
+
+        return parent.getAutomation().indexOf(automation);
+    }
+
+    private int getIndexOfElement(@NotNull PatternElement parent, @NotNull PatternElement element) {
 
         return parent.getElements().indexOf(element);
     }

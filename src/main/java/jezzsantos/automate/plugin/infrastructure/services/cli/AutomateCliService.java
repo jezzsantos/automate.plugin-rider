@@ -8,10 +8,7 @@ import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntryType;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
-import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.*;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
@@ -33,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AutomateCliService implements IAutomateCliService {
 
@@ -485,6 +483,86 @@ public class AutomateCliService implements IAutomateCliService {
             throw new Exception(result.getError().getErrorMessage());
         }
         else {
+            this.cache.invalidateCurrentPattern();
+        }
+    }
+
+    @NotNull
+    @Override
+    public CodeTemplate addPatternCodeTemplate(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String filePath) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@add-codetemplate", filePath, "--aschildof", parentEditPath));
+        if (name != null && !name.isEmpty()) {
+            args.addAll(List.of("--name", name));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternCodeTemplateStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            var codeTemplate = result.getOutput().getCodeTemplate();
+            this.cache.setPatternCodeTemplateContent(parentEditPath, codeTemplate.getName(), Objects.requireNonNull(codeTemplate.getEditorPath()));
+            return codeTemplate;
+        }
+    }
+
+    @NotNull
+    @Override
+    public CodeTemplateWithCommand addPatternCodeTemplateWithCommand(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String filePath, @Nullable String commandName, @NotNull String targetPath, boolean isOneOff) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@add-codetemplate-with-command", filePath, "--targetpath", targetPath, "--aschildof", parentEditPath));
+        if (isOneOff) {
+            args.add("--isoneoff");
+        }
+        if (name != null && !name.isEmpty()) {
+            args.addAll(List.of("--name", name));
+        }
+        if (commandName != null && !commandName.isEmpty()) {
+            args.addAll(List.of("--commandname", commandName));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternCodeTemplateWithCommandStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            var codeTemplateAndCommand = result.getOutput().getCodeTemplateWithCommand();
+            var codeTemplate = codeTemplateAndCommand.getCodeTemplate();
+            this.cache.setPatternCodeTemplateContent(parentEditPath, codeTemplate.getName(), Objects.requireNonNull(codeTemplate.getEditorPath()));
+            return codeTemplateAndCommand;
+        }
+    }
+
+    @Nullable
+    @Override
+    public String getPatternCodeTemplateContent(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String templateName) throws Exception {
+
+        return this.cache.getPatternCodeTemplateContent(editPath, templateName, () -> {
+            var args = new ArrayList<>(
+              List.of("@view", "@codetemplate", templateName, "--aschildof", editPath));
+            var result = runAutomateForStructuredOutput(AddRemovePatternCodeTemplateStructuredOutput.class, currentDirectory, args);
+            if (result.isError()) {
+                throw new Exception(result.getError().getErrorMessage());
+            }
+            else {
+                return result.getOutput().getCodeTemplate().getEditorPath();
+            }
+        });
+    }
+
+    @Override
+    public void deletePatternCodeTemplate(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String templateName) throws Exception {
+
+        var result = runAutomateForStructuredOutput(AddRemovePatternCodeTemplateStructuredOutput.class, currentDirectory,
+                                                    new ArrayList<>(List.of("@edit", "@delete-codetemplate", templateName, "--aschildof", editPath)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidatePatternCodeTemplateContent(editPath, templateName);
             this.cache.invalidateCurrentPattern();
         }
     }

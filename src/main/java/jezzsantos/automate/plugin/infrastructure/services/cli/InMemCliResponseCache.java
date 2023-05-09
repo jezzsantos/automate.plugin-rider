@@ -10,7 +10,9 @@ import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
@@ -29,13 +31,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
     @Nullable
     private ToolkitDetailed currentToolkit;
     private Boolean isCliInstalled;
-
-    public void setAllLists(@NotNull AllStateLite all) {
-
-        this.patternsList = all.getPatterns();
-        this.toolkitsList = all.getToolkits();
-        this.draftsList = all.getDrafts();
-    }
+    private Map<String, String> currentPatternCodeTemplateContent = new HashMap<>();
 
     @NotNull
     @Override
@@ -101,7 +97,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
     public PatternDetailed getPatternDetailed(@NotNull Callable<PatternDetailed> supplier) throws Exception {
 
         if (this.currentPattern == null) {
-            this.currentPattern = supplier.call();
+            setCurrentPattern(supplier.call());
         }
         return this.currentPattern;
     }
@@ -142,6 +138,18 @@ public class InMemCliResponseCache implements ICliResponseCache {
     }
 
     @Override
+    public void invalidateIsCliInstalled() {
+
+        this.isCliInstalled = null;
+    }
+
+    @Override
+    public void setIsCliInstalled(boolean isInstalled) {
+
+        this.isCliInstalled = isInstalled;
+    }
+
+    @Override
     public void invalidateAllLocalState() {
 
         invalidateAllPatterns();
@@ -174,7 +182,7 @@ public class InMemCliResponseCache implements ICliResponseCache {
     @Override
     public void invalidateCurrentPattern() {
 
-        this.currentPattern = null;
+        setCurrentPattern(null);
     }
 
     @Override
@@ -189,15 +197,55 @@ public class InMemCliResponseCache implements ICliResponseCache {
         this.currentDraft = null;
     }
 
+    @Nullable
     @Override
-    public void invalidateIsCliInstalled() {
+    public String getPatternCodeTemplateContent(@NotNull String parentEditPath, @NotNull String templateName, @NotNull Callable<String> supplier) throws Exception {
 
-        this.isCliInstalled = null;
+        var key = createCodeTemplateContentKey(parentEditPath, templateName);
+        var content = this.currentPatternCodeTemplateContent.getOrDefault(key, null);
+        if (content == null) {
+            var latest = supplier.call();
+            this.currentPatternCodeTemplateContent.put(key, latest);
+            return latest;
+        }
+
+        return content;
     }
 
     @Override
-    public void setIsCliInstalled(boolean isInstalled) {
+    public void invalidatePatternCodeTemplateContent(@NotNull String parentEditPath, @NotNull String templateName) {
 
-        this.isCliInstalled = isInstalled;
+        var key = createCodeTemplateContentKey(parentEditPath, templateName);
+        this.currentPatternCodeTemplateContent.remove(key);
+    }
+
+    @Override
+    public void setPatternCodeTemplateContent(@NotNull String parentEditPath, @NotNull String templateName, @NotNull String editorPath) {
+
+        var key = createCodeTemplateContentKey(parentEditPath, templateName);
+        this.currentPatternCodeTemplateContent.put(key, editorPath);
+    }
+
+    public void setAllLists(@NotNull AllStateLite all) {
+
+        this.patternsList = all.getPatterns();
+        this.toolkitsList = all.getToolkits();
+        this.draftsList = all.getDrafts();
+    }
+
+    private static String createCodeTemplateContentKey(@NotNull String parentEditPath, @NotNull String templateName) {
+
+        return String.format("%s::%s", parentEditPath, templateName);
+    }
+
+    private void setCurrentPattern(@Nullable PatternDetailed pattern) {
+
+        this.currentPattern = pattern;
+
+        if (pattern != null) {
+            // We only want to reset this set of cached objects when a  new pattern is selected,
+            //not when the current pattern is invalidated
+            this.currentPatternCodeTemplateContent = new HashMap<>();
+        }
     }
 }

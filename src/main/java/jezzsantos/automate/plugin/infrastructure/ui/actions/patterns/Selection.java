@@ -3,6 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.patterns;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
+import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternFolderPlaceholderNode;
 import org.jetbrains.annotations.NotNull;
@@ -148,6 +149,25 @@ public class Selection {
     }
 
     @Nullable
+    public static Selection.SelectedCodeTemplate isCodeTemplatePlaceholder(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof CodeTemplate codeTemplate) {
+                    var parent = path.getParentPath().getParentPath().getLastPathComponent();
+                    if (parent instanceof PatternElement parentElement) {
+                        return new SelectedCodeTemplate(parentElement, codeTemplate);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
     public static SelectedAttribute isAttribute(@NotNull AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
@@ -196,5 +216,21 @@ public class Selection {
         public PatternElement getParent() {return this.parent;}
 
         public PatternElement getElement() {return this.element;}
+    }
+
+    static class SelectedCodeTemplate {
+
+        private final CodeTemplate template;
+        private final PatternElement parent;
+
+        public SelectedCodeTemplate(@NotNull PatternElement parent, @NotNull CodeTemplate template) {
+
+            this.parent = parent;
+            this.template = template;
+        }
+
+        public PatternElement getParent() {return this.parent;}
+
+        public CodeTemplate getTemplate() {return this.template;}
     }
 }

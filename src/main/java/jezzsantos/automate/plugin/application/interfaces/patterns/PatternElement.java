@@ -71,6 +71,23 @@ public class PatternElement {
         this.isRoot = false;
     }
 
+    @Override
+    public String toString() {
+
+        var cardinality = toCardinalityString(this.cardinality);
+        var type = this.isRoot
+          ? ""
+          : this.isCollection
+            ? String.format("(collection, %s)", cardinality)
+            : String.format("(%s)", cardinality);
+        if (this.displayName != null && !this.displayName.isEmpty()) {
+            return String.format("%s [%s] %s", this.displayName, this.name, type);
+        }
+        else {
+            return String.format("%s %s", this.name, type);
+        }
+    }
+
     public void setRoot() {
 
         this.isRoot = true;
@@ -166,9 +183,33 @@ public class PatternElement {
         this.codeTemplates.add(codeTemplate);
     }
 
+    public void removeCodeTemplate(@NotNull CodeTemplate codeTemplate) {
+
+        this.codeTemplates.remove(codeTemplate);
+    }
+
     public void addAutomation(@NotNull Automation automation) {
 
         this.automation.add(automation);
+    }
+
+    public void updateAutomation(@NotNull Automation automation) {
+
+        var id = automation.getId();
+        var oldAutomation = this.automation.stream()
+          .filter(attr -> attr.getId().equals(id))
+          .findFirst();
+        if (oldAutomation.isEmpty()) {
+            return;
+        }
+
+        var indexOfAutomation = this.automation.indexOf(oldAutomation.get());
+        this.automation.set(indexOfAutomation, automation);
+    }
+
+    public void removeAutomation(@NotNull Automation automation) {
+
+        this.automation.remove(automation);
     }
 
     public void addAttribute(@NotNull Attribute attribute) {
@@ -238,23 +279,6 @@ public class PatternElement {
         }
 
         return schema;
-    }
-
-    @Override
-    public String toString() {
-
-        var cardinality = toCardinalityString(this.cardinality);
-        var type = this.isRoot
-          ? ""
-          : this.isCollection
-            ? String.format("(collection, %s)", cardinality)
-            : String.format("(%s)", cardinality);
-        if (this.displayName != null && !this.displayName.isEmpty()) {
-            return String.format("%s [%s] %s", this.displayName, this.name, type);
-        }
-        else {
-            return String.format("%s %s", this.name, type);
-        }
     }
 
     private static String toCardinalityString(@Nullable AutomateConstants.ElementCardinality cardinality) {

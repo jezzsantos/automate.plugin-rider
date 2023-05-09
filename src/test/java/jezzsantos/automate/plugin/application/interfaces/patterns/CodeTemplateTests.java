@@ -9,7 +9,7 @@ public class CodeTemplateTests {
     @Test
     public void whenToString_ThenReturnsString() {
 
-        var result = new CodeTemplate("anid", "aname", "afilename", "anextension")
+        var result = new CodeTemplate("anid", "aname", "afilename", "anextension", "aneditorpath")
           .toString();
 
         assertEquals("aname (original: afilename)", result);

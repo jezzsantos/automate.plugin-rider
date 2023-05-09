@@ -40,8 +40,8 @@ public class AddPatternElementAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isPatternSite = Selection.isChildElementOrRootOrElementPlaceholder(e) != null;
-        presentation.setEnabledAndVisible(isPatternEditingMode && isPatternSite);
+        var isPatternElementSite = Selection.isChildElementOrRootOrElementPlaceholder(e) != null;
+        presentation.setEnabledAndVisible(isPatternEditingMode && isPatternElementSite);
     }
 
     @Override

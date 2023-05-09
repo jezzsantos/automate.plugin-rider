@@ -6,10 +6,6 @@ import java.util.List;
 
 public class AutomateConstants {
 
-    public static final String PatternNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
-    public static final String DraftNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
-    public static final String AttributeNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
-    public static final String ElementNameRegex = "^[a-zA-Z\\d_\\.\\-]+$";
     public static final String ElementDisplayNameRegex = "^.+$";
     public static final String ElementDescriptionNameRegex = "^.+$";
     public static final List<AutomateConstants.AttributeDataType> AttributeDataTypes =
@@ -18,11 +14,20 @@ public class AutomateConstants {
     public static final List<String> OutputStructuredOptionAliases = List.of(OutputStructuredOptionShorthand, "--output-structured");
     public static final String UsageCorrelationOption = "--usage-correlation";
     public static final String UsageAllowedOption = "--collect-usage";
+    private static final String NameIdentifierRegex = "^[a-zA-Z\\d_\\.\\-]+$";
+    public static final String PatternNameRegex = NameIdentifierRegex;
+    public static final String DraftNameRegex = NameIdentifierRegex;
+    public static final String AttributeNameRegex = NameIdentifierRegex;
+    public static final String ElementNameRegex = NameIdentifierRegex;
+    public static final String CodeTemplateNameRegex = NameIdentifierRegex;
+    public static final String AutomationNameRegex = NameIdentifierRegex;
     public static String ExecutableName = "automate";
     public static String ApplicationInsightsCliRoleName = "automate CLI";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "1.1.0";
+    public static String MinimumSupportedVersion = "1.2.0";
     public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
+    public static List<String> ReservedCodeTemplateNames = List.of("Id");
+    public static List<String> ReservedAutomationNames = List.of("Id");
     public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
 
     public enum SchemaType {

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.components;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.DataManager;
 import com.intellij.ide.DefaultTreeExpander;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
@@ -33,8 +34,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+
+import static java.awt.event.KeyEvent.VK_ENTER;
 
 interface AutomateNotifier {
 
@@ -144,7 +151,9 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         this.application.addConfigurationListener(executablePathChangedListener());
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.automateTreeExpander = new DefaultTreeExpander(this);
-        PopupHandler.installPopupMenu(this, addTreeContextMenu(), "TreePopup");
+        var actionGroup = addTreeContextMenu();
+        PopupHandler.installPopupMenu(this, actionGroup, "TreePopupMenu");
+        DoubleClickHandler.install(this, actionGroup, "TreeDoubleClick");
         this.setCellRenderer(new ColoredTreeCellRenderer() {
             @Override
             public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -279,33 +288,46 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
         actions.addSeparator();
 
-        var addPatternAttribute = new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
-        addPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
-        actions.add(addPatternAttribute);
+        //Add actions
         var addPatternElement = new AddPatternElementAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         addPatternElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addPatternElement);
+        var addPatternAttribute = new AddPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        addPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
+        actions.add(addPatternAttribute);
+        var addPatternCodeTemplate = new AddPatternCodeTemplateAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        addPatternCodeTemplate.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
+        actions.add(addPatternCodeTemplate);
         var addDraftElement = new ListDraftElementsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         addDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addDraftElement);
+
+        // Edit actions
         var editPatternAttribute = new EditPatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
-        editPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
+        editPatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
         actions.add(editPatternAttribute);
         var editPatternElement = new EditPatternElementAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
-        editPatternElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
+        editPatternElement.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
         actions.add(editPatternElement);
+        var editPatternCodeTemplateContent = new EditPatternCodeTemplateContentAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        editPatternCodeTemplateContent.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
+        actions.add(editPatternCodeTemplateContent);
         var editDraftElement = new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
-        editDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_ENTER), this);
+        editDraftElement.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
         actions.add(editDraftElement);
 
         actions.addSeparator();
 
+        //Delete actions
         var deletePatternAttribute = new DeletePatternAttributeAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         deletePatternAttribute.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deletePatternAttribute);
         var deletePatternElement = new DeletePatternElementAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         deletePatternElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deletePatternElement);
+        var deletePatternCodeTemplate = new DeletePatternCodeTemplateAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        deletePatternCodeTemplate.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
+        actions.add(deletePatternCodeTemplate);
         var deleteDraftElement = new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         deleteDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deleteDraftElement);
@@ -315,6 +337,7 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
 
         actions.addSeparator();
 
+        // Other actions
         var executeDraftLaunchPoints = new ListDraftLaunchPointsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         actions.add(executeDraftLaunchPoints);
         var publishPattern = new PublishPatternAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
@@ -367,6 +390,82 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             }
             var selectedItem = e.getPath();
             this.model.setSelectedPath(selectedItem);
+        }
+    }
+
+    /**
+     * Adds a double click {@code MouseListener}, to the component, that executes the first enabled action (of the {@code ActionGroup}) that is registered with the {@code KeyEvent.VK_ENTER} key.
+     */
+    private static class DoubleClickHandler {
+
+        public static void install(@NotNull Component component, @NotNull ActionGroup actionGroup, @NotNull String place) {
+
+            component.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+
+                    if (!IsDoubleClickEvent(e, MouseEvent.BUTTON1)) {
+                        return;
+                    }
+
+                    var actionEvent = toActionEvent(e, place, component);
+                    var action = getFirstEnabledActionForKeyStroke(actionGroup, actionEvent, KeyEvent.VK_ENTER);
+                    if (action != null) {
+                        action.actionPerformed(actionEvent);
+                    }
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // ignore
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    // ignore
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    // ignore
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    // ignore
+                }
+            });
+        }
+
+        @NotNull
+        private static AnActionEvent toActionEvent(@NotNull MouseEvent e, @NotNull String place, @NotNull Component component) {
+
+            return AnActionEvent.createFromInputEvent(e, place, null, DataManager.getInstance().getDataContext(component));
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        @Nullable
+        private static AnAction getFirstEnabledActionForKeyStroke(@NotNull ActionGroup actionGroup, @NotNull AnActionEvent actionEvent, int keyEvent) {
+
+            var actions = ActionGroupUtil.getActiveActions(actionGroup, actionEvent);
+            actions.filter(action -> Arrays.stream(action.getShortcutSet().getShortcuts())
+                .anyMatch(shortcut -> shortcut.isKeyboard()
+                  && ((KeyboardShortcut) shortcut).getFirstKeyStroke().getKeyCode() == keyEvent))
+              .collect();
+            if (actions.isNotEmpty()) {
+                return actions.first();
+            }
+            else {
+                return null;
+            }
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private static boolean IsDoubleClickEvent(@NotNull MouseEvent e, int mouseEvent) {
+
+            var mouseButton = e.getButton();
+            return mouseButton == mouseEvent
+              && e.getClickCount() == 2;
         }
     }
 }

@@ -7,10 +7,7 @@ import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.application.interfaces.drafts.*;
-import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternDetailed;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
-import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
+import jezzsantos.automate.plugin.application.interfaces.patterns.*;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
@@ -298,6 +295,33 @@ public class AutomateApplication implements IAutomateApplication {
     public void deletePatternElement(@NotNull String editPath, @NotNull String name, boolean isCollection) throws Exception {
 
         this.automateService.deletePatternElement(this.currentDirectory, editPath, name, isCollection);
+    }
+
+    @NotNull
+    @Override
+    public CodeTemplate addPatternCodeTemplate(@NotNull String parentEditPath, @Nullable String name, @NotNull String filePath) throws Exception {
+
+        return this.automateService.addPatternCodeTemplate(this.currentDirectory, parentEditPath, name, filePath);
+    }
+
+    @NotNull
+    @Override
+    public CodeTemplateWithCommand addPatternCodeTemplateWithCommand(@NotNull String parentEditPath, @Nullable String name, @NotNull String filePath, @Nullable String commandName, @NotNull String targetPath, boolean isOneOff) throws Exception {
+
+        return this.automateService.addPatternCodeTemplateWithCommand(this.currentDirectory, parentEditPath, name, filePath, commandName, targetPath, isOneOff);
+    }
+
+    @Nullable
+    @Override
+    public String getPatternCodeTemplateContent(@NotNull String editPath, @NotNull String templateName) throws Exception {
+
+        return this.automateService.getPatternCodeTemplateContent(this.currentDirectory, editPath, templateName);
+    }
+
+    @Override
+    public void deletePatternCodeTemplate(@NotNull String editPath, @NotNull String templateName) throws Exception {
+
+        this.automateService.deletePatternCodeTemplate(this.currentDirectory, editPath, templateName);
     }
 
     @Nullable

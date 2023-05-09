@@ -36,6 +36,10 @@ public interface ICliResponseCache {
 
     boolean isCliInstalled(@NotNull Supplier<Boolean> supplier);
 
+    void invalidateIsCliInstalled();
+
+    void setIsCliInstalled(boolean isInstalled);
+
     void invalidateAllLocalState();
 
     void invalidateAllPatterns();
@@ -50,7 +54,9 @@ public interface ICliResponseCache {
 
     void invalidateCurrentDraft();
 
-    void invalidateIsCliInstalled();
+    @Nullable String getPatternCodeTemplateContent(@NotNull String parentEditPath, @NotNull String templateName, @NotNull Callable<String> supplier) throws Exception;
 
-    void setIsCliInstalled(boolean isInstalled);
+    void invalidatePatternCodeTemplateContent(@NotNull String parentEditPath, @NotNull String templateName);
+
+    void setPatternCodeTemplateContent(@NotNull String parentEditPath, @NotNull String templateName, @NotNull String editorPath);
 }
