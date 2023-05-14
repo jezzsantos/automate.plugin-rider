@@ -24,11 +24,13 @@ public class AutomateConstants {
     public static String ExecutableName = "automate";
     public static String ApplicationInsightsCliRoleName = "automate CLI";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "1.2.0";
-    public static List<String> ReservedAttributeNames = List.of("Id", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
-    public static List<String> ReservedCodeTemplateNames = List.of("Id");
-    public static List<String> ReservedAutomationNames = List.of("Id");
+    public static String MinimumSupportedVersion = "1.3.0";
+    public static List<String> ReservedAttributeNames = List.of("Id", "Parent", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
+    public static List<String> ReservedElementNames = ReservedAttributeNames;
+    public static List<String> ReservedCodeTemplateNames = List.of("Id", "Parent");
+    public static List<String> ReservedAutomationNames = List.of("Id", "Parent");
     public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
+    public static String TemplatingExpressionsUrl = "https://jezzsantos.github.io/automate/reference/#templating-expressions";
 
     public enum SchemaType {
         @SerializedName("None")

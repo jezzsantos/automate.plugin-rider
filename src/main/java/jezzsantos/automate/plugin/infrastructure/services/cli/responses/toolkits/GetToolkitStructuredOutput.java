@@ -1,8 +1,10 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses.toolkits;
 
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 

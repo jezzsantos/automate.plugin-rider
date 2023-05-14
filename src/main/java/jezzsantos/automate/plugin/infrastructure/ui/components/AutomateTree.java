@@ -298,6 +298,15 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var addPatternCodeTemplate = new AddPatternCodeTemplateAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         addPatternCodeTemplate.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addPatternCodeTemplate);
+        var addPatternCodeTemplateCommand = new AddPatternCodeTemplateCommandAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        addPatternCodeTemplateCommand.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
+        actions.add(addPatternCodeTemplateCommand);
+        var addPatternCliCommand = new AddPatternCliCommandAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        addPatternCliCommand.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
+        actions.add(addPatternCliCommand);
+        var addPatternCommandLaunchPoint = new AddPatternCommandLaunchPointAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        addPatternCommandLaunchPoint.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
+        actions.add(addPatternCommandLaunchPoint);
         var addDraftElement = new ListDraftElementsActionGroup(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         addDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_INSERT), this);
         actions.add(addDraftElement);
@@ -312,6 +321,15 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var editPatternCodeTemplateContent = new EditPatternCodeTemplateContentAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         editPatternCodeTemplateContent.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
         actions.add(editPatternCodeTemplateContent);
+        var editPatternCodeTemplateCommand = new EditPatternCodeTemplateCommandAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        editPatternCodeTemplateCommand.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
+        actions.add(editPatternCodeTemplateCommand);
+        var editPatternCliCommand = new EditPatternCliCommandAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        editPatternCliCommand.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
+        actions.add(editPatternCliCommand);
+        var editPatternCommandLaunchPoint = new EditPatternCommandLaunchPointAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        editPatternCommandLaunchPoint.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
+        actions.add(editPatternCommandLaunchPoint);
         var editDraftElement = new EditDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         editDraftElement.registerCustomShortcutSet(getKeyboardShortcut(VK_ENTER), this);
         actions.add(editDraftElement);
@@ -328,6 +346,15 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         var deletePatternCodeTemplate = new DeletePatternCodeTemplateAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
         deletePatternCodeTemplate.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deletePatternCodeTemplate);
+        var deletePatternCodeTemplateCommand = new DeletePatternCodeTemplateCommandAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        deletePatternCodeTemplateCommand.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
+        actions.add(deletePatternCodeTemplateCommand);
+        var deletePatternCliCommand = new DeletePatternCliCommandAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        deletePatternCliCommand.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
+        actions.add(deletePatternCliCommand);
+        var deletePatternCommandLaunchPoint = new DeletePatternCommandLaunchPointAction(consumer -> consumer.accept((PatternTreeModel) this.getModel()));
+        deletePatternCommandLaunchPoint.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
+        actions.add(deletePatternCommandLaunchPoint);
         var deleteDraftElement = new DeleteDraftElementAction(consumer -> consumer.accept((DraftTreeModel) this.getModel()));
         deleteDraftElement.registerCustomShortcutSet(getKeyboardShortcut(KeyEvent.VK_DELETE), this);
         actions.add(deleteDraftElement);
@@ -447,13 +474,20 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         @Nullable
         private static AnAction getFirstEnabledActionForKeyStroke(@NotNull ActionGroup actionGroup, @NotNull AnActionEvent actionEvent, int keyEvent) {
 
-            var actions = ActionGroupUtil.getActiveActions(actionGroup, actionEvent);
-            actions.filter(action -> Arrays.stream(action.getShortcutSet().getShortcuts())
-                .anyMatch(shortcut -> shortcut.isKeyboard()
-                  && ((KeyboardShortcut) shortcut).getFirstKeyStroke().getKeyCode() == keyEvent))
-              .collect();
-            if (actions.isNotEmpty()) {
-                return actions.first();
+            var allActions = ActionGroupUtil.getActiveActions(actionGroup, actionEvent);
+            var actionsWithKeyEvent = allActions.filter(action -> {
+                var shortcuts = action.getShortcutSet().getShortcuts();
+
+                return Arrays.stream(shortcuts).anyMatch(shortcut -> {
+                    if (!shortcut.isKeyboard()) {
+                        return false;
+                    }
+                    var firstKeyStroke = ((KeyboardShortcut) shortcut).getFirstKeyStroke().getKeyCode();
+                    return firstKeyStroke == keyEvent;
+                });
+            }).collect();
+            if (actionsWithKeyEvent.isNotEmpty()) {
+                return actionsWithKeyEvent.first();
             }
             else {
                 return null;

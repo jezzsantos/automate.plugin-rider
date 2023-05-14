@@ -5,8 +5,11 @@ import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -18,12 +21,12 @@ public class Automation {
     private String name;
     @SerializedName(value = "Type")
     private AutomateConstants.AutomationType type;
-    @SerializedName(value = "TemplateId")
-    private String templateId;
+    @SerializedName(value = "CodeTemplateId")
+    private String codeTemplateId;
     @SerializedName(value = "IsOneOff")
     private boolean isOneOff;
-    @SerializedName(value = "TargetPath")
-    private String targetPath;
+    @SerializedName(value = "FilePath")
+    private String filePath;
     @SerializedName(value = "ApplicationName")
     private String applicationName;
     @SerializedName(value = "Arguments")
@@ -47,17 +50,17 @@ public class Automation {
     }
 
     @TestOnly
-    public static Automation createCodeTemplateCommand(@NotNull String id, @NotNull String name, @NotNull String templateId, boolean isOneOff, @NotNull String targetPath) {
+    public static Automation createCodeTemplateCommand(@NotNull String id, @NotNull String name, @NotNull String templateId, boolean isOneOff, @NotNull String filePath) {
 
         var automation = new Automation(id, name, AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND);
-        automation.templateId = templateId;
+        automation.codeTemplateId = templateId;
         automation.isOneOff = isOneOff;
-        automation.targetPath = targetPath;
+        automation.filePath = filePath;
         return automation;
     }
 
     @TestOnly
-    public static Automation createCliCommand(@NotNull String id, @NotNull String name, @NotNull String applicationName, @NotNull String arguments) {
+    public static Automation createCliCommand(@NotNull String id, @NotNull String name, @NotNull String applicationName, @Nullable String arguments) {
 
         var automation = new Automation(id, name, AutomateConstants.AutomationType.CLI_COMMAND);
         automation.applicationName = applicationName;
@@ -66,25 +69,30 @@ public class Automation {
     }
 
     @TestOnly
-    public static Automation createLaunchPoint(@NotNull String id, @NotNull String name, @NotNull List<String> commandIds) {
+    public static Automation createLaunchPoint(@NotNull String id, @NotNull String name, @Nullable String commandIds) {
 
         var automation = new Automation(id, name, AutomateConstants.AutomationType.COMMAND_LAUNCH_POINT);
-        automation.cmdIds = commandIds;
+        automation.cmdIds = commandIds == null
+          ? new ArrayList<>()
+          : Arrays.stream(commandIds.split(";")).toList();
         return automation;
     }
 
     @Override
     public String toString() {
 
+        var id = String.format("%s: %s", AutomateBundle.message("general.Automation.Id.Title"), this.id);
         String data = "";
         switch (this.type) {
             case CODE_TEMPLATE_COMMAND -> {
                 var onceOnly = this.isOneOff
                   ? String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.True.Title"))
                   : String.format(", %s", AutomateBundle.message("general.Automation.CodeTemplateCommand.IsOneOff.False.Title"));
-                data = String.format("%s: %s%s, path: %s",
+                data = String.format("%s: %s%s, %s: %s",
                                      AutomateBundle.message("general.Automation.CodeTemplateCommand.Template.Title"),
-                                     this.templateId, onceOnly, this.targetPath);
+                                     this.codeTemplateId, onceOnly,
+                                     AutomateBundle.message("general.Automation.CodeTemplateCommand.TargetPath.Title"),
+                                     this.filePath);
             }
             case CLI_COMMAND -> data = String.format("%s: %s, %s: %s",
                                                      AutomateBundle.message("general.Automation.CliCommand.ApplicationName.Title"),
@@ -98,21 +106,73 @@ public class Automation {
                                                                 : String.join(";", this.cmdIds));
         }
 
-        return String.format("%s (%s) (%s)", this.name, this.type.getDisplayName(), data);
+        return String.format("%s (%s, %s)", this.name, id, data);
     }
 
     @NotNull
     public String getId() {return this.id;}
 
     @NotNull
-    public String getName() {
-
-        return this.name;
-    }
+    public String getName() {return this.name;}
 
     @NotNull
-    public AutomateConstants.AutomationType getType() {
+    public AutomateConstants.AutomationType getType() {return this.type;}
 
-        return this.type;
+    @Nullable
+    public String getCodeTemplateId() {
+
+        if (this.type != AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND) {
+            return null;
+        }
+
+        return this.codeTemplateId;
+    }
+
+    @Nullable
+    public String getFilePath() {
+
+        if (this.type != AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND) {
+            return null;
+        }
+
+        return this.filePath;
+    }
+
+    public boolean getIsOneOff() {
+
+        if (this.type != AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND) {
+            return false;
+        }
+
+        return this.isOneOff;
+    }
+
+    @Nullable
+    public String getApplicationName() {
+
+        if (this.type != AutomateConstants.AutomationType.CLI_COMMAND) {
+            return null;
+        }
+
+        return this.applicationName;
+    }
+
+    @Nullable
+    public String getArguments() {
+
+        if (this.type != AutomateConstants.AutomationType.CLI_COMMAND) {
+            return null;
+        }
+
+        return this.arguments;
+    }
+
+    public List<String> getCommandIdentifiers() {
+
+        if (this.type != AutomateConstants.AutomationType.COMMAND_LAUNCH_POINT) {
+            return null;
+        }
+
+        return this.cmdIds;
     }
 }

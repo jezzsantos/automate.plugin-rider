@@ -93,11 +93,6 @@ public class EditPatternElementDialog extends DialogWrapper {
         return null;
     }
 
-    public EditPatternElementDialogContext getContext() {
-
-        return this.context;
-    }
-
     @Override
     protected @Nullable ValidationInfo doValidate() {
 
@@ -128,6 +123,11 @@ public class EditPatternElementDialog extends DialogWrapper {
         return this.context.getIsNew()
           ? this.name
           : this.isRequired;
+    }
+
+    public EditPatternElementDialogContext getContext() {
+
+        return this.context;
     }
 
     public static class EditPatternElementDialogContext {
@@ -220,7 +220,7 @@ public class EditPatternElementDialog extends DialogWrapper {
             var existingElementNames = this.elements.stream()
               .map(PatternElement::getName);
             var existingNames = Stream.concat(existingAttributeNames, existingElementNames);
-            var reservedNames = AutomateConstants.ReservedAttributeNames.stream();
+            var reservedNames = AutomateConstants.ReservedElementNames.stream();
             var illegalNames = Stream.concat(existingNames, reservedNames);
 
             if (this.isNew) {

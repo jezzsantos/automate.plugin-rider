@@ -40,21 +40,19 @@ public class CodeTemplate {
     @Override
     public String toString() {
 
-        var filePath = String.format("%s: %s",
-                                     AutomateBundle.message("general.Automation.CodeTemplate.FilePath.Title"),
-                                     this.originalFilePath);
-        return String.format("%s (%s)", this.name, filePath);
+        var id = String.format("%s: %s", AutomateBundle.message("general.Automation.CodeTemplate.Id.Title"), this.id);
+        var filePath = String.format("%s: %s", AutomateBundle.message("general.Automation.CodeTemplate.FilePath.Title"), this.originalFilePath);
+        return String.format("%s (%s, %s)", this.name, id, filePath);
     }
+
+    public String getId() {return this.id;}
 
     @NotNull
-    public String getName() {
-
-        return this.name;
-    }
+    public String getName() {return this.name;}
 
     @Nullable
-    public String getEditorPath() {
+    public String getEditorPath() {return this.editorPath;}
 
-        return this.editorPath;
-    }
+    @NotNull
+    public String getOriginalFilePath() {return this.originalFilePath;}
 }

@@ -102,6 +102,28 @@ public interface IAutomateCliService {
 
     void deletePatternCodeTemplate(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String templateName) throws Exception;
 
+    @NotNull
+    Automation addPatternCodeTemplateCommand(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String codeTemplateName, @NotNull String targetPath, boolean isOneOff) throws Exception;
+
+    @NotNull
+    Automation updatePatternCodeTemplateCommand(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull String targetPath, boolean isOneOff) throws Exception;
+
+    @NotNull
+    Automation addPatternCliCommand(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String applicationName, @Nullable String arguments) throws Exception;
+
+    @NotNull
+    Automation updatePatternCliCommand(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull String applicationName, @Nullable String arguments) throws Exception;
+
+    void deleteCommand(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String commandName) throws Exception;
+
+    @NotNull
+    Automation addPatternCommandLaunchPoint(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull List<String> commandIdentifiers, @Nullable String from) throws Exception;
+
+    @NotNull
+    Automation updatePatternCommandLaunchPoint(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull List<String> addIdentifiers, @NotNull List<String> removeIdentifiers, @Nullable String from) throws Exception;
+
+    void deleteLaunchPoint(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String launchPointName) throws Exception;
+
     void installToolkit(@NotNull String currentDirectory, @NotNull String location) throws Exception;
 
     @NotNull

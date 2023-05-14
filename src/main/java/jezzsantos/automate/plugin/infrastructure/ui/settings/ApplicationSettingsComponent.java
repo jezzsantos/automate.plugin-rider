@@ -1,6 +1,5 @@
 package jezzsantos.automate.plugin.infrastructure.ui.settings;
 
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
@@ -15,6 +14,7 @@ import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
 import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsState;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
+import jezzsantos.automate.plugin.infrastructure.ui.components.HyperLink;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,8 +23,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class ApplicationSettingsComponent {
 
@@ -33,7 +31,8 @@ public class ApplicationSettingsComponent {
     private final JBCheckBox viewCliLog = new JBCheckBox(AutomateBundle.message("settings.ViewCliLog.Label.Title"));
     private final TextFieldWithBrowseButtonAndHint executablePath = new TextFieldWithBrowseButtonAndHint();
     private final JBLabel executablePathTestResult = new JBLabel();
-    private final JBLabel helpLink = new JBLabel();
+    private final HyperLink helpLink = new HyperLink(AutomateBundle.message("general.ApplicationSettingsComponent.MoreInfoLink.Title"),
+                                                     AutomateConstants.InstallationInstructionsUrl);
     private final JBCheckBox cliInstallPolicy = new JBCheckBox(AutomateBundle.message("settings.CliInstallPolicy.Label.Title"));
     private final String currentDirectory;
 
@@ -61,7 +60,6 @@ public class ApplicationSettingsComponent {
         var testPathToAutomate = new JButton(AutomateBundle.message("settings.TestPathToAutomateExecutable.Label.Title"));
         testPathToAutomatePanel.add(testPathToAutomate, BorderLayout.LINE_END);
         testPathToAutomate.addActionListener(e -> this.onTestPathToAutomate(e, automateService));
-        initHelpLink();
         this.helpLink.setVisible(false);
 
         this.minPanel = FormBuilder.createFormBuilder()
@@ -175,21 +173,5 @@ public class ApplicationSettingsComponent {
                 this.executablePathTestResult.setText(AutomateBundle.message("settings.PathToAutomateExecutable.Unknown.Message", executableName));
             }
         }
-    }
-
-    private void initHelpLink() {
-
-        this.helpLink.setText(String.format("<html><a href=\"#\">%s</a></html>", AutomateBundle.message("general.ApplicationSettingsComponent.MoreInfoLink.Title")));
-        this.helpLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        this.helpLink.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                try {
-                    BrowserUtil.browse(AutomateConstants.InstallationInstructionsUrl);
-                } catch (Exception ignored) {
-                }
-            }
-        });
     }
 }

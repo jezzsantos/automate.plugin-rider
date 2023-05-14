@@ -20,7 +20,15 @@ import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
-import jezzsantos.automate.plugin.infrastructure.services.cli.responses.*;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStructuredResult;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.GetInfoStructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.ListAllDefinitionsStructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.drafts.*;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.patterns.*;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.toolkits.GetToolkitStructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.toolkits.InstallToolkitStructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.toolkits.ListToolkitsStructuredOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -563,6 +571,162 @@ public class AutomateCliService implements IAutomateCliService {
         }
         else {
             this.cache.invalidatePatternCodeTemplateContent(editPath, templateName);
+            this.cache.invalidateCurrentPattern();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Automation addPatternCodeTemplateCommand(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String codeTemplateName, @NotNull String targetPath, boolean isOneOff) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@add-codetemplate-command", codeTemplateName, "--targetpath", targetPath, "--aschildof", parentEditPath));
+        if (isOneOff) {
+            args.add("--isoneoff");
+        }
+        if (name != null && !name.isEmpty()) {
+            args.addAll(List.of("--name", name));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getCodeTemplateCommand();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Automation updatePatternCodeTemplateCommand(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull String targetPath, boolean isOneOff) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@update-codetemplate-command", id, "--targetpath", targetPath, "--name", name, "--aschildof", editPath));
+        if (isOneOff) {
+            args.add("--isoneoff");
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getCodeTemplateCommand();
+        }
+    }
+
+    @Override
+    public @NotNull Automation addPatternCliCommand(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull String applicationName, @Nullable String arguments) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@add-cli-command", applicationName, "--aschildof", parentEditPath));
+        if (arguments != null && !arguments.isEmpty()) {
+            args.addAll(List.of("--arguments", arguments));
+        }
+        if (name != null && !name.isEmpty()) {
+            args.addAll(List.of("--name", name));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getCliCommand();
+        }
+    }
+
+    @Override
+    public @NotNull Automation updatePatternCliCommand(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull String applicationName, @Nullable String arguments) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@update-cli-command", id, "--app", applicationName, "--name", name, "--aschildof", editPath));
+        if (arguments != null && !arguments.isEmpty()) {
+            args.addAll(List.of("--arguments", arguments));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getCliCommand();
+        }
+    }
+
+    @Override
+    public void deleteCommand(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String commandName) throws Exception {
+
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory,
+                                                    new ArrayList<>(List.of("@edit", "@delete-command", commandName, "--aschildof", editPath)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Automation addPatternCommandLaunchPoint(@NotNull String currentDirectory, @NotNull String parentEditPath, @Nullable String name, @NotNull List<String> commandIdentifiers, @Nullable String from) throws Exception {
+
+        var identifiersToAdd = String.join(";", commandIdentifiers);
+        var args = new ArrayList<>(
+          List.of("@edit", "@add-command-launchpoint", identifiersToAdd, "--aschildof", parentEditPath));
+        if (from != null && !from.isEmpty()) {
+            args.addAll(List.of("--from", from));
+        }
+        if (name != null && !name.isEmpty()) {
+            args.addAll(List.of("--name", name));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getLaunchPoint();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Automation updatePatternCommandLaunchPoint(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull List<String> addIdentifiers, @NotNull List<String> removeIdentifiers, @Nullable String from) throws Exception {
+
+        var args = new ArrayList<>(
+          List.of("@edit", "@update-command-launchpoint", id, "--name", name, "--aschildof", editPath));
+        if (!addIdentifiers.isEmpty()) {
+            var identifiersToAdd = String.join(";", addIdentifiers);
+            args.addAll(List.of("--add", identifiersToAdd));
+        }
+        if (!removeIdentifiers.isEmpty()) {
+            var identifiersToRemove = String.join(";", removeIdentifiers);
+            args.addAll(List.of("--remove", identifiersToRemove));
+        }
+        if (from != null && !from.isEmpty()) {
+            args.addAll(List.of("--from", from));
+        }
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory, args);
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
+            this.cache.invalidateCurrentPattern();
+            return result.getOutput().getLaunchPoint();
+        }
+    }
+
+    @Override
+    public void deleteLaunchPoint(@NotNull String currentDirectory, @NotNull String editPath, @NotNull String launchPointName) throws Exception {
+
+        var result = runAutomateForStructuredOutput(AddRemovePatternAutomationStructuredOutput.class, currentDirectory,
+                                                    new ArrayList<>(List.of("@edit", "@delete-command-launchpoint", launchPointName, "--aschildof", editPath)));
+        if (result.isError()) {
+            throw new Exception(result.getError().getErrorMessage());
+        }
+        else {
             this.cache.invalidateCurrentPattern();
         }
     }

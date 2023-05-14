@@ -1,29 +1,32 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses.patterns;
 
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternLite;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternVersion;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class CreatePattern {
+class SwitchPattern {
 
     public String Name;
-    public String PatternId;
     public PatternVersion Version;
+    public String PatternId;
 }
 
-public class CreatePatternStructuredOutput extends StructuredOutput<CreatePattern> {
+public class SwitchPatternStructuredOutput extends StructuredOutput<SwitchPattern> {
 
     @UsedImplicitly
-    public CreatePatternStructuredOutput() {
+    public SwitchPatternStructuredOutput() {
 
         super(new ArrayList<>(List.of(new StructuredOutputOutput<>() {{
-            this.Values = new CreatePattern();
+            this.Values = new SwitchPattern();
         }})));
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public PatternLite getPattern() {
 
         var values = this.Output.get(0).Values;

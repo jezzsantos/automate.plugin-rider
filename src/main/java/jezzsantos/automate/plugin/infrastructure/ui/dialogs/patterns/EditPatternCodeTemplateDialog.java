@@ -9,6 +9,7 @@ import jezzsantos.automate.plugin.application.interfaces.patterns.Automation;
 import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
+import jezzsantos.automate.plugin.infrastructure.ui.components.HyperLink;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,7 @@ public class EditPatternCodeTemplateDialog extends DialogWrapper {
     private JTextField commandTargetPath;
     private JLabel commandTargetPathTitle;
     private JCheckBox commandIsOneOff;
-    private JLabel commandTargetPathDescription;
+    private HyperLink commandTargetPathDescription;
 
     public EditPatternCodeTemplateDialog(@NotNull Project project, @NotNull EditPatternCodeTemplateDialog.EditPatternCodeTemplateDialogContext context) {
 
@@ -71,7 +72,9 @@ public class EditPatternCodeTemplateDialog extends DialogWrapper {
         this.commandName.setText(this.context.getCommandName());
         this.commandTargetPathTitle.setText(AutomateBundle.message("dialog.EditPatternCodeTemplate.CommandTargetPath.Title"));
         this.commandTargetPath.setText(this.context.getCommandTargetPath());
-        this.commandTargetPathDescription.setText(AutomateBundle.message("dialog.EditPatternCodeTemplate.CommandTargetPathDescription.Message"));
+        this.commandTargetPathDescription.setLink(AutomateBundle.message("dialog.EditPatternCodeTemplate.CommandTargetPathDescription.Message"),
+                                                  AutomateBundle.message("dialog.EditPatternCodeTemplate.CommandTargetPathDescription.Link"),
+                                                  AutomateConstants.TemplatingExpressionsUrl);
         this.commandTargetPathDescription.setForeground(AutomateColors.getDisabledText());
         this.commandIsOneOff.setText(AutomateBundle.message("dialog.EditPatternCodeTemplate.CommandIsOneOff.Title"));
         this.commandIsOneOff.setSelected(this.context.getCommandIsOneOff());
@@ -84,13 +87,11 @@ public class EditPatternCodeTemplateDialog extends DialogWrapper {
                                                       @NotNull String name, @Nullable String filePath,
                                                       @NotNull String commandName, @Nullable String commandTargetPath) {
 
-        if (!name.isEmpty()) {
-            if (!context.isValidName(name)) {
-                return new ValidationInfo(AutomateBundle.message("dialog.EditPatternCodeTemplate.NameValidation.NotMatch.Message"));
-            }
-            if (!context.isAvailableName(name)) {
-                return new ValidationInfo(AutomateBundle.message("dialog.EditPatternCodeTemplate.NameValidation.Exists.Message"));
-            }
+        if (!context.isValidName(name)) {
+            return new ValidationInfo(AutomateBundle.message("dialog.EditPatternCodeTemplate.NameValidation.NotMatch.Message"));
+        }
+        if (!context.isAvailableName(name)) {
+            return new ValidationInfo(AutomateBundle.message("dialog.EditPatternCodeTemplate.NameValidation.Exists.Message"));
         }
         if (!context.isValidFilePath(filePath)) {
             return new ValidationInfo(AutomateBundle.message("dialog.EditPatternCodeTemplate.FilePathValidation.NotMatch.Message"));

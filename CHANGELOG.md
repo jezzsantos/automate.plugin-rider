@@ -13,9 +13,9 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- Patterns: #7. Added new code templates
+- Patterns: #7. Added, deleting new code templates
 - Patterns: #7. Editing the contents of a code template in the IDE
-- Patterns: #7. Deleting code templates
+- Patterns: #7. Adding, editing, deleting code-template-commands and CLI-commands and launch-points
 
 ### Changed
 

@@ -39,7 +39,7 @@ public class EditPatternElementAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isElementSite = Selection.isChildElementOrRoot(e) != null;
+        var isElementSite = Selection.isElementOrPattern(e) != null;
         presentation.setEnabledAndVisible(isPatternEditingMode && isElementSite);
     }
 
@@ -50,7 +50,7 @@ public class EditPatternElementAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            var selected = Selection.isChildElementOrRoot(e);
+            var selected = Selection.isElementOrPattern(e);
             if (selected != null) {
                 var application = IAutomateApplication.getInstance(project);
                 var attributes = selected.getParent().getAttributes();

@@ -12,11 +12,11 @@ import jezzsantos.automate.plugin.infrastructure.ui.dialogs.ConfirmDeleteDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
 
-public class DeletePatternCodeTemplateAction extends AnAction {
+public class DeletePatternCommandLaunchPointAction extends AnAction {
 
     private final Action<PatternTreeModel> onSuccess;
 
-    public DeletePatternCodeTemplateAction(Action<PatternTreeModel> onSuccess) {
+    public DeletePatternCommandLaunchPointAction(Action<PatternTreeModel> onSuccess) {
 
         super();
         this.onSuccess = onSuccess;
@@ -27,7 +27,7 @@ public class DeletePatternCodeTemplateAction extends AnAction {
 
         super.update(e);
 
-        var message = AutomateBundle.message("action.DeletePatternCodeTemplate.Title");
+        var message = AutomateBundle.message("action.DeletePatternCommandLaunchPoint.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
@@ -39,27 +39,27 @@ public class DeletePatternCodeTemplateAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isCodeTemplateSite = Selection.isCodeTemplate(e) != null;
-        presentation.setEnabledAndVisible(isPatternEditingMode && isCodeTemplateSite);
+        var isAutomationSite = Selection.isCommandLaunchPoint(e) != null;
+        presentation.setEnabledAndVisible(isPatternEditingMode && isAutomationSite);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
-        IRecorder.getInstance().measureEvent("action.pattern.codetemplate.delete", null);
+        IRecorder.getInstance().measureEvent("action.pattern.commandlaunchpoint.delete", null);
 
         var project = e.getProject();
         if (project != null) {
-            var selected = Selection.isCodeTemplate(e);
+            var selected = Selection.isCommandLaunchPoint(e);
             if (selected != null) {
                 if (ConfirmDeleteDialog.confirms(project,
-                                                 AutomateBundle.message("dialog.ConfirmDelete.PatternCodeTemplate.Title"),
-                                                 AutomateBundle.message("dialog.ConfirmDelete.PatternCodeTemplate.Message"))) {
+                                                 AutomateBundle.message("dialog.ConfirmDelete.DeletePatternCommandLaunchPoint.Title"),
+                                                 AutomateBundle.message("dialog.ConfirmDelete.DeletePatternCommandLaunchPoint.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
                     Try.andHandle(project,
-                                  () -> application.deletePatternCodeTemplate(selected.getParent().getEditPath(), selected.getTemplate().getName()),
-                                  () -> this.onSuccess.run(model -> model.deleteCodeTemplate(selected.getTemplate())),
-                                  AutomateBundle.message("action.DeletePatternCodeTemplate.DeleteCodeTemplate.Failure.Message"));
+                                  () -> application.deleteLaunchPoint(selected.getParent().getEditPath(), selected.getAutomation().getName()),
+                                  () -> this.onSuccess.run(model -> model.deleteAutomation(selected.getAutomation())),
+                                  AutomateBundle.message("action.DeletePatternCommandLaunchPoint.DeleteCommand.Failure.Message"));
                 }
             }
         }

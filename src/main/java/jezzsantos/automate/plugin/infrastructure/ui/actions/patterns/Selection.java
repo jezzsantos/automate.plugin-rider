@@ -2,7 +2,9 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.patterns;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
+import jezzsantos.automate.plugin.application.interfaces.patterns.Automation;
 import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
 import jezzsantos.automate.plugin.application.interfaces.patterns.PatternElement;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternFolderPlaceholderNode;
@@ -32,7 +34,7 @@ public class Selection {
     }
 
     @Nullable
-    public static SelectedElement isChildElementOrRoot(@NotNull AnActionEvent e) {
+    public static SelectedElement isElementOrPattern(@NotNull AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
@@ -148,8 +150,30 @@ public class Selection {
         return null;
     }
 
+    public static PatternElement isChildElementOrRootOrAutomationPlaceholder(AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof PatternElement patternElement) {
+                    return patternElement;
+                }
+                else {
+                    if (leaf instanceof PatternFolderPlaceholderNode placeholder) {
+                        return (placeholder.getChild() == placeholder.getParent().getAutomation())
+                          ? placeholder.getParent()
+                          : null;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     @Nullable
-    public static Selection.SelectedCodeTemplate isCodeTemplatePlaceholder(@NotNull AnActionEvent e) {
+    public static Selection.SelectedCodeTemplate isCodeTemplate(@NotNull AnActionEvent e) {
 
         var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
         if (selection != null) {
@@ -159,6 +183,89 @@ public class Selection {
                     var parent = path.getParentPath().getParentPath().getLastPathComponent();
                     if (parent instanceof PatternElement parentElement) {
                         return new SelectedCodeTemplate(parentElement, codeTemplate);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Selection.SelectedAutomation isCodeTemplateCommandPlaceholder(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof Automation automation) {
+                    if (automation.getType() == AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND) {
+                        var parent = path.getParentPath().getParentPath().getLastPathComponent();
+                        if (parent instanceof PatternElement parentElement) {
+                            return new SelectedAutomation(parentElement, automation);
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static Selection.SelectedAutomation isCodeTemplateCommand(AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof Automation automation) {
+                    if (automation.getType() == AutomateConstants.AutomationType.CODE_TEMPLATE_COMMAND) {
+                        var parent = path.getParentPath().getParentPath().getLastPathComponent();
+                        if (parent instanceof PatternElement parentElement) {
+                            return new SelectedAutomation(parentElement, automation);
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Selection.SelectedAutomation isCliCommand(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof Automation automation) {
+                    if (automation.getType() == AutomateConstants.AutomationType.CLI_COMMAND) {
+                        var parent = path.getParentPath().getParentPath().getLastPathComponent();
+                        if (parent instanceof PatternElement parentElement) {
+                            return new SelectedAutomation(parentElement, automation);
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Selection.SelectedAutomation isCommandLaunchPoint(@NotNull AnActionEvent e) {
+
+        var selection = e.getData(PlatformCoreDataKeys.SELECTED_ITEM);
+        if (selection != null) {
+            if (selection instanceof TreePath path) {
+                var leaf = path.getLastPathComponent();
+                if (leaf instanceof Automation automation) {
+                    if (automation.getType() == AutomateConstants.AutomationType.COMMAND_LAUNCH_POINT) {
+                        var parent = path.getParentPath().getParentPath().getLastPathComponent();
+                        if (parent instanceof PatternElement parentElement) {
+                            return new SelectedAutomation(parentElement, automation);
+                        }
                     }
                 }
             }
@@ -232,5 +339,21 @@ public class Selection {
         public PatternElement getParent() {return this.parent;}
 
         public CodeTemplate getTemplate() {return this.template;}
+    }
+
+    static class SelectedAutomation {
+
+        private final Automation automation;
+        private final PatternElement parent;
+
+        public SelectedAutomation(@NotNull PatternElement parent, @NotNull Automation automation) {
+
+            this.parent = parent;
+            this.automation = automation;
+        }
+
+        public PatternElement getParent() {return this.parent;}
+
+        public Automation getAutomation() {return this.automation;}
     }
 }

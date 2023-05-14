@@ -1,6 +1,8 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses.drafts;
 
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftElement;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;

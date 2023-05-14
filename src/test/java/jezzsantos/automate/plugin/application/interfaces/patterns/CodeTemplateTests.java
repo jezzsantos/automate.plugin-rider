@@ -12,6 +12,6 @@ public class CodeTemplateTests {
         var result = new CodeTemplate("anid", "aname", "afilename", "anextension", "aneditorpath")
           .toString();
 
-        assertEquals("aname (original: afilename)", result);
+        assertEquals("aname (id: anid, original: afilename)", result);
     }
 }

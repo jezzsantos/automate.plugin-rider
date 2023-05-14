@@ -324,6 +324,60 @@ public class AutomateApplication implements IAutomateApplication {
         this.automateService.deletePatternCodeTemplate(this.currentDirectory, editPath, templateName);
     }
 
+    @NotNull
+    @Override
+    public Automation addPatternCodeTemplateCommand(@NotNull String parentEditPath, @Nullable String name, @NotNull String codeTemplateName, @NotNull String targetPath, boolean isOneOff) throws Exception {
+
+        return this.automateService.addPatternCodeTemplateCommand(this.currentDirectory, parentEditPath, name, codeTemplateName, targetPath, isOneOff);
+    }
+
+    @NotNull
+    @Override
+    public Automation updatePatternCodeTemplateCommand(@NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull String targetPath, boolean isOneOff) throws Exception {
+
+        return this.automateService.updatePatternCodeTemplateCommand(this.currentDirectory, editPath, id, name, targetPath, isOneOff);
+    }
+
+    @NotNull
+    @Override
+    public Automation addPatternCliCommand(@NotNull String parentEditPath, @Nullable String name, @NotNull String applicationName, @Nullable String arguments) throws Exception {
+
+        return this.automateService.addPatternCliCommand(this.currentDirectory, parentEditPath, name, applicationName, arguments);
+    }
+
+    @NotNull
+    @Override
+    public Automation updatePatternCliCommand(@NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull String applicationName, @Nullable String arguments) throws Exception {
+
+        return this.automateService.updatePatternCliCommand(this.currentDirectory, editPath, id, name, applicationName, arguments);
+    }
+
+    @Override
+    public void deleteCommand(@NotNull String editPath, @NotNull String commandName) throws Exception {
+
+        this.automateService.deleteCommand(this.currentDirectory, editPath, commandName);
+    }
+
+    @NotNull
+    @Override
+    public Automation addPatternCommandLaunchPoint(@NotNull String parentEditPath, @Nullable String name, @NotNull List<String> commandIdentifiers, @Nullable String from) throws Exception {
+
+        return this.automateService.addPatternCommandLaunchPoint(this.currentDirectory, parentEditPath, name, commandIdentifiers, from);
+    }
+
+    @NotNull
+    @Override
+    public Automation updatePatternCommandLaunchPoint(@NotNull String editPath, @NotNull String id, @NotNull String name, @NotNull List<String> addIdentifiers, @NotNull List<String> removeIdentifiers, @Nullable String from) throws Exception {
+
+        return this.automateService.updatePatternCommandLaunchPoint(this.currentDirectory, editPath, id, name, addIdentifiers, removeIdentifiers, from);
+    }
+
+    @Override
+    public void deleteLaunchPoint(@NotNull String editPath, @NotNull String launchPointName) throws Exception {
+
+        this.automateService.deleteLaunchPoint(this.currentDirectory, editPath, launchPointName);
+    }
+
     @Nullable
     @Override
     public String publishCurrentPattern(boolean installLocally, @Nullable String version) throws Exception {

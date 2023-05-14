@@ -6,29 +6,28 @@ import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
 import jezzsantos.automate.plugin.common.Action;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
+import jezzsantos.automate.plugin.infrastructure.ui.dialogs.patterns.EditPatternCliCommandDialog;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.PatternTreeModel;
 import org.jetbrains.annotations.NotNull;
 
-public class EditPatternCodeTemplateContentAction extends AnAction {
+public class EditPatternCliCommandAction extends AnAction {
 
     private final Action<PatternTreeModel> onSuccess;
 
-    public EditPatternCodeTemplateContentAction(Action<PatternTreeModel> onSuccess) {
+    public EditPatternCliCommandAction(Action<PatternTreeModel> onSuccess) {
 
         super();
         this.onSuccess = onSuccess;
     }
 
-    @SuppressWarnings("DialogTitleCapitalization")
     @Override
     public void update(@NotNull AnActionEvent e) {
 
         super.update(e);
 
-        var message = AutomateBundle.message("action.EditPatternCodeTemplateContent.Title");
+        var message = AutomateBundle.message("action.EditPatternCliCommand.Title");
         var presentation = e.getPresentation();
         presentation.setDescription(message);
         presentation.setText(message);
@@ -40,26 +39,30 @@ public class EditPatternCodeTemplateContentAction extends AnAction {
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
         }
 
-        var isCodeTemplateSite = Selection.isCodeTemplate(e) != null;
-        presentation.setEnabledAndVisible(isPatternEditingMode && isCodeTemplateSite);
+        var isAutomationSite = Selection.isCliCommand(e) != null;
+        presentation.setEnabledAndVisible(isPatternEditingMode && isAutomationSite);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
-        IRecorder.getInstance().measureEvent("action.pattern.element.codetemplate.edit", null);
+        IRecorder.getInstance().measureEvent("action.pattern.clicommand.edit", null);
 
         var project = e.getProject();
         if (project != null) {
-            var selected = Selection.isCodeTemplate(e);
+            var selected = Selection.isCliCommand(e);
             if (selected != null) {
                 var application = IAutomateApplication.getInstance(project);
-                var codeTemplateEditorPath = Try.andHandle(project,
-                                                           () -> application.getPatternCodeTemplateContent(selected.getParent().getEditPath(), selected.getTemplate().getName()),
-                                                           AutomateBundle.message("action.EditPatternCodeTemplateAction.Failure.Message"));
-                if (codeTemplateEditorPath != null) {
-                    if (IContainer.getFileEditor(project).openFile(codeTemplateEditorPath)) {
-                        this.onSuccess.run(model -> model.updateElement(selected.getParent()));
+                var automations = selected.getParent().getAutomation();
+                var dialog = new EditPatternCliCommandDialog(project, new EditPatternCliCommandDialog.EditPatternCliCommandDialogContext(selected.getAutomation(), automations));
+                if (dialog.showAndGet()) {
+                    var context = dialog.getContext();
+                    var command = Try.andHandle(project,
+                                                () -> application.updatePatternCliCommand(selected.getParent().getEditPath(), context.getId(), context.getName(),
+                                                                                          context.getApplicationName(), context.getArguments()),
+                                                AutomateBundle.message("action.EditPatternCliCommand.UpdateCommand.Failure.Message"));
+                    if (command != null) {
+                        this.onSuccess.run(model -> model.updateAutomation(command));
                     }
                 }
             }

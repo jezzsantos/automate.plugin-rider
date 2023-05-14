@@ -1,7 +1,9 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses.patterns;
 
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Attribute;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;

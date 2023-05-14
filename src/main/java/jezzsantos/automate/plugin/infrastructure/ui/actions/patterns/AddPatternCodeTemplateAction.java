@@ -69,6 +69,7 @@ public class AddPatternCodeTemplateAction extends AnAction {
                         if (codeTemplateAndCommand != null) {
                             this.onSuccess.run(model -> {
                                 model.insertCodeTemplate(codeTemplateAndCommand.getCodeTemplate(), codeTemplateAndCommand.getAutomation());
+                                //TODO: open the template in editor
                             });
                         }
                     }
@@ -77,7 +78,10 @@ public class AddPatternCodeTemplateAction extends AnAction {
                                                          () -> application.addPatternCodeTemplate(parent.getEditPath(), context.getName(), context.getFilePath()),
                                                          AutomateBundle.message("action.AddPatternCodeTemplate.NewCodeTemplate.Failure.Message"));
                         if (codeTemplate != null) {
-                            this.onSuccess.run(model -> model.insertCodeTemplate(codeTemplate, null));
+                            this.onSuccess.run(model -> {
+                                model.insertCodeTemplate(codeTemplate, null);
+                                //TODO: open the template in editor
+                            });
                         }
                     }
                 }

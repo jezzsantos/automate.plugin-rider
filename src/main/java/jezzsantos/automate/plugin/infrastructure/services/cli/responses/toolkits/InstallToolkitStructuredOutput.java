@@ -1,6 +1,8 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses.toolkits;
 
 import com.jetbrains.rd.util.UsedImplicitly;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
 
 import java.util.ArrayList;
 import java.util.List;

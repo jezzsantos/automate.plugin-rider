@@ -1,6 +1,8 @@
-package jezzsantos.automate.plugin.infrastructure.services.cli.responses;
+package jezzsantos.automate.plugin.infrastructure.services.cli.responses.patterns;
 
 import jezzsantos.automate.plugin.application.interfaces.patterns.CodeTemplate;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutput;
+import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredOutputOutput;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.List;
 class AddRemoveCodeTemplate {
 
     public String Name;
-    public String Id;
+    public String TemplateId;
     public String ParentId;
     public String OriginalFilePath;
     public String OriginalFileExtension;
@@ -31,7 +33,7 @@ public class AddRemovePatternCodeTemplateStructuredOutput extends StructuredOutp
     public CodeTemplate getCodeTemplate() {
 
         var values = this.Output.get(0).Values;
-        return new CodeTemplate(values.Id, values.Name, values.OriginalFilePath, values.OriginalFileExtension, values.EditorPath);
+        return new CodeTemplate(values.TemplateId, values.Name, values.OriginalFilePath, values.OriginalFileExtension, values.EditorPath);
     }
 }
 

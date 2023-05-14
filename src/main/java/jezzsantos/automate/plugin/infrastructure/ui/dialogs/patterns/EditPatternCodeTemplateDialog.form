@@ -92,7 +92,7 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="8ff7e" class="javax.swing.JLabel" binding="commandTargetPathDescription">
+      <component id="8ff7e" class="jezzsantos.automate.plugin.infrastructure.ui.components.HyperLink" binding="commandTargetPathDescription">
         <constraints>
           <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
