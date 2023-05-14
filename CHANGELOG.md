@@ -9,13 +9,7 @@ All notable changes to this project are documented in this file.
 
 ### Notes
 
-- Minimum compatibility with `automate` CLI version 1.2.0
-
 ### Added
-
-- Patterns: #7. Added, deleting new code templates
-- Patterns: #7. Editing the contents of a code template in the IDE
-- Patterns: #7. Adding, editing, deleting code-template-commands and CLI-commands and launch-points
 
 ### Changed
 
@@ -25,11 +19,25 @@ All notable changes to this project are documented in this file.
 
 ### Fixed
 
-- Updated the compatibility of this plugin with Rider versions 222 -> onwards
-
 ### Security
 
-## [1.1.3] - 2022-12-11
+## [1.1.4] - 2023-05-15
+
+### Notes
+
+- Minimum compatibility with `automate` CLI version 1.2.0
+
+### Added
+
+- Patterns: #7. Added, deleting new code templates
+- Patterns: #7. Editing the contents of a code template in the IDE
+- Patterns: #7. Adding, editing, deleting code-template-commands and CLI-commands and launch-points
+
+### Fixed
+
+- Updated the compatibility of this plugin with Rider versions 222 -> onwards
+
+## 1.1.3 - 2022-12-11
 
 ### Notes
 
