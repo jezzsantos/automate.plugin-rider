@@ -23,7 +23,7 @@ public class IntelliJNotifier implements INotifier {
     @Override
     public void alert(@NotNull NotificationType type, @Nullable Project project, @NotNull String title, @NotNull String message, @Nullable LinkDescriptor link) {
 
-        alertInternal(type, null, title, message, link);
+        alertInternal(type, project, title, message, link);
     }
 
     @Override
@@ -40,6 +40,10 @@ public class IntelliJNotifier implements INotifier {
         ApplicationManager.getApplication().invokeLater(andThen);
     }
 
+    /**
+     * Displays a notification balloon in the IDE, that also supports a clickable hyperlink.
+     * If {@code project} is null, then the balloon will not appear, but the notification will still be created.
+     */
     private static void alertInternal(@NotNull NotificationType type, @Nullable Project project, @NotNull String title, @NotNull String message, @Nullable LinkDescriptor link) {
 
         com.intellij.notification.NotificationType notificationType = null;
@@ -58,6 +62,7 @@ public class IntelliJNotifier implements INotifier {
         if (link != null) {
             notification.addAction(createSimple(link.getDescription(), () -> BrowserUtil.browse(link.getUrl())));
         }
+
         notification.notify(project);
     }
 }
