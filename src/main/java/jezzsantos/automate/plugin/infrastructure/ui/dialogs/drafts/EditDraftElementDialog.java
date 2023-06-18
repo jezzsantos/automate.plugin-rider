@@ -80,11 +80,6 @@ public class EditDraftElementDialog extends DialogWrapper {
         contents.revalidate();
     }
 
-    public EditDraftElementDialog.EditDraftElementDialogContext getContext() {
-
-        return this.context;
-    }
-
     @Override
     protected @Nullable ValidationInfo doValidate() {
 
@@ -114,6 +109,11 @@ public class EditDraftElementDialog extends DialogWrapper {
         else {
             return behaviours.entrySet().iterator().next().getValue().getComponent();
         }
+    }
+
+    public EditDraftElementDialog.EditDraftElementDialogContext getContext() {
+
+        return this.context;
     }
 
     @NotNull
@@ -248,9 +248,11 @@ public class EditDraftElementDialog extends DialogWrapper {
                 }
                 var choices = this.attribute.getChoices();
                 if (!choices.isEmpty()) {
-                    if (!this.attribute.isOneOfChoices(currentValue)) {
-                        return new ValidationInfo(
-                          AutomateBundle.message("dialog.EditDraftElement.Validation.InvalidChoice.Message", this.name, String.join(", ", choices)));
+                    if (currentValue != null && !currentValue.isEmpty()) {
+                        if (!this.attribute.isOneOfChoices(currentValue)) {
+                            return new ValidationInfo(
+                              AutomateBundle.message("dialog.EditDraftElement.Validation.InvalidChoice.Message", this.name, String.join(", ", choices)));
+                        }
                     }
                 }
             }

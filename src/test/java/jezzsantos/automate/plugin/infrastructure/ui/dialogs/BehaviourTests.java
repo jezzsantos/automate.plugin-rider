@@ -174,6 +174,29 @@ public class BehaviourTests {
     }
 
     @Test
+    public void whenValidateAndHasChoicesAndIsRequiredAndMissing_ThenReturnsError() {
+
+        var attribute = new Attribute("anid", "anattributename", true, null, AutomateConstants.AttributeDataType.STRING, List.of("achoice1", "achoice2", "achoice3"));
+
+        var result = new EditDraftElementDialog.Behaviour("aname", null, attribute)
+          .validate();
+
+        assertFalse(result.okEnabled);
+        assertEquals(AutomateBundle.message("dialog.EditDraftElement.Validation.RequiredAndMissing.Message", "aname"), result.message);
+    }
+
+    @Test
+    public void whenValidateAndHasChoicesAndIsNotRequiredAndMissing_ThenReturnsNull() {
+
+        var attribute = new Attribute("anid", "anattributename", false, null, AutomateConstants.AttributeDataType.STRING, List.of("achoice1", "achoice2", "achoice3"));
+
+        var result = new EditDraftElementDialog.Behaviour("aname", null, attribute)
+          .validate();
+
+        assertNull(result);
+    }
+
+    @Test
     public void whenValidateAndIsNotCorrectDataType_ThenReturnsError() {
 
         var attribute = new Attribute("anid", "anattributename", false, null, AutomateConstants.AttributeDataType.INTEGER, null);
@@ -186,15 +209,14 @@ public class BehaviourTests {
     }
 
     @Test
-    public void whenValidateAndValueIsNotAChoice_ThenReturnsError() {
+    public void whenValidateAndValueIsNotAChoice_ThenReturnsNull() {
 
         var attribute = new Attribute("anid", "anattributename", false, null, AutomateConstants.AttributeDataType.STRING, List.of("achoice1", "achoice2", "achoice3"));
 
         var result = new EditDraftElementDialog.Behaviour("aname", "notachoice", attribute)
           .validate();
 
-        assertFalse(result.okEnabled);
-        assertEquals(AutomateBundle.message("dialog.EditDraftElement.Validation.InvalidChoice.Message", "aname", "achoice1, achoice2, achoice3"), result.message);
+        assertNull(result);
     }
 
     @Test
