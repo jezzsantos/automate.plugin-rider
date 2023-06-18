@@ -40,6 +40,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 
@@ -245,7 +246,12 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
                             if (value instanceof DraftPropertyPlaceholderNode placeholder) {
                                 setIcon(AllIcons.Gutter.ExtAnnotation);
                                 setToolTipText(AutomateBundle.message("toolWindow.Tree.Draft.Property.Tooltip"));
-                                append(placeholder.toString());
+                                if (isNotablePropertyName(placeholder.getProperty().getName())) {
+                                    append(placeholder.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, AutomateColors.getNormalText()));
+                                }
+                                else {
+                                    append(placeholder.toString());
+                                }
                             }
                         }
                     }
@@ -376,6 +382,11 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
     private ShortcutSet getKeyboardShortcut(int key) {
 
         return new CustomShortcutSet(KeyStroke.getKeyStroke(key, 0));
+    }
+
+    private boolean isNotablePropertyName(@NotNull String name) {
+
+        return Objects.equals(name, "Id") || Objects.equals(name, "Name");
     }
 
     @SuppressWarnings("ClassCanBeRecord")
