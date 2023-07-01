@@ -67,12 +67,12 @@ public class UpgradeToolkitAction extends AnAction {
                                                       new UpgradeToolkitDialog.UpgradeToolkitDialogContext(selectedNode.getToolkitName(), selectedNode.getToolkitCompatibility(),
                                                                                                            toolkitIsUpgradeable));
                 if (dialog.showAndGet()) {
-                    var warning = Try.andHandle(project, () -> {
+                    var warning = Try.andHandle(project, AutomateBundle.message("action.UpgradeToolkit.UpgradeToolkit.Progress.Title"), () -> {
                                                     application.setCurrentPattern(patternId);
                                                     return application.publishCurrentPattern(true, null);
                                                 },
                                                 AutomateBundle.message(
-                                                  "action.UpgradeToolkit.Failure.Message"));
+                                                  "action.UpgradeToolkit.UpgradeToolkit.Failure.Message"));
                     if (warning != null) {
                         this.notifier.alert(NotificationType.WARNING, AutomateBundle.message("action.UpgradeToolkit.Publish.SuccessWithWarning.Title"), AutomateBundle.message(
                           "action.UpgradeToolkit.Publish.SuccessWithWarning.Message", warning), null);

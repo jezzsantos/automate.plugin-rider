@@ -57,7 +57,7 @@ public class AddPatternCliCommandAction extends AnAction {
                 var dialog = new EditPatternCliCommandDialog(project, new EditPatternCliCommandDialog.EditPatternCliCommandDialogContext(automations));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var automation = Try.andHandle(project,
+                    var automation = Try.andHandle(project, AutomateBundle.message("action.AddPatternCliCommand.NewCliCommand.Progress.Title"),
                                                    () -> application.addPatternCliCommand(parent.getEditPath(), context.getName(), context.getApplicationName(),
                                                                                           context.getArguments()),
                                                    AutomateBundle.message("action.AddPatternCliCommand.NewCliCommand.Failure.Message"));

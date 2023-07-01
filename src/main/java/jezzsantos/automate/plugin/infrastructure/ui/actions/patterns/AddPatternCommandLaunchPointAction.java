@@ -58,7 +58,7 @@ public class AddPatternCommandLaunchPointAction extends AnAction {
                 var dialog = new EditPatternCommandLaunchPointDialog(project, new EditPatternCommandLaunchPointDialog.EditPatternCommandLaunchPointDialogContext(automations));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var automation = Try.andHandle(project,
+                    var automation = Try.andHandle(project, AutomateBundle.message("action.AddPatternCommandLaunchPoint.NewCommandLaunchPoint.Progress.Title"),
                                                    () -> application.addPatternCommandLaunchPoint(parent.getEditPath(), context.getName(), context.getAddIdentifiers(),
                                                                                                   context.getFrom()),
                                                    AutomateBundle.message("action.AddPatternCommandLaunchPoint.NewCommandLaunchPoint.Failure.Message"));

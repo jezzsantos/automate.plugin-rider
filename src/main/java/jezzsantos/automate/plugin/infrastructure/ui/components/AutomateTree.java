@@ -117,8 +117,8 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             if (editingMode == EditingMode.PATTERNS) {
                 var currentPattern = this.application.getCurrentPatternInfo();
                 if (currentPattern != null) {
-                    var pattern = Try.andHandle(this.project, this.application::getCurrentPatternDetailed,
-                                                AutomateBundle.message("general.AutomateTree.CurrentPattern.Failed.Message"));
+                    var pattern = Try.andHandle(this.project, AutomateBundle.message("general.AutomateTree.GetCurrentPattern.Progress.Title"),
+                                                this.application::getCurrentPatternDetailed, AutomateBundle.message("general.AutomateTree.GetCurrentPattern.Failed.Message"));
                     if (pattern != null) {
                         var model = new PatternTreeModel(new AutomateTreeSelector(this), pattern);
                         this.currentSelectionListener = new PatternModelTreeSelectionListener(model);
@@ -130,10 +130,10 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             else {
                 var currentDraft = this.application.getCurrentDraftInfo();
                 if (currentDraft != null) {
-                    var draft = Try.andHandle(this.project, this.application::getCurrentDraftDetailed,
-                                              AutomateBundle.message("general.AutomateTree.CurrentDraft.Failed.Message"));
-                    var toolkit = Try.andHandle(this.project, this.application::getCurrentToolkitDetailed,
-                                                AutomateBundle.message("general.AutomateTree.CurrentToolkit.Failed.Message"));
+                    var draft = Try.andHandle(this.project, AutomateBundle.message("general.AutomateTree.GetCurrentDraft.Progress.Title"),
+                                              this.application::getCurrentDraftDetailed, AutomateBundle.message("general.AutomateTree.GetCurrentDraft.Failed.Message"));
+                    var toolkit = Try.andHandle(this.project, AutomateBundle.message("general.AutomateTree.GetCurrentToolkit.Progress.Title"),
+                                                this.application::getCurrentToolkitDetailed, AutomateBundle.message("general.AutomateTree.GetCurrentToolkit.Failed.Message"));
                     if (draft != null && toolkit != null) {
                         var model = new DraftTreeModel(new AutomateTreeSelector(this), draft, toolkit.getPattern());
                         this.currentSelectionListener = new DraftModelTreeSelectionListener(model);

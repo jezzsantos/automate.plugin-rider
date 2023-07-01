@@ -60,7 +60,7 @@ public class EditPatternAttributeAction extends AnAction {
                                                                                                                              AutomateConstants.AttributeDataTypes));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var attribute = Try.andHandle(project,
+                    var attribute = Try.andHandle(project, AutomateBundle.message("action.EditPatternAttribute.UpdateAttribute.Progress.Title"),
                                                   () -> application.updatePatternAttribute(selected.getParent().getEditPath(), context.getId(), context.getName(),
                                                                                            context.getIsRequired(),
                                                                                            context.getDataType(), context.getDefaultValue(), context.getChoices()),

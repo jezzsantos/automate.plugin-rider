@@ -55,10 +55,10 @@ public class InstallToolkitToolbarAction extends AnAction {
             var dialog = new InstallToolkitDialog(project, new InstallToolkitDialog.InstallToolkitDialogContext());
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
-                Try.andHandle(project,
+                Try.andHandle(project, AutomateBundle.message("action.InstallToolkit.InstallToolkit.Progress.Title"),
                               () -> application.installToolkit(context.ToolkitLocation),
                               this.onPerformed,
-                              AutomateBundle.message("action.InstallToolkit.Failure.Message"));
+                              AutomateBundle.message("action.InstallToolkit.InstallToolkit.Failure.Message"));
             }
         }
     }

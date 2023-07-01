@@ -60,7 +60,7 @@ public class AddPatternCodeTemplateAction extends AnAction {
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
                     if (context.isAddCommand()) {
-                        var codeTemplateAndCommand = Try.andHandle(project,
+                        var codeTemplateAndCommand = Try.andHandle(project, AutomateBundle.message("action.AddPatternCodeTemplate.NewCodeTemplate.Progress.Title"),
                                                                    () -> application.addPatternCodeTemplateWithCommand(parent.getEditPath(), context.getName(),
                                                                                                                        context.getFilePath(), context.getCommandName(),
                                                                                                                        context.getCommandTargetPath(),
@@ -74,7 +74,7 @@ public class AddPatternCodeTemplateAction extends AnAction {
                         }
                     }
                     else {
-                        var codeTemplate = Try.andHandle(project,
+                        var codeTemplate = Try.andHandle(project, AutomateBundle.message("action.AddPatternCodeTemplate.NewCodeTemplate.Progress.Title"),
                                                          () -> application.addPatternCodeTemplate(parent.getEditPath(), context.getName(), context.getFilePath()),
                                                          AutomateBundle.message("action.AddPatternCodeTemplate.NewCodeTemplate.Failure.Message"));
                         if (codeTemplate != null) {

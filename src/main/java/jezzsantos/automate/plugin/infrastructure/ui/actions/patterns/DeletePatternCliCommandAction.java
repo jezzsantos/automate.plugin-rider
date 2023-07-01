@@ -56,7 +56,7 @@ public class DeletePatternCliCommandAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.DeletePatternCliCommand.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.DeletePatternCliCommand.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
+                    Try.andHandle(project, AutomateBundle.message("action.DeletePatternCliCommand.DeleteCommand.Progress.Title"),
                                   () -> application.deleteCommand(selected.getParent().getEditPath(), selected.getAutomation().getName()),
                                   () -> this.onSuccess.run(model -> model.deleteAutomation(selected.getAutomation())),
                                   AutomateBundle.message("action.DeletePatternCliCommand.DeleteCommand.Failure.Message"));

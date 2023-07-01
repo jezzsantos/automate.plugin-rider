@@ -57,10 +57,12 @@ public class UpgradeDraftAction extends AnAction {
             if (selectedNode != null) {
                 var dialog = new UpgradeDraftDialog(project,
                                                     new UpgradeDraftDialog.UpgradeDraftDialogContext(selectedNode.getToolkitName(), selectedNode.getDraftCompatibility(),
-                                                                                                     context -> Try.andHandle(project, () -> application.upgradeCurrentDraft(
+                                                                                                     context -> Try.andHandle(project, AutomateBundle.message(
+                                                                                                                                "action.UpgradeDraft.UpgradeCurrent.Progress.Title"),
+                                                                                                                              () -> application.upgradeCurrentDraft(
                                                                                                                                 context.getForce()),
                                                                                                                               AutomateBundle.message(
-                                                                                                                                "action.UpgradeDraft.Failure.Message"))));
+                                                                                                                                "action.UpgradeDraft.UpgradeCurrent.Failure.Message"))));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
                     if (context.isSuccess()) {

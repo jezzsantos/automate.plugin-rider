@@ -60,7 +60,7 @@ public class AddPatternAttributeAction extends AnAction {
                                                             new EditPatternAttributeDialog.EditPatternAttributeDialogContext(attributes, AutomateConstants.AttributeDataTypes));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var attribute = Try.andHandle(project,
+                    var attribute = Try.andHandle(project, AutomateBundle.message("action.AddPatternAttribute.NewAttribute.Progress.Title"),
                                                   () -> application.addPatternAttribute(parent.getEditPath(), context.getId(), context.getIsRequired(), context.getDataType(),
                                                                                         context.getDefaultValue(), context.getChoices()),
                                                   AutomateBundle.message("action.AddPatternAttribute.NewAttribute.Failure.Message"));

@@ -50,7 +50,7 @@ public class AddDraftElementAction extends AnAction {
             var dialog = new EditDraftElementDialog(project, new EditDraftElementDialog.EditDraftElementDialogContext(this.schema));
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
-                var added = Try.andHandle(project,
+                var added = Try.andHandle(project, AutomateBundle.message("action.AddDraftElement.NewElement.Progress.Title"),
                                           () -> application.addDraftElement(Objects.requireNonNull(this.parentElement.getConfigurePath()), this.schema.isCollection(),
                                                                             this.schema.getName(),
                                                                             context.getValues()),

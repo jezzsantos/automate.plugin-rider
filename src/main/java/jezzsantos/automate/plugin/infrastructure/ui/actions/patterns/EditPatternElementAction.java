@@ -59,7 +59,7 @@ public class EditPatternElementAction extends AnAction {
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
                     if (selected.getElement().isRoot()) {
-                        var pattern = Try.andHandle(project,
+                        var pattern = Try.andHandle(project, AutomateBundle.message("action.EditPatternElement.UpdateRoot.Progress.Title"),
                                                     () -> application.updatePattern(context.getName(), context.getDisplayName(), context.getDescription()),
                                                     AutomateBundle.message("action.EditPatternElement.UpdateRoot.Failure.Message"));
                         if (pattern != null) {
@@ -67,7 +67,7 @@ public class EditPatternElementAction extends AnAction {
                         }
                     }
                     else {
-                        var element = Try.andHandle(project,
+                        var element = Try.andHandle(project, AutomateBundle.message("action.EditPatternElement.UpdateElement.Progress.Title"),
                                                     () -> application.updatePatternElement(selected.getParent().getEditPath(), context.getId(), context.getName(),
                                                                                            context.getIsCollection(),
                                                                                            context.getIsRequired(),

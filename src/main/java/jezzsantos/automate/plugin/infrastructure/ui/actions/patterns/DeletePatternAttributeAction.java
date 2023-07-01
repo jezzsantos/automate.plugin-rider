@@ -56,7 +56,7 @@ public class DeletePatternAttributeAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternAttribute.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
+                    Try.andHandle(project, AutomateBundle.message("action.DeletePatternAttribute.DeleteAttribute.Progress.Title"),
                                   () -> application.deletePatternAttribute(selected.getParent().getEditPath(), selected.getAttribute().getName()),
                                   () -> this.onSuccess.run(model -> model.deleteAttribute(selected.getAttribute())),
                                   AutomateBundle.message("action.DeletePatternAttribute.DeleteAttribute.Failure.Message"));

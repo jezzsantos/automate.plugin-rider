@@ -57,7 +57,7 @@ public class AddDraftAction extends AnAction {
             var dialog = new NewDraftDialog(project, new NewDraftDialog.NewDraftDialogContext(toolkits, drafts));
             if (dialog.showAndGet()) {
                 var context = dialog.getContext();
-                var draft = Try.andHandle(project,
+                var draft = Try.andHandle(project, AutomateBundle.message("action.AddDraft.NewDraft.Progress.Title"),
                                           () -> application.createDraft(context.ToolkitName, context.Name),
                                           AutomateBundle.message("action.AddDraft.NewDraft.Failure.Message"));
                 if (draft != null) {

@@ -61,7 +61,7 @@ public class EditPatternCodeTemplateCommandAction extends AnAction {
                                                                                                                                                            automations));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var command = Try.andHandle(project,
+                    var command = Try.andHandle(project, AutomateBundle.message("action.EditPatternCodeTemplateCommand.UpdateCommand.Progress.Title"),
                                                 () -> application.updatePatternCodeTemplateCommand(selected.getParent().getEditPath(), context.getId(), context.getName(),
                                                                                                    context.getTargetPath(), context.getIsOneOff()),
                                                 AutomateBundle.message("action.EditPatternCodeTemplateCommand.UpdateCommand.Failure.Message"));

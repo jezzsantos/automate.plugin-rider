@@ -43,9 +43,9 @@ public class ViewDraftAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var currentDraft = Try.andHandle(project,
-                                             application::getCurrentDraftInfo,
-                                             AutomateBundle.message("action.ViewDraft.GetCurrentDraft.Failure.Message"));
+            var currentDraft = Try.andHandleWithoutProgress(project, AutomateBundle.message("action.ViewDraft.GetCurrentDraft.Progress.Title"),
+                                                            application::getCurrentDraftInfo,
+                                                            AutomateBundle.message("action.ViewDraft.GetCurrentDraft.Failure.Message"));
             var isThisDraftCurrentDraft = currentDraft != null && currentDraft.getId().equals(this.draft == null
                                                                                                 ? null
                                                                                                 : this.draft.getId());
@@ -71,7 +71,7 @@ public class ViewDraftAction extends AnAction {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
-                Try.andHandle(project,
+                Try.andHandle(project, AutomateBundle.message("action.ViewDraft.SetCurrentDraft.Progress.Title"),
                               () -> application.setCurrentDraft(this.draft.getId()),
                               this.onPerformed,
                               AutomateBundle.message("action.ViewDraft.SetCurrentDraft.Failure.Message"));

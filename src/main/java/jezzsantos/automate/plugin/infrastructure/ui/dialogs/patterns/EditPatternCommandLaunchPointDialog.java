@@ -8,7 +8,6 @@ import com.intellij.ui.components.JBList;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.patterns.Automation;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import org.apache.commons.collections.ListUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -105,9 +104,9 @@ public class EditPatternCommandLaunchPointDialog extends DialogWrapper {
         super.doOKAction();
         this.context.setName(this.name.getText());
         var selected = this.localAutomation.getSelectedValuesList();
-        var unselected = ListUtils.subtract(this.context.getAutomation(), selected).stream().toList();
+        var unselected = new ArrayList<>(this.context.getAutomation());
+        unselected.removeAll(selected);
         this.context.setAddIdentifiers(selected);
-        //noinspection unchecked
         this.context.setRemoveIdentifiers(unselected);
     }
 

@@ -54,9 +54,9 @@ public class EditPatternCodeTemplateContentAction extends AnAction {
             var selected = Selection.isCodeTemplate(e);
             if (selected != null) {
                 var application = IAutomateApplication.getInstance(project);
-                var codeTemplateEditorPath = Try.andHandle(project,
+                var codeTemplateEditorPath = Try.andHandle(project, AutomateBundle.message("action.EditPatternCodeTemplate.GetTemplateContent.Progress.Title"),
                                                            () -> application.getPatternCodeTemplateContent(selected.getParent().getEditPath(), selected.getTemplate().getName()),
-                                                           AutomateBundle.message("action.EditPatternCodeTemplateAction.Failure.Message"));
+                                                           AutomateBundle.message("action.EditPatternCodeTemplate.GetTemplateContent.Failure.Message"));
                 if (codeTemplateEditorPath != null) {
                     if (IContainer.getFileEditor(project).openFile(codeTemplateEditorPath)) {
                         this.onSuccess.run(model -> model.updateElement(selected.getParent()));

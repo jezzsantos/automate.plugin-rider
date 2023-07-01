@@ -56,10 +56,10 @@ public class DeletePatternCommandLaunchPointAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.DeletePatternCommandLaunchPoint.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.DeletePatternCommandLaunchPoint.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
+                    Try.andHandle(project, AutomateBundle.message("action.DeletePatternCommandLaunchPoint.DeleteLaunchPoint.Progress.Title"),
                                   () -> application.deleteLaunchPoint(selected.getParent().getEditPath(), selected.getAutomation().getName()),
                                   () -> this.onSuccess.run(model -> model.deleteAutomation(selected.getAutomation())),
-                                  AutomateBundle.message("action.DeletePatternCommandLaunchPoint.DeleteCommand.Failure.Message"));
+                                  AutomateBundle.message("action.DeletePatternCommandLaunchPoint.DeleteLaunchPoint.Failure.Message"));
                 }
             }
         }

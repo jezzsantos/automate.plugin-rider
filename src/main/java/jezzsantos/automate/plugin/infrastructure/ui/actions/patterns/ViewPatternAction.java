@@ -43,9 +43,9 @@ public class ViewPatternAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            var currentPattern = Try.andHandle(project,
-                                               application::getCurrentPatternInfo,
-                                               AutomateBundle.message("action.ViewPattern.GetCurrentPattern.Failure.Message"));
+            var currentPattern = Try.andHandleWithoutProgress(project, AutomateBundle.message("action.ViewPattern.GetCurrentPattern.Progress.Title"),
+                                                              application::getCurrentPatternInfo,
+                                                              AutomateBundle.message("action.ViewPattern.GetCurrentPattern.Failure.Message"));
             var isThisPatternCurrentPattern = currentPattern != null && currentPattern.getId().equals(this.pattern == null
                                                                                                         ? null
                                                                                                         : this.pattern.getId());
@@ -65,7 +65,7 @@ public class ViewPatternAction extends AnAction {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
-                Try.andHandle(project,
+                Try.andHandle(project, AutomateBundle.message("action.ViewPattern.SetCurrentPattern.Progress.Title"),
                               () -> application.setCurrentPattern(this.pattern.getId()),
                               this.onPerformed,
                               AutomateBundle.message("action.ViewPattern.SetCurrentPattern.Message"));

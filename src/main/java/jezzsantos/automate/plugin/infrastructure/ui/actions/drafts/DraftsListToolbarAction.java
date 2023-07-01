@@ -39,7 +39,9 @@ public class DraftsListToolbarAction extends ComboBoxAction {
             isInstalled = application.isCliInstalled();
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
             if (isInstalled) {
-                var currentDraft = Try.andHandle(project, application::getCurrentDraftInfo, AutomateBundle.message("action.DraftsListToolbar.GetCurrentDraft.Failure.Message"));
+                var currentDraft = Try.andHandleWithoutProgress(project, AutomateBundle.message("action.DraftsListToolbar.GetCurrentDraft.Progress.Title"),
+                                                                application::getCurrentDraftInfo,
+                                                                AutomateBundle.message("action.DraftsListToolbar.GetCurrentDraft.Failure.Message"));
                 if (currentDraft != null) {
                     message = currentDraft.getName();
                 }
@@ -61,7 +63,7 @@ public class DraftsListToolbarAction extends ComboBoxAction {
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             if (application.isCliInstalled()) {
-                var drafts = Try.andHandle(project, application::listDrafts,
+                var drafts = Try.andHandle(project, AutomateBundle.message("action.DraftsListToolbar.ListDrafts.Progress.Title"), application::listDrafts,
                                            AutomateBundle.message("action.DraftsListToolbar.ListAllDrafts.Failure.Message"));
                 var isAnyDrafts = drafts != null && !drafts.isEmpty();
                 if (isAnyDrafts) {

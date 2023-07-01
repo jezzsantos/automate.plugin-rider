@@ -58,7 +58,7 @@ public class DeleteDraftElementAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.DraftElement.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.DraftElement.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
+                    Try.andHandle(project, AutomateBundle.message("action.DeleteDraftElement.DeleteElement.Progress.Title"),
                                   () -> application.deleteDraftElement(Objects.requireNonNull(element.getConfigurePath())),
                                   () -> this.onSuccess.run(model -> model.deleteDraftElement(element)),
                                   AutomateBundle.message("action.DeleteDraftElement.DeleteElement.Failure.Message"));

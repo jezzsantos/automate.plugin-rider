@@ -49,10 +49,13 @@ public class ExecuteDraftLaunchPointAction extends AnAction {
 
             var application = IAutomateApplication.getInstance(project);
             var context = new ExecuteDraftLaunchPointDialog.ExecuteDraftLaunchPointDialogContext(this.automation.getName(),
-                                                                                                 () -> Try.andHandle(project, () -> application.executeLaunchPoint(
-                                                                                                   Objects.requireNonNull(this.parentElement.getConfigurePath()),
-                                                                                                   this.automation.getName()), AutomateBundle.message(
-                                                                                                   "action.ExecuteDraftLaunchPoint.Failure.Message")));
+                                                                                                 () -> Try.andHandle(project, AutomateBundle.message(
+                                                                                                                       "action.ExecuteDraftLaunchPoint.ExecuteLaunchPoint.Progress.Title"),
+                                                                                                                     () -> application.executeLaunchPoint(
+                                                                                                                       Objects.requireNonNull(
+                                                                                                                         this.parentElement.getConfigurePath()),
+                                                                                                                       this.automation.getName()), AutomateBundle.message(
+                                                                                                     "action.ExecuteDraftLaunchPoint.ExecuteLaunchPoint.Failure.Message")));
             var dialog = new ExecuteDraftLaunchPointDialog(project, context);
             dialog.showAndGet();
             this.onSuccess.run(model -> {});

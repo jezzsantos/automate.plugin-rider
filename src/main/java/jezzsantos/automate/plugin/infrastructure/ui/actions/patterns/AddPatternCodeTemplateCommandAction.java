@@ -60,7 +60,7 @@ public class AddPatternCodeTemplateCommandAction extends AnAction {
                                                                                                                                                                     automations));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var automation = Try.andHandle(project,
+                    var automation = Try.andHandle(project, AutomateBundle.message("action.AddPatternCodeTemplateCommand.NewCodeTemplateCommand.Progress.Title"),
                                                    () -> application.addPatternCodeTemplateCommand(parent.getEditPath(), context.getName(), context.getCodeTemplate().getName(),
                                                                                                    context.getTargetPath(), context.getIsOneOff()),
                                                    AutomateBundle.message("action.AddPatternCodeTemplateCommand.NewCodeTemplateCommand.Failure.Message"));

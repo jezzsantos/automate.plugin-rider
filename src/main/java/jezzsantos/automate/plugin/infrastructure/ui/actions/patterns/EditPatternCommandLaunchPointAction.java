@@ -59,7 +59,7 @@ public class EditPatternCommandLaunchPointAction extends AnAction {
                                                                                                                                                         automations));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var command = Try.andHandle(project,
+                    var command = Try.andHandle(project, AutomateBundle.message("action.EditPatternCommandLaunchPoint.UpdateLaunchPoint.Progress.Title"),
                                                 () -> application.updatePatternCommandLaunchPoint(selected.getParent().getEditPath(), context.getId(), context.getName(),
                                                                                                   context.getAddIdentifiers(), context.getRemoveIdentifiers(), context.getFrom()),
                                                 AutomateBundle.message("action.EditPatternCommandLaunchPoint.UpdateLaunchPoint.Failure.Message"));

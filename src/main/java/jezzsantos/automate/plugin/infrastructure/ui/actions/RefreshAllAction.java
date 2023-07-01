@@ -40,7 +40,7 @@ public class RefreshAllAction extends AnAction {
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            Try.andHandle(project,
+            Try.andHandle(project, AutomateBundle.message("action.RefreshPatterns.ListAllItems.Progress.Title"),
                           () -> application.listAllAutomation(true),
                           this.onPerformed,
                           AutomateBundle.message("action.RefreshPatterns.ListAllItems.Failure.Message"));

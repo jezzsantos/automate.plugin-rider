@@ -56,7 +56,7 @@ public class DeletePatternElementAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternElement.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.PatternElement.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
+                    Try.andHandle(project, AutomateBundle.message("action.DeletePatternElement.DeleteElement.Progress.Title"),
                                   () -> application.deletePatternElement(selected.getParent().getEditPath(), selected.getElement().getName(), selected.getElement().isCollection()),
                                   () -> this.onSuccess.run(model -> model.deleteElement(selected.getElement())),
                                   AutomateBundle.message("action.DeletePatternElement.DeleteElement.Failure.Message"));

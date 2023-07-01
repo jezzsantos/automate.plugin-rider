@@ -58,14 +58,14 @@ public class PublishPatternAction extends AnAction {
             var project = e.getProject();
             if (project != null) {
                 var application = IAutomateApplication.getInstance(project);
-                var pattern = Try.andHandle(project, application::getCurrentPatternDetailed,
+                var pattern = Try.andHandle(project, AutomateBundle.message("action.PublishPattern.GetCurrentPattern.Progress.Title"), application::getCurrentPatternDetailed,
                                             AutomateBundle.message("action.PublishPattern.GetCurrentPattern.Failure.Message"));
                 if (pattern != null) {
                     var dialog = new PublishPatternDialog(project,
                                                           new PublishPatternDialog.PublishPatternDialogContext(pattern));
                     if (dialog.showAndGet()) {
                         var context = dialog.getContext();
-                        var warning = Try.andHandle(project,
+                        var warning = Try.andHandle(project, AutomateBundle.message("action.PublishPattern.Publish.Progress.Title"),
                                                     () -> application.publishCurrentPattern(context.getInstallLocally(), context.getCustomVersion()),
                                                     AutomateBundle.message("action.PublishPattern.Publish.Failure.Message"));
                         if (warning != null) {

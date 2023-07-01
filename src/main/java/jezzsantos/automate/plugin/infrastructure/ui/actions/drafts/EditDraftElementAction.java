@@ -58,7 +58,7 @@ public class EditDraftElementAction extends AnAction {
                 var dialog = new EditDraftElementDialog(project, new EditDraftElementDialog.EditDraftElementDialogContext(element, schema));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var updated = Try.andHandle(project,
+                    var updated = Try.andHandle(project, AutomateBundle.message("action.EditDraftElement.UpdateElement.Progress.Title"),
                                                 () -> application.updateDraftElement(Objects.requireNonNull(element.getConfigurePath()), context.getValues()),
                                                 AutomateBundle.message("action.EditDraftElement.UpdateElement.Failure.Message"));
                     if (updated != null) {

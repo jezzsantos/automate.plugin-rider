@@ -42,9 +42,9 @@ public class PatternsListToolbarAction extends ComboBoxAction {
             isAuthoringMode = application.isAuthoringMode();
             isPatternEditingMode = application.getEditingMode() == EditingMode.PATTERNS;
             if (isInstalled) {
-                var currentPattern = Try.andHandle(project,
-                                                   application::getCurrentPatternInfo,
-                                                   AutomateBundle.message("action.PatternsListToolbar.GetCurrentPattern.Failure.Message"));
+                var currentPattern = Try.andHandleWithoutProgress(project, AutomateBundle.message("action.PatternsListToolbar.GetCurrentPattern.Progress.Title"),
+                                                                  application::getCurrentPatternInfo,
+                                                                  AutomateBundle.message("action.PatternsListToolbar.GetCurrentPattern.Failure.Message"));
                 if (currentPattern != null) {
                     message.set(currentPattern.getName());
                 }
@@ -66,7 +66,7 @@ public class PatternsListToolbarAction extends ComboBoxAction {
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             if (application.isCliInstalled()) {
-                var patterns = Try.andHandle(project,
+                var patterns = Try.andHandle(project, AutomateBundle.message("action.PatternsListToolbar.GetAllPatterns.Progress.Title"),
                                              application::listPatterns,
                                              AutomateBundle.message("action.PatternsListToolbar.ListAllPatterns.Failure.Message"));
                 var isAnyPatterns = patterns != null && !patterns.isEmpty();

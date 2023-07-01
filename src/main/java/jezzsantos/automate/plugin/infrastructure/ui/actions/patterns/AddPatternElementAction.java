@@ -60,7 +60,7 @@ public class AddPatternElementAction extends AnAction {
                                                           new EditPatternElementDialog.EditPatternElementDialogContext(attributes, elements));
                 if (dialog.showAndGet()) {
                     var context = dialog.getContext();
-                    var element = Try.andHandle(project,
+                    var element = Try.andHandle(project, AutomateBundle.message("action.AddPatternElement.NewElement.Progress.Title"),
                                                 () -> application.addPatternElement(parent.getEditPath(), context.getId(), context.getIsCollection(), context.getIsRequired(),
                                                                                     context.getDisplayName(), context.getDescription(), context.getIsAutoCreate()),
                                                 AutomateBundle.message("action.AddPatternElement.NewElement.Failure.Message"));

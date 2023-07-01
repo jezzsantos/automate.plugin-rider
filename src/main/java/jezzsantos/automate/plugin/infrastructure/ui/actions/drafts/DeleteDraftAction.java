@@ -54,9 +54,9 @@ public class DeleteDraftAction extends AnAction {
                                                  AutomateBundle.message("dialog.ConfirmDelete.Draft.Title"),
                                                  AutomateBundle.message("dialog.ConfirmDelete.Draft.Message"))) {
                     var application = IAutomateApplication.getInstance(project);
-                    Try.andHandle(project,
+                    Try.andHandle(project, AutomateBundle.message("action.DeleteDraft.DeleteDraft.Progress.Title"),
                                   application::deleteCurrentDraft,
-                                  AutomateBundle.message("action.DeleteDraftElement.DeleteDraft.Failure.Message"));
+                                  AutomateBundle.message("action.DeleteDraft.DeleteDraft.Failure.Message"));
                     this.onSuccess.run();
                 }
             }
