@@ -10,8 +10,8 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.*;
 import jezzsantos.automate.plugin.application.interfaces.patterns.*;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetailed;
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
-import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ public class AutomateApplication implements IAutomateApplication {
     @NotNull
     private final IAutomateCliService automateService;
     @NotNull
-    private final IApplicationConfiguration configuration;
+    private final IProjectConfiguration configuration;
     @NotNull
     private final String currentDirectory;
     private final IRecorder recorder;
@@ -38,11 +38,11 @@ public class AutomateApplication implements IAutomateApplication {
     @UsedImplicitly
     public AutomateApplication(@NotNull Project project) {
 
-        this(IRecorder.getInstance(), IApplicationConfiguration.getInstance(), IAutomateCliService.getInstance(), Objects.requireNonNull(project.getBasePath()));
+        this(IRecorder.getInstance(), IProjectConfiguration.getInstance(project), IAutomateCliService.getInstance(project), Objects.requireNonNull(project.getBasePath()));
     }
 
     @TestOnly
-    public AutomateApplication(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull IAutomateCliService automateService, @NotNull String currentDirectory) {
+    public AutomateApplication(@NotNull IRecorder recorder, @NotNull IProjectConfiguration configuration, @NotNull IAutomateCliService automateService, @NotNull String currentDirectory) {
 
         this.recorder = recorder;
         this.configuration = configuration;

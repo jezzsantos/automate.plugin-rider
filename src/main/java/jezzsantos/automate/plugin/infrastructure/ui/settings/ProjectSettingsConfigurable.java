@@ -3,9 +3,10 @@ package jezzsantos.automate.plugin.infrastructure.ui.settings;
 import com.intellij.ide.ui.search.SearchableOptionContributor;
 import com.intellij.ide.ui.search.SearchableOptionProcessor;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.project.Project;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
-import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
@@ -17,25 +18,27 @@ import org.jetbrains.annotations.TestOnly;
 import javax.swing.*;
 import java.util.Objects;
 
-public class ApplicationSettingsConfigurable implements SearchableConfigurable {
+public class ProjectSettingsConfigurable implements SearchableConfigurable {
 
-    public static final String ConfigurableId = "jezzsantos.automate.infrastructure.settings.ApplicationSettingsConfigurable";
+    public static final String ConfigurableId = "jezzsantos.automate.infrastructure.settings.ProjectSettingsConfigurable";
     public static final String ConfigurableDisplayName = AutomateBundle.message("settings.Title");
+    private final Project project;
     @NotNull
-    private final IApplicationConfiguration configuration;
+    private final IProjectConfiguration configuration;
     private final IOsPlatform platform;
-    private ApplicationSettingsComponent settingsComponent;
+    private ProjectSettingsComponent settingsComponent;
 
     @UsedImplicitly
-    public ApplicationSettingsConfigurable() {
+    public ProjectSettingsConfigurable(@NotNull Project project) {
 
-        this(IApplicationConfiguration.getInstance(), IContainer.getOsPlatform());
+        this(project, IProjectConfiguration.getInstance(project), IContainer.getOsPlatform());
     }
 
     @NonInjectable
     @TestOnly
-    public ApplicationSettingsConfigurable(@NotNull IApplicationConfiguration configuration, @NotNull IOsPlatform platform) {
+    public ProjectSettingsConfigurable(@NotNull Project project, @NotNull IProjectConfiguration configuration, @NotNull IOsPlatform platform) {
 
+        this.project = project;
         this.configuration = configuration;
         this.platform = platform;
     }
@@ -51,7 +54,7 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
     @Override
     public JComponent createComponent() {
 
-        this.settingsComponent = new ApplicationSettingsComponent(this.platform);
+        this.settingsComponent = new ProjectSettingsComponent(this.project, this.platform);
         return this.settingsComponent.getPanel();
     }
 
@@ -121,8 +124,8 @@ public class ApplicationSettingsConfigurable implements SearchableConfigurable {
         @SuppressWarnings("SameParameterValue")
         private void addOptions(@NotNull SearchableOptionProcessor processor, @NotNull String text, @NotNull String hit) {
 
-            addOptions(processor, text, null, hit, ApplicationSettingsConfigurable.ConfigurableId,
-                       ApplicationSettingsConfigurable.ConfigurableDisplayName, true);
+            addOptions(processor, text, null, hit, ProjectSettingsConfigurable.ConfigurableId,
+                       ProjectSettingsConfigurable.ConfigurableDisplayName, true);
         }
     }
 }

@@ -7,7 +7,7 @@ import jezzsantos.automate.plugin.application.interfaces.drafts.DraftDetailed;
 import jezzsantos.automate.plugin.application.interfaces.drafts.DraftLite;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
-import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
@@ -42,7 +42,7 @@ public class AutomateCliServiceTests {
     private IAutomateCliRunner cliRunner;
     private ICliResponseCache cache;
     private IRecorder recorder;
-    private IApplicationConfiguration configuration;
+    private IProjectConfiguration configuration;
     private IOsPlatform platform;
     private ICliUpgrader upgrader;
 
@@ -54,7 +54,7 @@ public class AutomateCliServiceTests {
           .thenReturn(new ReportingContext(true, "amachineid", "asessionid"));
         Mockito.when(this.recorder.withOperation(anyString(), any(), anyString(), anyString()))
           .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(1)).get());
-        this.configuration = Mockito.mock(IApplicationConfiguration.class);
+        this.configuration = Mockito.mock(IProjectConfiguration.class);
         Mockito.when(this.configuration.getExecutablePath())
           .thenReturn(StringWithDefault.fromValue("anexecutablepath"));
         this.cache = Mockito.mock(ICliResponseCache.class);

@@ -9,7 +9,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
-import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
+import jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
 import jezzsantos.automate.plugin.infrastructure.ui.toolwindows.AutomateToolWindow;
@@ -80,9 +80,9 @@ public class AutomateToolWindowFactory implements ToolWindowFactory, Disposable 
         ToolWindowFactory.super.init(toolWindow);
         ensureRecorderIsNotDisposedBeforeThisFactory();
 
-        var allowUsage = IApplicationConfiguration.getInstance().allowUsageCollection();
-        IRecorder.getInstance().startSession(allowUsage, AutomateBundle.message("trace.Operation.Session.Start.Message"));
         var project = toolWindow.getProject();
+        var allowUsage = IProjectConfiguration.getInstance(project).allowUsageCollection();
+        IRecorder.getInstance().startSession(allowUsage, AutomateBundle.message("trace.Operation.Session.Start.Message"));
         initStartupState(project);
     }
 

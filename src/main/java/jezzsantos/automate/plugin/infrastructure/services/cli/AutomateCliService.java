@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.services.cli;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.serviceContainer.NonInjectable;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
@@ -13,8 +14,8 @@ import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitDetaile
 import jezzsantos.automate.plugin.application.interfaces.toolkits.ToolkitLite;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
 import jezzsantos.automate.plugin.application.services.interfaces.CliVersionCompatibility;
-import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.IContainer;
 import jezzsantos.automate.plugin.common.StringWithDefault;
@@ -47,7 +48,7 @@ public class AutomateCliService implements IAutomateCliService {
     @NotNull
     private final IRecorder recorder;
     @NotNull
-    private final IApplicationConfiguration configuration;
+    private final IProjectConfiguration configuration;
     @NotNull
     private final IOsPlatform platform;
 
@@ -56,25 +57,25 @@ public class AutomateCliService implements IAutomateCliService {
     private final ICliUpgrader upgrader;
 
     @UsedImplicitly
-    public AutomateCliService() {
+    public AutomateCliService(@NotNull Project project) {
 
-        this(IRecorder.getInstance(), IApplicationConfiguration.getInstance(), new InMemCliResponseCache(), IContainer.getOsPlatform());
+        this(IRecorder.getInstance(), IProjectConfiguration.getInstance(project), new InMemCliResponseCache(), IContainer.getOsPlatform());
     }
 
     @NonInjectable
-    private AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform) {
+    private AutomateCliService(@NotNull IRecorder recorder, @NotNull IProjectConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform) {
 
         this(recorder, configuration, cache, platform, new AutomateCliRunner());
     }
 
     @NonInjectable
-    private AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
+    private AutomateCliService(@NotNull IRecorder recorder, @NotNull IProjectConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner) {
 
         this(recorder, configuration, cache, platform, runner, new AutomateCliUpgrader(recorder, runner, IContainer.getNotifier()));
     }
 
     @NonInjectable
-    public AutomateCliService(@NotNull IRecorder recorder, @NotNull IApplicationConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner, @NotNull ICliUpgrader upgrader) {
+    public AutomateCliService(@NotNull IRecorder recorder, @NotNull IProjectConfiguration configuration, @NotNull ICliResponseCache cache, @NotNull IOsPlatform platform, @NotNull IAutomateCliRunner runner, @NotNull ICliUpgrader upgrader) {
 
         this.recorder = recorder;
         this.configuration = configuration;

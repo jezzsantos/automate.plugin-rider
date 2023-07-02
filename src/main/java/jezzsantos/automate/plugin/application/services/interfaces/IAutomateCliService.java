@@ -1,6 +1,6 @@
 package jezzsantos.automate.plugin.application.services.interfaces;
 
-import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.AllStateLite;
 import jezzsantos.automate.plugin.application.interfaces.CliLogEntry;
@@ -18,9 +18,9 @@ import java.util.Map;
 
 public interface IAutomateCliService {
 
-    static IAutomateCliService getInstance() {
+    static IAutomateCliService getInstance(@NotNull Project project) {
 
-        return ApplicationManager.getApplication().getService(IAutomateCliService.class);
+        return project.getService(IAutomateCliService.class);
     }
 
     @NotNull

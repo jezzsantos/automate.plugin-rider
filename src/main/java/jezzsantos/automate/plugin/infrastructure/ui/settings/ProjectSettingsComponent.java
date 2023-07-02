@@ -1,18 +1,19 @@
 package jezzsantos.automate.plugin.infrastructure.ui.settings;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.application.interfaces.CliInstallPolicy;
 import jezzsantos.automate.plugin.application.services.interfaces.CliExecutableStatus;
-import jezzsantos.automate.plugin.application.services.interfaces.IApplicationConfiguration;
 import jezzsantos.automate.plugin.application.services.interfaces.IAutomateCliService;
+import jezzsantos.automate.plugin.application.services.interfaces.IProjectConfiguration;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.StringWithDefault;
 import jezzsantos.automate.plugin.infrastructure.IOsPlatform;
-import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsState;
+import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState;
 import jezzsantos.automate.plugin.infrastructure.ui.AutomateColors;
 import jezzsantos.automate.plugin.infrastructure.ui.components.HyperLink;
 import jezzsantos.automate.plugin.infrastructure.ui.components.TextFieldWithBrowseButtonAndHint;
@@ -24,7 +25,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class ApplicationSettingsComponent {
+public class ProjectSettingsComponent {
 
     private final JPanel minPanel;
     private final JBCheckBox authoringMode = new JBCheckBox(AutomateBundle.message("settings.AuthoringMode.Label.Message"));
@@ -36,9 +37,9 @@ public class ApplicationSettingsComponent {
     private final JBCheckBox cliInstallPolicy = new JBCheckBox(AutomateBundle.message("settings.CliInstallPolicy.Label.Title"));
     private final String currentDirectory;
 
-    public ApplicationSettingsComponent(@NotNull IOsPlatform platform) {
+    public ProjectSettingsComponent(@NotNull Project project, @NotNull IOsPlatform platform) {
 
-        var automateService = IAutomateCliService.getInstance();
+        var automateService = IAutomateCliService.getInstance(project);
         var defaultInstallLocation = automateService.getDefaultExecutableLocation();
         this.executablePath.setHint(AutomateBundle.message("settings.PathToAutomateExecutable.EmptyPathHint.Message", defaultInstallLocation));
         this.executablePath.setPreferredSize(new Dimension(380, this.executablePath.getHeight()));
@@ -75,7 +76,7 @@ public class ApplicationSettingsComponent {
 
         this.currentDirectory = platform.getDotNetToolsDirectory();
         if (!automateService.isCliInstalled(this.currentDirectory)) {
-            var configuration = IApplicationConfiguration.getInstance();
+            var configuration = IProjectConfiguration.getInstance(project);
             var status = automateService.tryGetExecutableStatus(this.currentDirectory, configuration.getExecutablePath());
             displayVersionInfo(status);
         }
@@ -114,7 +115,7 @@ public class ApplicationSettingsComponent {
     @NotNull
     public StringWithDefault getExecutablePath() {
 
-        return ApplicationSettingsState.createExecutablePathWithValue(this.executablePath.getText());
+        return ProjectSettingsState.createExecutablePathWithValue(this.executablePath.getText());
     }
 
     public void setExecutablePath(StringWithDefault value) {
@@ -144,7 +145,7 @@ public class ApplicationSettingsComponent {
     private void onTestPathToAutomate(ActionEvent ignored, @NotNull IAutomateCliService automateService) {
 
         var testText = this.executablePath.getText();
-        var executablePath = ApplicationSettingsState.createExecutablePathWithValue(testText);
+        var executablePath = ProjectSettingsState.createExecutablePathWithValue(testText);
         var executableStatus = automateService.tryGetExecutableStatus(this.currentDirectory, executablePath);
 
         displayVersionInfo(executableStatus);

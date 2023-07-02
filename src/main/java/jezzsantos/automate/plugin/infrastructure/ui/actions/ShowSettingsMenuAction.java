@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import jezzsantos.automate.plugin.common.recording.IRecorder;
-import jezzsantos.automate.plugin.infrastructure.ui.settings.ApplicationSettingsConfigurable;
+import jezzsantos.automate.plugin.infrastructure.ui.settings.ProjectSettingsConfigurable;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowSettingsMenuAction extends AnAction {
@@ -35,7 +35,7 @@ public class ShowSettingsMenuAction extends AnAction {
 
         var project = e.getProject();
         if (project != null) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, ApplicationSettingsConfigurable.class);
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, ProjectSettingsConfigurable.class);
         }
     }
 }

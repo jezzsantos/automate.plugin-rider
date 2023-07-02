@@ -3,7 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.settings.converters;
 import com.intellij.util.xmlb.Converter;
 import com.jetbrains.rd.util.reactive.Property;
 import jezzsantos.automate.plugin.common.StringWithDefault;
-import jezzsantos.automate.plugin.infrastructure.settings.ApplicationSettingsState;
+import jezzsantos.automate.plugin.infrastructure.settings.ProjectSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ public class StringWithDefaultPropertyConverter extends Converter<Property<Strin
     @Override
     public @Nullable Property<StringWithDefault> fromString(@NotNull String s) {
 
-        return new Property<>(ApplicationSettingsState.createExecutablePathWithValue(s));
+        return new Property<>(ProjectSettingsState.createExecutablePathWithValue(s));
     }
 
     @Override
