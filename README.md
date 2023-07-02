@@ -1,6 +1,5 @@
 [![Build Test](https://github.com/jezzsantos/automate.plugin-rider/actions/workflows/build.yml/badge.svg)](https://github.com/jezzsantos/automate.plugin-rider/actions/workflows/build.yml)
-[![Download](https://img.shields.io/badge/JetBrains-marketplace-orange?style=flat&logo=rider)](https://plugins.jetbrains.com/plugin/19421-automate)
-![Icon](https://raw.githubusercontent.com/jezzsantos/automate.plugin-rider/main/src/main/resources/META-INF/pluginIcon.svg)
+[![Download](https://img.shields.io/jetbrains/plugin/v/19421?style=flat&logo=rider&color=orange&label=JetBrains%20Plugin)](https://plugins.jetbrains.com/plugin/19421-automate)
 
 # automate Rider Plugin
 
