@@ -21,7 +21,18 @@ All notable changes to this project are documented in this file.
 
 ### Security
 
-## [1.1.4] - 2023-05-15
+## [1.2.0] - 2023-07-02
+
+### Fixed
+
+- Improved the look of some dialog boxes
+- Patterns: #46. Attributes that have choices but are not required now do not block with validation message
+- Patterns: #44. Changed title of the action to edit the content of a code template
+- Drafts: #39. Highlighted common property names (such as Id and Name)
+- General: #42. Added visible progress indicators when communicating with CLI for long-running tasks
+- General: #43. Fixed the problem with sharing context between different solution in separate instances of the IDE
+
+## 1.1.4 - 2023-05-15
 
 ### Notes
 

@@ -215,10 +215,13 @@ When you push your changes (or push your pull requests), they will be built and 
 1. In `gradle.properties`, update the `thisPluginVersion` property
 2. In `CHANGELOG.md`, insert change notes into the `[Unreleased]` sections of the document (e.g. under headings such
    as: `### Notes`, `### Added`, `### Fixed` etc). Only leave sections with items in them ( delete the unused sections)
-3. Run: `./gradlew patchChangelog`
-4. Commit changes with message like `#vx.y.z` (or `#vx.y.z-Unstable`)
-5. Tag that commit `vx.y.z` (or `#vx.y.z-Unstable` if you want an unpublished release)
-6. Push commit and tags
+3. Update both `pluginUntilBuild` and `platformVersionsToVerify` for newer releases for Rider. (you will need to reload
+   your gradle changes first)
+4. Run: `./gradlew runPluginVerifier`, analyze the results, and fix any issues
+5. Run: `./gradlew patchChangelog`
+6. Commit changes with message like `#vx.y.z` (or `#vx.y.z-Unstable`)
+7. Tag that commit `vx.y.z` (or `#vx.y.z-Unstable` if you want an unpublished release)
+8. Push commit and tags
 
 Wait until the latest build goes green, at which point:
 
