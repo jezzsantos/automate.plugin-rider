@@ -49,6 +49,7 @@ public class EditPatternCliCommandDialog extends DialogWrapper {
                                           AutomateBundle.message("dialog.EditPatternCliCommand.CommandTargetPathDescription.Link"),
                                           AutomateConstants.TemplatingExpressionsUrl);
         this.argumentsDescription.setForeground(AutomateColors.getDisabledText());
+        this.arguments.getDocument().putProperty("filterNewlines", Boolean.TRUE);
 
         setOKButtonText(context.getIsNew()
                           ? AutomateBundle.message("dialog.EditPatternCliCommand.NewCommand.Confirm.Title")
