@@ -5,7 +5,7 @@ import com.microsoft.applicationinsights.telemetry.EventTelemetry;
 import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.recording.IMeasurementReporter;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -33,6 +33,8 @@ public class ProcessRunner implements IProcessRunner {
     @Override
     public ProcessResult start(@NotNull List<String> commandLineAndArguments, @NotNull String currentDirectory) {
 
+        //PROBLEM: On MacOS, we are executing the `automate` CLI, which in turn executes the 'dotnet' command, which it cannot find
+        // we think, because the PATH variable is not set (or not used by automate) to run the sub-command.
         var builder = new ProcessBuilder(commandLineAndArguments);
         builder.redirectErrorStream(false);
 

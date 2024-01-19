@@ -17,7 +17,7 @@ import jezzsantos.automate.plugin.infrastructure.services.cli.responses.CliStruc
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.GetInfoStructuredOutput;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.ListAllDefinitionsStructuredOutput;
 import jezzsantos.automate.plugin.infrastructure.services.cli.responses.StructuredError;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

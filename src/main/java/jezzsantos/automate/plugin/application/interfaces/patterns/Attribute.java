@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.jetbrains.rd.util.UsedImplicitly;
 import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.common.AutomateBundle;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;

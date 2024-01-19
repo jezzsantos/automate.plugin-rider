@@ -8,7 +8,7 @@ import jezzsantos.automate.plugin.common.Try;
 import jezzsantos.automate.plugin.common.recording.ILogger;
 import jezzsantos.automate.plugin.common.recording.ISessionReporter;
 import jezzsantos.automate.plugin.common.recording.LogLevel;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -31,9 +31,6 @@ public class ApplicationInsightsSessionReporter implements ISessionReporter, Dis
         this.reportingEnabled = false;
         this.operations = new Operations();
     }
-
-    @TestOnly
-    public Operations getOperations() {return this.operations;}
 
     @Override
     public void enableReporting(@NotNull String machineId, @NotNull String sessionId) {
@@ -110,6 +107,9 @@ public class ApplicationInsightsSessionReporter implements ISessionReporter, Dis
             disposable.dispose();
         }
     }
+
+    @TestOnly
+    public Operations getOperations() {return this.operations;}
 
     static class Operations {
 
