@@ -21,7 +21,19 @@ All notable changes to this project are documented in this file.
 
 ### Security
 
-## [1.2.0] - 2023-07-02
+## [1.4.0] - 2024-10-13
+
+### Changed
+
+- Updated compatibility upto Rider 2024.1
+
+## 1.3.0 - 2024-01-19
+
+### Changed
+
+- Updated compatibility upto Rider 2023.3
+
+## 1.2.0 - 2023-07-02
 
 ### Fixed
 

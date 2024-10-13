@@ -1,64 +1,70 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version "${intellijPluginVersion}"
+    id 'org.jetbrains.intellij.platform' version "${intellijPluginVersion}"
     id 'org.jetbrains.changelog' version '2.0.0'
     id 'me.filippov.gradle.jvm.wrapper' version '0.14.0'
 }
 
-repositories {
-    maven { setUrl("https://cache-redirector.jetbrains.com/maven-central") }
-}
-
 apply plugin: 'org.jetbrains.changelog'
 
-group "jezzsantos"
+group "${thisPluginGroup}"
 version "${thisPluginVersion}"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+repositories {
+    maven { setUrl("https://cache-redirector.jetbrains.com/maven-central") }
+
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
+
 dependencies {
     implementation 'com.google.code.gson:gson:2.10'
-    // HACK: we need to stay on this older version of AI for as long as possible
+    // HACK: we need to stay on this older version of AppInsights for as long as possible
     //noinspection GradlePackageUpdate
     implementation 'com.microsoft.azure:applicationinsights-core:2.6.4'
-}
 
-test {
-    dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-        testImplementation 'org.mockito:mockito-core:4.8.0'
-        testImplementation 'org.testng:testng:7.6.1'
-        testRuntimeOnly 'org.junit.support:testng-engine:1.0.4'
+    intellijPlatform {
+        def version = providers.gradleProperty("platformVersion").get()
+        rider(version)
+        pluginVerifier()
+        zipSigner()
+        instrumentationTools()
+
+        testFramework TestFrameworkType.Bundled.INSTANCE
     }
 
-    systemProperty "LOCAL_ENV_RUN", "true" //For use with 'BaseTestWithSolution' and TestNG
-    useJUnitPlatform()
-    minHeapSize = "512m"
-    maxHeapSize = "1024m"
-    testLogging {
-        showStandardStreams = true
-        exceptionFormat = TestExceptionFormat.FULL
-    }
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.mockito:mockito-core:4.8.0'
+    testImplementation 'org.testng:testng:7.7.0'
+    testRuntimeOnly 'org.junit.support:testng-engine:1.0.4'
 }
 
-intellij {
-    type = "${platformType}"
-    version = "${platformVersion}"
-    downloadSources = false
+intellijPlatform {
     instrumentCode = true
-}
-
-runIde {
-    maxHeapSize = "2G"
-    autoReloadPlugins = false
+    pluginConfiguration {
+        version "${thisPluginVersion}"
+        ideaVersion {
+            sinceBuild = "${pluginSinceBuild}"
+            untilBuild = "${pluginUntilBuild}"
+        }
+    }
+    pluginVerification {
+        ides {
+            recommended()
+        }
+    }
 }
 
 changelog {
@@ -79,37 +85,50 @@ changelog {
     combinePreReleases = true
 }
 
-wrapper {
-    gradleVersion = "${gradleVersion}"
-}
+tasks {
+    wrapper {
+        gradleVersion = "${gradleVersion}"
+    }
 
-patchPluginXml {
-    changeNotes.set(changelog.renderItem(
-            changelog
-                    .getUnreleased()
-                    .withHeader(false)
-                    .withEmptySections(false),
-            Changelog.OutputType.HTML
-    ))
-    sinceBuild = "${pluginSinceBuild}"
-    untilBuild = "${pluginUntilBuild}"
-}
+    publishPlugin {
+        token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
+        channels.set(List.of(("${thisPluginVersion}".split("-").length > 1) ? "${thisPluginVersion}".split("-")[1] : "default"))
+        var versionExists = changelog.has("${thisPluginVersion}")
+        if (versionExists) {
+            patchPluginXml.changeNotes.set(changelog.renderItem(
+                    changelog
+                            .get("${thisPluginVersion}")
+                            .withHeader(false)
+                            .withEmptySections(false),
+                    Changelog.OutputType.HTML
+            ))
+        }
+    }
 
-publishPlugin {
-    token.set(System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken"))
-    channels.set(List.of(("${thisPluginVersion}".split("-").length > 1) ? "${thisPluginVersion}".split("-")[1] : "default"))
-    var versionExists = changelog.has("${thisPluginVersion}")
-    if (versionExists) {
-        patchPluginXml.changeNotes.set(changelog.renderItem(
+    patchPluginXml {
+        changeNotes.set(changelog.renderItem(
                 changelog
-                        .get("${thisPluginVersion}")
+                        .getUnreleased()
                         .withHeader(false)
                         .withEmptySections(false),
                 Changelog.OutputType.HTML
         ))
     }
+
+    test {
+        systemProperty "LOCAL_ENV_RUN", "true" //For use with 'BaseTestWithSolution' and TestNG
+        useJUnitPlatform()
+        minHeapSize = "512m"
+        maxHeapSize = "1024m"
+        testLogging {
+            showStandardStreams = true
+            exceptionFormat = TestExceptionFormat.FULL
+        }
+    }
+
+    runIde {
+        autoReload = false
+        maxHeapSize = "2G"
+    }
 }
 
-runPluginVerifier {
-    ideVersions.set(List.of("${platformVersionsToVerify}".split(",")))
-}
