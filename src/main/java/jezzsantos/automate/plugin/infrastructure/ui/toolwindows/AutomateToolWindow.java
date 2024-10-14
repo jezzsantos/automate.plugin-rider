@@ -2,7 +2,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.toolbarLayout.ToolbarLayoutStrategy;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.jetbrains.rider.settings.codeCleanup.TreeActionsGroup;
@@ -43,12 +43,6 @@ public class AutomateToolWindow implements Disposable {
         this.init();
     }
 
-    @NotNull
-    public JPanel getContent() {
-
-        return this.mainPanel;
-    }
-
     @Override
     public void dispose() {
 
@@ -61,12 +55,18 @@ public class AutomateToolWindow implements Disposable {
         }
     }
 
+    @NotNull
+    public JPanel getContent() {
+
+        return this.mainPanel;
+    }
+
     private void createUIComponents() {
 
         this.tree = new AutomateTree(this.project);
         this.toolbar = new AutomateToolbar(this.project, this.tree, ActionPlaces.TOOLWINDOW_CONTENT, true);
         this.toolbar.setTargetComponent(this.mainPanel);
-        this.toolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
+        this.toolbar.setLayoutStrategy(ToolbarLayoutStrategy.NOWRAP_STRATEGY);
         this.cliLogsPane = new CliLogsPane(this.project);
     }
 
