@@ -7,7 +7,7 @@ plugins {
 
     id("java")
     alias(libs.plugins.kotlin)
-    id("org.jetbrains.intellij.platform")
+    alias(libs.plugins.intellijPlatform)
     alias(libs.plugins.changelog)
     alias(libs.plugins.jvmwrapper)
 }
@@ -36,12 +36,17 @@ dependencies {
 
     intellijPlatform {
         val platformVer: String = providers.gradleProperty("platformVersion").get()
-        rider(platformVer)
+        // Do not set useInstaller = true because installer version for some reason do not contain libs/testFramework.jar
+        // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html#setting-up-intellij-platform
+        // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#target-versions
+        rider(platformVer, useInstaller = false)
         jetbrainsRuntime()
         pluginVerifier()
         zipSigner()
         instrumentationTools()
 
+        // TestFrameworkType.Platform as of this moment does not work for rider and the warning on this page is wrong.
+        // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#testing
         testFramework(TestFrameworkType.Bundled)
     }
 }
