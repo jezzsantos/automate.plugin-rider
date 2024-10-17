@@ -3,6 +3,10 @@ kotlin = "1.9.25" # https://plugins.jetbrains.com/docs/intellij/using-kotlin.htm
 changelog = "2.2.1"
 jvmwrapper = "0.14.0"
 
+# https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
+# Apache 2.0 https://github.com/ota4j-team/opentest4j/blob/main/LICENSE
+intellijPlatform = "2.1.0"
+
 [libraries]
 kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 
@@ -10,3 +14,4 @@ kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref =
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 jvmwrapper = { id = "me.filippov.gradle.jvm.wrapper", version.ref = "jvmwrapper" }
+intellijPlatform = { id = "org.jetbrains.intellij.platformr", version.ref = "intellijPlatform" }
