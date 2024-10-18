@@ -1,0 +1,12 @@
+[versions]
+kotlin = "1.9.25" # https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
+changelog = "2.2.1"
+jvmwrapper = "0.14.0"
+
+[libraries]
+kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+
+[plugins]
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+jvmwrapper = { id = "me.filippov.gradle.jvm.wrapper", version.ref = "jvmwrapper" }
