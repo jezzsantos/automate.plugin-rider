@@ -30,22 +30,19 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.10")
-    //noinspection GradlePackageUpdate
-    implementation("com.microsoft.azure:applicationinsights-core:2.6.4") // HACK: we need to stay on this older version of AppInsights for as long as possible
+    implementation(libs.googleGson)
+    implementation(libs.microsoftApplicationInsights)
 
     intellijPlatform {
         val platformVer: String = providers.gradleProperty("platformVersion").get()
-        // Do not set useInstaller = true because installer version for some reason do not contain libs/testFramework.jar
-        // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html#setting-up-intellij-platform
-        // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#target-versions
+        // HACK: Do not set useInstaller = true because installer version for some reason do not contain libs/testFramework.jar
         rider(platformVer, useInstaller = false)
         jetbrainsRuntime()
         pluginVerifier()
         zipSigner()
         instrumentationTools()
 
-        // TestFrameworkType.Platform as of this moment does not work for rider and the warning on this page is wrong.
+        // HACK: TestFrameworkType.Platform as of this moment does not work for rider and the warning on this page is wrong.
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#testing
         testFramework(TestFrameworkType.Bundled)
     }
@@ -92,8 +89,7 @@ changelog {
 tasks {
 
     wrapper {
-        val gradleVer: String = providers.gradleProperty("gradleVersion").get()
-        gradleVersion = gradleVer
+        gradleVersion = libs.versions.gradle.get()
     }
 
     publishPlugin {
@@ -137,11 +133,11 @@ tasks {
 
     test {
         dependencies {
-            testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
-            testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
-            testImplementation("org.mockito:mockito-core:4.8.0")
-            testImplementation("org.testng:testng:7.7.0")
-            testRuntimeOnly("org.junit.support:testng-engine:1.0.4")
+            testImplementation(libs.junitJupiter)
+            testRuntimeOnly(libs.junitJupiterEngine)
+            testImplementation(libs.mockito)
+            testImplementation(libs.testNg)
+            testRuntimeOnly(libs.testNgEngine)
         }
 
         systemProperty("LOCAL_ENV_RUN", "true") //For use with 'BaseTestWithSolution' and TestNG

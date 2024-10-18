@@ -1,17 +1,33 @@
 [versions]
+gradle = "8.10.2" # Gradle Releases -> https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html#requirements
+intellijPlatform = "2.1.0" # IntelliJ Plugin -> https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 kotlin = "1.9.25" # https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
 changelog = "2.2.1"
 jvmwrapper = "0.14.0"
-
-# https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
-# Apache 2.0 https://github.com/ota4j-team/opentest4j/blob/main/LICENSE
-intellijPlatform = "2.1.0"
+# runtime
+googleGson = "2.10"
+microsoftApplicationInsights = "2.6.4" # HACK: we need to stay on this much older version of AppInsights for as long as possible, since it caches locally
+# testing
+junitJupiter = "5.9.0"
+junitJupiterEngine = "5.9.0"
+mockito = "4.8.0"
+testNg = "7.7.0"
+testNgEngine = "1.0.4"
 
 [libraries]
 kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+# runtime
+googleGson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGson" }
+microsoftApplicationInsights = { group = "com.microsoft.azure", name = "applicationinsights-core", version.ref = "microsoftApplicationInsights" }
+# testing
+junitJupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+junitJupiterEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiterEngine" }
+mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+testNg = { group = "org.testng", name = "testng", version.ref = "testNg" }
+testNgEngine = { group = "org.junit.support", name = "testng-engine", version.ref = "testNgEngine" }
 
 [plugins]
-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+intellijPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 jvmwrapper = { id = "me.filippov.gradle.jvm.wrapper", version.ref = "jvmwrapper" }
-intellijPlatform = { id = "org.jetbrains.intellij.platformr", version.ref = "intellijPlatform" }

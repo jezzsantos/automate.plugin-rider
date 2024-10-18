@@ -1,10 +1,4 @@
 pluginManagement {
-    val intellijPluginVersion: String by settings
-
-    plugins {
-        id("org.jetbrains.intellij.platform").version(intellijPluginVersion) // so that we can read the version from gradle.properties
-    }
-
     repositories {
         maven { setUrl("https://cache-redirector.jetbrains.com/plugins.gradle.org") }
 
