@@ -3,6 +3,7 @@ package jezzsantos.automate.plugin.infrastructure.ui.actions.drafts;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
@@ -55,11 +56,11 @@ public class DraftsListToolbarAction extends ComboBoxAction {
     }
 
     @Override
-    protected @NotNull DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected @NotNull DefaultActionGroup createPopupActionGroup(@NotNull JComponent button, @NotNull DataContext dataContext) {
 
         final var actions = new DefaultActionGroup();
 
-        var project = DataManager.getInstance().getDataContext(component).getData(CommonDataKeys.PROJECT);
+        var project = DataManager.getInstance().getDataContext(button).getData(CommonDataKeys.PROJECT);
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
             if (application.isCliInstalled()) {

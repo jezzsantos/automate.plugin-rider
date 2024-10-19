@@ -83,7 +83,7 @@ public class Attribute {
                 if (value == null) {
                     return false;
                 }
-                return NumberUtils.isNumber(value);
+                return NumberUtils.isCreatable(value);
 
             case DATETIME:
                 if (value == null) {
