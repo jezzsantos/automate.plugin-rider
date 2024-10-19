@@ -21,6 +21,14 @@ All notable changes to this project are documented in this file.
 
 ### Security
 
+## [1.5.0] - 2024-10-20
+
+### Changed
+
+- Updated compatibility beyond Rider 2024.1
+- Updated to Java 21
+- replaced all obsolete APIs
+
 ## 1.4.0 - 2024-10-13
 
 ### Changed

@@ -60,7 +60,10 @@ intellijPlatform {
         version = plugInVer
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            untilBuild = if (providers.gradleProperty("pluginUntilBuild").get().isEmpty())
+                provider { null }
+            else
+                providers.gradleProperty("pluginUntilBuild")
         }
     }
     pluginVerification {
