@@ -3,6 +3,7 @@ build
 .gradle
 gradle
 out/
+.intellijPlatform
 
 # User-specific stuff
 .idea/**/workspace.xml

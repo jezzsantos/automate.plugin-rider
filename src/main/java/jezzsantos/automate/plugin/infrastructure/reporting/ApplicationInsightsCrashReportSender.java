@@ -29,7 +29,7 @@ public class ApplicationInsightsCrashReportSender implements ICrashReportSender 
           "Plugin Version", Objects.requireNonNullElse(report.getVersion(), AutomateBundle.message("general.AICrashReportSender.UnknownEntry.Message")),
           "Last ActionId", Objects.requireNonNullElse(report.getLastActionId(), AutomateBundle.message("general.AICrashReportSender.EmptyEntry.Message")),
           "User Comments", Objects.requireNonNullElse(report.getReproSteps(), AutomateBundle.message("general.AICrashReportSender.EmptyEntry.Message"))
-        ), cause.getMessage());
+        ), cause.getMessage(), (Object[]) null);
     }
 
     @Nullable

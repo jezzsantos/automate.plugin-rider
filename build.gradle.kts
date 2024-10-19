@@ -9,15 +9,22 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.intellijPlatform)
     alias(libs.plugins.changelog)
-    alias(libs.plugins.jvmwrapper)
 }
 
-group = providers.gradleProperty("thisPluginGroup").get()
-version = providers.gradleProperty("thisPluginVersion").get()
+group = providers.gradleProperty("pluginGroup").get()
+version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -25,7 +32,6 @@ repositories {
 
     intellijPlatform {
         defaultRepositories()
-        jetbrainsRuntime()
     }
 }
 
@@ -37,7 +43,6 @@ dependencies {
         val platformVer: String = providers.gradleProperty("platformVersion").get()
         // HACK: Do not set useInstaller = true because installer version for some reason do not contain libs/testFramework.jar
         rider(platformVer, useInstaller = false)
-        jetbrainsRuntime()
         pluginVerifier()
         zipSigner()
         instrumentationTools()
@@ -51,7 +56,7 @@ dependencies {
 intellijPlatform {
     instrumentCode = true
     pluginConfiguration {
-        val plugInVer: String = providers.gradleProperty("thisPluginVersion").get()
+        val plugInVer: String = providers.gradleProperty("pluginVersion").get()
         version = plugInVer
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
@@ -66,7 +71,7 @@ intellijPlatform {
 }
 
 changelog {
-    val plugInVer: String = providers.gradleProperty("thisPluginVersion").get()
+    val plugInVer: String = providers.gradleProperty("pluginVersion").get()
     version.set(plugInVer)
     path.set(file("CHANGELOG.md").canonicalPath)
     header.set(provider { "[${version.get()}] - ${date("yyyy-MM-dd")}" })
@@ -94,7 +99,7 @@ tasks {
 
     publishPlugin {
         dependsOn("patchChangelog")
-        val plugInVer: String = providers.gradleProperty("thisPluginVersion").get()
+        val plugInVer: String = providers.gradleProperty("pluginVersion").get()
         val items: String = if (plugInVer.split("-").size > 1)
             plugInVer.split("-")[1]
         else
@@ -104,7 +109,7 @@ tasks {
     }
 
     patchPluginXml {
-        val plugInVer: String = providers.gradleProperty("thisPluginVersion").get()
+        val plugInVer: String = providers.gradleProperty("pluginVersion").get()
         val versionExists = changelog.has(plugInVer)
         if (versionExists) {
             changeNotes.set(provider {

@@ -21,7 +21,7 @@ All notable changes to this project are documented in this file.
 
 ### Security
 
-## [1.4.0] - 2024-10-13
+## 1.4.0 - 2024-10-13
 
 ### Changed
 

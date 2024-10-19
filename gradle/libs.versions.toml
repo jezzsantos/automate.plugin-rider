@@ -1,17 +1,16 @@
 [versions]
-gradle = "8.10.2" # Gradle Releases -> https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html#requirements
+gradle = "8.5" # Gradle Releases -> https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html#requirements
 intellijPlatform = "2.1.0" # IntelliJ Plugin -> https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-kotlin = "1.9.25" # https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
+kotlin = "2.0.0" # https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
 changelog = "2.2.1"
-jvmwrapper = "0.14.0"
 # runtime
 googleGson = "2.10"
 microsoftApplicationInsights = "2.6.4" # HACK: we need to stay on this much older version of AppInsights for as long as possible, since it caches locally
 # testing
-junitJupiter = "5.9.0"
-junitJupiterEngine = "5.9.0"
-mockito = "4.8.0"
-testNg = "7.7.0"
+junitJupiter = "5.9.2"
+junitJupiterEngine = "5.9.2"
+mockito = "5.14.0"
+testNg = "7.10.0"
 testNgEngine = "1.0.4"
 
 [libraries]
@@ -30,4 +29,3 @@ testNgEngine = { group = "org.junit.support", name = "testng-engine", version.re
 intellijPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
-jvmwrapper = { id = "me.filippov.gradle.jvm.wrapper", version.ref = "jvmwrapper" }

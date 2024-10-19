@@ -54,5 +54,5 @@
     <actions>
     </actions>
 
-    <idea-version since-build="2021.3" until-build="2022.*"/>
+    <idea-version since-build="222"/>
 </idea-plugin>

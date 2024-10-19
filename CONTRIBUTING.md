@@ -201,6 +201,41 @@ When you push your changes (or push your pull requests), they will be built and 
 
 > The build must pass to submit changes to the codebase
 
+## Upgrading Plugin
+
+To upgrade this code to match a new release of Rider:
+
+1. Upgrade the version of the IntelliJ IDE.
+2. Increment the `pluginVersion` in `gradle.properties`.
+3. Update the `pluginUntilBuild` in `gradle.properties`.
+   See: https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#platformVersions
+4. Update the `platformVersion` in `gradle.properties`, only if you want to change the local version of Rider to be used
+   for testing
+5. Check and upgrade the `intellijPluginVersion` in `libs.versions.toml`
+6. Rebuild gradle
+7. Complete the release process in: [Versioning](#Versioning)
+
+### Updating Gradle
+
+To upgrade Gradle to compatible version (see: https://docs.gradle.org/current/userguide/compatibility.html)
+
+1. Check and upgrade the `gradleVersion` in `libs.versions.toml`
+2. Update the `distributionUrl` in `gradle-wrapper.properties`
+
+### Updating Java Runtime
+
+To upgrade the JBR to a new version:
+
+1. Open Project Structure in IDE, and in the Platform Settings | SDKs, download a new JDK, and select `Jetbrains` as the
+   vendor (e.g. `jbr-21.0.4`)
+2. Open Project Structure in IDE, and in the Project Settings | Project, change `SDK` (e.g. `jbr-21.0.4`)
+3. Open Settings | Build, Execution, Deployment | Compiler | Java Compiler, and change the "project bytecode version"
+4. Open Settings | Build, Execution, Deployment | Compiler | Kotlin Compiler, and change the "Target JVM version"
+5. Open Settings | Build, Execution, Deployment | Gradle, and change the "Gradle JVM"
+6. Update the version in all the: `github/workflows/*.yml` files
+7. Update the version in `build.gradle.kts` (e.g. `jvmToolchain(21)`)
+8. Update the `JAVA_HOME` environment variable on your local machine, and restart the IDE
+
 ## Publishing
 
 > Versioning and Publishing (publicly) are performed by core contributors only.
@@ -212,7 +247,7 @@ When you push your changes (or push your pull requests), they will be built and 
 >
 > If this is a 'pre-release' version (using `-preview`) we only ever increase the Minor number for breaking changes.
 
-1. In `gradle.properties`, update the `thisPluginVersion` property
+1. In `gradle.properties`, update the `pluginVersion` property
 2. In `CHANGELOG.md`, insert change notes into the `[Unreleased]` sections of the document (e.g. under headings such
    as: `### Notes`, `### Added`, `### Fixed` etc). Only leave sections with items in them ( delete the unused sections)
 3. Update both `pluginUntilBuild` and `platformVersionsToVerify` for newer releases for Rider. (you will need to reload

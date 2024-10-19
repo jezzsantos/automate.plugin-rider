@@ -1,3 +1,5 @@
+rootProject.name = "automate"
+
 pluginManagement {
     repositories {
         maven { setUrl("https://cache-redirector.jetbrains.com/plugins.gradle.org") }
@@ -15,5 +17,3 @@ pluginManagement {
         }
     }
 }
-
-rootProject.name = "automate"
