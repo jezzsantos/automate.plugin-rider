@@ -44,11 +44,6 @@ import java.util.Objects;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 
-interface AutomateNotifier {
-
-    void update();
-}
-
 public class AutomateTree extends Tree implements AutomateNotifier, DataProvider, Disposable {
 
     @NotNull

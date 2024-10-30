@@ -1,5 +1,6 @@
 package jezzsantos.automate.plugin.infrastructure.ui.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
@@ -17,6 +18,12 @@ public class ToggleAuthoringModeMenuAction extends AnAction {
 
         super();
         this.onPerformed = onPerformed;
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+
+        return ActionUpdateThread.EDT;
     }
 
     @SuppressWarnings("DialogTitleCapitalization")

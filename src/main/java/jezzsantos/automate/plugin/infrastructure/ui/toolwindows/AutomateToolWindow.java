@@ -1,13 +1,22 @@
 package jezzsantos.automate.plugin.infrastructure.ui.toolwindows;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.toolbarLayout.ToolbarLayoutStrategy;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.wm.ToolWindow;
-import com.jetbrains.rider.settings.codeCleanup.TreeActionsGroup;
+import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.Topic;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
-import jezzsantos.automate.plugin.infrastructure.ui.components.AutomateToolbar;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.*;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.AddDraftAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.drafts.DraftsListToolbarAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.patterns.AddPatternAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.patterns.PatternsListToolbarAction;
+import jezzsantos.automate.plugin.infrastructure.ui.actions.toolkits.InstallToolkitToolbarAction;
 import jezzsantos.automate.plugin.infrastructure.ui.components.AutomateTree;
 import jezzsantos.automate.plugin.infrastructure.ui.components.CliLogsPane;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +28,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+interface StateChangedListener {
+
+    Topic<StateChangedListener> TOPIC = new Topic<>(
+      StateChangedListener.class, Topic.BroadcastDirection.TO_CHILDREN);
+
+    void settingsChanged();
+}
+
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class AutomateToolWindow implements Disposable {
 
@@ -28,8 +45,10 @@ public class AutomateToolWindow implements Disposable {
     private final IAutomateApplication application;
     @NotNull
     private final ToolWindow toolwindow;
+    @NotNull
+    private final MessageBus messageBus;
     private JPanel mainPanel;
-    private AutomateToolbar toolbar;
+    private SimpleToolWindowPanel toolbar;
     private AutomateTree tree;
     private CliLogsPane cliLogsPane;
     private JSplitPane splitter;
@@ -38,6 +57,7 @@ public class AutomateToolWindow implements Disposable {
 
         this.project = project;
         this.toolwindow = toolwindow;
+        this.messageBus = project.getMessageBus();
         this.application = IAutomateApplication.getInstance(this.project);
 
         this.init();
@@ -61,12 +81,47 @@ public class AutomateToolWindow implements Disposable {
         return this.mainPanel;
     }
 
+    @NotNull
+    private static DefaultActionGroup createActions(MessageBus messageBus) {
+
+        final Runnable update = notifyUpdated(messageBus);
+
+        final var actions = new DefaultActionGroup();
+
+        actions.add(new TogglePatternEditingModeAction(update));
+        actions.add(new ToggleDraftEditingModeAction(update));
+
+        actions.addSeparator();
+
+        actions.add(new PatternsListToolbarAction(update));
+        actions.add(new AddPatternAction(update));
+        actions.add(new InstallToolkitToolbarAction(update));
+        actions.add(new DraftsListToolbarAction(update));
+        actions.add(new AddDraftAction(update));
+        actions.add(new RefreshAllAction(update));
+
+        actions.addSeparator();
+
+        actions.add(new ShowSettingsToolbarAction());
+        actions.add(new AdvancedOptionsToolbarActionGroup(update));
+
+        actions.addSeparator();
+
+        actions.add(new ToggleAuthoringModeToolbarAction(update));
+
+        return actions;
+    }
+
+    @NotNull
+    private static Runnable notifyUpdated(MessageBus messageBus) {
+
+        return () -> messageBus.syncPublisher(StateChangedListener.TOPIC).settingsChanged();
+    }
+
     private void createUIComponents() {
 
+        this.toolbar = new SimpleToolWindowPanel(true);
         this.tree = new AutomateTree(this.project);
-        this.toolbar = new AutomateToolbar(this.project, this.tree, ActionPlaces.TOOLWINDOW_CONTENT, true);
-        this.toolbar.setTargetComponent(this.mainPanel);
-        this.toolbar.setLayoutStrategy(ToolbarLayoutStrategy.NOWRAP_STRATEGY);
         this.cliLogsPane = new CliLogsPane(this.project);
     }
 
@@ -79,7 +134,12 @@ public class AutomateToolWindow implements Disposable {
 
     private void initToolWindow() {
 
-        var expandCollapseActions = new ArrayList<>(List.of(new TreeActionsGroup(this.tree).getChildActionsOrStubs()));
+        var actionManager = ActionManager.getInstance();
+        var actionToolbar = actionManager.createActionToolbar(ActionPlaces.TOOLWINDOW_CONTENT, createActions(this.messageBus), true);
+        this.toolbar.setToolbar(actionToolbar.getComponent());
+        actionToolbar.setTargetComponent(this.mainPanel);
+
+        var expandCollapseActions = new ArrayList<>(List.of(actionManager.getAction(IdeActions.ACTION_COLLAPSE_ALL), actionManager.getAction(IdeActions.ACTION_EXPAND_ALL)));
         Collections.reverse(expandCollapseActions);
         this.toolwindow.setTitleActions(expandCollapseActions);
     }
@@ -103,6 +163,12 @@ public class AutomateToolWindow implements Disposable {
         if (isVisible) {
             this.splitter.setDividerLocation(0.5d);
         }
+    }
+
+    private void setupActionNotifications() {
+
+        var connection = this.messageBus.connect();
+        connection.subscribe(StateChangedListener.TOPIC, (StateChangedListener) this.tree::update);
     }
 }
 

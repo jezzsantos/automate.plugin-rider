@@ -1,10 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.actions.drafts;
 
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
@@ -23,6 +20,12 @@ public class DraftsListToolbarAction extends ComboBoxAction {
 
         super();
         this.onPerformed = onPerformed;
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+
+        return ActionUpdateThread.EDT;
     }
 
     @SuppressWarnings("DialogTitleCapitalization")

@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.actions;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
@@ -15,6 +16,12 @@ public class ShowSettingsToolbarAction extends AnAction {
     public ShowSettingsToolbarAction() {
 
         super();
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+
+        return ActionUpdateThread.EDT;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class AutomateConstants {
     public static String ExecutableName = "automate";
     public static String ApplicationInsightsCliRoleName = "automate CLI";
     public static String ToolkitFileExtension = "toolkit";
-    public static String MinimumSupportedVersion = "1.3.0";
+    public static String MinimumSupportedVersion = "1.3.1";
     public static List<String> ReservedAttributeNames = List.of("Id", "Parent", "DisplayName", "Description", "ConfigurePath", "Schema", "Items");
     public static List<String> ReservedElementNames = ReservedAttributeNames;
     public static List<String> ReservedCodeTemplateNames = List.of("Id", "Parent");

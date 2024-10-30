@@ -1,10 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.actions;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Separator;
+import com.intellij.openapi.actionSystem.*;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.common.AutomateBundle;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +16,12 @@ public class AdvancedOptionsToolbarActionGroup extends ActionGroup {
         super();
         setPopup(true);
         this.onPerformed = onPerformed;
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+
+        return ActionUpdateThread.EDT;
     }
 
     @Override
