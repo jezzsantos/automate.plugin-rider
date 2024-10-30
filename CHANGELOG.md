@@ -21,6 +21,14 @@ All notable changes to this project are documented in this file.
 
 ### Security
 
+## [1.6.0] - 2024-10-30
+
+### Changed
+
+- Updated compatibility beyond Rider 2024.1
+- replaced all obsolete APIs
+- Added more information for user getting started with no toolkits installed.
+
 ## [1.5.0] - 2024-10-20
 
 ### Changed
