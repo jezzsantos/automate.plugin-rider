@@ -82,9 +82,9 @@ public class AutomateToolWindow implements Disposable {
     }
 
     @NotNull
-    private static DefaultActionGroup createActions(MessageBus messageBus) {
+    private static DefaultActionGroup createActions(MessageBus messageBus, AutomateTree tree) {
 
-        final Runnable update = notifyUpdated(messageBus);
+        final Runnable update = notifyUpdated(messageBus, tree);
 
         final var actions = new DefaultActionGroup();
 
@@ -113,9 +113,12 @@ public class AutomateToolWindow implements Disposable {
     }
 
     @NotNull
-    private static Runnable notifyUpdated(MessageBus messageBus) {
+    private static Runnable notifyUpdated(MessageBus messageBus, AutomateTree tree) {
 
-        return () -> messageBus.syncPublisher(StateChangedListener.TOPIC).settingsChanged();
+        return () -> {
+            messageBus.syncPublisher(StateChangedListener.TOPIC).settingsChanged();
+            tree.update();
+        };
     }
 
     private void createUIComponents() {
@@ -135,7 +138,7 @@ public class AutomateToolWindow implements Disposable {
     private void initToolWindow() {
 
         var actionManager = ActionManager.getInstance();
-        var actionToolbar = actionManager.createActionToolbar(ActionPlaces.TOOLWINDOW_CONTENT, createActions(this.messageBus), true);
+        var actionToolbar = actionManager.createActionToolbar(ActionPlaces.TOOLWINDOW_CONTENT, createActions(this.messageBus, this.tree), true);
         this.toolbar.setToolbar(actionToolbar.getComponent());
         actionToolbar.setTargetComponent(this.mainPanel);
 

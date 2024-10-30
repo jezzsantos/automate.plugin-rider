@@ -55,14 +55,15 @@ public class IntelliJNotifier implements INotifier {
         }
 
         var notifier = NotificationGroupManager.getInstance();
-        var notification = notifier
-          .getNotificationGroup(AutomateBundle.message("notification.group.name"))
-          .createNotification(title, message, notificationType);
+        var group = notifier.getNotificationGroup(AutomateBundle.message("notification.group.name"));
+        if (group != null) {
+            var notification = group.createNotification(title, message, notificationType);
 
-        if (link != null) {
-            notification.addAction(createSimple(link.getDescription(), () -> BrowserUtil.browse(link.getUrl())));
+            if (link != null) {
+                notification.addAction(createSimple(link.getDescription(), () -> BrowserUtil.browse(link.getUrl())));
+            }
+
+            notification.notify(project);
         }
-
-        notification.notify(project);
     }
 }

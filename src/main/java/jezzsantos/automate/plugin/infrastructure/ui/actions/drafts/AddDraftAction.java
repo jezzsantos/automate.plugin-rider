@@ -40,15 +40,16 @@ public class AddDraftAction extends AnAction {
         presentation.setText(message);
         presentation.setIcon(AllIcons.General.Add);
 
-        boolean isInstalled = false;
+        boolean isAnyToolkits = false;
         boolean isDraftEditingMode = false;
         var project = e.getProject();
         if (project != null) {
             var application = IAutomateApplication.getInstance(project);
-            isInstalled = application.isCliInstalled();
+            isAnyToolkits = application.isAnyToolkitsInstalled();
             isDraftEditingMode = application.getEditingMode() == EditingMode.DRAFTS;
         }
-        presentation.setEnabledAndVisible(isInstalled && isDraftEditingMode);
+        presentation.setVisible(isDraftEditingMode);
+        presentation.setEnabled(isAnyToolkits && isDraftEditingMode);
     }
 
     @Override

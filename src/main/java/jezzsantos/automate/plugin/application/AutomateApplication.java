@@ -65,6 +65,12 @@ public class AutomateApplication implements IAutomateApplication {
     }
 
     @Override
+    public boolean isAnyToolkitsInstalled() {
+
+        return isCliInstalled() && this.automateService.isAnyToolkitsInstalled();
+    }
+
+    @Override
     public void addPropertyListener(@NotNull PropertyChangeListener listener) {
 
         this.automateService.addPropertyChangedListener(listener);

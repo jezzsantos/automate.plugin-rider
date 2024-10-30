@@ -29,7 +29,9 @@ public class AutomateConstants {
     public static List<String> ReservedElementNames = ReservedAttributeNames;
     public static List<String> ReservedCodeTemplateNames = List.of("Id", "Parent");
     public static List<String> ReservedAutomationNames = List.of("Id", "Parent");
-    public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation/#jetbrains-ide-plugin";
+    public static String InstallationInstructionsUrl = "https://jezzsantos.github.io/automate/installation-rider-plugin";
+    public static String AuthoringHelpUrl = "https://jezzsantos.github.io/automate/authoring-plugin/";
+    public static String RuntimeHelpUrl = "https://jezzsantos.github.io/automate/runtime-plugin/";
     public static String TemplatingExpressionsUrl = "https://jezzsantos.github.io/automate/reference/#templating-expressions";
 
     public enum SchemaType {

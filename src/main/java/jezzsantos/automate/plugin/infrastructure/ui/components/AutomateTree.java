@@ -1,6 +1,7 @@
 package jezzsantos.automate.plugin.infrastructure.ui.components;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.ide.DefaultTreeExpander;
 import com.intellij.openapi.Disposable;
@@ -10,6 +11,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.Tree;
+import jezzsantos.automate.core.AutomateConstants;
 import jezzsantos.automate.plugin.AutomateIcons;
 import jezzsantos.automate.plugin.application.IAutomateApplication;
 import jezzsantos.automate.plugin.application.interfaces.EditingMode;
@@ -97,15 +99,21 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
             this.removeTreeSelectionListener(this.currentSelectionListener);
         }
         var isInstalled = this.application.isCliInstalled();
-        EditingMode editingMode = null;
+        EditingMode editingMode = this.application.getEditingMode();
         if (isInstalled) {
-            editingMode = this.application.getEditingMode();
-            setGuidance(editingMode == EditingMode.PATTERNS
-                          ? AutomateBundle.message("toolWindow.EmptyPatterns.Message")
-                          : AutomateBundle.message("toolWindow.EmptyDrafts.Message"));
+            if (editingMode == EditingMode.PATTERNS) {
+                setGuidance(AutomateBundle.message("toolWindow.EmptyPatterns.Message"), AutomateConstants.AuthoringHelpUrl);
+            }
+
+            if (editingMode == EditingMode.DRAFTS) {
+                var isAnyToolkits = this.application.isAnyToolkitsInstalled();
+                setGuidance(isAnyToolkits
+                              ? AutomateBundle.message("toolWindow.EmptyDrafts.Message")
+                              : AutomateBundle.message("toolWindow.NoInstalledToolkits.Message"), AutomateConstants.RuntimeHelpUrl);
+            }
         }
         else {
-            setGuidance(AutomateBundle.message("toolWindow.StartupError.Message", this.application.getExecutableName()));
+            setGuidance(AutomateBundle.message("toolWindow.StartupError.Message", this.application.getExecutableName()), AutomateConstants.InstallationInstructionsUrl);
         }
 
         if (isInstalled) {
@@ -266,13 +274,22 @@ public class AutomateTree extends Tree implements AutomateNotifier, DataProvider
         };
     }
 
-    private void setGuidance(@NotNull String text) {
+    @SuppressWarnings("DialogTitleCapitalization")
+    private void setGuidance(@NotNull String text, @Nullable String link) {
 
         var statusText = this.getEmptyText();
         statusText.clear();
         var lines = text.split(System.lineSeparator());
         for (var line : lines) {
             statusText.appendLine(line);
+        }
+        if (link != null && !link.isEmpty()) {
+            statusText.appendLine(AutomateBundle.message("toolWindow.MoreInfo.Message"), SimpleTextAttributes.LINK_ATTRIBUTES, e -> {
+                try {
+                    BrowserUtil.browse(link);
+                } catch (Exception ignored) {
+                }
+            });
         }
         this.invalidate();
     }

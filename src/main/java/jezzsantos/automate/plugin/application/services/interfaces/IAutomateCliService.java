@@ -34,6 +34,8 @@ public interface IAutomateCliService {
 
     boolean isCliInstalled(@NotNull String currentDirectory);
 
+    boolean isAnyToolkitsInstalled();
+
     void refreshCliExecutableStatus();
 
     @NotNull

@@ -162,6 +162,12 @@ public class AutomateCliService implements IAutomateCliService {
     }
 
     @Override
+    public boolean isAnyToolkitsInstalled() {
+
+        return !this.cache.listToolkits(ArrayList::new).isEmpty();
+    }
+
+    @Override
     public void refreshCliExecutableStatus() {
 
         this.cache.invalidateIsCliInstalled();

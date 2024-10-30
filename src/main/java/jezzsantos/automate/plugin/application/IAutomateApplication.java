@@ -28,6 +28,8 @@ public interface IAutomateApplication {
 
     boolean isCliInstalled();
 
+    boolean isAnyToolkitsInstalled();
+
     void addPropertyListener(@NotNull PropertyChangeListener listener);
 
     void removePropertyListener(@NotNull PropertyChangeListener listener);
