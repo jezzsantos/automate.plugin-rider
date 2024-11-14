@@ -21,11 +21,17 @@ All notable changes to this project are documented in this file.
 
 ### Security
 
+## [1.7.0] - 2024-11-14
+
+### Changed
+
+- Updated compatibility up to Rider 2024.4
+
 ## [1.6.0] - 2024-10-30
 
 ### Changed
 
-- Updated compatibility beyond Rider 2024.1
+- Updated compatibility up to Rider 2024.2
 - replaced all obsolete APIs
 - Added more information for user getting started with no toolkits installed.
 
@@ -33,7 +39,7 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
-- Updated compatibility beyond Rider 2024.1
+- Updated compatibility for Rider 2024.1
 - Updated to Java 21
 - replaced all obsolete APIs
 
